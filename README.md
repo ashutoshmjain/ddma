@@ -25,6 +25,13 @@ DeepDive Media Automator (DDMA) is a python CLI toolkit and an interactive web c
 2. **OpenAI Whisper (`openai-whisper==20250625`)**
 3. **FFmpeg**: Must be installed and added to your system's `PATH`.
 
+### 🖥️ Recommended Hardware Configuration
+Running AI transcription models (like OpenAI Whisper) is resource-intensive. For a smooth experience:
+* **GPU (Highly Recommended)**: Dedicated NVIDIA GPU (GTX 1060 / RTX 2060 or better) with at least **4 GB VRAM** and CUDA support. Running Whisper on a CUDA-enabled GPU speeds up transcription by 10x–20x compared to CPU.
+* **CPU**: Modern multi-core processor (Intel Core i5 / AMD Ryzen 5 or better).
+* **RAM**: **16 GB RAM** or more is recommended.
+* **Storage**: SSD (Solid State Drive) is highly recommended for faster reads/writes of large audio and video assets.
+
 ---
 
 ## 📥 Installation
