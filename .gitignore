@@ -1,0 +1,43 @@
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Large audio/video files
+*.mp3
+*.m4a
+*.mp4
+*.wav
+
+# Pre-existing episode MP3 files in root
+242.mp3
+243.mp3
+244.m4a
+
+# Shared resources stings (except title card music)
+music/*
+!music/title-card-music.mp3
+
+# Previews & final clips outputs
+previews/*
+!previews/.gitkeep
+clips/*
+!clips/.gitkeep
+title_cards/*
+!title_cards/.gitkeep
+
+# Project assets
+projects/*
+!projects/.gitkeep
+
+# IDE files
+.vscode/
+.idea/
+.DS_Store

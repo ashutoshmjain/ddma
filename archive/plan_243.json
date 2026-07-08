@@ -1,0 +1,65 @@
+[
+    {
+        "num": 1,
+        "title": "Memory vs Healing",
+        "start": 0.0,
+        "end": 114.6,
+        "duration": 114.6,
+        "bridge_text": "If our brain cells can't heal themselves, how do they survive a lifetime of damage?"
+    },
+    {
+        "num": 2,
+        "title": "The Garbage Theory",
+        "start": 229.05,
+        "end": 325.25,
+        "duration": 96.2,
+        "bridge_text": "What happens when the cell's waste incinerator fails and starts spilling acid?"
+    },
+    {
+        "num": 3,
+        "title": "The Acid Balloon",
+        "start": 370.37,
+        "end": 485.65,
+        "duration": 115.28,
+        "bridge_text": "How can a cell patch a nanometer-scale rupture in less than a millisecond?"
+    },
+    {
+        "num": 4,
+        "title": "The Calcium Smoke Detector",
+        "start": 970.25,
+        "end": 1124.42,
+        "duration": 154.17,
+        "bridge_text": "How do weak molecular bonds snap together like Velcro to seal a high-pressure leak?"
+    },
+    {
+        "num": 5,
+        "title": "The Avidity",
+        "start": 1273.15,
+        "end": 1379.3,
+        "duration": 106.15,
+        "bridge_text": "Why is physical membrane repair infinitely faster than CRISPR gene editing?"
+    },
+    {
+        "num": 6,
+        "title": "CRISPR\nVERSUS\nLASER",
+        "start": 1722.58,
+        "end": 1885.45,
+        "duration": 162.87,
+        "bridge_text": "How does cancer hijack this rescue system to make tumors indestructible?"
+    },
+    {
+        "num": 7,
+        "title": "The\nCancer\nCell",
+        "start": 1930.07,
+        "end": 2093.3,
+        "duration": 163.23,
+        "bridge_text": "Is the scarring from these emergency patches the real reason we age?"
+    },
+    {
+        "num": 8,
+        "title": "The Senescence",
+        "start": 2480.17,
+        "end": 2596.5,
+        "duration": 116.33
+    }
+]

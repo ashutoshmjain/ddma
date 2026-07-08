@@ -1,0 +1,372 @@
+[
+    {
+        "num": 1,
+        "title": "Einstein's Magnet-Conductor Paradox",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2430.36,
+                "end": 2499.84,
+                "duration": 69.48,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 4.5,
+                "crossfade": 5
+            },
+            {
+                "type": "audio",
+                "start": 36.52,
+                "end": 48.18,
+                "duration": 11.66,
+                "text": "So  today  we  aren't  talking  about  how  science  is  built.  We  are  talking  about  how  it  is  violently  destroyed.  Indeed,  we  are  examining  the  precise  calculated  architecture  of  intellectual  demolition."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ],
+        "locked": true
+    },
+    {
+        "num": 2,
+        "title": "The Tied Stones Paradox",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 1183.24,
+                "end": 1343.48,
+                "duration": 160.24,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Cartoon Bank Heist (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ],
+        "locked": true
+    },
+    {
+        "num": 3,
+        "title": "The Demolition Myth",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 0,
+                "end": 113.84,
+                "duration": 113.84,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Cold Killa (Sting) - MK2.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 4,
+        "title": "The Rigidness of Paradigms",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 134.32,
+                "end": 218.26,
+                "duration": 83.94,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Cruise (Sting) - John Deley and the 41 Players.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 5,
+        "title": "Laudan's Problems",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 238.84,
+                "end": 363.76,
+                "duration": 124.91999999999999,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Danzon De Pasion (Sting) - Jimmy Fontanez_Media Right Productions.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 6,
+        "title": "Planck's Principle",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 506.28,
+                "end": 601.52,
+                "duration": 95.24000000000001,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Day of Recon (Sting) - Max Surla_Media Right Productions.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 7,
+        "title": "The Copernican Myth",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 615.2,
+                "end": 739.26,
+                "duration": 124.05999999999995,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Demilitarized Zone (Sting) - Ethan Meixsell.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 8,
+        "title": "Ptolemy's Equant Cheat",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 790.54,
+                "end": 923.94,
+                "duration": 133.4000000000001,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Dewey, Cheedham, and Howe (Sting) - John Deley and the 41 Players.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 9,
+        "title": "Cartesian Vortices",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 1369.52,
+                "end": 1496.78,
+                "duration": 127.25999999999999,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Dizzy (Sting) - Max Surla_Media Right Productions.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 10,
+        "title": "The Phlogiston Anomaly",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 1640.56,
+                "end": 1736.54,
+                "duration": 95.98000000000002,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Double Helix (Sting) - Ethan Meixsell.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 11,
+        "title": "The Analytical Balance",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 1753.34,
+                "end": 1864.32,
+                "duration": 110.98000000000002,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Dub Hub (Sting) - Jimmy Fontanez_Media Right Productions.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 12,
+        "title": "The Special Creation Doctrine",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 1920.22,
+                "end": 2013.6,
+                "duration": 93.37999999999988,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Flow (Sting) - MK2.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 13,
+        "title": "Darwin's Homology Proofs",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2028.72,
+                "end": 2113,
+                "duration": 84.27999999999997,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 14,
+        "title": "The Displacement Current",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2278.18,
+                "end": 2406.06,
+                "duration": 127.88000000000011,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Leavin (Sting) - MK2.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 15,
+        "title": "The Photoelectric Paradox",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2620.8,
+                "end": 2749.14,
+                "duration": 128.3399999999997,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Left U Into (Sting) - Otis McDonald.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 16,
+        "title": "Observer Patch Holography",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2890.92,
+                "end": 3004.14,
+                "duration": 113.2199999999998,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Livin' Up (Sting) - Otis McDonald.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 17,
+        "title": "OPH: Quantum, Time and de Sitter",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 3144.46,
+                "end": 3274.32,
+                "duration": 129.86000000000013,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Mess Call - USAF Heritage of America Band .mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 18,
+        "title": "OPH: Black Holes, Dark Matter, and Laws",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 3464.18,
+                "end": 3593.12,
+                "duration": 128.94000000000005,
+                "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "Official National Anthem (Sting) - Jingle Punks.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
+            }
+        ]
+    },
+    {
+        "num": 19,
+        "title": "Tearing Down the Scaffold",
+        "segments": [
+            {
+                "type": "audio",
+                "start": 3676.32,
+                "end": 3799.54,
+                "duration": 123.2199999999998,
+                "text": "(Speech Segment)"
+            }
+        ]
+    }
+]
