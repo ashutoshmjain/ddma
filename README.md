@@ -22,7 +22,8 @@ DeepDive Media Automator (DDMA) is a python CLI toolkit and an interactive web c
 ## 🛠️ Requirements
 
 1. **Python 3.8+**
-2. **FFmpeg**: Must be installed and added to your system's `PATH`.
+2. **OpenAI Whisper (`openai-whisper==20250625`)**
+3. **FFmpeg**: Must be installed and added to your system's `PATH`.
 
 ---
 
