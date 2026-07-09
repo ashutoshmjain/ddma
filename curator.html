@@ -996,6 +996,18 @@
                     <button class="btn btn-primary btn-mini" id="exportBtn">💾 Export Plan</button>
                 </div>
             </div>
+            <!-- Utility Toolbar for Undo/Snapshot -->
+            <div class="clips-toolbar" id="clipsToolbar" style="display: none; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border-color); background-color: var(--panel-bg-darker); align-items: center; justify-content: space-between; gap: 0.5rem;">
+                <div style="display: flex; gap: 0.4rem; align-items: center;">
+                    <button class="btn btn-secondary btn-mini" id="undoBtn" disabled style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">↩️ Undo</button>
+                    <span style="font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono);" id="undoCountLabel"></span>
+                    <button class="btn btn-secondary btn-mini" id="playLockedBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem; margin-left: 0.5rem;">▶ Play Locked</button>
+                </div>
+                <div style="display: flex; gap: 0.4rem; align-items: center;">
+                    <button class="btn btn-secondary btn-mini" id="saveSnapshotBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">📸 Take Snapshot</button>
+                    <button class="btn btn-secondary btn-mini" id="restoreSnapshotBtn" disabled style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">⏪ Restore Snapshot</button>
+                </div>
+            </div>
             <div class="clip-list" id="clipListContainer">
                 <div class="empty-state" id="planEmptyState">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1196,6 +1208,10 @@
         let editingSegmentRef = null; // { clipIdx, segIdx }
         
         let pollingInterval = null;
+        let undoStack = [];
+        let lastSavedStateString = "[]";
+        let activeLockedSequence = null;
+        let sequencePlayIdx = -1;
 
         // Elements
         const projectList = document.getElementById('projectList');
@@ -1216,6 +1232,13 @@
         const planEmptyState = document.getElementById('planEmptyState');
         const exportBtn = document.getElementById('exportBtn');
         const newClipBtn = document.getElementById('newClipBtn');
+        
+        const clipsToolbar = document.getElementById('clipsToolbar');
+        const undoBtn = document.getElementById('undoBtn');
+        const undoCountLabel = document.getElementById('undoCountLabel');
+        const saveSnapshotBtn = document.getElementById('saveSnapshotBtn');
+        const restoreSnapshotBtn = document.getElementById('restoreSnapshotBtn');
+        const playLockedBtn = document.getElementById('playLockedBtn');
         
         const audioElement = document.getElementById('audioElement');
         const playBtn = document.getElementById('playBtn');
@@ -1280,64 +1303,120 @@
             playerStateBar.textContent = `🎙 STATE: ${stateMsg}`;
         }
 
+        // Save settings to settings.json on server
+        function saveSettingsToServer() {
+            if (!window.location.protocol.startsWith('http')) return;
+            const theme = localStorage.getItem('ddma-theme') || 'midnight';
+            const format = localStorage.getItem('ddma-export-format') || 'audio';
+            const res = localStorage.getItem('ddma-video-res') || '740x740';
+            const bg = localStorage.getItem('ddma-video-bg') || 'black';
+            
+            const settings = {
+                theme: theme,
+                export_format: format,
+                resolution: res,
+                bg_color: bg
+            };
+            
+            fetch('/save-settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(settings)
+            })
+            .then(res => {
+                if (!res.ok) console.error("Saving settings to server failed");
+            })
+            .catch(err => {
+                console.warn("Saving settings to server failed: ", err.message);
+            });
+        }
+
         // Initialize App
         window.addEventListener('DOMContentLoaded', () => {
-            // Apply loaded theme preference on load
-            const savedTheme = localStorage.getItem('ddma-theme') || 'midnight';
-            applyTheme(savedTheme);
-            themeSelector.value = savedTheme;
+            const initApp = () => {
+                // Apply loaded theme preference on load
+                const savedTheme = localStorage.getItem('ddma-theme') || 'midnight';
+                applyTheme(savedTheme, false); // pass false so we don't save back immediately
+                themeSelector.value = savedTheme;
 
-            // Load saved export settings
-            const savedFormat = localStorage.getItem('ddma-export-format') || 'audio';
-            exportFormatSelector.value = savedFormat;
-            if (savedFormat === 'video') {
-                videoSettingsArea.style.display = 'flex';
-            } else {
-                videoSettingsArea.style.display = 'none';
-            }
-            
-            const savedRes = localStorage.getItem('ddma-video-res') || '740x740';
-            videoResolutionSelector.value = savedRes;
-            
-            const savedBg = localStorage.getItem('ddma-video-bg') || 'black';
-            if (savedBg !== 'black' && savedBg !== '#161822' && savedBg !== '#475569') {
-                videoBgPresetSelector.value = 'custom';
-                customColorField.style.display = 'flex';
-                videoBgCustomInput.value = savedBg;
-            } else {
-                videoBgPresetSelector.value = savedBg;
-                customColorField.style.display = 'none';
-            }
+                // Load saved export settings
+                const savedFormat = localStorage.getItem('ddma-export-format') || 'audio';
+                exportFormatSelector.value = savedFormat;
+                if (savedFormat === 'video') {
+                    videoSettingsArea.style.display = 'flex';
+                } else {
+                    videoSettingsArea.style.display = 'none';
+                }
+                
+                const savedRes = localStorage.getItem('ddma-video-res') || '740x740';
+                videoResolutionSelector.value = savedRes;
+                
+                const savedBg = localStorage.getItem('ddma-video-bg') || 'black';
+                if (savedBg !== 'black' && savedBg !== '#161822' && savedBg !== '#475569') {
+                    videoBgPresetSelector.value = 'custom';
+                    customColorField.style.display = 'flex';
+                    videoBgCustomInput.value = savedBg;
+                } else {
+                    videoBgPresetSelector.value = savedBg;
+                    customColorField.style.display = 'none';
+                }
+
+                if (window.location.protocol.startsWith('http')) {
+                    updateStateBar("Loading projects list...");
+                    
+                    // Fetch music stings
+                    fetch('/list-music')
+                        .then(r => r.json())
+                        .then(files => {
+                            availableMusicFiles = files;
+                            // Fetch projects
+                            loadProjectsList();
+                        })
+                        .catch(err => {
+                            console.error("Music stings load failure: ", err);
+                            loadProjectsList();
+                        });
+                }
+                
+                setupResizer();
+                setupSidebarCollapse();
+                setupSettingsModal();
+            };
 
             if (window.location.protocol.startsWith('http')) {
-                updateStateBar("Loading projects list...");
-                
-                // Fetch music stings
-                fetch('/list-music')
-                    .then(r => r.json())
-                    .then(files => {
-                        availableMusicFiles = files;
-                        // Fetch projects
-                        loadProjectsList();
+                // Fetch settings from server
+                fetch('/get-settings')
+                    .then(r => {
+                        if (!r.ok) throw new Error("Could not retrieve settings");
+                        return r.json();
+                    })
+                    .then(data => {
+                        if (data.theme) localStorage.setItem('ddma-theme', data.theme);
+                        if (data.export_format) localStorage.setItem('ddma-export-format', data.export_format);
+                        if (data.resolution) localStorage.setItem('ddma-video-res', data.resolution);
+                        if (data.bg_color) localStorage.setItem('ddma-video-bg', data.bg_color);
                     })
                     .catch(err => {
-                        console.error("Music stings load failure: ", err);
-                        loadProjectsList();
+                        console.warn("Could not load settings from server, using local fallback:", err);
+                    })
+                    .finally(() => {
+                        initApp();
                     });
+            } else {
+                initApp();
             }
-            
-            setupResizer();
-            setupSidebarCollapse();
-            setupSettingsModal();
         });
 
         // Theme applier logic
-        function applyTheme(themeName) {
+        function applyTheme(themeName, save = true) {
             document.documentElement.className = '';
             if (themeName !== 'midnight') {
                 document.documentElement.classList.add(`theme-${themeName}`);
             }
             localStorage.setItem('ddma-theme', themeName);
+            if (save) {
+                saveSettingsToServer();
+            }
         }
 
         // Settings Modal Setup
@@ -1407,6 +1486,8 @@
                     }
                 }
                 localStorage.setItem('ddma-video-bg', bg);
+                
+                saveSettingsToServer();
 
                 settingsModalOverlay.classList.remove('active');
                 showDebug(`Settings saved successfully!`, false);
@@ -1613,6 +1694,8 @@
                 pollingInterval = null;
             }
             
+            stopLockedSequence();
+            
             activeProjectId = projectId;
             
             loadProjectsListOnly();
@@ -1628,6 +1711,15 @@
                     projectInfo = data.info;
                     clips = data.plan || [];
                     transcriptionData = data.transcription;
+                    
+                    // Initialize Undo stack and baseline save state
+                    undoStack = [];
+                    lastSavedStateString = JSON.stringify(clips);
+                    updateUndoButtonState();
+                    
+                    // Show clips utility toolbar and configure snapshot button
+                    clipsToolbar.style.display = 'flex';
+                    restoreSnapshotBtn.disabled = !data.has_snapshot;
                     
                     activeProjectBadge.textContent = projectInfo.name;
                     activeProjectTitleHeader.textContent = `${projectInfo.name.toUpperCase()} CLIP PLAN`;
@@ -2261,9 +2353,142 @@
             savePlanToServer();
         }
 
+        // Stop active locked sequence playback
+        function stopLockedSequence() {
+            if (activeLockedSequence !== null) {
+                activeLockedSequence = null;
+                sequencePlayIdx = -1;
+                audioElement.pause();
+                audioElement.src = `/project-audio?id=${activeProjectId}`;
+                audioElement.onended = null;
+                
+                // Clear any border highlights on cards
+                document.querySelectorAll('.clip-card').forEach(c => c.style.borderColor = '');
+                
+                // Update all card buttons to '▶ Play'
+                const cardPlayBtns = document.querySelectorAll('.btn-card-play');
+                cardPlayBtns.forEach(btn => {
+                    btn.innerHTML = '▶ Play';
+                });
+                
+                playBtn.textContent = '▶';
+                activeClipPlayIdx = null;
+                playLockedBtn.innerHTML = '▶ Play Locked';
+                updateStateBar("Ready");
+            }
+        }
+
+        // Play next step of locked sequence
+        function playSequenceStep() {
+            if (activeLockedSequence === null) return;
+            if (sequencePlayIdx < 0 || sequencePlayIdx >= activeLockedSequence.length) {
+                stopLockedSequence();
+                return;
+            }
+            
+            const clipIdx = activeLockedSequence[sequencePlayIdx];
+            const clip = clips[clipIdx];
+            
+            // Check if clip actually has segments
+            if (clip.segments.length === 0) {
+                // If a locked clip has no segments, skip it and go to the next
+                sequencePlayIdx++;
+                playSequenceStep();
+                return;
+            }
+            
+            const btnEl = document.getElementById(`playCardBtn_${clipIdx}`);
+            if (btnEl) {
+                btnEl.innerHTML = '⏳ Compiling...';
+            }
+            
+            updateStateBar(`Compiling preview ${sequencePlayIdx + 1}/${activeLockedSequence.length} for: "${clip.title}"...`);
+            
+            const cardEl = document.getElementById(`clipCard_${clipIdx}`);
+            if (cardEl) {
+                cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                document.querySelectorAll('.clip-card').forEach(c => c.style.borderColor = '');
+                cardEl.style.borderColor = 'var(--primary)';
+            }
+            
+            fetch(`/compile-project-preview?id=${activeProjectId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    clip_idx: clipIdx,
+                    segments: clip.segments
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Compilation server error");
+                return res.json();
+            })
+            .then(data => {
+                if (activeLockedSequence === null) return;
+                
+                if (btnEl) {
+                    btnEl.innerHTML = '⏸ Pause';
+                }
+                playBtn.textContent = '⏸';
+                activeClipPlayIdx = clipIdx;
+                
+                audioElement.src = data.preview_url;
+                audioElement.volume = 1.0;
+                audioElement.play()
+                    .then(() => {
+                        updateStateBar(`Playing sequence (${sequencePlayIdx + 1}/${activeLockedSequence.length}): "${clip.title}"`);
+                    })
+                    .catch(err => {
+                        showDebug("Failed to play preview file: " + err.message);
+                    });
+                
+                audioElement.onended = () => {
+                    if (activeLockedSequence === null) return;
+                    if (btnEl) {
+                        btnEl.innerHTML = '▶ Play';
+                    }
+                    if (cardEl) cardEl.style.borderColor = '';
+                    sequencePlayIdx++;
+                    playSequenceStep();
+                };
+            })
+            .catch(err => {
+                if (btnEl) {
+                    btnEl.innerHTML = '▶ Play';
+                }
+                showDebug("FFmpeg sequence step failed: " + err.message);
+                updateStateBar("Ready");
+                stopLockedSequence();
+            });
+        }
+
+        // Play Locked button listener
+        playLockedBtn.addEventListener('click', () => {
+            if (!activeProjectId) return;
+            
+            if (activeLockedSequence !== null) {
+                stopLockedSequence();
+            } else {
+                const locked = clips.filter(c => c.locked);
+                if (locked.length === 0) {
+                    alert("No clips are locked yet. Toggle the lock icon on some cards first!");
+                    return;
+                }
+                
+                activeLockedSequence = locked.map(c => clips.indexOf(c));
+                sequencePlayIdx = 0;
+                playLockedBtn.innerHTML = '⏹ Stop Locked';
+                playSequenceStep();
+            }
+        });
+
         // Compile and Play FFmpeg preview
         function playFFmpegPreview(clipIdx, btnEl, event) {
             event.stopPropagation();
+            
+            if (activeLockedSequence !== null) {
+                stopLockedSequence();
+            }
             
             if (activeClipPlayIdx === clipIdx && !audioElement.paused) {
                 audioElement.pause();
@@ -2376,9 +2601,34 @@
             });
         }
 
+        // Update Undo button state in UI
+        function updateUndoButtonState() {
+            if (undoStack.length > 0) {
+                undoBtn.disabled = false;
+                undoCountLabel.textContent = `(${undoStack.length}/10)`;
+            } else {
+                undoBtn.disabled = true;
+                undoCountLabel.textContent = "";
+            }
+        }
+
         // Save plan.json
-        function savePlanToServer() {
+        function savePlanToServer(isUndoable = true) {
             if (!activeProjectId) return;
+            
+            const currentPlanStr = JSON.stringify(clips);
+            if (currentPlanStr !== lastSavedStateString) {
+                if (isUndoable) {
+                    // Push deep copy of previous state onto undo stack
+                    undoStack.push(JSON.parse(lastSavedStateString));
+                    if (undoStack.length > 10) {
+                        undoStack.shift();
+                    }
+                    updateUndoButtonState();
+                }
+                lastSavedStateString = currentPlanStr;
+            }
+
             fetch(`/save-project-plan?id=${activeProjectId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -2403,6 +2653,107 @@
             });
             renderClips();
             savePlanToServer();
+        });
+
+        // Undo button listener
+        undoBtn.addEventListener('click', () => {
+            if (undoStack.length === 0) return;
+            
+            // Peek at the previous state first before popping it
+            const prevState = undoStack[undoStack.length - 1];
+            
+            // Check if undo would change any currently locked clips
+            for (let i = 0; i < clips.length; i++) {
+                const currClip = clips[i];
+                if (currClip.locked) {
+                    const prevClip = prevState.find(c => c.num === currClip.num);
+                    if (!prevClip) {
+                        alert(`Cannot undo: Clip #${currClip.num} ("${currClip.title}") is currently locked. Please unlock it first.`);
+                        return;
+                    } else {
+                        const currContent = JSON.stringify({ title: currClip.title, segments: currClip.segments });
+                        const prevContent = JSON.stringify({ title: prevClip.title, segments: prevClip.segments });
+                        if (currContent !== prevContent) {
+                            alert(`Cannot undo: Clip #${currClip.num} ("${currClip.title}") is currently locked. Please unlock it first.`);
+                            return;
+                        }
+                    }
+                }
+            }
+            
+            const prevStatePopped = undoStack.pop();
+            clips = prevStatePopped;
+            renderClips();
+            updateUsedHighlights();
+            savePlanToServer(false); // save changes without pushing to undo stack again
+            updateUndoButtonState();
+            updateStateBar("Undo successful");
+        });
+
+        // Take Snapshot button listener
+        saveSnapshotBtn.addEventListener('click', () => {
+            if (!activeProjectId) return;
+            saveSnapshotBtn.disabled = true;
+            saveSnapshotBtn.innerHTML = '⏳ Saving...';
+            
+            fetch(`/save-project-snapshot?id=${activeProjectId}`, { method: 'POST' })
+                .then(r => {
+                    if (!r.ok) throw new Error("Could not save snapshot");
+                    return r.json();
+                })
+                .then(data => {
+                    saveSnapshotBtn.disabled = false;
+                    saveSnapshotBtn.innerHTML = '📸 Take Snapshot';
+                    restoreSnapshotBtn.disabled = false;
+                    updateStateBar("Snapshot saved successfully!");
+                    showDebug("Snapshot saved in projects/" + activeProjectId + "/plan_snapshot.json", false);
+                })
+                .catch(err => {
+                    saveSnapshotBtn.disabled = false;
+                    saveSnapshotBtn.innerHTML = '📸 Take Snapshot';
+                    updateStateBar("Snapshot failed");
+                    showDebug("Snapshot failed: " + err.message);
+                });
+        });
+
+        // Restore Snapshot button listener
+        restoreSnapshotBtn.addEventListener('click', () => {
+            if (!activeProjectId) return;
+            if (!confirm("Are you sure you want to restore the snapshot? This will overwrite your current active plan. (You will still be able to Undo this restore).")) return;
+            
+            restoreSnapshotBtn.disabled = true;
+            restoreSnapshotBtn.innerHTML = '⏳ Restoring...';
+            
+            // Push current state to undo stack before overwriting
+            undoStack.push(JSON.parse(JSON.stringify(clips)));
+            if (undoStack.length > 10) {
+                undoStack.shift();
+            }
+            updateUndoButtonState();
+            
+            fetch(`/restore-project-snapshot?id=${activeProjectId}`, { method: 'POST' })
+                .then(r => {
+                    if (!r.ok) throw new Error("Could not restore snapshot");
+                    return r.json();
+                })
+                .then(data => {
+                    restoreSnapshotBtn.disabled = false;
+                    restoreSnapshotBtn.innerHTML = '⏪ Restore Snapshot';
+                    
+                    clips = data.plan || [];
+                    lastSavedStateString = JSON.stringify(clips);
+                    renderClips();
+                    updateUsedHighlights();
+                    
+                    updateStateBar("Snapshot restored!");
+                    showDebug("Restored from plan_snapshot.json", false);
+                })
+                .catch(err => {
+                    restoreSnapshotBtn.disabled = false;
+                    restoreSnapshotBtn.innerHTML = '⏪ Restore Snapshot';
+                    updateStateBar("Restore snapshot failed");
+                    showDebug("Restore snapshot failed: " + err.message);
+                });
         });
 
         // Render planned clips list
@@ -2487,7 +2838,7 @@
                                             </div>
                                             <div class="music-editor-field">
                                                 <label>Volume:</label>
-                                                <input type="number" class="music-volume" step="0.05" min="0" max="2" style="width: 55px;" value="${seg.volume !== undefined ? seg.volume : 0.35}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
+                                                <input type="number" class="music-volume" step="0.05" min="0" max="2" style="width: 55px;" value="${seg.volume !== undefined ? seg.volume : 1.00}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
                                             </div>
                                         </div>
                                     </div>
@@ -2591,7 +2942,7 @@
                         el.addEventListener('change', function() {
                             const clipIdx = parseInt(this.dataset.clip);
                             const segIdx = parseInt(this.dataset.seg);
-                            updateSegmentField(clipIdx, segIdx, 'volume', parseFloat(this.value) || 0.35);
+                            updateSegmentField(clipIdx, segIdx, 'volume', parseFloat(this.value) || 1.00);
                             renderClips();
                         });
                     });

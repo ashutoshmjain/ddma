@@ -2,6 +2,9 @@
     {
         "num": 1,
         "title": "Einstein's Magnet-Conductor Paradox",
+        "bridge_text": [
+            "Why is merely proposing a correct scientific theory never enough to change the world?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -21,7 +24,7 @@
                 "start": 36.52,
                 "end": 48.18,
                 "duration": 11.66,
-                "text": "So  today  we  aren't  talking  about  how  science  is  built.  We  are  talking  about  how  it  is  violently  destroyed.  Indeed,  we  are  examining  the  precise  calculated  architecture  of  intellectual  demolition."
+                "text": "So today we aren't talking about how science is built. We are talking about how it is violently destroyed. Indeed, we are examining the precise calculated architecture of intellectual demolition."
             },
             {
                 "type": "music",
@@ -34,13 +37,16 @@
     },
     {
         "num": 2,
-        "title": "The Tied Stones Paradox",
+        "title": "Tied Stones",
+        "bridge_text": [
+            "What happens to a scientist who dares to ask a question outside the accepted rules?"
+        ],
         "segments": [
             {
                 "type": "audio",
                 "start": 1183.24,
-                "end": 1343.48,
-                "duration": 160.24,
+                "end": 1358.08,
+                "duration": 174.84,
                 "text": "(Speech Segment)"
             },
             {
@@ -55,6 +61,9 @@
     {
         "num": 3,
         "title": "The Demolition Myth",
+        "bridge_text": [
+            "Why is a logical contradiction far more deadly to a theory than bad experimental data?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -74,6 +83,9 @@
     {
         "num": 4,
         "title": "The Rigidness of Paradigms",
+        "bridge_text": [
+            "Does science progress through logical persuasion, or must the old guard die out first?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -93,6 +105,9 @@
     {
         "num": 5,
         "title": "Laudan's Problems",
+        "bridge_text": [
+            "How did Copernicus overthrow 1,400 years of astronomy without better data or a telescope?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -112,6 +127,9 @@
     {
         "num": 6,
         "title": "Planck's Principle",
+        "bridge_text": [
+            "What was the secret geometric cheat code that kept the ancient earth-centered universe alive?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -131,6 +149,9 @@
     {
         "num": 7,
         "title": "The Copernican Myth",
+        "bridge_text": [
+            "Why did the early scientific pioneers have to destroy the idea of cosmic whirlpools?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -150,6 +171,9 @@
     {
         "num": 8,
         "title": "Ptolemy's Equant Cheat",
+        "bridge_text": [
+            "How did 18th-century chemists explain a substance that supposedly had negative weight?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -169,6 +193,9 @@
     {
         "num": 9,
         "title": "Cartesian Vortices",
+        "bridge_text": [
+            "How did the simple balance scale spark a revolution that laid the foundation of modern chemistry?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -188,6 +215,9 @@
     {
         "num": 10,
         "title": "The Phlogiston Anomaly",
+        "bridge_text": [
+            "Why did Darwin focus on the imperfections and cruelties of nature to prove evolution?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -207,6 +237,9 @@
     {
         "num": 11,
         "title": "The Analytical Balance",
+        "bridge_text": [
+            "Why would a bat's wing, a whale's flipper, and a human hand share the exact same bone structure?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -226,6 +259,9 @@
     {
         "num": 12,
         "title": "The Special Creation Doctrine",
+        "bridge_text": [
+            "How did a mathematical correction in a capacitor lead to discovering the nature of light?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -245,6 +281,9 @@
     {
         "num": 13,
         "title": "Darwin's Homology Proofs",
+        "bridge_text": [
+            "Why did classical physics predict that any warm object should release a lethal dose of UV light?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -264,6 +303,9 @@
     {
         "num": 14,
         "title": "The Displacement Current",
+        "bridge_text": [
+            "Could the boundaries of what we can physically observe contain the entire code of the universe?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -283,6 +325,9 @@
     {
         "num": 15,
         "title": "The Photoelectric Paradox",
+        "bridge_text": [
+            "How does the expansion of empty space challenge our basic understanding of time and gravity?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -302,6 +347,9 @@
     {
         "num": 16,
         "title": "Observer Patch Holography",
+        "bridge_text": [
+            "Why must a physical law break down at the edge of a black hole to preserve cosmic consistency?"
+        ],
         "segments": [
             {
                 "type": "audio",
@@ -321,6 +369,7 @@
     {
         "num": 17,
         "title": "OPH: Quantum, Time and de Sitter",
+        "bridge_text": [],
         "segments": [
             {
                 "type": "audio",
@@ -340,6 +389,7 @@
     {
         "num": 18,
         "title": "OPH: Black Holes, Dark Matter, and Laws",
+        "bridge_text": [],
         "segments": [
             {
                 "type": "audio",
@@ -359,6 +409,7 @@
     {
         "num": 19,
         "title": "Tearing Down the Scaffold",
+        "bridge_text": [],
         "segments": [
             {
                 "type": "audio",
@@ -366,6 +417,12 @@
                 "end": 3799.54,
                 "duration": 123.2199999999998,
                 "text": "(Speech Segment)"
+            },
+            {
+                "type": "music",
+                "music_file": "none",
+                "duration": 1,
+                "crossfade": 0.3
             }
         ]
     }

@@ -123,7 +123,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         ]
                     else:
                         # Slice music and scale volume down
-                        volume = seg.get("volume", 0.35)
+                        volume = seg.get("volume", 1.0)
                         cmd = [
                             "ffmpeg", "-y",
                             "-i", music_path,
@@ -208,6 +208,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 # Save to project's plan.json
                 with open(os.path.join(project_dir, 'plan.json'), 'w', encoding='utf-8') as f:
                     json.dump(json_data, f, indent=4)
+                
+                # Sync to root plan.json
+                with open('plan.json', 'w', encoding='utf-8') as f:
+                    json.dump(json_data, f, indent=4)
                     
                 self.send_response(200)
                 self.send_header('Content-type', 'text/plain')
@@ -218,6 +222,81 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             except Exception as e:
                 print(f"Error saving plan for {project_id}: {e}")
                 self.send_error(500, f"Error saving plan: {e}")
+                return
+                
+        elif parsed_url.path == '/save-project-snapshot':
+            project_id = params.get('id', [None])[0]
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                
+                project_dir = os.path.join("projects", project_id)
+                plan_path = os.path.join(project_dir, "plan.json")
+                snapshot_path = os.path.join(project_dir, "plan_snapshot.json")
+                
+                if os.path.exists(plan_path):
+                    shutil.copy2(plan_path, snapshot_path)
+                else:
+                    with open(snapshot_path, "w", encoding="utf-8") as f:
+                        json.dump([], f)
+                        
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_error(500, f"Error saving snapshot: {e}")
+                return
+                
+        elif parsed_url.path == '/restore-project-snapshot':
+            project_id = params.get('id', [None])[0]
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                
+                project_dir = os.path.join("projects", project_id)
+                plan_path = os.path.join(project_dir, "plan.json")
+                snapshot_path = os.path.join(project_dir, "plan_snapshot.json")
+                
+                if not os.path.exists(snapshot_path):
+                    raise Exception("No snapshot exists for this project.")
+                    
+                shutil.copy2(snapshot_path, plan_path)
+                shutil.copy2(snapshot_path, "plan.json")
+                
+                # Load the restored plan
+                with open(plan_path, "r", encoding="utf-8") as f:
+                    restored_plan = json.load(f)
+                    
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "plan": restored_plan}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_error(500, f"Error restoring snapshot: {e}")
+                return
+                
+        elif parsed_url.path == '/save-settings':
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length)
+            try:
+                json_data = json.loads(post_data.decode('utf-8'))
+                settings_path = "settings.json"
+                with open(settings_path, "w", encoding="utf-8") as f:
+                    json.dump(json_data, f, indent=4)
+                    
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_error(500, f"Error saving settings: {e}")
                 return
                 
         elif parsed_url.path == '/create-project':
@@ -535,16 +614,23 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if os.path.exists(plan_path):
                     with open(plan_path, "r", encoding="utf-8") as f:
                         plan_data = json.load(f)
+                    try:
+                        shutil.copy2(plan_path, "plan.json")
+                    except Exception as copy_err:
+                        print(f"Error syncing project plan to root: {copy_err}")
                         
                 trans_data = None
                 if os.path.exists(trans_path):
                     with open(trans_path, "r", encoding="utf-8") as f:
                         trans_data = json.load(f)
                 
+                has_snapshot = os.path.exists(os.path.join(project_dir, "plan_snapshot.json"))
+                
                 payload = {
                     "info": info,
                     "plan": plan_data,
-                    "transcription": trans_data
+                    "transcription": trans_data,
+                    "has_snapshot": has_snapshot
                 }
                 
                 self.send_response(200)
@@ -570,6 +656,30 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(files).encode('utf-8'))
             return
             
+        elif parsed_url.path == '/get-settings':
+            try:
+                settings_path = "settings.json"
+                settings_data = {}
+                if os.path.exists(settings_path):
+                    with open(settings_path, "r", encoding="utf-8") as f:
+                        settings_data = json.load(f)
+                else:
+                    settings_data = {
+                        "theme": "midnight",
+                        "export_format": "audio",
+                        "resolution": "740x740",
+                        "bg_color": "black"
+                    }
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps(settings_data).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_error(500, str(e))
+                return
+                
         elif parsed_url.path == '/project-audio':
             project_id = params.get('id', [None])[0]
             audio_file = None
