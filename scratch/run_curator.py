@@ -108,6 +108,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     # Slice audio segment from project audio source
                     start = seg["start"]
                     end = seg["end"]
+                    volume = seg.get("volume", 1.0)
                     cmd = [
                         "ffmpeg", "-y",
                         "-ss", str(start),
@@ -115,6 +116,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         "-i", audio_source_path,
                         "-ar", "48000",
                         "-ac", "2",
+                        "-af", f"volume={volume}",
                         temp_file
                     ]
                     res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

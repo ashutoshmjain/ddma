@@ -3235,7 +3235,15 @@
                                 audioEditorHtml = `
                                     <div class="music-editor-row" style="margin-top: 0.2rem;" onclick="event.stopPropagation();">
                                         <div class="music-editor-field">
-                                            <label>Next Crossfade (s):</label>
+                                            <label>Duration (s):</label>
+                                            <input type="number" class="audio-duration" step="0.1" min="0" style="width: 55px;" value="${seg.duration.toFixed(2)}" data-clip="${index}" data-seg="${segIdx}">
+                                        </div>
+                                        <div class="music-editor-field">
+                                            <label>Volume:</label>
+                                            <input type="number" class="audio-volume" step="0.05" min="0" max="2" style="width: 55px;" value="${seg.volume !== undefined ? seg.volume : 1.00}" data-clip="${index}" data-seg="${segIdx}">
+                                        </div>
+                                        <div class="music-editor-field">
+                                            <label>Crossfade (s):</label>
                                             <input type="number" class="audio-crossfade" step="0.1" min="0" style="width: 55px;" value="${seg.crossfade !== undefined ? seg.crossfade : 0.0}" data-clip="${index}" data-seg="${segIdx}">
                                         </div>
                                     </div>
@@ -3402,6 +3410,28 @@
                             const clipIdx = parseInt(this.dataset.clip);
                             const segIdx = parseInt(this.dataset.seg);
                             updateSegmentField(clipIdx, segIdx, 'crossfade', parseFloat(this.value) || 0.0);
+                            renderClips();
+                        });
+                    });
+
+                    card.querySelectorAll('.audio-duration').forEach(el => {
+                        el.addEventListener('change', function() {
+                            const clipIdx = parseInt(this.dataset.clip);
+                            const segIdx = parseInt(this.dataset.seg);
+                            const newDur = parseFloat(this.value) || 0.0;
+                            const seg = clips[clipIdx].segments[segIdx];
+                            seg.duration = newDur;
+                            seg.end = parseFloat((seg.start + newDur).toFixed(2));
+                            savePlanToServer();
+                            renderClips();
+                        });
+                    });
+
+                    card.querySelectorAll('.audio-volume').forEach(el => {
+                        el.addEventListener('change', function() {
+                            const clipIdx = parseInt(this.dataset.clip);
+                            const segIdx = parseInt(this.dataset.seg);
+                            updateSegmentField(clipIdx, segIdx, 'volume', parseFloat(this.value) || 1.00);
                             renderClips();
                         });
                     });

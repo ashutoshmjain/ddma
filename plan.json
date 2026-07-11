@@ -119,13 +119,15 @@
                 "start": 36.52,
                 "end": 48.18,
                 "duration": 11.66,
-                "text": "So today we aren't talking about how science is built. We are talking about how it is violently destroyed. Indeed, we are examining the precise calculated architecture of intellectual demolition."
+                "text": "So today we aren't talking about how science is built. We are talking about how it is violently destroyed. Indeed, we are examining the precise calculated architecture of intellectual demolition.",
+                "crossfade": 0
             },
             {
                 "type": "music",
                 "music_file": "Danzon De Pasion (Sting) - Jimmy Fontanez_Media Right Productions.mp3",
                 "duration": 4.5,
-                "crossfade": 0.3
+                "crossfade": 2.5,
+                "volume": 0.75
             },
             {
                 "type": "audio",
