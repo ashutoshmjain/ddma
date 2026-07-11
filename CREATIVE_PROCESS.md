@@ -61,6 +61,10 @@ Episode 244 serves as the gold standard for this curation model. Here are key co
 * **Segment 2 (Audio)**: Picks up the transition to explain the demolition of scientific paradigms.
 * **Segment 3 (Music - Howling Sting)**: Concludes with a **`0.3s`** crossfade.
 
+### 🎙️ Clip 2: Tied Stones
+* **Segment 0 (Audio)**: Galileo's logical thought experiment trap.
+* **Segment 1 (Music - deepDive-strong.mp3)**: The host announcement and audience welcome theme (13.0s duration). Creatively placed at the end of Clip 2 to introduce the deep dive format and greet the audience immediately after the initial hook is established.
+
 ### 🎙️ Clip 5: Laudan's Problems
 * **Segment 0 (Audio)**: First part of the speech.
 * **Segment 1 (Music - Danzon De Pasion Sting)**: Volume scaled to **`0.75`** to play softly under the speech, with a **`2.5s`** crossfade to transition seamlessly into the second audio block.
