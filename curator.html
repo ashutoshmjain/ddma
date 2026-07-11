@@ -3338,7 +3338,23 @@
                             </div>
                             <span class="clip-duration-badge">Total: ${totalDuration.toFixed(2)}s</span>
                         </div>
-                        <div class="clip-card-actions">
+                        
+                        <div class="music-editor-row" style="margin-top: 0.4rem; padding: 0.3rem 0.5rem; background: rgba(255,255,255,0.02); border-radius: 4px;" onclick="event.stopPropagation();">
+                            <div class="music-editor-field">
+                                <label style="font-size: 0.7rem; color: var(--text-muted);">Clip Dur:</label>
+                                <input type="text" style="width: 55px; background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-mono);" value="${totalDuration.toFixed(2)}s" disabled>
+                            </div>
+                            <div class="music-editor-field">
+                                <label style="font-size: 0.7rem;">Clip Vol:</label>
+                                <input type="number" class="clip-volume" step="0.05" min="0" max="2" style="width: 55px;" value="${clip.volume !== undefined ? clip.volume : 1.00}" data-index="${index}">
+                            </div>
+                            <div class="music-editor-field">
+                                <label style="font-size: 0.7rem;">Crossfade (s):</label>
+                                <input type="number" class="clip-crossfade" step="0.1" min="0" style="width: 55px;" value="${clip.crossfade !== undefined ? clip.crossfade : 0.0}" data-index="${index}">
+                            </div>
+                        </div>
+
+                        <div class="clip-card-actions" style="margin-top: 0.4rem;">
                             <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600;">${lockBtnIcon}</button>
                             <button class="btn-card-play" id="playCardBtn_${index}">▶ Play</button>
                             <button class="btn-card-export" id="exportCardBtn_${index}">📤 Export Clip</button>
@@ -3358,6 +3374,18 @@
 
                 card.querySelector('.clip-card-title').addEventListener('change', function(e) {
                     clips[index].title = e.target.value.trim();
+                    savePlanToServer();
+                });
+
+                card.querySelector('.clip-volume').addEventListener('change', function(e) {
+                    const val = parseFloat(e.target.value);
+                    clips[index].volume = isNaN(val) ? 1.00 : val;
+                    savePlanToServer();
+                });
+
+                card.querySelector('.clip-crossfade').addEventListener('change', function(e) {
+                    const val = parseFloat(e.target.value);
+                    clips[index].crossfade = isNaN(val) ? 0.0 : val;
                     savePlanToServer();
                 });
 

@@ -586,29 +586,75 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 with open(plan_path, "r", encoding="utf-8") as f:
                     clips_list = json.load(f)
                 
-                if not clips_list:
-                    raise Exception("No clips in plan to combine.")
+                # Filter to only pick up locked clips
+                locked_clips = [c for c in clips_list if c.get("locked", False)]
+                if not locked_clips:
+                    raise Exception("No locked clips in plan to combine. Please lock at least one clip first.")
                 
                 os.makedirs("previews", exist_ok=True)
                 
-                for c_idx, c in enumerate(clips_list):
+                for c_idx, c in enumerate(locked_clips):
                     c_segments = c.get("segments", [])
                     if not c_segments:
                         continue
                     temp_clip_out = f"temp_combine_clip_{project_id}_{c_idx}.wav"
                     temp_clip_files.append(temp_clip_out)
+                    
+                    # Compile the segments to a temporary WAV file
                     self.compile_segments(c_segments, temp_clip_out, audio_path)
+                    
+                    # Scale the volume of the compiled wav if clip volume is customized
+                    clip_volume = c.get("volume", 1.0)
+                    if clip_volume != 1.0:
+                        temp_volume_out = f"temp_combine_clip_vol_{project_id}_{c_idx}.wav"
+                        cmd_vol = [
+                            "ffmpeg", "-y",
+                            "-i", temp_clip_out,
+                            "-af", f"volume={clip_volume}",
+                            temp_volume_out
+                        ]
+                        subprocess.run(cmd_vol, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        if os.path.exists(temp_volume_out):
+                            os.remove(temp_clip_out)
+                            os.rename(temp_volume_out, temp_clip_out)
                 
                 if not temp_clip_files:
-                    raise Exception("No valid segments to combine.")
+                    raise Exception("No valid segments in locked clips to combine.")
                 
                 output_path = f"previews/combined_{project_id}.mp3"
                 cmd = ["ffmpeg", "-y"]
                 for tf in temp_clip_files:
                     cmd += ["-i", tf]
                 
-                filter_complex = "".join(f"[{i}:a]" for i in range(len(temp_clip_files)))
-                filter_complex += f"concat=n={len(temp_clip_files)}:v=0:a=1[out]"
+                # Check for clip-level crossfades
+                has_clip_crossfade = False
+                clip_crossfades = []
+                for idx, c in enumerate(locked_clips[:-1]):
+                    cf = float(c.get("crossfade", 0.0))
+                    clip_crossfades.append(cf)
+                    if cf > 0:
+                        has_clip_crossfade = True
+                
+                if not has_clip_crossfade:
+                    filter_complex = "".join(f"[{i}:a]" for i in range(len(temp_clip_files)))
+                    filter_complex += f"concat=n={len(temp_clip_files)}:v=0:a=1[out]"
+                else:
+                    # Construct chained acrossfade filters
+                    filter_parts = []
+                    current_src = "[0:a]"
+                    for i in range(len(temp_clip_files) - 1):
+                        cf_dur = clip_crossfades[i]
+                        if cf_dur > 0:
+                            fade_opts = f"d={cf_dur}"
+                        else:
+                            fade_opts = "ns=1"
+                        
+                        next_dest = f"[a{i+1}]" if i < len(temp_clip_files) - 2 else "[out]"
+                        filter_parts.append(f"{current_src}[{i+1}:a]acrossfade={fade_opts}:c1=tri:c2=tri{next_dest}")
+                        current_src = f"[a{i+1}]"
+                    
+                    filter_complex = ";".join(filter_parts)
+                
                 cmd += [
                     "-filter_complex", filter_complex,
                     "-map", "[out]",
