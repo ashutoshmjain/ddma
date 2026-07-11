@@ -3148,6 +3148,7 @@
 
         // Render planned clips list
         function renderClips() {
+            const savedScrollTop = clipListContainer.scrollTop;
             if (!activeProjectId) {
                 planEmptyState.style.display = 'flex';
                 planEmptyState.innerHTML = `
@@ -3440,6 +3441,9 @@
 
                 clipListContainer.appendChild(card);
             });
+            
+            // Restore scroll position to prevent jumping
+            clipListContainer.scrollTop = savedScrollTop;
         }
 
         // Export Plan
