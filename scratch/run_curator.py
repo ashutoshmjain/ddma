@@ -565,6 +565,86 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_error(500, f"Compilation error: {e}")
                 return
 
+        elif parsed_url.path == '/combine-project-audio':
+            project_id = params.get('id', [None])[0]
+            temp_clip_files = []
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                
+                project_dir = os.path.join("projects", project_id)
+                info_path = os.path.join(project_dir, "project_info.json")
+                with open(info_path, "r", encoding="utf-8") as f:
+                    info = json.load(f)
+                
+                audio_path = os.path.join(project_dir, info["audio_filename"])
+                
+                plan_path = os.path.join(project_dir, "plan.json")
+                if not os.path.exists(plan_path):
+                    raise Exception("plan.json not found.")
+                    
+                with open(plan_path, "r", encoding="utf-8") as f:
+                    clips_list = json.load(f)
+                
+                if not clips_list:
+                    raise Exception("No clips in plan to combine.")
+                
+                os.makedirs("previews", exist_ok=True)
+                
+                for c_idx, c in enumerate(clips_list):
+                    c_segments = c.get("segments", [])
+                    if not c_segments:
+                        continue
+                    temp_clip_out = f"temp_combine_clip_{project_id}_{c_idx}.wav"
+                    temp_clip_files.append(temp_clip_out)
+                    self.compile_segments(c_segments, temp_clip_out, audio_path)
+                
+                if not temp_clip_files:
+                    raise Exception("No valid segments to combine.")
+                
+                output_path = f"previews/combined_{project_id}.mp3"
+                cmd = ["ffmpeg", "-y"]
+                for tf in temp_clip_files:
+                    cmd += ["-i", tf]
+                
+                filter_complex = "".join(f"[{i}:a]" for i in range(len(temp_clip_files)))
+                filter_complex += f"concat=n={len(temp_clip_files)}:v=0:a=1[out]"
+                cmd += [
+                    "-filter_complex", filter_complex,
+                    "-map", "[out]",
+                    "-c:a", "libmp3lame",
+                    "-b:a", "192k",
+                    output_path
+                ]
+                
+                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                if res.returncode != 0:
+                    raise Exception(f"FFmpeg combine error: {res.stderr.decode('utf-8')}")
+                
+                response_data = {
+                    "success": True,
+                    "combined_url": f"previews/combined_{project_id}.mp3?t={int(time.time() * 1000)}"
+                }
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps(response_data).encode('utf-8'))
+                return
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                self.send_error(500, f"Combine error: {e}")
+                return
+            finally:
+                for tf in temp_clip_files:
+                    if os.path.exists(tf):
+                        try:
+                            os.remove(tf)
+                        except:
+                            pass
+
         elif parsed_url.path == '/export-project-clip':
             project_id = params.get('id', [None])[0]
             content_length = int(self.headers.get('Content-Length', 0))

@@ -1119,7 +1119,7 @@
                     <!-- Group 1: Core Operations -->
                     <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
                         <button class="btn btn-secondary btn-mini" id="newClipBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;">➕ New Clip</button>
-                        <button class="btn btn-primary btn-mini" id="exportBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;">💾 Export Plan</button>
+                        <button class="btn btn-primary btn-mini" id="exportBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;">🔗 Combine Audio</button>
                     </div>
                     <!-- Group 2: History & Preview -->
                     <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
@@ -1293,18 +1293,32 @@
         </div>
     </div>
 
-    <!-- Export Plan Modal -->
+    <!-- Combine Audio Modal -->
     <div class="export-modal-overlay" id="exportModalOverlay">
         <div class="export-modal">
             <div class="export-modal-header">
-                <h3>EXPORTED PLAN</h3>
+                <h3>COMBINED AUDIO PREVIEW</h3>
                 <button class="icon-btn" id="closeModalBtn" style="font-size: 1.2rem;">✖</button>
             </div>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Copy this JSON plan and replace the contents of plan.json in your project directory.</p>
-            <textarea class="export-textarea" id="exportTextarea" readonly></textarea>
-            <div class="export-actions">
-                <button class="btn btn-secondary" id="copyJsonBtn">Copy JSON</button>
-                <button class="btn btn-accent" id="downloadPlanBtn">Save directly to plan.json</button>
+            <div id="combineLoadingState" style="text-align: center; padding: 2rem 0;">
+                <div style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--text); font-weight: 600;">Compiling and combining audio...</div>
+                <div style="color: var(--text-muted); font-size: 0.8rem;">Please wait while FFmpeg processes all segment files.</div>
+            </div>
+            <div id="combinePlayerState" style="display: none; flex-direction: column; gap: 1rem;">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Play or download the compiled combined audio of all active clips in this project.</p>
+                <audio id="combinedAudioPlayer" controls style="width: 100%; border-radius: 8px; margin-top: 0.5rem;"></audio>
+                <div class="export-actions" style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
+                    <a id="downloadCombinedAudioBtn" class="btn btn-accent" style="flex: 1; justify-content: center; text-decoration: none; font-size: 0.85rem;" download>⬇ Download MP3</a>
+                    <button class="btn btn-secondary" id="showPlanJsonBtn" style="font-size: 0.85rem;">📋 View Plan JSON</button>
+                </div>
+                <div id="planJsonSection" style="display: none; flex-direction: column; gap: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 0.5rem;">
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">Metadata plan.json configuration:</p>
+                    <textarea class="export-textarea" id="exportTextarea" readonly style="height: 120px; font-family: monospace; font-size: 0.75rem;"></textarea>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary btn-mini" id="copyJsonBtn" style="flex: 1; justify-content: center;">Copy JSON</button>
+                        <button class="btn btn-accent btn-mini" id="downloadPlanBtn" style="flex: 1; justify-content: center;">Save directly to plan.json</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1399,6 +1413,13 @@
         const exportTextarea = document.getElementById('exportTextarea');
         const copyJsonBtn = document.getElementById('copyJsonBtn');
         const downloadPlanBtn = document.getElementById('downloadPlanBtn');
+
+        const combineLoadingState = document.getElementById('combineLoadingState');
+        const combinePlayerState = document.getElementById('combinePlayerState');
+        const combinedAudioPlayer = document.getElementById('combinedAudioPlayer');
+        const downloadCombinedAudioBtn = document.getElementById('downloadCombinedAudioBtn');
+        const showPlanJsonBtn = document.getElementById('showPlanJsonBtn');
+        const planJsonSection = document.getElementById('planJsonSection');
         const contextMenu = document.getElementById('contextMenu');
         const debugStatus = document.getElementById('debugStatus');
         const playerStateBar = document.getElementById('playerStateBar');
@@ -3523,18 +3544,60 @@
             clipListContainer.scrollTop = savedScrollTop;
         }
 
-        // Export Plan
+        // Combine Audio
         exportBtn.addEventListener('click', function() {
             if (clips.length === 0) {
                 alert("Please add some clips to the plan first.");
                 return;
             }
-            exportTextarea.value = JSON.stringify(clips, null, 4);
+            
+            // Show modal and reset loading state
             exportModalOverlay.classList.add('active');
+            combineLoadingState.style.display = 'block';
+            combinePlayerState.style.display = 'none';
+            planJsonSection.style.display = 'none';
+            showPlanJsonBtn.textContent = "📋 View Plan JSON";
+            combinedAudioPlayer.src = "";
+            
+            // Call the combine-project-audio endpoint
+            fetch(`/combine-project-audio?id=${activeProjectId}`, {
+                method: 'POST'
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Server compilation failed.");
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    combineLoadingState.style.display = 'none';
+                    combinePlayerState.style.display = 'flex';
+                    combinedAudioPlayer.src = data.combined_url;
+                    downloadCombinedAudioBtn.href = data.combined_url;
+                    exportTextarea.value = JSON.stringify(clips, null, 4);
+                } else {
+                    throw new Error("Invalid response.");
+                }
+            })
+            .catch(err => {
+                alert("Error combining audio: " + err.message);
+                exportModalOverlay.classList.remove('active');
+            });
         });
 
         closeModalBtn.addEventListener('click', function() {
             exportModalOverlay.classList.remove('active');
+            combinedAudioPlayer.pause();
+            combinedAudioPlayer.src = "";
+        });
+
+        showPlanJsonBtn.addEventListener('click', function() {
+            if (planJsonSection.style.display === 'none') {
+                planJsonSection.style.display = 'flex';
+                this.textContent = "📋 Hide Plan JSON";
+            } else {
+                planJsonSection.style.display = 'none';
+                this.textContent = "📋 View Plan JSON";
+            }
         });
 
         copyJsonBtn.addEventListener('click', function() {
