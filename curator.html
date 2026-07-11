@@ -2575,8 +2575,8 @@
                     const card = clipListContainer.querySelector(`.clip-card[data-index="${clipIdx}"]`);
                     if (card) {
                         const totalDuration = calculateClipDuration(clips[clipIdx]);
-                        const durationBadge = card.querySelector('.clip-duration-badge');
-                        if (durationBadge) durationBadge.textContent = `Total: ${totalDuration.toFixed(2)}s`;
+                        const durInput = card.querySelector('.clip-dur-input');
+                        if (durInput) durInput.value = totalDuration.toFixed(2);
                     }
                     
                     updateUsedHighlights();
@@ -3336,25 +3336,25 @@
                                 <span class="clip-num-badge" style="background-color: var(--primary); color: white; padding: 0.15rem 0.35rem; border-radius: 4px; font-weight: bold; font-size: 0.75rem; font-family: var(--font-mono); white-space: nowrap;">${episodeNum}-${clip.num}</span>
                                 <input type="text" class="clip-card-title" placeholder="Enter title description..." value="${clip.title}" data-index="${index}" ${isLocked ? 'disabled' : ''}>
                             </div>
-                            <span class="clip-duration-badge">Total: ${totalDuration.toFixed(2)}s</span>
-                        </div>
-                        
-                        <div class="music-editor-row" style="margin-top: 0.4rem; padding: 0.3rem 0.5rem; background: rgba(255,255,255,0.02); border-radius: 4px;" onclick="event.stopPropagation();">
-                            <div class="music-editor-field">
-                                <label style="font-size: 0.7rem; color: var(--text-muted);">Clip Dur:</label>
-                                <input type="text" style="width: 55px; background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-mono);" value="${totalDuration.toFixed(2)}s" disabled>
-                            </div>
-                            <div class="music-editor-field">
-                                <label style="font-size: 0.7rem;">Clip Vol:</label>
-                                <input type="number" class="clip-volume" step="0.05" min="0" max="2" style="width: 55px;" value="${clip.volume !== undefined ? clip.volume : 1.00}" data-index="${index}">
-                            </div>
-                            <div class="music-editor-field">
-                                <label style="font-size: 0.7rem;">Crossfade (s):</label>
-                                <input type="number" class="clip-crossfade" step="0.1" min="0" style="width: 55px;" value="${clip.crossfade !== undefined ? clip.crossfade : 0.0}" data-index="${index}">
+                            
+                            <!-- Clip Level Settings (Duration, Volume, Crossfade) -->
+                            <div class="music-editor-row" style="margin-top: 0.4rem; padding: 0.3rem 0.5rem; background: rgba(255,255,255,0.02); border-radius: 4px; display: inline-flex; align-self: flex-start;" onclick="event.stopPropagation();">
+                                <div class="music-editor-field">
+                                    <label style="font-size: 0.7rem; color: var(--text-muted);">Duration (s):</label>
+                                    <input type="text" class="clip-dur-input" style="width: 55px; background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-mono); padding: 0;" value="${totalDuration.toFixed(2)}" disabled>
+                                </div>
+                                <div class="music-editor-field">
+                                    <label style="font-size: 0.7rem;">Volume:</label>
+                                    <input type="number" class="clip-volume" step="0.05" min="0" max="2" style="width: 55px;" value="${clip.volume !== undefined ? clip.volume : 1.00}" data-index="${index}">
+                                </div>
+                                <div class="music-editor-field">
+                                    <label style="font-size: 0.7rem;">Crossfade (s):</label>
+                                    <input type="number" class="clip-crossfade" step="0.1" min="0" style="width: 55px;" value="${clip.crossfade !== undefined ? clip.crossfade : 0.0}" data-index="${index}">
+                                </div>
                             </div>
                         </div>
 
-                        <div class="clip-card-actions" style="margin-top: 0.4rem;">
+                        <div class="clip-card-actions">
                             <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600;">${lockBtnIcon}</button>
                             <button class="btn-card-play" id="playCardBtn_${index}">▶ Play</button>
                             <button class="btn-card-export" id="exportCardBtn_${index}">📤 Export Clip</button>
