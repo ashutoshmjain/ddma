@@ -68,7 +68,22 @@ Episode 244 serves as the gold standard for this curation model. Here are key co
 
 ---
 
-## 5. Summary of the Unified Compilation Pipeline
+## 5. Narrative Anchoring (Repeated Core Theme / Punchline Segments)
+
+A highly advanced creative choice in Episode 244 is the use of **Narrative Anchors**—brief, punchy 10-to-15-second "theme core" audio segments that are repeated across multiple different clips.
+
+* **The Core Theme (Clip 1, Segment 2)**: 
+  * *Text*: *"So today we aren't talking about how science is built. We are talking about how it is violently destroyed. Indeed, we are examining the precise calculated architecture of intellectual demolition."*
+  * *Duration*: `11.66` seconds (sliced from `36.52s` to `48.18s` of the source audio).
+* **Cross-Clip Distribution**: This exact punchline is used as Segment 2 of **Clip 1** and is repeated as Segment 0 of **Clip 5**.
+* **Creative Rationale**: 
+  1. **Thematic Chorus**: Like the chorus of a song, repeating a core message anchors the listener's focus, reinforcing the central thesis of the episode.
+  2. **Conceptual Continuity**: It bridges different historical examples (like Galileo's falling stones in Clip 2 and Laudan's framework in Clip 5) back to the primary driving point.
+  3. **High-Engagement Saliency**: Slicing and spreading these high-potency "soundbites" creates a hook that makes independent clips feel unified when auto-played in sequence on feeds.
+
+---
+
+## 6. Summary of the Unified Compilation Pipeline
 
 When a creative agent triggers a build:
 1. **Segment Compile**: The backend slices individual audio segments and applies their specific segment volumes.
