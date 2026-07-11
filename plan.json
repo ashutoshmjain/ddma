@@ -17,7 +17,8 @@
                 "type": "music",
                 "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
-                "crossfade": 5
+                "crossfade": 5,
+                "volume": 1
             },
             {
                 "type": "audio",
@@ -44,16 +45,17 @@
         "segments": [
             {
                 "type": "audio",
-                "start": 1183.24,
-                "end": 1358.08,
-                "duration": 174.84,
-                "text": "(Speech Segment)"
+                "start": 1135.52,
+                "end": 1291.48,
+                "duration": 155.96,
+                "text": "up.   Galileo's  ultimate  weapon  was  a  theoretical  attack  factor.  It  was  a  thought  experiment  presented  in  his  1638  masterwork,  discourses  and  mathematical  demonstrations  relating  to  two  new  sciences.  And  he  didn't  write  it  as  a  dry  academic  paper.  He  wrote  it  as  a  dialogue,  right?  Yes,  he  used  the  Platonic  dialogue  format  to  trap  the  Aristotelian  worldview  in  its  own  internal  logic.  He  created  characters  to  argue  the  points,  allowing  the  reader  to  walk  into  the  trap  themselves.  Let's  walk  the  listener  through  this  specific  logic  trap  because  reading  through  the  research,  this  is  an  absolute  masterpiece  of  rhetorical  destruction.  It's  brilliant.  Galileo  creates  a  character  named  Salviati  who  represents  his  own  views  and  a  character  named  Cenclicio  who  represents  the  entrenched  Aristotelian  consensus.  Salviati  challenges  Cenclicio  based  on  Aristotle's  own  rules.  He  says,  let's  take  a  heavy  stone  and  let's  assign  its  natural  falling  speed  a  value  of  eight.  Okay.  And  let's  take  a  lighter  stone,  which  naturally  falls  slower,  so  let's  assign  it  speed  of  four.  Aristotle  dictates  that  the  heavy  stone  must  fall  faster.  Cenclicio  agrees.  So  the  premise  is  perfectly  established  according  to  the  dominant  paradigm.  Now  Galileo  springs  the  trap.  Salviati  proposes  a  physical  modification,  tying  the  heavy  stone  and  the  light  stone  together  with  a  piece  of  string  and  dropping  this  new  contraption  simultaneously.  Okay.  So  they're  tied  together.  What  happens  next?  Galileo  derives  two  completely  contradictory  logical  deductions  based  entirely  on  Aristotle's  own  unbreakable  rules.  First  is  the  retardation  argument.  When  you  drop  them,  the  lighter  stone  must  have  fallen  slower  at  speed  four.  The  heavier  stone  must  have  fallen  faster  at  speed  eight.  Therefore,  as  they  fall,  the  slower  light  stone  will  lag  behind.  It  will  create  drag  on  the  heavier  stone.  It  will  pull  the  string  taught.  That  makes  intuitive  sense.  Right.  The  combined  system  should  therefore  be  retarded  or  slowed  down  by  the  slower  object,  meaning  the  tied  together  stones  will  fall  at  a  speed  intermediate  between  the  two.  They  will  fall  at  a  speed  somewhere  between  four  and  eight.  Let's  call  it  six.  That  is  entirely  logically  sound  based  on  the  Aristotelian  premise  of  drag,  but  then  Galileo  presents  the  second  deduction.  The  additive  weight  argument.  Oh,  this  is  the  killer  part.  It  is.  He  reminds  simplicity  of  that  the  two  stones  are  tied  together.  They  now  create  a  new  singular  composite  physical  system.  And  this  new  combined  system  is  physically  measurably  heavier  than  the  original  heavy  stone  alone.  Right.  And  according  to  Aristotle's  absolute,  inviolable  baseline  rule,  heavier  bodies  fall  faster.  Exactly."
             },
             {
                 "type": "music",
-                "music_file": "Cartoon Bank Heist (Sting) - Doug Maxwell_Media Right Productions.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
+                "music_file": "deepDive-strong.mp3",
+                "duration": 13,
+                "crossfade": 0.3,
+                "volume": 1
             }
         ],
         "locked": true
@@ -74,33 +76,36 @@
             },
             {
                 "type": "music",
-                "music_file": "Cold Killa (Sting) - MK2.mp3",
+                "music_file": "Cruise (Sting) - John Deley and the 41 Players.mp3",
                 "duration": 4.5,
-                "crossfade": 0.3
+                "crossfade": 0.3,
+                "volume": 1
             }
-        ]
+        ],
+        "locked": true
     },
     {
         "num": 4,
-        "title": "The Rigidness of Paradigms",
+        "title": "Ad-hoc Hypothesis",
         "bridge_text": [
             "Does science progress through logical persuasion, or must the old guard die out first?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 134.32,
-                "end": 218.26,
-                "duration": 83.94,
-                "text": "(Speech Segment)"
+                "start": 137.84,
+                "end": 278.14,
+                "duration": 140.3,
+                "text": "OK,  let's  unpack  this.  The  central  thesis  of  the  research  we  are  looking  at  today  argues  that  scientists  don't  win  by  presenting  better  data.  No,  they  don't.  They  win  by  engineering  an  intellectual  crisis.  They  act  as  relentless,  diagnosticians  of  failure  before  they  even,  you  know,  attempt  to  be  architects  of  coherence.  Which  runs  completely  counter  to  the  stories  we  tell  children  about  how  science  operates.  Right.  The  sanitized  version.  Yeah,  we  teach  this  very  sanitized  version  of  the  scientific  method.  A  scientist  makes  a  neutral  observation,  forms  a  hypothesis,  runs  a  clean  experiment.  And  then  the  whole  scientific  community  looks  at  the  data,  applauds,  and  instantly  adopts  the  new  truth.   But  if  we  look  at  the  epistemological  framework,  specifically  the  landmark  work  of  the  philosopher  Thomas  Kuhn,  we  see  a  reality  that  is  far  more  entrenched  and,  well,  far  more  human.  Because  humans  don't  like  being  wrong.  We  really  don't.  Kuhn  introduced  the  concept  of  the  dominant  paradigm  and  normal  science.  Normal  science  is  what  happens  99 %  of  the  time  in  the  real  world.   Define  normal  science  for  us.  It  means  the  scientific  community  has  a  shared  agreed  upon  model  of  reality.  Their  daily  work  is  not  trying  to  overthrow  that  model.  Their  daily  work  is  just  solving  minor,  highly  specific  puzzles  within  the  boundaries  of  that  existing  model.  Right.  And  the  research  points  out  that  a  paradigm  is  incredibly  rigid.  It  dictates  not  just  what  the  answer  should  look  like,  but  what  questions  you  were  even  allowed  to  ask  in  the  first  place.  Precisely.  If  you  ask  a  question  outside  the  paradigm,  you  aren't  considered  a  visionary.  You  were  considered  a  crank.  So  what  happens  when  anomalies  inevitably  arise?  Like  what  happens  when  a  researcher  runs  an  experiment  that  yields  a  result  that  the  dominant  paradigm  absolutely  cannot  explain?  According  to  the  idealized  version  of  science,  the  community  should  immediately  throw  away  the  paradigm  and  start  over.  But  in  reality.  In  reality,  that  would  require  thousands  of  scientists  destroying  their  own  careers,  returning  their  grant  funding  and  dismantling  their  entire  professional  worldview.  You  and  nature  just  doesn't  allow  for  that.  To  what  I  do.  Instead,  the  community  ignores  the  anomaly.  They  marginalized  the  research  who  found  it  or  more  commonly  they  construct  ad  hoc  hypotheses.  Ad  hoc  hypotheses.  Basically,  intellectual  duct  tape.  Exactly.  Intellectual  duct  tape."
             },
             {
                 "type": "music",
                 "music_file": "Cruise (Sting) - John Deley and the 41 Players.mp3",
-                "duration": 4.5,
+                "duration": 5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": true
     },
     {
         "num": 5,

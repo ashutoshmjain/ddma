@@ -54,6 +54,19 @@ def run_transcribe(project_id, audio_path, out_json_path, info_path):
 
 # Migration Helper for Legacy Root files
 def migrate_legacy_files():
+    # Clean up any leftover trash folders from previous sessions
+    try:
+        if os.path.exists("projects"):
+            for folder in os.listdir("projects"):
+                if folder.startswith(".trash_"):
+                    trash_path = os.path.join("projects", folder)
+                    try:
+                        shutil.rmtree(trash_path)
+                    except:
+                        pass
+    except:
+        pass
+
     # If legacy files exist in root and we don't have episode_244 project, migrate them automatically
     os.makedirs("projects", exist_ok=True)
     legacy_project_dir = os.path.join("projects", "episode_244")
@@ -359,6 +372,126 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
             except Exception as e:
                 self.send_error(500, str(e))
+                return
+
+        elif parsed_url.path == '/delete-project':
+            project_id = params.get('id', [None])[0]
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                project_dir = os.path.join("projects", project_id)
+                if os.path.exists(project_dir):
+                    # Delete project_info.json first to immediately hide it from selection lists
+                    info_path = os.path.join(project_dir, "project_info.json")
+                    if os.path.exists(info_path):
+                        try:
+                            os.remove(info_path)
+                        except:
+                            pass
+                    
+                    # Try to remove the directory tree
+                    try:
+                        shutil.rmtree(project_dir)
+                    except Exception as rmtree_err:
+                        print(f"shutil.rmtree failed on {project_dir} (possibly locked file): {rmtree_err}. Attempting fallback...")
+                        # Fallback: Delete all individual files we can, rename directory to hide it
+                        for root, dirs, files in os.walk(project_dir, topdown=False):
+                            for name in files:
+                                file_path = os.path.join(root, name)
+                                try:
+                                    os.remove(file_path)
+                                except:
+                                    pass
+                        
+                        # Rename parent folder to a hidden .trash folder so it's ignored and can be cleaned up later
+                        trash_dir = os.path.join("projects", f".trash_{project_id}_{int(time.time())}")
+                        try:
+                            os.rename(project_dir, trash_dir)
+                        except Exception as rename_err:
+                            print(f"Failed to rename trash folder: {rename_err}")
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_error(500, f"Error deleting project: {e}")
+                return
+
+        elif parsed_url.path == '/rename-project':
+            project_id = params.get('id', [None])[0]
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length)
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                
+                json_data = json.loads(post_data.decode('utf-8'))
+                new_name = json_data.get("name", "").strip()
+                if not new_name:
+                    raise Exception("New name is required.")
+                
+                project_dir = os.path.join("projects", project_id)
+                info_path = os.path.join(project_dir, "project_info.json")
+                if os.path.exists(info_path):
+                    with open(info_path, "r", encoding="utf-8") as f:
+                        info = json.load(f)
+                    info["name"] = new_name
+                    with open(info_path, "w", encoding="utf-8") as f:
+                        json.dump(info, f, indent=4)
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_error(500, f"Error renaming project: {e}")
+                return
+
+        elif parsed_url.path == '/duplicate-project':
+            project_id = params.get('id', [None])[0]
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length)
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                
+                json_data = json.loads(post_data.decode('utf-8'))
+                new_name = json_data.get("name", "").strip()
+                if not new_name:
+                    raise Exception("New project name is required.")
+                
+                new_id = re.sub(r'[^a-zA-Z0-9_-]', '_', new_name.lower().replace(" ", "_"))
+                src_dir = os.path.join("projects", project_id)
+                dst_dir = os.path.join("projects", new_id)
+                
+                if os.path.exists(dst_dir):
+                    raise Exception("Project with this name/id already exists.")
+                
+                shutil.copytree(src_dir, dst_dir)
+                
+                # Update project_info.json in the copy
+                info_path = os.path.join(dst_dir, "project_info.json")
+                if os.path.exists(info_path):
+                    with open(info_path, "r", encoding="utf-8") as f:
+                        info = json.load(f)
+                    info["id"] = new_id
+                    info["name"] = new_name
+                    with open(info_path, "w", encoding="utf-8") as f:
+                        json.dump(info, f, indent=4)
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "project_id": new_id}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_error(500, f"Error duplicating project: {e}")
                 return
 
         elif parsed_url.path == '/compile-project-preview':

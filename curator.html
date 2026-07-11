@@ -139,16 +139,16 @@
 
         .project-nav-item {
             display: flex;
-            flex-direction: column;
-            gap: 0.2rem;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
             padding: 0.6rem 0.8rem;
             border-radius: 8px;
             border: 1px solid transparent;
             background-color: transparent;
             color: var(--text-muted);
-            cursor: pointer;
             transition: all 0.2s ease;
-            text-align: left;
             width: 100%;
         }
 
@@ -161,6 +161,50 @@
             background-color: rgba(99, 102, 241, 0.1);
             border-color: var(--primary);
             color: var(--text-main);
+        }
+
+        .project-nav-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            cursor: pointer;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .project-nav-actions {
+            display: flex;
+            gap: 0.25rem;
+            opacity: 0.2;
+            transition: opacity 0.2s ease;
+        }
+
+        .project-nav-item:hover .project-nav-actions {
+            opacity: 1;
+        }
+
+        .project-action-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .project-action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.15);
+        }
+
+        .project-action-btn.delete-btn:hover {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #f87171;
         }
 
         .project-nav-name {
@@ -268,14 +312,14 @@
 
         /* Swapped Layout Columns */
         .left-panel {
-            width: 460px;
+            width: 500px; /* default middle panel width */
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             background-color: var(--bg-color);
             flex-shrink: 0;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .panel-resizer {
@@ -298,7 +342,13 @@
             flex-direction: column;
             overflow: hidden;
             background-color: var(--panel-bg-darker);
-            transition: background-color 0.3s ease;
+            transition: flex 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+        }
+
+        .right-panel.collapsed {
+            width: 0px !important;
+            flex: 0 0 0px !important;
+            border-left: none;
         }
 
         .panel-header {
@@ -652,8 +702,79 @@
             gap: 0.4rem;
         }
 
+        /* Unified Button Styles */
+        .btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.35rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            transition: all 0.15s ease;
+            outline: none;
+            user-select: none;
+            font-family: var(--font-main);
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: #3b4260;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #ffffff;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: rgba(255, 255, 255, 0.06);
+            border-color: #3b4260;
+        }
+
+        .btn-accent {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-accent:hover:not(:disabled) {
+            background-color: var(--accent);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background-color: rgba(255, 255, 255, 0.01) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-muted) !important;
+            transform: none !important;
+        }
+
         .btn-mini {
-            padding: 0.3rem 0.6rem;
+            padding: 0.2rem 0.5rem;
             font-size: 0.7rem;
             border-radius: 5px;
         }
@@ -991,21 +1112,30 @@
                     <button id="expandSidebarBtn" class="btn btn-secondary btn-mini" style="display: none; font-weight: 600; flex-shrink: 0; padding: 0.2rem 0.5rem; gap: 0.25rem;">▶ Projects</button>
                     <h2 id="activeProjectTitleHeader" style="margin: 0; font-size: 0.85rem;">CLIP PLAN</h2>
                 </div>
-                <div style="display: flex; gap: 0.4rem;" id="clipsControlsArea">
-                    <button class="btn btn-secondary btn-mini" id="newClipBtn">➕ New Clip</button>
-                    <button class="btn btn-primary btn-mini" id="exportBtn">💾 Export Plan</button>
-                </div>
             </div>
-            <!-- Utility Toolbar for Undo/Snapshot -->
+            <!-- Utility Toolbar for All Actions -->
             <div class="clips-toolbar" id="clipsToolbar" style="display: none; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border-color); background-color: var(--panel-bg-darker); align-items: center; justify-content: space-between; gap: 0.5rem;">
-                <div style="display: flex; gap: 0.4rem; align-items: center;">
-                    <button class="btn btn-secondary btn-mini" id="undoBtn" disabled style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">↩️ Undo</button>
-                    <span style="font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono);" id="undoCountLabel"></span>
-                    <button class="btn btn-secondary btn-mini" id="playLockedBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem; margin-left: 0.5rem;">▶ Play Locked</button>
+                <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                    <!-- Group 1: Core Operations -->
+                    <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
+                        <button class="btn btn-secondary btn-mini" id="newClipBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;">➕ New Clip</button>
+                        <button class="btn btn-primary btn-mini" id="exportBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;">💾 Export Plan</button>
+                    </div>
+                    <!-- Group 2: History & Preview -->
+                    <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
+                        <button class="btn btn-secondary btn-mini" id="undoBtn" disabled style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">↩️ Undo</button>
+                        <span style="font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono);" id="undoCountLabel"></span>
+                        <button class="btn btn-secondary btn-mini" id="playLockedBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">▶ Play Locked</button>
+                    </div>
+                    <!-- Group 3: Snapshot System -->
+                    <div style="display: flex; gap: 0.4rem; align-items: center;">
+                        <button class="btn btn-secondary btn-mini" id="saveSnapshotBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">📸 Take Snapshot</button>
+                        <button class="btn btn-secondary btn-mini" id="restoreSnapshotBtn" disabled style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">⏪ Restore Snapshot</button>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 0.4rem; align-items: center;">
-                    <button class="btn btn-secondary btn-mini" id="saveSnapshotBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">📸 Take Snapshot</button>
-                    <button class="btn btn-secondary btn-mini" id="restoreSnapshotBtn" disabled style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">⏪ Restore Snapshot</button>
+                <!-- Group 4: Panel Toggles -->
+                <div style="display: flex; align-items: center;">
+                    <button id="expandTranscriptBtn" class="btn btn-secondary btn-mini" style="display: none; font-weight: 600; padding: 0.2rem 0.5rem; gap: 0.25rem; font-size: 0.7rem;">Transcript ◀</button>
                 </div>
             </div>
             <div class="clip-list" id="clipListContainer">
@@ -1021,8 +1151,11 @@
 
         <!-- Panel 3: Right Pane (Transcription) -->
         <div class="right-panel">
-            <div class="panel-header">
-                <h2>WORD-LEVEL TRANSCRIPT</h2>
+            <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <button id="collapseTranscriptBtn" class="icon-btn" title="Collapse Transcript" style="font-size: 0.7rem; padding: 0.2rem; cursor: pointer;">▶</button>
+                    <h2 style="margin: 0; font-size: 0.85rem;">WORD-LEVEL TRANSCRIPT</h2>
+                </div>
                 <div style="display: flex; align-items: center; gap: 0.6rem;">
                     <button class="btn btn-secondary btn-mini" id="toggleUsedBtn">👁 Highlight Used</button>
                     <div id="segmentCount" style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">0 words loaded</div>
@@ -1212,6 +1345,7 @@
         let lastSavedStateString = "[]";
         let activeLockedSequence = null;
         let sequencePlayIdx = -1;
+        let segmentClipboard = null;
 
         // Elements
         const projectList = document.getElementById('projectList');
@@ -1269,8 +1403,11 @@
         const resizer = document.getElementById('panelResizer');
         const leftPanel = document.querySelector('.left-panel');
         const sidebarPanel = document.querySelector('.sidebar-panel');
+        const rightPanel = document.querySelector('.right-panel');
         const collapseSidebarBtn = document.getElementById('collapseSidebarBtn');
         const expandSidebarBtn = document.getElementById('expandSidebarBtn');
+        const collapseTranscriptBtn = document.getElementById('collapseTranscriptBtn');
+        const expandTranscriptBtn = document.getElementById('expandTranscriptBtn');
 
         // Settings Elements
         const settingsBtn = document.getElementById('settingsBtn');
@@ -1380,6 +1517,7 @@
                 
                 setupResizer();
                 setupSidebarCollapse();
+                setupTranscriptCollapse();
                 setupSettingsModal();
             };
 
@@ -1635,6 +1773,135 @@
             });
         }
 
+        // Transcript panel collapse logic
+        let lastLeftPanelWidth = 500;
+        function setupTranscriptCollapse() {
+            collapseTranscriptBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                lastLeftPanelWidth = leftPanel.offsetWidth;
+                
+                rightPanel.classList.add('collapsed');
+                resizer.style.display = 'none';
+                expandTranscriptBtn.style.display = 'inline-flex';
+                
+                leftPanel.style.width = 'auto';
+                leftPanel.style.flex = '1';
+            });
+            
+            expandTranscriptBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                leftPanel.style.flex = 'none';
+                leftPanel.style.width = `${lastLeftPanelWidth}px`;
+                
+                rightPanel.classList.remove('collapsed');
+                resizer.style.display = 'block';
+                expandTranscriptBtn.style.display = 'none';
+            });
+        }
+
+        // Project management helpers
+        function clearActiveProjectState() {
+            activeProjectId = null;
+            projectInfo = null;
+            clips = [];
+            transcriptionData = null;
+            document.getElementById('activeProjectBadge').textContent = "No active project";
+            document.getElementById('activeProjectBadge').style.display = "none";
+            document.getElementById('activeProjectTitleHeader').textContent = "CLIP PLAN";
+            document.getElementById('clipsToolbar').style.display = 'none';
+            
+            // Clear player
+            audioElement.pause();
+            audioElement.src = "";
+            document.getElementById('audioPlayerBar').style.display = 'none';
+            
+            renderClips();
+            renderTranscript();
+            updateUsedHighlights();
+            loadProjectsListOnly();
+        }
+
+        function renameProjectPrompt(projectId, currentName) {
+            const newName = prompt(`Rename project "${currentName}" to:`, currentName);
+            if (!newName || newName.trim() === "" || newName.trim() === currentName) return;
+            
+            updateStateBar("Renaming project...");
+            fetch(`/rename-project?id=${projectId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newName.trim() })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    updateStateBar("Project renamed successfully!");
+                    if (activeProjectId === projectId) {
+                        if (projectInfo) projectInfo.name = newName.trim();
+                        document.getElementById('activeProjectBadge').textContent = newName.trim();
+                    }
+                    loadProjectsList();
+                } else {
+                    throw new Error("Failed to rename project");
+                }
+            })
+            .catch(err => {
+                showDebug("Rename project failed: " + err.message, true);
+                alert("Error renaming project: " + err.message);
+            });
+        }
+
+        function duplicateProjectPrompt(projectId, currentName) {
+            const newName = prompt(`Duplicate project "${currentName}" as:`, `${currentName} Copy`);
+            if (!newName || newName.trim() === "") return;
+            
+            updateStateBar("Duplicating project...");
+            fetch(`/duplicate-project?id=${projectId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newName.trim() })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    updateStateBar("Project duplicated successfully!");
+                    selectProject(data.project_id);
+                } else {
+                    throw new Error("Failed to duplicate project");
+                }
+            })
+            .catch(err => {
+                showDebug("Duplicate project failed: " + err.message, true);
+                alert("Error duplicating project: " + err.message);
+            });
+        }
+
+        function deleteProjectConfirm(projectId, name) {
+            const confirmed = confirm(`Are you sure you want to permanently delete the project "${name}"?\n\nThis will delete all its metadata, segment plans, transcripts, and copied audio files. This action CANNOT be undone.`);
+            if (!confirmed) return;
+            
+            updateStateBar("Deleting project...");
+            fetch(`/delete-project?id=${projectId}`, {
+                method: 'POST'
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    updateStateBar("Project deleted.");
+                    if (activeProjectId === projectId) {
+                        clearActiveProjectState();
+                    } else {
+                        loadProjectsList();
+                    }
+                } else {
+                    throw new Error("Failed to delete project");
+                }
+            })
+            .catch(err => {
+                showDebug("Delete project failed: " + err.message, true);
+                alert("Error deleting project: " + err.message);
+            });
+        }
+
         // Load Projects List from Backend
         function loadProjectsList() {
             fetch('/list-projects')
@@ -1647,7 +1914,7 @@
                     }
                     
                     projects.forEach(p => {
-                        const item = document.createElement('button');
+                        const item = document.createElement('div');
                         item.className = `project-nav-item ${activeProjectId === p.id ? 'active' : ''}`;
                         
                         let statusText = 'Ready';
@@ -1655,12 +1922,34 @@
                         if (p.status === 'error') statusText = 'Error';
                         
                         item.innerHTML = `
-                            <span class="project-nav-name">${p.name}</span>
-                            <span class="project-status-badge ${p.status}">${statusText}</span>
+                            <div class="project-nav-content">
+                                <span class="project-nav-name">${p.name}</span>
+                                <span class="project-status-badge ${p.status}">${statusText}</span>
+                            </div>
+                            <div class="project-nav-actions" onclick="event.stopPropagation();">
+                                <button class="project-action-btn rename-proj-btn" data-id="${p.id}" title="Rename Project">✏️</button>
+                                <button class="project-action-btn duplicate-proj-btn" data-id="${p.id}" title="Duplicate Project">👥</button>
+                                <button class="project-action-btn delete-proj-btn" data-id="${p.id}" title="Delete Project">🗑</button>
+                            </div>
                         `;
                         
-                        item.addEventListener('click', () => {
+                        item.querySelector('.project-nav-content').addEventListener('click', () => {
                             selectProject(p.id);
+                        });
+                        
+                        item.querySelector('.rename-proj-btn').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            renameProjectPrompt(p.id, p.name);
+                        });
+                        
+                        item.querySelector('.duplicate-proj-btn').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            duplicateProjectPrompt(p.id, p.name);
+                        });
+                        
+                        item.querySelector('.delete-proj-btn').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            deleteProjectConfirm(p.id, p.name);
                         });
                         
                         projectList.appendChild(item);
@@ -1762,7 +2051,7 @@
                 .then(projects => {
                     projectList.innerHTML = '';
                     projects.forEach(p => {
-                        const item = document.createElement('button');
+                        const item = document.createElement('div');
                         item.className = `project-nav-item ${activeProjectId === p.id ? 'active' : ''}`;
                         
                         let statusText = 'Ready';
@@ -1770,12 +2059,36 @@
                         if (p.status === 'error') statusText = 'Error';
                         
                         item.innerHTML = `
-                            <span class="project-nav-name">${p.name}</span>
-                            <span class="project-status-badge ${p.status}">${statusText}</span>
+                            <div class="project-nav-content">
+                                <span class="project-nav-name">${p.name}</span>
+                                <span class="project-status-badge ${p.status}">${statusText}</span>
+                            </div>
+                            <div class="project-nav-actions" onclick="event.stopPropagation();">
+                                <button class="project-action-btn rename-proj-btn" data-id="${p.id}" title="Rename Project">✏️</button>
+                                <button class="project-action-btn duplicate-proj-btn" data-id="${p.id}" title="Duplicate Project">👥</button>
+                                <button class="project-action-btn delete-proj-btn" data-id="${p.id}" title="Delete Project">🗑</button>
+                            </div>
                         `;
-                        item.addEventListener('click', () => {
+                        
+                        item.querySelector('.project-nav-content').addEventListener('click', () => {
                             selectProject(p.id);
                         });
+                        
+                        item.querySelector('.rename-proj-btn').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            renameProjectPrompt(p.id, p.name);
+                        });
+                        
+                        item.querySelector('.duplicate-proj-btn').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            duplicateProjectPrompt(p.id, p.name);
+                        });
+                        
+                        item.querySelector('.delete-proj-btn').addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            deleteProjectConfirm(p.id, p.name);
+                        });
+                        
                         projectList.appendChild(item);
                     });
                 });
@@ -2353,6 +2666,83 @@
             savePlanToServer();
         }
 
+        // Move Segment Up
+        function moveSegmentUp(clipIdx, segIdx) {
+            if (clips[clipIdx].locked) return;
+            if (segIdx <= 0) return;
+            
+            const segs = clips[clipIdx].segments;
+            const temp = segs[segIdx];
+            segs[segIdx] = segs[segIdx - 1];
+            segs[segIdx - 1] = temp;
+            
+            // Adjust active editing selection reference if active
+            if (editingSegmentRef && editingSegmentRef.clipIdx === clipIdx) {
+                if (editingSegmentRef.segIdx === segIdx) {
+                    editingSegmentRef.segIdx = segIdx - 1;
+                } else if (editingSegmentRef.segIdx === segIdx - 1) {
+                    editingSegmentRef.segIdx = segIdx;
+                }
+            }
+            
+            renderClips();
+            savePlanToServer();
+        }
+
+        // Move Segment Down
+        function moveSegmentDown(clipIdx, segIdx) {
+            if (clips[clipIdx].locked) return;
+            const segs = clips[clipIdx].segments;
+            if (segIdx >= segs.length - 1) return;
+            
+            const temp = segs[segIdx];
+            segs[segIdx] = segs[segIdx + 1];
+            segs[segIdx + 1] = temp;
+            
+            // Adjust active editing selection reference if active
+            if (editingSegmentRef && editingSegmentRef.clipIdx === clipIdx) {
+                if (editingSegmentRef.segIdx === segIdx) {
+                    editingSegmentRef.segIdx = segIdx + 1;
+                } else if (editingSegmentRef.segIdx === segIdx + 1) {
+                    editingSegmentRef.segIdx = segIdx;
+                }
+            }
+            
+            renderClips();
+            savePlanToServer();
+        }
+
+        // Copy Segment to Clipboard
+        function copySegment(clipIdx, segIdx) {
+            const seg = clips[clipIdx].segments[segIdx];
+            if (!seg) return;
+            
+            segmentClipboard = JSON.parse(JSON.stringify(seg));
+            
+            const episodeNum = (projectInfo && projectInfo.name) ? (projectInfo.name.match(/\d+/)?.[0] || projectInfo.name) : "244";
+            updateStateBar(`Copied segment (from Clip ${episodeNum}-${clips[clipIdx].num}) to clipboard`);
+            
+            // Re-render clips to show the newly enabled "Paste Segment" button
+            renderClips();
+        }
+
+        // Paste Segment from Clipboard
+        function pasteSegment(clipIdx) {
+            if (clips[clipIdx].locked) return;
+            if (!segmentClipboard) return;
+            
+            // Push deep copy of clipboard segment to the top (index 0)
+            const copy = JSON.parse(JSON.stringify(segmentClipboard));
+            clips[clipIdx].segments.unshift(copy);
+            
+            const episodeNum = (projectInfo && projectInfo.name) ? (projectInfo.name.match(/\d+/)?.[0] || projectInfo.name) : "244";
+            updateStateBar(`Pasted segment to Clip ${episodeNum}-${clips[clipIdx].num}`);
+            
+            renderClips();
+            updateUsedHighlights();
+            savePlanToServer();
+        }
+
         // Stop active locked sequence playback
         function stopLockedSequence() {
             if (activeLockedSequence !== null) {
@@ -2784,6 +3174,8 @@
             const cards = clipListContainer.querySelectorAll('.clip-card');
             cards.forEach(c => c.remove());
 
+            const episodeNum = (projectInfo && projectInfo.name) ? (projectInfo.name.match(/\d+/)?.[0] || projectInfo.name) : "244";
+
             clips.forEach((clip, index) => {
                 clip.num = index + 1;
                 const isLocked = clip.locked || false;
@@ -2802,7 +3194,26 @@
                     clip.segments.forEach((seg, segIdx) => {
                         const isEditing = editingSegmentRef && editingSegmentRef.clipIdx === index && editingSegmentRef.segIdx === segIdx;
                         const rowStyle = isEditing ? 'border: 1px solid var(--primary); background-color: rgba(99, 102, 241, 0.08);' : '';
-                        const deleteBtnHtml = isLocked ? '' : `<button class="icon-btn remove-seg" data-clip="${index}" data-seg="${segIdx}">✖</button>`;
+                        
+                        let segmentActionsHtml = "";
+                        if (!isLocked) {
+                            const isFirst = segIdx === 0;
+                            const isLast = segIdx === clip.segments.length - 1;
+                            segmentActionsHtml = `
+                                <div class="segment-actions-group" style="display: flex; gap: 0.2rem; align-items: center; justify-content: flex-end;" onclick="event.stopPropagation();">
+                                    <button class="icon-btn move-seg-up" data-clip="${index}" data-seg="${segIdx}" title="Move Up" ${isFirst ? 'style="display:none;"' : ''}>🔼</button>
+                                    <button class="icon-btn move-seg-down" data-clip="${index}" data-seg="${segIdx}" title="Move Down" ${isLast ? 'style="display:none;"' : ''}>🔽</button>
+                                    <button class="icon-btn copy-seg-btn" data-clip="${index}" data-seg="${segIdx}" title="Copy Segment">📋</button>
+                                    <button class="icon-btn remove-seg" data-clip="${index}" data-seg="${segIdx}" title="Remove Segment">✖</button>
+                                </div>
+                            `;
+                        } else {
+                            segmentActionsHtml = `
+                                <div class="segment-actions-group" style="display: flex; gap: 0.2rem; align-items: center; justify-content: flex-end;" onclick="event.stopPropagation();">
+                                    <button class="icon-btn copy-seg-btn" data-clip="${index}" data-seg="${segIdx}" title="Copy Segment">📋</button>
+                                </div>
+                            `;
+                        }
                         
                         if (seg.type === "audio") {
                             segmentsHtml += `
@@ -2811,7 +3222,7 @@
                                         <span class="segment-meta audio-meta">🎙 Audio Segment (${seg.duration.toFixed(2)}s)</span>
                                         <span class="segment-text">"${seg.text}"</span>
                                     </div>
-                                    ${deleteBtnHtml}
+                                    ${segmentActionsHtml}
                                 </div>
                             `;
                         } else if (seg.type === "music") {
@@ -2842,7 +3253,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    ${isLocked ? '' : `<button class="icon-btn remove-seg" data-clip="${index}" data-seg="${segIdx}" onclick="event.stopPropagation();">✖</button>`}
+                                    ${segmentActionsHtml}
                                 </div>
                             `;
                         }
@@ -2855,13 +3266,17 @@
                     <div class="segment-adder-btns">
                         <button class="btn btn-secondary btn-mini add-audio-btn" data-index="${index}">➕ Add Audio</button>
                         <button class="btn btn-secondary btn-mini add-music-btn" data-index="${index}">🎵 Add Music</button>
+                        <button class="btn btn-secondary btn-mini paste-seg-btn" data-index="${index}" ${segmentClipboard ? '' : 'disabled style="opacity: 0.5; cursor: not-allowed;"'}>📋 Paste Segment</button>
                     </div>
                 `;
                 
                 card.innerHTML = `
                     <div class="clip-card-header">
                         <div class="clip-card-title-container">
-                            <input type="text" class="clip-card-title" value="${clip.title}" data-index="${index}" ${isLocked ? 'disabled' : ''}>
+                            <div style="display: flex; align-items: center; width: 100%; gap: 0.4rem;">
+                                <span class="clip-num-badge" style="background-color: var(--primary); color: white; padding: 0.15rem 0.35rem; border-radius: 4px; font-weight: bold; font-size: 0.75rem; font-family: var(--font-mono); white-space: nowrap;">${episodeNum}-${clip.num}</span>
+                                <input type="text" class="clip-card-title" placeholder="Enter title description..." value="${clip.title}" data-index="${index}" ${isLocked ? 'disabled' : ''}>
+                            </div>
                             <span class="clip-duration-badge">Total: ${totalDuration.toFixed(2)}s</span>
                         </div>
                         <div class="clip-card-actions">
@@ -2878,7 +3293,7 @@
                     
                     <div class="card-controls">
                         ${adderControlsHtml}
-                        <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-left: auto;">Clip #${clip.num}</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); margin-left: auto;">ID: ${episodeNum}-${clip.num}</span>
                     </div>
                 `;
 
@@ -2908,6 +3323,11 @@
                     card.querySelector('.add-music-btn').addEventListener('click', function(e) {
                         e.stopPropagation();
                         addMusicSegmentToClip(index);
+                    });
+
+                    card.querySelector('.paste-seg-btn').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        pasteSegment(index);
                     });
                 }
 
@@ -2947,6 +3367,24 @@
                         });
                     });
 
+                    card.querySelectorAll('.move-seg-up').forEach(el => {
+                        el.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const clipIdx = parseInt(this.dataset.clip);
+                            const segIdx = parseInt(this.dataset.seg);
+                            moveSegmentUp(clipIdx, segIdx);
+                        });
+                    });
+
+                    card.querySelectorAll('.move-seg-down').forEach(el => {
+                        el.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const clipIdx = parseInt(this.dataset.clip);
+                            const segIdx = parseInt(this.dataset.seg);
+                            moveSegmentDown(clipIdx, segIdx);
+                        });
+                    });
+
                     card.querySelectorAll('.remove-seg').forEach(el => {
                         el.addEventListener('click', function(e) {
                             e.stopPropagation();
@@ -2963,6 +3401,15 @@
                         savePlanToServer();
                     });
                 }
+
+                card.querySelectorAll('.copy-seg-btn').forEach(el => {
+                    el.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const clipIdx = parseInt(this.dataset.clip);
+                        const segIdx = parseInt(this.dataset.seg);
+                        copySegment(clipIdx, segIdx);
+                    });
+                });
 
                 if (!isLocked) {
                     card.addEventListener('dragstart', function(e) {
