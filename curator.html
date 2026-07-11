@@ -3230,11 +3230,23 @@
                         }
                         
                         if (seg.type === "audio") {
+                            let audioEditorHtml = "";
+                            if (!isLocked) {
+                                audioEditorHtml = `
+                                    <div class="music-editor-row" style="margin-top: 0.2rem;" onclick="event.stopPropagation();">
+                                        <div class="music-editor-field">
+                                            <label>Next Crossfade (s):</label>
+                                            <input type="number" class="audio-crossfade" step="0.1" min="0" style="width: 55px;" value="${seg.crossfade !== undefined ? seg.crossfade : 0.0}" data-clip="${index}" data-seg="${segIdx}">
+                                        </div>
+                                    </div>
+                                `;
+                            }
                             segmentsHtml += `
                                 <div class="segment-row audio-seg" data-clip="${index}" data-seg="${segIdx}" style="${rowStyle}">
                                     <div class="segment-info">
                                         <span class="segment-meta audio-meta">🎙 Audio Segment (${seg.duration.toFixed(2)}s)</span>
                                         <span class="segment-text">"${seg.text}"</span>
+                                        ${audioEditorHtml}
                                     </div>
                                     ${segmentActionsHtml}
                                 </div>
@@ -3386,6 +3398,15 @@
                     });
 
                     card.querySelectorAll('.music-crossfade').forEach(el => {
+                        el.addEventListener('change', function() {
+                            const clipIdx = parseInt(this.dataset.clip);
+                            const segIdx = parseInt(this.dataset.seg);
+                            updateSegmentField(clipIdx, segIdx, 'crossfade', parseFloat(this.value) || 0.0);
+                            renderClips();
+                        });
+                    });
+
+                    card.querySelectorAll('.audio-crossfade').forEach(el => {
                         el.addEventListener('change', function() {
                             const clipIdx = parseInt(this.dataset.clip);
                             const segIdx = parseInt(this.dataset.seg);
