@@ -173,12 +173,39 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if res.returncode != 0:
                     raise Exception(f"FFmpeg error encoding preview: {res.stderr.decode('utf-8')}")
             else:
+                # Check if there are any crossfades > 0
+                has_crossfade = False
+                crossfades = []
+                for idx, seg in enumerate(segments[:-1]):
+                    cf = float(seg.get("crossfade", 0.0))
+                    crossfades.append(cf)
+                    if cf > 0:
+                        has_crossfade = True
+                
                 cmd = ["ffmpeg", "-y"]
                 for tf in temp_files:
                     cmd += ["-i", tf]
                 
-                filter_complex = "".join(f"[{i}:a]" for i in range(len(temp_files)))
-                filter_complex += f"concat=n={len(temp_files)}:v=0:a=1[out]"
+                if not has_crossfade:
+                    filter_complex = "".join(f"[{i}:a]" for i in range(len(temp_files)))
+                    filter_complex += f"concat=n={len(temp_files)}:v=0:a=1[out]"
+                else:
+                    # Construct chained acrossfade filters
+                    filter_parts = []
+                    current_src = "[0:a]"
+                    for i in range(len(temp_files) - 1):
+                        cf_dur = crossfades[i]
+                        # Use acrossfade with duration or tiny samples if 0
+                        if cf_dur > 0:
+                            fade_opts = f"d={cf_dur}"
+                        else:
+                            fade_opts = "ns=1"
+                        
+                        next_dest = f"[a{i+1}]" if i < len(temp_files) - 2 else "[out]"
+                        filter_parts.append(f"{current_src}[{i+1}:a]acrossfade={fade_opts}:c1=tri:c2=tri{next_dest}")
+                        current_src = f"[a{i+1}]"
+                    
+                    filter_complex = ";".join(filter_parts)
                 
                 cmd += [
                     "-filter_complex", filter_complex,

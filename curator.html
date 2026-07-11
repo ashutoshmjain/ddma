@@ -1347,6 +1347,19 @@
         let sequencePlayIdx = -1;
         let segmentClipboard = null;
 
+        function calculateClipDuration(clip) {
+            let total = 0;
+            if (clip && clip.segments) {
+                clip.segments.forEach((seg, idx) => {
+                    total += parseFloat(seg.duration || 0);
+                    if (idx < clip.segments.length - 1) {
+                        total -= parseFloat(seg.crossfade || 0);
+                    }
+                });
+            }
+            return total;
+        }
+
         // Elements
         const projectList = document.getElementById('projectList');
         const activeProjectBadge = document.getElementById('activeProjectBadge');
@@ -2540,7 +2553,7 @@
                     
                     const card = clipListContainer.querySelector(`.clip-card[data-index="${clipIdx}"]`);
                     if (card) {
-                        const totalDuration = clips[clipIdx].segments.reduce((acc, s) => acc + parseFloat(s.duration || 0), 0);
+                        const totalDuration = calculateClipDuration(clips[clipIdx]);
                         const durationBadge = card.querySelector('.clip-duration-badge');
                         if (durationBadge) durationBadge.textContent = `Total: ${totalDuration.toFixed(2)}s`;
                     }
@@ -3186,7 +3199,7 @@
                 card.dataset.index = index;
                 card.draggable = !isLocked;
                 
-                const totalDuration = clip.segments.reduce((acc, seg) => acc + parseFloat(seg.duration || 0), 0);
+                const totalDuration = calculateClipDuration(clip);
                 
                 let segmentsHtml = "";
                 if (clip.segments.length === 0) {
@@ -3251,6 +3264,10 @@
                                             <div class="music-editor-field">
                                                 <label>Volume:</label>
                                                 <input type="number" class="music-volume" step="0.05" min="0" max="2" style="width: 55px;" value="${seg.volume !== undefined ? seg.volume : 1.00}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
+                                            </div>
+                                            <div class="music-editor-field">
+                                                <label>Crossfade (s):</label>
+                                                <input type="number" class="music-crossfade" step="0.1" min="0" style="width: 55px;" value="${seg.crossfade !== undefined ? seg.crossfade : 0.0}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
                                             </div>
                                         </div>
                                     </div>
@@ -3364,6 +3381,15 @@
                             const clipIdx = parseInt(this.dataset.clip);
                             const segIdx = parseInt(this.dataset.seg);
                             updateSegmentField(clipIdx, segIdx, 'volume', parseFloat(this.value) || 1.00);
+                            renderClips();
+                        });
+                    });
+
+                    card.querySelectorAll('.music-crossfade').forEach(el => {
+                        el.addEventListener('change', function() {
+                            const clipIdx = parseInt(this.dataset.clip);
+                            const segIdx = parseInt(this.dataset.seg);
+                            updateSegmentField(clipIdx, segIdx, 'crossfade', parseFloat(this.value) || 0.0);
                             renderClips();
                         });
                     });

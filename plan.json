@@ -116,16 +116,23 @@
         "segments": [
             {
                 "type": "audio",
-                "start": 238.84,
-                "end": 363.76,
-                "duration": 124.91999999999999,
-                "text": "(Speech Segment)"
+                "start": 36.52,
+                "end": 48.18,
+                "duration": 11.66,
+                "text": "So today we aren't talking about how science is built. We are talking about how it is violently destroyed. Indeed, we are examining the precise calculated architecture of intellectual demolition."
             },
             {
                 "type": "music",
                 "music_file": "Danzon De Pasion (Sting) - Jimmy Fontanez_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3
+            },
+            {
+                "type": "audio",
+                "start": 300.82,
+                "end": 462.14,
+                "duration": 161.32,
+                "text": "Isn't  science  ultimately  purely  objective?  Doesn't  the  data  eventually  just  speak  for  itself?  If  you  gather  enough  empirical  evidence  over  years  and  years,  won't  the  old  guard  eventually  just  have  to  concede  to  reality?  Not  according  to  the  historical  record,  no.  And  not  according  to  the  philosopher  Larry  Laudin,  who  provides  a  really  powerful  framework  for  understanding  this  in  the  paper  we're  reviewing.  Okay.  What's  his  framework?  Laudin  argues  that  scientific  progress  is  measured  by  what  he  calls  problem  solving  effectiveness.  But  he  makes  a  critical  division.  He  divides  the  problems  of  theory  faces  into  two  entirely  distinct  categories,  empirical  problems  and  conceptual  problems.  Okay,  let's  make  sure  we  have  a  solid  grip  on  this  distinction  because  it  seems  to  be  the  engine  for  everything  that  follows  in  this  deep  dive.  It  really  is  the  absolute  core  of  the  dynamic.   Empirical  problems  are  just  data  points  that  need  explaining.  Let's  say  you  are  observing  a  planet  and  its  orbit  is  a  fraction  of  a  degree  off  from  what  your  current  mathematical  model  predicts.  That  is  an  empirical  problem.  The  data  doesn't  perfectly  match  the  model.  And  according  to  Laudin,  empirical  problems  aren't  actually  that  dangerous  to  an  established  theory,  right?  Exactly.  Because  of  that  intellectual  duct  tape  we  talked  about,  if  you  have  an  empirical  problem,  you  can  usually  just  add  a  minor  mathematical  tweak  to  your  theory  to  fix  it.  Just  fudge  the  numbers  a  bit.  Basically,  you  add  a  new  variable,  you  invent  a  minor  sub -roll  and  the  paradigm  survives.  But  conceptual  problems  are  entirely  different  beasts.  How  so?  Conceptual  problems  are  internal  logical  inconsistencies.  They  are  theoretical  asymmetries.  There  are  moments  where  a  theory  fundamentally  contradicts  its  own  starting  premises  or  this  is  key,  directly  contradicts  another  equal  accepted  foundational  theory  in  a  different  branch  of  physics.  So  an  empirical  problem  is  my  math  didn't  quite  predict  this  data.  Right.  But  a  conceptual  problem  is  my  math  fundamentally  contradicts  the  laws  of  geometry.  Or  my  theory  requires  an  object  to  be  in  two  places  at  once.  Yes,  exactly.  And  what's  fascinating  here  is  that  resulting  in  a  conceptual  conflict  is  a  far  more  powerful  driver  of  theory  choice  than  merely  accumulating  empirical  data.  Really?  So  the  data  isn't  king.  Not  in  a  revolution.  Ground  breaking.  Revolutionary  scientists  don't  win  by  debating  data  collection  techniques.  They  win  by  exposing  the  conceptual  problems  of  their  rivals.  They  go  for  the  structural  weak  points.  Exactly.  They  demonstrate  that  the  dominant  theory  is  mathematically,  structurally,  or  logically  incoherent.  Once  a  theory  is  shown  to  be  philosophically  absurd  or  mathematically  self -contradictory,  no  amount  of  past  empirical  success  can  save  it."
             }
         ]
     },
