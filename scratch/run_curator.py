@@ -914,11 +914,34 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 has_snapshot = os.path.exists(os.path.join(project_dir, "plan_snapshot.json"))
                 
+                # Scan for compiled videos matching this project (e.g. episode 244 -> "244-*.mp4")
+                compiled_videos = []
+                import re
+                ep_num_match = re.search(r'\d+', project_id)
+                if ep_num_match:
+                    ep_num = ep_num_match.group(0)
+                    clips_dir = "clips"
+                    if os.path.exists(clips_dir):
+                        for file in os.listdir(clips_dir):
+                            if file.startswith(f"{ep_num}-") and file.endswith(".mp4") and not file.endswith("-original.mp4"):
+                                try:
+                                    parts = file.split("-")
+                                    if len(parts) >= 2:
+                                        clip_num = int(parts[1])
+                                        compiled_videos.append({
+                                            "num": clip_num,
+                                            "filename": file,
+                                            "url": f"/clips/{file}"
+                                        })
+                                except Exception:
+                                    pass
+                
                 payload = {
                     "info": info,
                     "plan": plan_data,
                     "transcription": trans_data,
-                    "has_snapshot": has_snapshot
+                    "has_snapshot": has_snapshot,
+                    "compiled_videos": compiled_videos
                 }
                 
                 self.send_response(200)

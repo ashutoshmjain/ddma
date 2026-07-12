@@ -822,6 +822,26 @@
             color: white;
         }
 
+        .btn-card-video {
+            background-color: rgba(236, 72, 153, 0.1);
+            color: #ec4899;
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            border-radius: 6px;
+            padding: 0.35rem 0.7rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            transition: all 0.15s ease;
+        }
+
+        .btn-card-video:hover {
+            background-color: #ec4899;
+            color: white;
+        }
+
         .icon-btn {
             background: transparent;
             border: none;
@@ -1359,6 +1379,23 @@
         </div>
     </div>
 
+    <!-- Video Preview Modal -->
+    <div class="export-modal-overlay" id="videoModalOverlay">
+        <div class="export-modal" style="max-width: 600px; padding: 1.5rem;">
+            <div class="export-modal-header">
+                <h3 id="videoModalTitle">VIDEO PREVIEW</h3>
+                <button class="icon-btn" id="closeVideoModalBtn" style="font-size: 1.2rem;" title="Close player">✖</button>
+            </div>
+            <div style="display: flex; justify-content: center; background-color: #000; border-radius: 8px; overflow: hidden; margin-top: 0.5rem; aspect-ratio: 1/1; max-height: 480px; border: 1px solid var(--border-color);">
+                <video id="previewVideoPlayer" controls style="width: 100%; height: 100%; object-fit: contain;"></video>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.8rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
+                <span id="videoModalSubtitle" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+                <a id="downloadVideoBtn" class="btn btn-accent btn-mini" style="text-decoration: none; padding: 0.35rem 0.7rem; font-size: 0.75rem;" download>⬇ Download Video</a>
+            </div>
+        </div>
+    </div>
+
     <!-- Right Click Context Menu -->
     <div id="contextMenu" class="context-menu">
         <div class="context-menu-item" id="ctxSetStart">📍 Start Selection Here</div>
@@ -1387,6 +1424,7 @@
         let activeSearchQuery = "";
         let activeClipPlayIdx = null;
         let lastCombinedUrl = "";
+        let compiledVideos = [];
         let dragSrcCardIdx = null;
         let showUsedRanges = false;
         let editingSegmentRef = null; // { clipIdx, segIdx }
@@ -1453,6 +1491,14 @@
         const exportTextarea = document.getElementById('exportTextarea');
         const copyJsonBtn = document.getElementById('copyJsonBtn');
         const downloadPlanBtn = document.getElementById('downloadPlanBtn');
+        
+        // Video Preview elements
+        const videoModalOverlay = document.getElementById('videoModalOverlay');
+        const closeVideoModalBtn = document.getElementById('closeVideoModalBtn');
+        const previewVideoPlayer = document.getElementById('previewVideoPlayer');
+        const videoModalTitle = document.getElementById('videoModalTitle');
+        const videoModalSubtitle = document.getElementById('videoModalSubtitle');
+        const downloadVideoBtn = document.getElementById('downloadVideoBtn');
 
         const combineLoadingState = document.getElementById('combineLoadingState');
         const combinePlayerState = document.getElementById('combinePlayerState');
@@ -2074,6 +2120,7 @@
                     projectInfo = data.info;
                     clips = data.plan || [];
                     transcriptionData = data.transcription;
+                    compiledVideos = data.compiled_videos || [];
                     
                     // Initialize Undo stack and baseline save state
                     undoStack = [];
@@ -3369,6 +3416,12 @@
                     </div>
                 `;
                 
+                const matchingVideo = compiledVideos.find(v => v.num === clip.num);
+                let videoBtnHtml = "";
+                if (matchingVideo) {
+                    videoBtnHtml = `<button class="btn btn-mini btn-card-video" id="playVideoBtn_${index}" style="font-weight:600;" title="Play compiled MP4 video">📹 Play Video</button>`;
+                }
+                
                 card.innerHTML = `
                     <div class="clip-card-header">
                         <div class="clip-card-title-container">
@@ -3397,6 +3450,7 @@
                         <div class="clip-card-actions">
                             <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600;">${lockBtnIcon}</button>
                             <button class="btn-card-play" id="playCardBtn_${index}">▶ Play</button>
+                            ${videoBtnHtml}
                             <button class="btn-card-export" id="exportCardBtn_${index}">📤 Export Clip</button>
                             ${deleteCardBtnHtml}
                         </div>
@@ -3440,6 +3494,23 @@
                 card.querySelector(`#exportCardBtn_${index}`).addEventListener('click', function(e) {
                     exportClipAudio(index, this, e);
                 });
+
+                if (matchingVideo) {
+                    card.querySelector(`#playVideoBtn_${index}`).addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        // Pause the audio player
+                        audioElement.pause();
+                        playBtn.textContent = '▶';
+                        
+                        // Setup and show video modal
+                        previewVideoPlayer.src = matchingVideo.url;
+                        videoModalTitle.textContent = `VIDEO PREVIEW - Part ${clip.num}: ${clip.title}`;
+                        videoModalSubtitle.textContent = `clips/${matchingVideo.filename}`;
+                        downloadVideoBtn.href = matchingVideo.url;
+                        videoModalOverlay.classList.add('active');
+                        previewVideoPlayer.play();
+                    });
+                }
 
                 if (!isLocked) {
                     card.querySelector('.add-audio-btn').addEventListener('click', function(e) {
@@ -3707,6 +3778,20 @@
             exportModalOverlay.classList.remove('minimized');
             combinedAudioPlayer.pause();
             combinedAudioPlayer.src = "";
+        });
+
+        closeVideoModalBtn.addEventListener('click', function() {
+            videoModalOverlay.classList.remove('active');
+            previewVideoPlayer.pause();
+            previewVideoPlayer.src = "";
+        });
+
+        videoModalOverlay.addEventListener('click', function(e) {
+            if (e.target === videoModalOverlay) {
+                videoModalOverlay.classList.remove('active');
+                previewVideoPlayer.pause();
+                previewVideoPlayer.src = "";
+            }
         });
 
         showPlanJsonBtn.addEventListener('click', function() {
