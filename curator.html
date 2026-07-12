@@ -1152,6 +1152,7 @@
                     <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
                         <button class="btn btn-secondary btn-mini" id="newClipBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;">➕ New Clip</button>
                         <button class="btn btn-primary btn-mini" id="exportBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;">🔗 Combine Audio</button>
+                        <button class="btn btn-secondary btn-mini" id="openExportModalBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Download combined MP3 or view plan JSON">📥 Export Plan</button>
                     </div>
                     <!-- Group 2: History & Preview -->
                     <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
@@ -1385,6 +1386,7 @@
         let clips = [];
         let activeSearchQuery = "";
         let activeClipPlayIdx = null;
+        let lastCombinedUrl = "";
         let dragSrcCardIdx = null;
         let showUsedRanges = false;
         let editingSegmentRef = null; // { clipIdx, segIdx }
@@ -1447,6 +1449,7 @@
         const closeModalBtn = document.getElementById('closeModalBtn');
         const minimizeModalBtn = document.getElementById('minimizeModalBtn');
         const combineModalHeaderTitle = document.getElementById('combineModalHeaderTitle');
+        const openExportModalBtn = document.getElementById('openExportModalBtn');
         const exportTextarea = document.getElementById('exportTextarea');
         const copyJsonBtn = document.getElementById('copyJsonBtn');
         const downloadPlanBtn = document.getElementById('downloadPlanBtn');
@@ -3611,21 +3614,15 @@
 
         // Combine Audio
         exportBtn.addEventListener('click', function() {
-            if (clips.length === 0) {
-                alert("Please add some clips to the plan first.");
+            const lockedClips = clips.filter(c => c.locked);
+            if (lockedClips.length === 0) {
+                alert("Please lock at least one clip card first. Only locked clips will be combined.");
                 return;
             }
             
-            // Show modal and reset loading state
-            exportModalOverlay.classList.remove('minimized');
-            exportModalOverlay.classList.add('active');
-            combineModalHeaderTitle.textContent = "COMBINED AUDIO PREVIEW";
-            minimizeModalBtn.textContent = "🗕";
-            combineLoadingState.style.display = 'block';
-            combinePlayerState.style.display = 'none';
-            planJsonSection.style.display = 'none';
-            showPlanJsonBtn.textContent = "📋 View Plan JSON";
-            combinedAudioPlayer.src = "";
+            exportBtn.innerHTML = '⏳ Combining...';
+            exportBtn.disabled = true;
+            updateStateBar("Compiling and combining locked clips...");
             
             // Call the combine-project-audio endpoint
             fetch(`/combine-project-audio?id=${activeProjectId}`, {
@@ -3637,23 +3634,58 @@
             })
             .then(data => {
                 if (data.success) {
-                    combineLoadingState.style.display = 'none';
-                    combinePlayerState.style.display = 'flex';
-                    combinedAudioPlayer.src = data.combined_url;
-                    downloadCombinedAudioBtn.href = data.combined_url;
-                    exportTextarea.value = JSON.stringify(clips, null, 4);
+                    lastCombinedUrl = data.combined_url;
+                    
+                    // Stop any active locked sequences or previews
+                    if (activeLockedSequence !== null) {
+                        stopLockedSequence();
+                    }
+                    
+                    // Load and play in the main bottom player bar
+                    audioElement.src = data.combined_url;
+                    audioElement.volume = 1.0;
+                    audioElement.play()
+                        .then(() => {
+                            nowPlayingTitle.textContent = `🔗 Combined Preview (${lockedClips.length} Locked Clips)`;
+                            updateStateBar(`Playing combined audio preview (${lockedClips.length} clips locked)`);
+                            playBtn.textContent = '⏸';
+                        })
+                        .catch(err => {
+                            showDebug("Failed to play combined audio: " + err.message);
+                        });
                 } else {
                     throw new Error("Invalid response.");
                 }
             })
-            .then(() => {
-                // Autoplay combined audio on compile complete
-                combinedAudioPlayer.play();
-            })
             .catch(err => {
                 alert("Error combining audio: " + err.message);
-                exportModalOverlay.classList.remove('active');
+                updateStateBar("Ready");
+            })
+            .finally(() => {
+                exportBtn.innerHTML = '🔗 Combine Audio';
+                exportBtn.disabled = false;
             });
+        });
+
+        // Open Export Plan Modal
+        openExportModalBtn.addEventListener('click', function() {
+            if (clips.length === 0) {
+                alert("Please add some clips to the plan first.");
+                return;
+            }
+            
+            exportModalOverlay.classList.remove('minimized');
+            exportModalOverlay.classList.add('active');
+            combineModalHeaderTitle.textContent = "COMBINED AUDIO PREVIEW";
+            minimizeModalBtn.textContent = "🗕";
+            combineLoadingState.style.display = 'none';
+            combinePlayerState.style.display = 'flex';
+            planJsonSection.style.display = 'none';
+            showPlanJsonBtn.textContent = "📋 View Plan JSON";
+            
+            combinedAudioPlayer.src = lastCombinedUrl || "";
+            downloadCombinedAudioBtn.href = lastCombinedUrl || "#";
+            exportTextarea.value = JSON.stringify(clips, null, 4);
         });
 
         minimizeModalBtn.addEventListener('click', function() {
