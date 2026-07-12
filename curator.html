@@ -1996,16 +1996,11 @@
                     } else {
                         loadProjectsList();
                     }
-                } else {
-                    throw new Error("Failed to rename project");
-                }
-            })
-            .catch(err => {
+                         .catch(err => {
                 showDebug("Rename project failed: " + err.message, true);
-                alert("Error renaming project: " + err.message);
             });
         }
-
+ 
         function duplicateProjectPrompt(projectId, currentName) {
             const newName = prompt(`Duplicate project "${currentName}" as:`, `${currentName} Copy`);
             if (!newName || newName.trim() === "") return;
@@ -2016,7 +2011,12 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: newName.trim() })
             })
-            .then(r => r.json())
+            .then(r => {
+                if (!r.ok) {
+                    return r.text().then(text => { throw new Error(text); });
+                }
+                return r.json();
+            })
             .then(data => {
                 if (data.success) {
                     updateStateBar("Project duplicated successfully!");
@@ -2027,10 +2027,9 @@
             })
             .catch(err => {
                 showDebug("Duplicate project failed: " + err.message, true);
-                alert("Error duplicating project: " + err.message);
             });
         }
-
+ 
         function deleteProjectConfirm(projectId, name) {
             const confirmed = confirm(`Are you sure you want to permanently delete the project "${name}"?\n\nThis will delete all its metadata, segment plans, transcripts, and copied audio files. This action CANNOT be undone.`);
             if (!confirmed) return;
@@ -2039,7 +2038,12 @@
             fetch(`/delete-project?id=${projectId}`, {
                 method: 'POST'
             })
-            .then(r => r.json())
+            .then(r => {
+                if (!r.ok) {
+                    return r.text().then(text => { throw new Error(text); });
+                }
+                return r.json();
+            })
             .then(data => {
                 if (data.success) {
                     updateStateBar("Project deleted.");
@@ -2054,7 +2058,6 @@
             })
             .catch(err => {
                 showDebug("Delete project failed: " + err.message, true);
-                alert("Error deleting project: " + err.message);
             });
         }
 
@@ -3736,7 +3739,9 @@
                 method: 'POST'
             })
             .then(res => {
-                if (!res.ok) throw new Error("Server compilation failed.");
+                if (!res.ok) {
+                    return res.text().then(text => { throw new Error(text); });
+                }
                 return res.json();
             })
             .then(data => {
@@ -3765,7 +3770,7 @@
                 }
             })
             .catch(err => {
-                alert("Error combining audio: " + err.message);
+                showDebug("Error combining audio: " + err.message, true);
                 updateStateBar("Ready");
             })
             .finally(() => {
@@ -3791,7 +3796,9 @@
                 method: 'POST'
             })
             .then(res => {
-                if (!res.ok) throw new Error("Server compilation failed.");
+                if (!res.ok) {
+                    return res.text().then(text => { throw new Error(text); });
+                }
                 return res.json();
             })
             .then(data => {
@@ -3819,7 +3826,7 @@
                 }
             })
             .catch(err => {
-                alert("Error combining video: " + err.message);
+                showDebug("Error combining video: " + err.message, true);
                 updateStateBar("Ready");
             })
             .finally(() => {

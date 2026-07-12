@@ -9,16 +9,29 @@
             {
                 "type": "audio",
                 "start": 2430.36,
-                "end": 2499.84,
-                "duration": 69.48,
-                "text": "(Speech Segment)"
+                "end": 2447.2,
+                "duration": 16.84,
+                "text": "Throughout  his  famous  miracle  year  of  1905,  Einstein  repeatedly  dismantled  prevailing  physics  by  pointing  out  structural  absurdities  in  how  the  scientific  community  interpreted  the  world.  Let's  start  with  special  relativity.  His  1905  paper  on  the  electro  dynamics  of  moving  bodies"
             },
             {
                 "type": "music",
                 "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
-                "crossfade": 5,
+                "crossfade": 0.3,
                 "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 2448.88,
+                "end": 2499.84,
+                "duration": 50.96,
+                "text": "At  the  time,  physicists  were  terrified  by  the  Michelson -Morley  experiment.  This  experiment  had  attempted  and  completely  failed  to  detect  the  Earth  moving  through  the  invisible  ether,  the  theoretical  medium  that  supposedly  carried  light  waves  through  space.  Everyone  in  physics  was  scrambling,  trying  to  invent  new  insanely  complex  mechanical  rules  for  how  the  ether  behaved  to  explain  why  the  experiment  failed  to  see  it.  They  were  applying  massive  amounts  of  intellectual  duct  tape,  but  Einstein  didn't  try  to  fix  the  ether.  He  completely  ignored  the  empirical  problem  of  the  Michelson -Morley  experiment.  Instead,  he  opened  his  paper  by  pointing  out  a  massive  conceptual  hole  in  Maxwell's  electro  dynamics  regarding  symmetry.  His  attack  vector  targeted  a  glaring  illogical  asymmetry  in  how  classical  physicists  describe  the  interaction  between  a  simple  magnet  and  a  simple  wire  conductor."
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3
             },
             {
                 "type": "audio",
@@ -34,7 +47,8 @@
                 "crossfade": 0.3
             }
         ],
-        "locked": true
+        "locked": true,
+        "crossfade": 0.5
     },
     {
         "num": 2,
@@ -45,20 +59,29 @@
         "segments": [
             {
                 "type": "audio",
-                "start": 1135.52,
+                "start": 1136.7,
                 "end": 1291.48,
-                "duration": 155.96,
-                "text": "up.   Galileo's  ultimate  weapon  was  a  theoretical  attack  factor.  It  was  a  thought  experiment  presented  in  his  1638  masterwork,  discourses  and  mathematical  demonstrations  relating  to  two  new  sciences.  And  he  didn't  write  it  as  a  dry  academic  paper.  He  wrote  it  as  a  dialogue,  right?  Yes,  he  used  the  Platonic  dialogue  format  to  trap  the  Aristotelian  worldview  in  its  own  internal  logic.  He  created  characters  to  argue  the  points,  allowing  the  reader  to  walk  into  the  trap  themselves.  Let's  walk  the  listener  through  this  specific  logic  trap  because  reading  through  the  research,  this  is  an  absolute  masterpiece  of  rhetorical  destruction.  It's  brilliant.  Galileo  creates  a  character  named  Salviati  who  represents  his  own  views  and  a  character  named  Cenclicio  who  represents  the  entrenched  Aristotelian  consensus.  Salviati  challenges  Cenclicio  based  on  Aristotle's  own  rules.  He  says,  let's  take  a  heavy  stone  and  let's  assign  its  natural  falling  speed  a  value  of  eight.  Okay.  And  let's  take  a  lighter  stone,  which  naturally  falls  slower,  so  let's  assign  it  speed  of  four.  Aristotle  dictates  that  the  heavy  stone  must  fall  faster.  Cenclicio  agrees.  So  the  premise  is  perfectly  established  according  to  the  dominant  paradigm.  Now  Galileo  springs  the  trap.  Salviati  proposes  a  physical  modification,  tying  the  heavy  stone  and  the  light  stone  together  with  a  piece  of  string  and  dropping  this  new  contraption  simultaneously.  Okay.  So  they're  tied  together.  What  happens  next?  Galileo  derives  two  completely  contradictory  logical  deductions  based  entirely  on  Aristotle's  own  unbreakable  rules.  First  is  the  retardation  argument.  When  you  drop  them,  the  lighter  stone  must  have  fallen  slower  at  speed  four.  The  heavier  stone  must  have  fallen  faster  at  speed  eight.  Therefore,  as  they  fall,  the  slower  light  stone  will  lag  behind.  It  will  create  drag  on  the  heavier  stone.  It  will  pull  the  string  taught.  That  makes  intuitive  sense.  Right.  The  combined  system  should  therefore  be  retarded  or  slowed  down  by  the  slower  object,  meaning  the  tied  together  stones  will  fall  at  a  speed  intermediate  between  the  two.  They  will  fall  at  a  speed  somewhere  between  four  and  eight.  Let's  call  it  six.  That  is  entirely  logically  sound  based  on  the  Aristotelian  premise  of  drag,  but  then  Galileo  presents  the  second  deduction.  The  additive  weight  argument.  Oh,  this  is  the  killer  part.  It  is.  He  reminds  simplicity  of  that  the  two  stones  are  tied  together.  They  now  create  a  new  singular  composite  physical  system.  And  this  new  combined  system  is  physically  measurably  heavier  than  the  original  heavy  stone  alone.  Right.  And  according  to  Aristotle's  absolute,  inviolable  baseline  rule,  heavier  bodies  fall  faster.  Exactly."
+                "duration": 154.78,
+                "text": "Galileo's  ultimate  weapon  was  a  theoretical  attack  factor.  It  was  a  thought  experiment  presented  in  his  1638  masterwork,  discourses  and  mathematical  demonstrations  relating  to  two  new  sciences.  And  he  didn't  write  it  as  a  dry  academic  paper.  He  wrote  it  as  a  dialogue,  right?  Yes,  he  used  the  Platonic  dialogue  format  to  trap  the  Aristotelian  worldview  in  its  own  internal  logic.  He  created  characters  to  argue  the  points,  allowing  the  reader  to  walk  into  the  trap  themselves.  Let's  walk  the  listener  through  this  specific  logic  trap  because  reading  through  the  research,  this  is  an  absolute  masterpiece  of  rhetorical  destruction.  It's  brilliant.  Galileo  creates  a  character  named  Salviati  who  represents  his  own  views  and  a  character  named  Cenclicio  who  represents  the  entrenched  Aristotelian  consensus.  Salviati  challenges  Cenclicio  based  on  Aristotle's  own  rules.  He  says,  let's  take  a  heavy  stone  and  let's  assign  its  natural  falling  speed  a  value  of  eight.  Okay.  And  let's  take  a  lighter  stone,  which  naturally  falls  slower,  so  let's  assign  it  speed  of  four.  Aristotle  dictates  that  the  heavy  stone  must  fall  faster.  Cenclicio  agrees.  So  the  premise  is  perfectly  established  according  to  the  dominant  paradigm.  Now  Galileo  springs  the  trap.  Salviati  proposes  a  physical  modification,  tying  the  heavy  stone  and  the  light  stone  together  with  a  piece  of  string  and  dropping  this  new  contraption  simultaneously.  Okay.  So  they're  tied  together.  What  happens  next?  Galileo  derives  two  completely  contradictory  logical  deductions  based  entirely  on  Aristotle's  own  unbreakable  rules.  First  is  the  retardation  argument.  When  you  drop  them,  the  lighter  stone  must  have  fallen  slower  at  speed  four.  The  heavier  stone  must  have  fallen  faster  at  speed  eight.  Therefore,  as  they  fall,  the  slower  light  stone  will  lag  behind.  It  will  create  drag  on  the  heavier  stone.  It  will  pull  the  string  taught.  That  makes  intuitive  sense.  Right.  The  combined  system  should  therefore  be  retarded  or  slowed  down  by  the  slower  object,  meaning  the  tied  together  stones  will  fall  at  a  speed  intermediate  between  the  two.  They  will  fall  at  a  speed  somewhere  between  four  and  eight.  Let's  call  it  six.  That  is  entirely  logically  sound  based  on  the  Aristotelian  premise  of  drag,  but  then  Galileo  presents  the  second  deduction.  The  additive  weight  argument.  Oh,  this  is  the  killer  part.  It  is.  He  reminds  simplicity  of  that  the  two  stones  are  tied  together.  They  now  create  a  new  singular  composite  physical  system.  And  this  new  combined  system  is  physically  measurably  heavier  than  the  original  heavy  stone  alone.  Right.  And  according  to  Aristotle's  absolute,  inviolable  baseline  rule,  heavier  bodies  fall  faster.  Exactly.",
+                "crossfade": -1
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 0.8
             },
             {
                 "type": "music",
                 "music_file": "deepDive-strong.mp3",
                 "duration": 13,
-                "crossfade": 0.3,
-                "volume": 1
+                "crossfade": 1,
+                "volume": 2
             }
         ],
-        "locked": true
+        "locked": true,
+        "crossfade": 0.5
     },
     {
         "num": 3,
@@ -82,7 +105,8 @@
                 "volume": 1
             }
         ],
-        "locked": true
+        "locked": true,
+        "crossfade": 0.5
     },
     {
         "num": 4,
@@ -96,16 +120,18 @@
                 "start": 137.84,
                 "end": 278.14,
                 "duration": 140.3,
-                "text": "OK,  let's  unpack  this.  The  central  thesis  of  the  research  we  are  looking  at  today  argues  that  scientists  don't  win  by  presenting  better  data.  No,  they  don't.  They  win  by  engineering  an  intellectual  crisis.  They  act  as  relentless,  diagnosticians  of  failure  before  they  even,  you  know,  attempt  to  be  architects  of  coherence.  Which  runs  completely  counter  to  the  stories  we  tell  children  about  how  science  operates.  Right.  The  sanitized  version.  Yeah,  we  teach  this  very  sanitized  version  of  the  scientific  method.  A  scientist  makes  a  neutral  observation,  forms  a  hypothesis,  runs  a  clean  experiment.  And  then  the  whole  scientific  community  looks  at  the  data,  applauds,  and  instantly  adopts  the  new  truth.   But  if  we  look  at  the  epistemological  framework,  specifically  the  landmark  work  of  the  philosopher  Thomas  Kuhn,  we  see  a  reality  that  is  far  more  entrenched  and,  well,  far  more  human.  Because  humans  don't  like  being  wrong.  We  really  don't.  Kuhn  introduced  the  concept  of  the  dominant  paradigm  and  normal  science.  Normal  science  is  what  happens  99 %  of  the  time  in  the  real  world.   Define  normal  science  for  us.  It  means  the  scientific  community  has  a  shared  agreed  upon  model  of  reality.  Their  daily  work  is  not  trying  to  overthrow  that  model.  Their  daily  work  is  just  solving  minor,  highly  specific  puzzles  within  the  boundaries  of  that  existing  model.  Right.  And  the  research  points  out  that  a  paradigm  is  incredibly  rigid.  It  dictates  not  just  what  the  answer  should  look  like,  but  what  questions  you  were  even  allowed  to  ask  in  the  first  place.  Precisely.  If  you  ask  a  question  outside  the  paradigm,  you  aren't  considered  a  visionary.  You  were  considered  a  crank.  So  what  happens  when  anomalies  inevitably  arise?  Like  what  happens  when  a  researcher  runs  an  experiment  that  yields  a  result  that  the  dominant  paradigm  absolutely  cannot  explain?  According  to  the  idealized  version  of  science,  the  community  should  immediately  throw  away  the  paradigm  and  start  over.  But  in  reality.  In  reality,  that  would  require  thousands  of  scientists  destroying  their  own  careers,  returning  their  grant  funding  and  dismantling  their  entire  professional  worldview.  You  and  nature  just  doesn't  allow  for  that.  To  what  I  do.  Instead,  the  community  ignores  the  anomaly.  They  marginalized  the  research  who  found  it  or  more  commonly  they  construct  ad  hoc  hypotheses.  Ad  hoc  hypotheses.  Basically,  intellectual  duct  tape.  Exactly.  Intellectual  duct  tape."
+                "text": "OK,  let's  unpack  this.  The  central  thesis  of  the  research  we  are  looking  at  today  argues  that  scientists  don't  win  by  presenting  better  data.  No,  they  don't.  They  win  by  engineering  an  intellectual  crisis.  They  act  as  relentless,  diagnosticians  of  failure  before  they  even,  you  know,  attempt  to  be  architects  of  coherence.  Which  runs  completely  counter  to  the  stories  we  tell  children  about  how  science  operates.  Right.  The  sanitized  version.  Yeah,  we  teach  this  very  sanitized  version  of  the  scientific  method.  A  scientist  makes  a  neutral  observation,  forms  a  hypothesis,  runs  a  clean  experiment.  And  then  the  whole  scientific  community  looks  at  the  data,  applauds,  and  instantly  adopts  the  new  truth.   But  if  we  look  at  the  epistemological  framework,  specifically  the  landmark  work  of  the  philosopher  Thomas  Kuhn,  we  see  a  reality  that  is  far  more  entrenched  and,  well,  far  more  human.  Because  humans  don't  like  being  wrong.  We  really  don't.  Kuhn  introduced  the  concept  of  the  dominant  paradigm  and  normal  science.  Normal  science  is  what  happens  99 %  of  the  time  in  the  real  world.   Define  normal  science  for  us.  It  means  the  scientific  community  has  a  shared  agreed  upon  model  of  reality.  Their  daily  work  is  not  trying  to  overthrow  that  model.  Their  daily  work  is  just  solving  minor,  highly  specific  puzzles  within  the  boundaries  of  that  existing  model.  Right.  And  the  research  points  out  that  a  paradigm  is  incredibly  rigid.  It  dictates  not  just  what  the  answer  should  look  like,  but  what  questions  you  were  even  allowed  to  ask  in  the  first  place.  Precisely.  If  you  ask  a  question  outside  the  paradigm,  you  aren't  considered  a  visionary.  You  were  considered  a  crank.  So  what  happens  when  anomalies  inevitably  arise?  Like  what  happens  when  a  researcher  runs  an  experiment  that  yields  a  result  that  the  dominant  paradigm  absolutely  cannot  explain?  According  to  the  idealized  version  of  science,  the  community  should  immediately  throw  away  the  paradigm  and  start  over.  But  in  reality.  In  reality,  that  would  require  thousands  of  scientists  destroying  their  own  careers,  returning  their  grant  funding  and  dismantling  their  entire  professional  worldview.  You  and  nature  just  doesn't  allow  for  that.  To  what  I  do.  Instead,  the  community  ignores  the  anomaly.  They  marginalized  the  research  who  found  it  or  more  commonly  they  construct  ad  hoc  hypotheses.  Ad  hoc  hypotheses.  Basically,  intellectual  duct  tape.  Exactly.  Intellectual  duct  tape.",
+                "crossfade": 0.5
             },
             {
                 "type": "music",
-                "music_file": "Cruise (Sting) - John Deley and the 41 Players.mp3",
-                "duration": 5,
+                "music_file": "Operator Error (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
                 "crossfade": 0.3
             }
         ],
-        "locked": true
+        "locked": true,
+        "crossfade": 0.5
     },
     {
         "num": 5,
@@ -125,19 +151,26 @@
             {
                 "type": "music",
                 "music_file": "Danzon De Pasion (Sting) - Jimmy Fontanez_Media Right Productions.mp3",
-                "duration": 4.5,
-                "crossfade": 2.5,
+                "duration": 3,
+                "crossfade": 1,
                 "volume": 0.75
             },
             {
                 "type": "audio",
-                "start": 300.82,
+                "start": 299.08,
                 "end": 462.14,
-                "duration": 161.32,
-                "text": "Isn't  science  ultimately  purely  objective?  Doesn't  the  data  eventually  just  speak  for  itself?  If  you  gather  enough  empirical  evidence  over  years  and  years,  won't  the  old  guard  eventually  just  have  to  concede  to  reality?  Not  according  to  the  historical  record,  no.  And  not  according  to  the  philosopher  Larry  Laudin,  who  provides  a  really  powerful  framework  for  understanding  this  in  the  paper  we're  reviewing.  Okay.  What's  his  framework?  Laudin  argues  that  scientific  progress  is  measured  by  what  he  calls  problem  solving  effectiveness.  But  he  makes  a  critical  division.  He  divides  the  problems  of  theory  faces  into  two  entirely  distinct  categories,  empirical  problems  and  conceptual  problems.  Okay,  let's  make  sure  we  have  a  solid  grip  on  this  distinction  because  it  seems  to  be  the  engine  for  everything  that  follows  in  this  deep  dive.  It  really  is  the  absolute  core  of  the  dynamic.   Empirical  problems  are  just  data  points  that  need  explaining.  Let's  say  you  are  observing  a  planet  and  its  orbit  is  a  fraction  of  a  degree  off  from  what  your  current  mathematical  model  predicts.  That  is  an  empirical  problem.  The  data  doesn't  perfectly  match  the  model.  And  according  to  Laudin,  empirical  problems  aren't  actually  that  dangerous  to  an  established  theory,  right?  Exactly.  Because  of  that  intellectual  duct  tape  we  talked  about,  if  you  have  an  empirical  problem,  you  can  usually  just  add  a  minor  mathematical  tweak  to  your  theory  to  fix  it.  Just  fudge  the  numbers  a  bit.  Basically,  you  add  a  new  variable,  you  invent  a  minor  sub -roll  and  the  paradigm  survives.  But  conceptual  problems  are  entirely  different  beasts.  How  so?  Conceptual  problems  are  internal  logical  inconsistencies.  They  are  theoretical  asymmetries.  There  are  moments  where  a  theory  fundamentally  contradicts  its  own  starting  premises  or  this  is  key,  directly  contradicts  another  equal  accepted  foundational  theory  in  a  different  branch  of  physics.  So  an  empirical  problem  is  my  math  didn't  quite  predict  this  data.  Right.  But  a  conceptual  problem  is  my  math  fundamentally  contradicts  the  laws  of  geometry.  Or  my  theory  requires  an  object  to  be  in  two  places  at  once.  Yes,  exactly.  And  what's  fascinating  here  is  that  resulting  in  a  conceptual  conflict  is  a  far  more  powerful  driver  of  theory  choice  than  merely  accumulating  empirical  data.  Really?  So  the  data  isn't  king.  Not  in  a  revolution.  Ground  breaking.  Revolutionary  scientists  don't  win  by  debating  data  collection  techniques.  They  win  by  exposing  the  conceptual  problems  of  their  rivals.  They  go  for  the  structural  weak  points.  Exactly.  They  demonstrate  that  the  dominant  theory  is  mathematically,  structurally,  or  logically  incoherent.  Once  a  theory  is  shown  to  be  philosophically  absurd  or  mathematically  self -contradictory,  no  amount  of  past  empirical  success  can  save  it."
+                "duration": 163.06,
+                "text": "But  wait,  let  me  push  back  here.  Isn't  science  ultimately  purely  objective?  Doesn't  the  data  eventually  just  speak  for  itself?  If  you  gather  enough  empirical  evidence  over  years  and  years,  won't  the  old  guard  eventually  just  have  to  concede  to  reality?  Not  according  to  the  historical  record,  no.  And  not  according  to  the  philosopher  Larry  Laudin,  who  provides  a  really  powerful  framework  for  understanding  this  in  the  paper  we're  reviewing.  Okay.  What's  his  framework?  Laudin  argues  that  scientific  progress  is  measured  by  what  he  calls  problem  solving  effectiveness.  But  he  makes  a  critical  division.  He  divides  the  problems  of  theory  faces  into  two  entirely  distinct  categories,  empirical  problems  and  conceptual  problems.  Okay,  let's  make  sure  we  have  a  solid  grip  on  this  distinction  because  it  seems  to  be  the  engine  for  everything  that  follows  in  this  deep  dive.  It  really  is  the  absolute  core  of  the  dynamic.   Empirical  problems  are  just  data  points  that  need  explaining.  Let's  say  you  are  observing  a  planet  and  its  orbit  is  a  fraction  of  a  degree  off  from  what  your  current  mathematical  model  predicts.  That  is  an  empirical  problem.  The  data  doesn't  perfectly  match  the  model.  And  according  to  Laudin,  empirical  problems  aren't  actually  that  dangerous  to  an  established  theory,  right?  Exactly.  Because  of  that  intellectual  duct  tape  we  talked  about,  if  you  have  an  empirical  problem,  you  can  usually  just  add  a  minor  mathematical  tweak  to  your  theory  to  fix  it.  Just  fudge  the  numbers  a  bit.  Basically,  you  add  a  new  variable,  you  invent  a  minor  sub -roll  and  the  paradigm  survives.  But  conceptual  problems  are  entirely  different  beasts.  How  so?  Conceptual  problems  are  internal  logical  inconsistencies.  They  are  theoretical  asymmetries.  There  are  moments  where  a  theory  fundamentally  contradicts  its  own  starting  premises  or  this  is  key,  directly  contradicts  another  equal  accepted  foundational  theory  in  a  different  branch  of  physics.  So  an  empirical  problem  is  my  math  didn't  quite  predict  this  data.  Right.  But  a  conceptual  problem  is  my  math  fundamentally  contradicts  the  laws  of  geometry.  Or  my  theory  requires  an  object  to  be  in  two  places  at  once.  Yes,  exactly.  And  what's  fascinating  here  is  that  resulting  in  a  conceptual  conflict  is  a  far  more  powerful  driver  of  theory  choice  than  merely  accumulating  empirical  data.  Really?  So  the  data  isn't  king.  Not  in  a  revolution.  Ground  breaking.  Revolutionary  scientists  don't  win  by  debating  data  collection  techniques.  They  win  by  exposing  the  conceptual  problems  of  their  rivals.  They  go  for  the  structural  weak  points.  Exactly.  They  demonstrate  that  the  dominant  theory  is  mathematically,  structurally,  or  logically  incoherent.  Once  a  theory  is  shown  to  be  philosophically  absurd  or  mathematically  self -contradictory,  no  amount  of  past  empirical  success  can  save  it."
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 2.5,
+                "crossfade": 0.3
             }
         ],
-        "locked": true
+        "locked": true,
+        "crossfade": 0.5
     },
     {
         "num": 6,
@@ -148,18 +181,34 @@
         "segments": [
             {
                 "type": "audio",
-                "start": 506.28,
+                "start": 485.02,
                 "end": 601.52,
-                "duration": 95.24000000000001,
-                "text": "(Speech Segment)"
+                "duration": 116.5,
+                "text": "John  Swales'  CARS  model,  which  stands  for  create  a  research  space.  CARS.  Right.  Swales  analyze  the  rhetoric  of  decades  of  scientific  literature  and  found  that  successful  scientific  introductions  invariably  follow  three  distinct  moves.  Okay.  What  are  the  moves?  Move  one  is  establishing  a  territory.  This  just  means  summarizing  the  current  consensus,  outlining  what  everyone  already  agrees  on.  Setting  the  stage.   Move  three  is  occupying  the  niche,  which  is  the  part  where  you  finally  introduce  your  own  novel  work  and  your  new  equations.  But  there's  a  move,  too.  Yes.  And  it  is  the  pivotal  critical  step.  Move,  too.  Establishing  a  niche.  Establishing  a  niche.  In  plain  terms,  that's  pointing  out  the  gap  or  the  fundamental  flaw  in  the  consensus  you  just  summarized  and  move  one.  Precisely.  Now,  an  average  everyday  researcher  doing  normal  science  uses  move,  too,  just  to  point  out  a  minor  lack  of  data.  They  might  write,  you  know,  previous  studies  have  tested  the  tensile  strength  of  this  alloy  at  room  temperature,  but  not  at  freezing  temperature.  Just  a  small  gap.  Right.  That  is  a  minor  empirical  gap.  They  are  asking  for  permission  to  fill  a  tiny  pothole  in  the  existing  road,  but  a  revolutionary  scientist  weaponizes  move,  too.  They  don't  just  point  out  a  pothole.  They  point  out  that  the  road  is  leading  off  a  cliff.  I  love  that  analogy,  yes.  They  expose  a  fatal  foundational  contradiction.  They  force  the  community  to  stare  directly  into  the  abyss  of  a  conceptual  failure.  They  use  move,  too,  to  argue  that  the  territory  itself  is  structurally  unsound  and  mathematically  illegitimate.  They  basically  demand  a  total  tear  down  before  they  even  unroll  the  blueprints  for  the  new  building.  Exactly.  And  the  research  highlights  why  this  incredibly  aggressive,  almost  hostile  posture  is  absolutely  necessary,  bringing  up  what  is  known  as  Planck's  principle.  Max  Planck  was  the  brilliant  physicist  who  originated  quantum  theory,  and  he  made  a  rather  grim,  cynical  observation  about  the  sociology  of  science  after  dealing  with  decades  of  pushback."
             },
             {
                 "type": "music",
                 "music_file": "Day of Recon (Sting) - Max Surla_Media Right Productions.mp3",
                 "duration": 4.5,
+                "crossfade": 0.5
+            },
+            {
+                "type": "audio",
+                "start": 601.62,
+                "end": 626.08,
+                "duration": 24.46,
+                "text": "What  did  he  say?  He  stated  that  a  new  scientific  truth  does  not  triumph  by  convincing  its  opponents  and  making  them  see  the  light,  rather  than  triumphs  because  its  opponents  eventually  die,  and  a  new  generation  grows  up  that  is  familiar  with  the  new  truth.  Wow.  Just  waiting  them  out.  It's  a  stark  reminder  of  the  ossification  of  canon.  In  trench  scientists  almost  never  abandon  the  theories  upon  which  their  reputations,  their  tenure,  and  their  identities  are  built.  They  just  can't  do  it.",
+                "crossfade": 0.5
+            },
+            {
+                "type": "music",
+                "music_file": "Operator Error (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": true,
+        "crossfade": 0.5
     },
     {
         "num": 7,
@@ -181,7 +230,8 @@
                 "duration": 4.5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": false
     },
     {
         "num": 8,
@@ -203,7 +253,8 @@
                 "duration": 4.5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": false
     },
     {
         "num": 9,
@@ -225,7 +276,8 @@
                 "duration": 4.5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": false
     },
     {
         "num": 10,
@@ -247,7 +299,8 @@
                 "duration": 4.5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": false
     },
     {
         "num": 11,
@@ -269,7 +322,8 @@
                 "duration": 4.5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": false
     },
     {
         "num": 12,
@@ -291,7 +345,8 @@
                 "duration": 4.5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": false
     },
     {
         "num": 13,
@@ -313,7 +368,8 @@
                 "duration": 4.5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": false
     },
     {
         "num": 14,
@@ -335,7 +391,8 @@
                 "duration": 4.5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": false
     },
     {
         "num": 15,
@@ -357,7 +414,8 @@
                 "duration": 4.5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": false
     },
     {
         "num": 16,
@@ -379,7 +437,8 @@
                 "duration": 4.5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": false
     },
     {
         "num": 17,
@@ -399,7 +458,8 @@
                 "duration": 4.5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": false
     },
     {
         "num": 18,
@@ -419,7 +479,8 @@
                 "duration": 4.5,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": false
     },
     {
         "num": 19,
@@ -439,6 +500,7 @@
                 "duration": 1,
                 "crossfade": 0.3
             }
-        ]
+        ],
+        "locked": false
     }
 ]

@@ -229,6 +229,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         pass
 
     def do_POST(self):
+        import re
         parsed_url = urlparse(self.path)
         params = parse_qs(parsed_url.query)
         
