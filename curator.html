@@ -1996,7 +1996,11 @@
                     } else {
                         loadProjectsList();
                     }
-                         .catch(err => {
+                } else {
+                    throw new Error("Failed to rename project");
+                }
+            })
+            .catch(err => {
                 showDebug("Rename project failed: " + err.message, true);
             });
         }
