@@ -1954,15 +1954,21 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: newName.trim() })
             })
-            .then(r => r.json())
+            .then(r => {
+                if (!r.ok) {
+                    return r.text().then(text => { throw new Error(text); });
+                }
+                return r.json();
+            })
             .then(data => {
                 if (data.success) {
                     updateStateBar("Project renamed successfully!");
                     if (activeProjectId === projectId) {
-                        if (projectInfo) projectInfo.name = newName.trim();
-                        document.getElementById('activeProjectBadge').textContent = newName.trim();
+                        activeProjectId = data.new_id || projectId;
+                        loadActiveProject(activeProjectId);
+                    } else {
+                        loadProjectsList();
                     }
-                    loadProjectsList();
                 } else {
                     throw new Error("Failed to rename project");
                 }

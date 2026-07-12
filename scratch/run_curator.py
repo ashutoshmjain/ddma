@@ -462,23 +462,74 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not new_name:
                     raise Exception("New name is required.")
                 
-                project_dir = os.path.join("projects", project_id)
+                # Derive new project ID
+                new_id = re.sub(r'[^a-zA-Z0-9_-]', '_', new_name.lower().replace(" ", "_"))
+                
+                src_dir = os.path.join("projects", project_id)
+                dst_dir = os.path.join("projects", new_id)
+                
+                if new_id != project_id:
+                    if os.path.exists(dst_dir):
+                        raise Exception(f"A project directory named '{new_id}' already exists. Please delete it first.")
+                    
+                    # Rename project directory
+                    os.rename(src_dir, dst_dir)
+                    project_dir = dst_dir
+                else:
+                    project_dir = src_dir
+                
+                # Update metadata id and name
                 info_path = os.path.join(project_dir, "project_info.json")
                 if os.path.exists(info_path):
                     with open(info_path, "r", encoding="utf-8") as f:
                         info = json.load(f)
+                    info["id"] = new_id
                     info["name"] = new_name
                     with open(info_path, "w", encoding="utf-8") as f:
                         json.dump(info, f, indent=4)
+                
+                # Rename matching clip files inside clips/ folder
+                if new_id != project_id:
+                    old_ep_match = re.search(r'\d+', project_id)
+                    new_ep_match = re.search(r'\d+', new_id)
+                    if old_ep_match and new_ep_match:
+                        old_ep = old_ep_match.group(0)
+                        new_ep = new_ep_match.group(0)
+                        if old_ep != new_ep:
+                            clips_dir = "clips"
+                            if os.path.exists(clips_dir):
+                                for file in os.listdir(clips_dir):
+                                    if file.startswith(f"{old_ep}-"):
+                                        old_file_path = os.path.join(clips_dir, file)
+                                        # Construct new filename replacing the episode number prefix
+                                        new_filename = f"{new_ep}-{file[len(old_ep)+1:]}"
+                                        new_file_path = os.path.join(clips_dir, new_filename)
+                                        
+                                        try:
+                                            # Overwrite target if it exists, as requested
+                                            if os.path.exists(new_file_path):
+                                                os.remove(new_file_path)
+                                            os.rename(old_file_path, new_file_path)
+                                        except Exception as file_err:
+                                            print(f"Error renaming clip file {file} to {new_filename}: {file_err}")
+                
+                response_data = {
+                    "success": True,
+                    "new_id": new_id
+                }
                 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
-                self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
+                self.wfile.write(json.dumps(response_data).encode('utf-8'))
                 return
             except Exception as e:
-                self.send_error(500, f"Error renaming project: {e}")
+                self.send_response(500)
+                self.send_header('Content-type', 'text/plain')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(str(e).encode('utf-8'))
                 return
 
         elif parsed_url.path == '/duplicate-project':
