@@ -22,7 +22,7 @@
             --danger: #ef4444;
             --danger-hover: #dc2626;
             --panel-bg-darker: #0b0c0e;
-            --card-locked-bg: rgba(22, 24, 34, 0.5);
+            --card-locked-bg: rgba(13, 14, 20, 0.7);
         }
 
         /* Cyberpunk Cyber Theme */
@@ -39,7 +39,7 @@
             --danger: #f43f5e;
             --danger-hover: #e11d48;
             --panel-bg-darker: #020204;
-            --card-locked-bg: rgba(13, 14, 22, 0.5);
+            --card-locked-bg: rgba(5, 5, 8, 0.7);
         }
 
         /* Nordic Breeze Light Theme */
@@ -56,7 +56,7 @@
             --danger: #dc2626;
             --danger-hover: #b91c1c;
             --panel-bg-darker: #e2e8f0;
-            --card-locked-bg: rgba(226, 232, 240, 0.6);
+            --card-locked-bg: rgba(226, 232, 240, 0.85);
         }
 
         * {
@@ -520,8 +520,9 @@
 
         /* Locked Card Styling */
         .clip-card.locked {
-            opacity: 0.92;
+            opacity: 0.95;
             border-color: var(--border-color);
+            border-left: 4px solid var(--primary);
             background-color: var(--card-locked-bg);
             cursor: not-allowed;
         }
