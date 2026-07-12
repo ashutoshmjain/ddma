@@ -1963,7 +1963,7 @@
             // Clear player
             audioElement.pause();
             audioElement.src = "";
-            document.getElementById('audioPlayerBar').style.display = 'none';
+            document.getElementById('nowPlayingTitle').textContent = "No project loaded";
             
             renderClips();
             renderTranscript();
