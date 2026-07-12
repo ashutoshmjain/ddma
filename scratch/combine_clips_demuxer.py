@@ -74,9 +74,16 @@ def render_bridge_image(bridge_text_input, width, height, font_path, out_img_pat
     img.save(out_img_path)
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Combine episode clips with transition bridge cards.")
+    parser.add_argument("--episode", type=str, required=True, help="Episode number/prefix (e.g. 244)")
+    parser.add_argument("--plan-file", type=str, default="plan.json", help="Path to plan JSON file")
+    parser.add_argument("--out-file", type=str, help="Output path for the combined video file")
+    args = parser.parse_args()
+
     clips_dir = "clips"
-    episode = "243"
-    plan_file = "plan.json"
+    episode = args.episode
+    plan_file = args.plan_file
     
     if not os.path.exists(plan_file):
         print(f"Error: Plan file {plan_file} not found.")
@@ -87,16 +94,20 @@ def main():
     
     pattern = re.compile(rf"^{episode}-(\d+)\.mp4$")
     
+    # Filter to only pick up locked clip numbers from the plan
+    locked_nums = {c["num"] for c in plan_data if c.get("locked", False)}
+    
     clip_files = []
     if os.path.exists(clips_dir):
         for f in os.listdir(clips_dir):
             match = pattern.match(f)
             if match:
                 num = int(match.group(1))
-                clip_files.append((num, os.path.abspath(os.path.join(clips_dir, f))))
+                if num in locked_nums:
+                    clip_files.append((num, os.path.abspath(os.path.join(clips_dir, f))))
                 
     if not clip_files:
-        print(f"Error: No compiled clips found for Episode {episode} in '{clips_dir}' directory.")
+        print(f"Error: No locked, compiled video clips found for Episode {episode} in '{clips_dir}' directory.")
         sys.exit(1)
         
     # Sort clips numerically
@@ -219,7 +230,7 @@ def main():
             
     print(f"\nCreated demuxer list: {list_path}")
     
-    out_path = f"combined_{episode}.mp4"
+    out_path = args.out_file if args.out_file else f"combined_{episode}.mp4"
     print(f"Concatenating into {out_path} at constant 30 fps and 48 kHz stereo AAC audio...")
     
     cmd = [

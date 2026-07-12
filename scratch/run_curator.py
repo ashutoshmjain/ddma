@@ -691,6 +691,57 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         except:
                             pass
 
+        elif parsed_url.path == '/combine-project-video':
+            project_id = params.get('id', [None])[0]
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                
+                project_dir = os.path.join("projects", project_id)
+                plan_path = os.path.join(project_dir, "plan.json")
+                if not os.path.exists(plan_path):
+                    raise Exception("plan.json not found.")
+                
+                # Extract number from project_id (e.g. "episode_244" -> "244")
+                import re
+                ep_num_match = re.search(r'\d+', project_id)
+                if not ep_num_match:
+                    raise Exception("Could not resolve episode number from project ID.")
+                ep_num = ep_num_match.group(0)
+                
+                os.makedirs("previews", exist_ok=True)
+                out_file = f"previews/combined_{project_id}.mp4"
+                
+                # Run the combine_clips_demuxer.py script
+                cmd = [
+                    sys.executable,
+                    "scratch/combine_clips_demuxer.py",
+                    "--episode", ep_num,
+                    "--plan-file", plan_path,
+                    "--out-file", out_file
+                ]
+                
+                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                if res.returncode != 0:
+                    raise Exception(f"Combine clips script failed: {res.stderr or res.stdout}")
+                
+                response_data = {
+                    "success": True,
+                    "combined_url": f"/previews/combined_{project_id}.mp4?t={int(time.time() * 1000)}"
+                }
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps(response_data).encode('utf-8'))
+                return
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                self.send_error(500, f"Combine video error: {e}")
+                return
+
         elif parsed_url.path == '/export-project-clip':
             project_id = params.get('id', [None])[0]
             content_length = int(self.headers.get('Content-Length', 0))

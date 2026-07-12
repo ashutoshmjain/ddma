@@ -1172,6 +1172,7 @@
                     <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
                         <button class="btn btn-secondary btn-mini" id="newClipBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;">➕ New Clip</button>
                         <button class="btn btn-primary btn-mini" id="exportBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;">🔗 Combine Audio</button>
+                        <button class="btn btn-primary btn-mini" id="combineVideoBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Combine all locked video clips into a single video episode">🎬 Combine Video</button>
                         <button class="btn btn-secondary btn-mini" id="openExportModalBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Download combined MP3 or view plan JSON">📥 Export Plan</button>
                     </div>
                     <!-- Group 2: History & Preview -->
@@ -1467,6 +1468,7 @@
         const clipListContainer = document.getElementById('clipListContainer');
         const planEmptyState = document.getElementById('planEmptyState');
         const exportBtn = document.getElementById('exportBtn');
+        const combineVideoBtn = document.getElementById('combineVideoBtn');
         const newClipBtn = document.getElementById('newClipBtn');
         
         const clipsToolbar = document.getElementById('clipsToolbar');
@@ -2876,10 +2878,10 @@
                 // Clear any border highlights on cards
                 document.querySelectorAll('.clip-card').forEach(c => c.style.borderColor = '');
                 
-                // Update all card buttons to '▶ Play'
+                // Update all card buttons to '▶ Audio'
                 const cardPlayBtns = document.querySelectorAll('.btn-card-play');
                 cardPlayBtns.forEach(btn => {
-                    btn.innerHTML = '▶ Play';
+                    btn.innerHTML = '▶ Audio';
                 });
                 
                 playBtn.textContent = '▶';
@@ -2956,7 +2958,7 @@
                 audioElement.onended = () => {
                     if (activeLockedSequence === null) return;
                     if (btnEl) {
-                        btnEl.innerHTML = '▶ Play';
+                        btnEl.innerHTML = '▶ Audio';
                     }
                     if (cardEl) cardEl.style.borderColor = '';
                     sequencePlayIdx++;
@@ -2965,7 +2967,7 @@
             })
             .catch(err => {
                 if (btnEl) {
-                    btnEl.innerHTML = '▶ Play';
+                    btnEl.innerHTML = '▶ Audio';
                 }
                 showDebug("FFmpeg sequence step failed: " + err.message);
                 updateStateBar("Ready");
@@ -3003,7 +3005,7 @@
             
             if (activeClipPlayIdx === clipIdx && !audioElement.paused) {
                 audioElement.pause();
-                btnEl.innerHTML = '▶ Play';
+                btnEl.innerHTML = '▶ Audio';
                 playBtn.textContent = '▶';
                 activeClipPlayIdx = null;
                 updateStateBar("Ready");
@@ -3049,7 +3051,7 @@
                     });
                 
                 audioElement.onended = () => {
-                    btnEl.innerHTML = '▶ Play';
+                    btnEl.innerHTML = '▶ Audio';
                     playBtn.textContent = '▶';
                     activeClipPlayIdx = null;
                     audioElement.src = `/project-audio?id=${activeProjectId}`;
@@ -3058,7 +3060,7 @@
             })
             .catch(err => {
                 btnEl.disabled = false;
-                btnEl.innerHTML = '▶ Play';
+                btnEl.innerHTML = '▶ Audio';
                 showDebug("FFmpeg preview compilation failed: " + err.message);
                 updateStateBar("Ready (compilation failed)");
             });
@@ -3406,7 +3408,7 @@
                     });
                 }
                 
-                const lockBtnIcon = isLocked ? '🔒 Locked' : '🔓 Unlock';
+                const lockBtnIcon = isLocked ? '🔒 Locked' : '🔓 Unlocked';
                 const deleteCardBtnHtml = isLocked ? '' : `<button class="icon-btn icon-btn-danger remove-clip" data-index="${index}">🗑</button>`;
                 const adderControlsHtml = isLocked ? '' : `
                     <div class="segment-adder-btns">
@@ -3419,7 +3421,7 @@
                 const matchingVideo = compiledVideos.find(v => v.num === clip.num);
                 let videoBtnHtml = "";
                 if (matchingVideo) {
-                    videoBtnHtml = `<button class="btn btn-mini btn-card-video" id="playVideoBtn_${index}" style="font-weight:600;" title="Play compiled MP4 video">📹 Play Video</button>`;
+                    videoBtnHtml = `<button class="btn btn-mini btn-card-video" id="playVideoBtn_${index}" style="font-weight:600;" title="Play compiled MP4 video">📹 Video</button>`;
                 }
                 
                 card.innerHTML = `
@@ -3449,9 +3451,9 @@
 
                         <div class="clip-card-actions">
                             <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600;">${lockBtnIcon}</button>
-                            <button class="btn-card-play" id="playCardBtn_${index}">▶ Play</button>
+                            <button class="btn-card-play" id="playCardBtn_${index}">▶ Audio</button>
                             ${videoBtnHtml}
-                            <button class="btn-card-export" id="exportCardBtn_${index}">📤 Export Clip</button>
+                            <button class="btn-card-export" id="exportCardBtn_${index}">📤 Export</button>
                             ${deleteCardBtnHtml}
                         </div>
                     </div>
@@ -3735,6 +3737,60 @@
             .finally(() => {
                 exportBtn.innerHTML = '🔗 Combine Audio';
                 exportBtn.disabled = false;
+            });
+        });
+
+        // Combine Video
+        combineVideoBtn.addEventListener('click', function() {
+            const lockedClips = clips.filter(c => c.locked);
+            if (lockedClips.length === 0) {
+                alert("Please lock at least one clip card first. Only locked clips will be combined.");
+                return;
+            }
+            
+            combineVideoBtn.innerHTML = '⏳ Combining...';
+            combineVideoBtn.disabled = true;
+            updateStateBar("Compiling and combining locked video clips (this may take a minute)...");
+            
+            // Call the combine-project-video endpoint
+            fetch(`/combine-project-video?id=${activeProjectId}`, {
+                method: 'POST'
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Server compilation failed.");
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Pause any active audio playing
+                    audioElement.pause();
+                    playBtn.textContent = '▶';
+                    
+                    // Stop any active locked sequences
+                    if (activeLockedSequence !== null) {
+                        stopLockedSequence();
+                    }
+                    
+                    // Setup and show video modal with the combined video
+                    previewVideoPlayer.src = data.combined_url;
+                    videoModalTitle.textContent = `COMBINED VIDEO - ${activeProjectId.toUpperCase()}`;
+                    videoModalSubtitle.textContent = `previews/combined_${activeProjectId}.mp4`;
+                    downloadVideoBtn.href = data.combined_url;
+                    videoModalOverlay.classList.add('active');
+                    previewVideoPlayer.play();
+                    
+                    updateStateBar(`Playing combined video preview (${lockedClips.length} clips locked)`);
+                } else {
+                    throw new Error("Invalid response.");
+                }
+            })
+            .catch(err => {
+                alert("Error combining video: " + err.message);
+                updateStateBar("Ready");
+            })
+            .finally(() => {
+                combineVideoBtn.innerHTML = '🎬 Combine Video';
+                combineVideoBtn.disabled = false;
             });
         });
 
