@@ -71,6 +71,8 @@ def main():
         info_data = {
             "id": args.project,
             "name": args.project.replace("_", " ").title(),
+            "audio_filename": audio_file_in_project,
+            "status": "ready",
             "created_at": datetime.now().isoformat()
         }
         with open(info_path, "w", encoding="utf-8") as f:

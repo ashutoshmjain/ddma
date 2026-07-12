@@ -1,24 +1,24 @@
 [
     {
         "num": 1,
-        "title": "Einstein's Magnet-Conductor Paradox",
+        "title": "The Intellectual Demolition",
         "bridge_text": [
             "Why is merely proposing a correct scientific theory never enough to change the world?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 2430.36,
-                "end": 2499.84,
-                "duration": 69.48,
-                "text": "(Speech Segment)"
+                "start": 0.0,
+                "end": 36.52,
+                "duration": 36.52,
+                "text": "Imagine you've spent 40 years of your life building your career, building your professional reputation, and really your entire fundamental worldview on a single universally accepted scientific truth. You're respected, you're well-funded, you feel secure. Exactly, you're secure. Now imagine a 25 year old upstart comes along, and they don't just like find a new data point that's slightly challenges your work. That would just be normal science. Right, instead they mathematically prove that your entire life's work, the very foundation of your reality, is a logical joke. A total structural absurdity. Yeah, a contradiction."
             },
             {
                 "type": "music",
                 "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
-                "crossfade": 5,
-                "volume": 1
+                "crossfade": 3.0,
+                "volume": 1.0
             },
             {
                 "type": "audio",
@@ -31,14 +31,43 @@
                 "type": "music",
                 "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
                 "duration": 4.5,
-                "crossfade": 0.3
+                "crossfade": 0.3,
+                "volume": 1.0
             }
         ],
-        "locked": true
+        "locked": true,
+        "volume": 1.0,
+        "crossfade": 0.5
     },
     {
         "num": 2,
-        "title": "Tied Stones",
+        "title": "Welcome to the Crisis",
+        "bridge_text": [
+            "How do we break our own models of reality to discover new truths?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 48.18,
+                "end": 98.0,
+                "duration": 49.82,
+                "text": "So today's deep dive explores a fundamentally counterintuitive truth about human knowledge. We are examining a fascinating research paper titled Scientific Paradigm Shift Strategies, alongside some internal documentation from the deep dive platform. It's a heavy topic. It is. The goal of this deep dive is to deconstruct the romanticized, almost fairy tale mythology of the lone genius scientist. We are going to explore why merely proposing a correct theory is never, ever enough. It never is. True scientific revolution requires the systematic, deliberate, and often devastating rhetorical destruction of the existing paradigm. You get to clear the lot before you can build the house."
+            },
+            {
+                "type": "music",
+                "music_file": "deepDive-strong.mp3",
+                "duration": 13.0,
+                "crossfade": 0.3,
+                "volume": 1.0
+            }
+        ],
+        "locked": true,
+        "volume": 1.0,
+        "crossfade": 0.5
+    },
+    {
+        "num": 3,
+        "title": "Galileo's Logic Trap",
         "bridge_text": [
             "What happens to a scientist who dares to ask a question outside the accepted rules?"
         ],
@@ -48,70 +77,51 @@
                 "start": 1135.52,
                 "end": 1291.48,
                 "duration": 155.96,
-                "text": "up.   Galileo's  ultimate  weapon  was  a  theoretical  attack  factor.  It  was  a  thought  experiment  presented  in  his  1638  masterwork,  discourses  and  mathematical  demonstrations  relating  to  two  new  sciences.  And  he  didn't  write  it  as  a  dry  academic  paper.  He  wrote  it  as  a  dialogue,  right?  Yes,  he  used  the  Platonic  dialogue  format  to  trap  the  Aristotelian  worldview  in  its  own  internal  logic.  He  created  characters  to  argue  the  points,  allowing  the  reader  to  walk  into  the  trap  themselves.  Let's  walk  the  listener  through  this  specific  logic  trap  because  reading  through  the  research,  this  is  an  absolute  masterpiece  of  rhetorical  destruction.  It's  brilliant.  Galileo  creates  a  character  named  Salviati  who  represents  his  own  views  and  a  character  named  Cenclicio  who  represents  the  entrenched  Aristotelian  consensus.  Salviati  challenges  Cenclicio  based  on  Aristotle's  own  rules.  He  says,  let's  take  a  heavy  stone  and  let's  assign  its  natural  falling  speed  a  value  of  eight.  Okay.  And  let's  take  a  lighter  stone,  which  naturally  falls  slower,  so  let's  assign  it  speed  of  four.  Aristotle  dictates  that  the  heavy  stone  must  fall  faster.  Cenclicio  agrees.  So  the  premise  is  perfectly  established  according  to  the  dominant  paradigm.  Now  Galileo  springs  the  trap.  Salviati  proposes  a  physical  modification,  tying  the  heavy  stone  and  the  light  stone  together  with  a  piece  of  string  and  dropping  this  new  contraption  simultaneously.  Okay.  So  they're  tied  together.  What  happens  next?  Galileo  derives  two  completely  contradictory  logical  deductions  based  entirely  on  Aristotle's  own  unbreakable  rules.  First  is  the  retardation  argument.  When  you  drop  them,  the  lighter  stone  must  have  fallen  slower  at  speed  four.  The  heavier  stone  must  have  fallen  faster  at  speed  eight.  Therefore,  as  they  fall,  the  slower  light  stone  will  lag  behind.  It  will  create  drag  on  the  heavier  stone.  It  will  pull  the  string  taught.  That  makes  intuitive  sense.  Right.  The  combined  system  should  therefore  be  retarded  or  slowed  down  by  the  slower  object,  meaning  the  tied  together  stones  will  fall  at  a  speed  intermediate  between  the  two.  They  will  fall  at  a  speed  somewhere  between  four  and  eight.  Let's  call  it  six.  That  is  entirely  logically  sound  based  on  the  Aristotelian  premise  of  drag,  but  then  Galileo  presents  the  second  deduction.  The  additive  weight  argument.  Oh,  this  is  the  killer  part.  It  is.  He  reminds  simplicity  of  that  the  two  stones  are  tied  together.  They  now  create  a  new  singular  composite  physical  system.  And  this  new  combined  system  is  physically  measurably  heavier  than  the  original  heavy  stone  alone.  Right.  And  according  to  Aristotle's  absolute,  inviolable  baseline  rule,  heavier  bodies  fall  faster.  Exactly."
+                "text": "Galileo's ultimate weapon was a theoretical attack factor. It was a thought experiment presented in his 1638 masterwork, discourses and mathematical demonstrations relating to two new sciences. And he didn't write it as a dry academic paper. He wrote it as a dialogue, right? Yes, he used the Platonic dialogue format to trap the Aristotelian worldview in its own internal logic. He created characters to argue the points, allowing the reader to walk into the trap themselves. Let's walk the listener through this specific logic trap because reading through the research, this is an absolute masterpiece of rhetorical destruction. It's brilliant. Galileo creates a character named Salviati who represents his own views and a character named Cenclicio who represents the entrenched Aristotelian consensus. Salviati challenges Cenclicio based on Aristotle's own rules. He says, let's take a heavy stone and let's assign its natural falling speed a value of eight. Okay. And let's take a lighter stone, which naturally falls slower, so let's assign it speed of four. Aristotle dictates that the heavy stone must fall faster. Cenclicio agrees. So the premise is perfectly established according to the dominant paradigm. Now Galileo springs the trap. Salviati proposes a physical modification, tying the heavy stone and the light stone together with a piece of string and dropping this new contraption simultaneously. Okay. So they're tied together. What happens next? Galileo derives two completely contradictory logical deductions based entirely on Aristotle's own unbreakable rules. First is the retardation argument. When you drop them, the lighter stone must have fallen slower at speed four. The heavier stone must have fallen faster at speed eight. Therefore, as they fall, the slower light stone will lag behind. It will create drag on the heavier stone. It will pull the string taught. That makes intuitive sense. Right. The combined system should therefore be retarded or slowed down by the slower object, meaning the tied together stones will fall at a speed intermediate between the two. They will fall at a speed somewhere between four and eight. Let's call it six. That is entirely logically sound based on the Aristotelian premise of drag, but then Galileo presents the second deduction. The additive weight argument. Oh, this is the killer part. It is. He reminds simplicity of that the two stones are tied together. They now create a new singular composite physical system. And this new combined system is physically measurably heavier than the original heavy stone alone. Right. And according to Aristotle's absolute, inviolable baseline rule, heavier bodies fall faster. Exactly."
             },
             {
                 "type": "music",
-                "music_file": "deepDive-strong.mp3",
-                "duration": 13,
+                "music_file": "deepDive-soft-ok.mp3",
+                "duration": 4.5,
                 "crossfade": 0.3,
-                "volume": 1
+                "volume": 0.85
             }
         ],
-        "locked": true
+        "locked": true,
+        "volume": 1.0,
+        "crossfade": 0.5
     },
     {
-        "num": 3,
-        "title": "The Demolition Myth",
+        "num": 4,
+        "title": "Laudan's Problems",
         "bridge_text": [
             "Why is a logical contradiction far more deadly to a theory than bad experimental data?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 0,
-                "end": 113.84,
-                "duration": 113.84,
-                "text": "(Speech Segment)"
+                "start": 300.82,
+                "end": 462.14,
+                "duration": 161.32,
+                "text": "Laudin argues that scientific progress is measured by what he calls problem solving effectiveness. But he makes a critical division. He divides the problems of theory faces into two entirely distinct categories, empirical problems and conceptual problems. Okay, let's make sure we have a solid grip on this distinction because it seems to be the engine for everything that follows in this deep dive. It really is the absolute core of the dynamic. Empirical problems are just data points that need explaining. Let's say you are observing a planet and its orbit is a fraction of a degree off from what your current mathematical model predicts. That is an empirical problem. The data doesn't perfectly match the model. And according to Laudin, empirical problems aren't actually that dangerous to an established theory, right? Exactly. Because of that intellectual duct tape we talked about, if you have an empirical problem, you can usually just add a minor mathematical tweak to your theory to fix it. Just fudge the numbers a bit. Basically, you add a new variable, you invent a minor sub-roll and the paradigm survives. But conceptual problems are entirely different beasts. How so? Conceptual problems are internal logical inconsistencies. They are theoretical asymmetries. There are moments where a theory fundamentally contradicts its own starting premises or this is key, directly contradicts another equal accepted foundational theory in a different branch of physics. So an empirical problem is my math didn't quite predict this data. Right. But a conceptual problem is my math fundamentally contradicts the laws of geometry. Or my theory requires an object to be in two places at once. Yes, exactly. And what's fascinating here is that resulting in a conceptual conflict is a far more powerful driver of theory choice than merely accumulating empirical data. Really? So the data isn't king. Not in a revolution. Ground breaking. Revolutionary scientists don't win by debating data collection techniques. They win by exposing the conceptual problems of their rivals. They go for the structural weak points. Exactly. They demonstrate that the dominant theory is mathematically, structurally, or logically incoherent. Once a theory is shown to be philosophically absurd or mathematically self-contradictory, no amount of past empirical success can save it."
             },
             {
                 "type": "music",
-                "music_file": "Cruise (Sting) - John Deley and the 41 Players.mp3",
+                "music_file": "Danzon De Pasion (Sting) - Jimmy Fontanez_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
-                "volume": 1
+                "volume": 0.75
             }
         ],
-        "locked": true
-    },
-    {
-        "num": 4,
-        "title": "Ad-hoc Hypothesis",
-        "bridge_text": [
-            "Does science progress through logical persuasion, or must the old guard die out first?"
-        ],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 137.84,
-                "end": 278.14,
-                "duration": 140.3,
-                "text": "OK,  let's  unpack  this.  The  central  thesis  of  the  research  we  are  looking  at  today  argues  that  scientists  don't  win  by  presenting  better  data.  No,  they  don't.  They  win  by  engineering  an  intellectual  crisis.  They  act  as  relentless,  diagnosticians  of  failure  before  they  even,  you  know,  attempt  to  be  architects  of  coherence.  Which  runs  completely  counter  to  the  stories  we  tell  children  about  how  science  operates.  Right.  The  sanitized  version.  Yeah,  we  teach  this  very  sanitized  version  of  the  scientific  method.  A  scientist  makes  a  neutral  observation,  forms  a  hypothesis,  runs  a  clean  experiment.  And  then  the  whole  scientific  community  looks  at  the  data,  applauds,  and  instantly  adopts  the  new  truth.   But  if  we  look  at  the  epistemological  framework,  specifically  the  landmark  work  of  the  philosopher  Thomas  Kuhn,  we  see  a  reality  that  is  far  more  entrenched  and,  well,  far  more  human.  Because  humans  don't  like  being  wrong.  We  really  don't.  Kuhn  introduced  the  concept  of  the  dominant  paradigm  and  normal  science.  Normal  science  is  what  happens  99 %  of  the  time  in  the  real  world.   Define  normal  science  for  us.  It  means  the  scientific  community  has  a  shared  agreed  upon  model  of  reality.  Their  daily  work  is  not  trying  to  overthrow  that  model.  Their  daily  work  is  just  solving  minor,  highly  specific  puzzles  within  the  boundaries  of  that  existing  model.  Right.  And  the  research  points  out  that  a  paradigm  is  incredibly  rigid.  It  dictates  not  just  what  the  answer  should  look  like,  but  what  questions  you  were  even  allowed  to  ask  in  the  first  place.  Precisely.  If  you  ask  a  question  outside  the  paradigm,  you  aren't  considered  a  visionary.  You  were  considered  a  crank.  So  what  happens  when  anomalies  inevitably  arise?  Like  what  happens  when  a  researcher  runs  an  experiment  that  yields  a  result  that  the  dominant  paradigm  absolutely  cannot  explain?  According  to  the  idealized  version  of  science,  the  community  should  immediately  throw  away  the  paradigm  and  start  over.  But  in  reality.  In  reality,  that  would  require  thousands  of  scientists  destroying  their  own  careers,  returning  their  grant  funding  and  dismantling  their  entire  professional  worldview.  You  and  nature  just  doesn't  allow  for  that.  To  what  I  do.  Instead,  the  community  ignores  the  anomaly.  They  marginalized  the  research  who  found  it  or  more  commonly  they  construct  ad  hoc  hypotheses.  Ad  hoc  hypotheses.  Basically,  intellectual  duct  tape.  Exactly.  Intellectual  duct  tape."
-            },
-            {
-                "type": "music",
-                "music_file": "Cruise (Sting) - John Deley and the 41 Players.mp3",
-                "duration": 5,
-                "crossfade": 0.3
-            }
-        ],
-        "locked": true
+        "locked": true,
+        "volume": 1.0,
+        "crossfade": 0.5
     },
     {
         "num": 5,
-        "title": "Laudan's Problems",
+        "title": "The Demolition Myth",
         "bridge_text": [
-            "How did Copernicus overthrow 1,400 years of astronomy without better data or a telescope?"
+            "Does science progress through logical persuasion, or must the old guard die out first?"
         ],
         "segments": [
             {
@@ -119,326 +129,32 @@
                 "start": 36.52,
                 "end": 48.18,
                 "duration": 11.66,
-                "text": "So today we aren't talking about how science is built. We are talking about how it is violently destroyed. Indeed, we are examining the precise calculated architecture of intellectual demolition.",
-                "crossfade": 0
+                "text": "So today we aren't talking about how science is built. We are talking about how it is violently destroyed. Indeed, we are examining the precise calculated architecture of intellectual demolition."
             },
             {
                 "type": "music",
-                "music_file": "Danzon De Pasion (Sting) - Jimmy Fontanez_Media Right Productions.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
-                "crossfade": 2.5,
-                "volume": 0.75
+                "crossfade": 2.0,
+                "volume": 1.0
             },
             {
                 "type": "audio",
-                "start": 300.82,
-                "end": 462.14,
-                "duration": 161.32,
-                "text": "Isn't  science  ultimately  purely  objective?  Doesn't  the  data  eventually  just  speak  for  itself?  If  you  gather  enough  empirical  evidence  over  years  and  years,  won't  the  old  guard  eventually  just  have  to  concede  to  reality?  Not  according  to  the  historical  record,  no.  And  not  according  to  the  philosopher  Larry  Laudin,  who  provides  a  really  powerful  framework  for  understanding  this  in  the  paper  we're  reviewing.  Okay.  What's  his  framework?  Laudin  argues  that  scientific  progress  is  measured  by  what  he  calls  problem  solving  effectiveness.  But  he  makes  a  critical  division.  He  divides  the  problems  of  theory  faces  into  two  entirely  distinct  categories,  empirical  problems  and  conceptual  problems.  Okay,  let's  make  sure  we  have  a  solid  grip  on  this  distinction  because  it  seems  to  be  the  engine  for  everything  that  follows  in  this  deep  dive.  It  really  is  the  absolute  core  of  the  dynamic.   Empirical  problems  are  just  data  points  that  need  explaining.  Let's  say  you  are  observing  a  planet  and  its  orbit  is  a  fraction  of  a  degree  off  from  what  your  current  mathematical  model  predicts.  That  is  an  empirical  problem.  The  data  doesn't  perfectly  match  the  model.  And  according  to  Laudin,  empirical  problems  aren't  actually  that  dangerous  to  an  established  theory,  right?  Exactly.  Because  of  that  intellectual  duct  tape  we  talked  about,  if  you  have  an  empirical  problem,  you  can  usually  just  add  a  minor  mathematical  tweak  to  your  theory  to  fix  it.  Just  fudge  the  numbers  a  bit.  Basically,  you  add  a  new  variable,  you  invent  a  minor  sub -roll  and  the  paradigm  survives.  But  conceptual  problems  are  entirely  different  beasts.  How  so?  Conceptual  problems  are  internal  logical  inconsistencies.  They  are  theoretical  asymmetries.  There  are  moments  where  a  theory  fundamentally  contradicts  its  own  starting  premises  or  this  is  key,  directly  contradicts  another  equal  accepted  foundational  theory  in  a  different  branch  of  physics.  So  an  empirical  problem  is  my  math  didn't  quite  predict  this  data.  Right.  But  a  conceptual  problem  is  my  math  fundamentally  contradicts  the  laws  of  geometry.  Or  my  theory  requires  an  object  to  be  in  two  places  at  once.  Yes,  exactly.  And  what's  fascinating  here  is  that  resulting  in  a  conceptual  conflict  is  a  far  more  powerful  driver  of  theory  choice  than  merely  accumulating  empirical  data.  Really?  So  the  data  isn't  king.  Not  in  a  revolution.  Ground  breaking.  Revolutionary  scientists  don't  win  by  debating  data  collection  techniques.  They  win  by  exposing  the  conceptual  problems  of  their  rivals.  They  go  for  the  structural  weak  points.  Exactly.  They  demonstrate  that  the  dominant  theory  is  mathematically,  structurally,  or  logically  incoherent.  Once  a  theory  is  shown  to  be  philosophically  absurd  or  mathematically  self -contradictory,  no  amount  of  past  empirical  success  can  save  it."
+                "start": 120.0,
+                "end": 240.0,
+                "duration": 120.0,
+                "text": "The history of science is not, as we are awesome thought, this gentle, cumulative gathering of facts. Like adding bricks to a wall. Exactly. It's not that at all. Yeah. It is a series of violent conceptual ruptures. OK, let's unpack this. The central thesis of the research we are looking at today argues that scientists don't win by presenting better data. No, they don't. They win by engineering an intellectual crisis. They act as relentless, diagnosticians of failure before they even, you know, attempt to be architects of coherence. Which runs completely counter to the stories we tell children about how science operates. Right. The sanitized version. Yeah, we teach this very sanitized version of the scientific method. A scientist makes a neutral observation, forms a hypothesis, runs a clean experiment. And then the whole scientific community looks at the data, applauds, and instantly adopts the new truth."
+            },
+            {
+                "type": "music",
+                "music_file": "Cruise (Sting) - John Deley and the 41 Players.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1.0
             }
         ],
-        "locked": true
-    },
-    {
-        "num": 6,
-        "title": "Planck's Principle",
-        "bridge_text": [
-            "What was the secret geometric cheat code that kept the ancient earth-centered universe alive?"
-        ],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 506.28,
-                "end": 601.52,
-                "duration": 95.24000000000001,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Day of Recon (Sting) - Max Surla_Media Right Productions.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 7,
-        "title": "The Copernican Myth",
-        "bridge_text": [
-            "Why did the early scientific pioneers have to destroy the idea of cosmic whirlpools?"
-        ],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 615.2,
-                "end": 739.26,
-                "duration": 124.05999999999995,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Demilitarized Zone (Sting) - Ethan Meixsell.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 8,
-        "title": "Ptolemy's Equant Cheat",
-        "bridge_text": [
-            "How did 18th-century chemists explain a substance that supposedly had negative weight?"
-        ],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 790.54,
-                "end": 923.94,
-                "duration": 133.4000000000001,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Dewey, Cheedham, and Howe (Sting) - John Deley and the 41 Players.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 9,
-        "title": "Cartesian Vortices",
-        "bridge_text": [
-            "How did the simple balance scale spark a revolution that laid the foundation of modern chemistry?"
-        ],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 1369.52,
-                "end": 1496.78,
-                "duration": 127.25999999999999,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Dizzy (Sting) - Max Surla_Media Right Productions.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 10,
-        "title": "The Phlogiston Anomaly",
-        "bridge_text": [
-            "Why did Darwin focus on the imperfections and cruelties of nature to prove evolution?"
-        ],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 1640.56,
-                "end": 1736.54,
-                "duration": 95.98000000000002,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Double Helix (Sting) - Ethan Meixsell.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 11,
-        "title": "The Analytical Balance",
-        "bridge_text": [
-            "Why would a bat's wing, a whale's flipper, and a human hand share the exact same bone structure?"
-        ],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 1753.34,
-                "end": 1864.32,
-                "duration": 110.98000000000002,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Dub Hub (Sting) - Jimmy Fontanez_Media Right Productions.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 12,
-        "title": "The Special Creation Doctrine",
-        "bridge_text": [
-            "How did a mathematical correction in a capacitor lead to discovering the nature of light?"
-        ],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 1920.22,
-                "end": 2013.6,
-                "duration": 93.37999999999988,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Flow (Sting) - MK2.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 13,
-        "title": "Darwin's Homology Proofs",
-        "bridge_text": [
-            "Why did classical physics predict that any warm object should release a lethal dose of UV light?"
-        ],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 2028.72,
-                "end": 2113,
-                "duration": 84.27999999999997,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 14,
-        "title": "The Displacement Current",
-        "bridge_text": [
-            "Could the boundaries of what we can physically observe contain the entire code of the universe?"
-        ],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 2278.18,
-                "end": 2406.06,
-                "duration": 127.88000000000011,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Leavin (Sting) - MK2.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 15,
-        "title": "The Photoelectric Paradox",
-        "bridge_text": [
-            "How does the expansion of empty space challenge our basic understanding of time and gravity?"
-        ],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 2620.8,
-                "end": 2749.14,
-                "duration": 128.3399999999997,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Left U Into (Sting) - Otis McDonald.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 16,
-        "title": "Observer Patch Holography",
-        "bridge_text": [
-            "Why must a physical law break down at the edge of a black hole to preserve cosmic consistency?"
-        ],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 2890.92,
-                "end": 3004.14,
-                "duration": 113.2199999999998,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Livin' Up (Sting) - Otis McDonald.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 17,
-        "title": "OPH: Quantum, Time and de Sitter",
-        "bridge_text": [],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 3144.46,
-                "end": 3274.32,
-                "duration": 129.86000000000013,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Mess Call - USAF Heritage of America Band .mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 18,
-        "title": "OPH: Black Holes, Dark Matter, and Laws",
-        "bridge_text": [],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 3464.18,
-                "end": 3593.12,
-                "duration": 128.94000000000005,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Official National Anthem (Sting) - Jingle Punks.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 19,
-        "title": "Tearing Down the Scaffold",
-        "bridge_text": [],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 3676.32,
-                "end": 3799.54,
-                "duration": 123.2199999999998,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "none",
-                "duration": 1,
-                "crossfade": 0.3
-            }
-        ]
+        "locked": true,
+        "volume": 1.0,
+        "crossfade": 0.0
     }
 ]
