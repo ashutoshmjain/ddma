@@ -1,6 +1,10 @@
 {
-    "theme": "light",
+    "theme": "cyberpunk",
     "export_format": "video",
     "resolution": "740x740",
-    "bg_color": "black"
+    "bg_color": "black",
+    "mosaic_api_key": "",
+    "mosaic_agent_id": "",
+    "mosaic_mogr_node_id": "",
+    "mosaic_captions_node_id": ""
 }

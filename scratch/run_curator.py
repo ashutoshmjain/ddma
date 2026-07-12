@@ -9,9 +9,205 @@ import re
 import json
 import shutil
 import subprocess
+import requests
 from urllib.parse import urlparse, parse_qs
 
 PORT = 8000
+
+# Global tracker for background Mosaic runs
+# Keys: (project_id, clip_num), Values: {"status": ..., "progress": ..., "error": ..., "run_id": ...}
+mosaic_runs = {}
+
+# Background thread helper for executing the Mosaic API pipeline (upload, run, poll, download)
+def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content):
+    job_key = (project_id, int(clip_num))
+    mosaic_runs[job_key] = {"status": "starting", "progress": 0, "error": None, "run_id": None}
+    
+    try:
+        api_key = settings.get("mosaic_api_key")
+        agent_id = settings.get("mosaic_agent_id")
+        mogr_node_id = settings.get("mosaic_mogr_node_id")
+        captions_node_id = settings.get("mosaic_captions_node_id")
+        
+        if not api_key or not agent_id:
+            raise Exception("Mosaic API Key and Agent ID must be configured in System Settings first.")
+        
+        # 1. Locate local file
+        ep_num_match = re.search(r'\d+', project_id)
+        if not ep_num_match:
+            raise Exception(f"Could not resolve episode number from project ID '{project_id}'")
+        ep_num = ep_num_match.group(0)
+        
+        file_path = os.path.join("clips", f"{ep_num}-{clip_num}.mp4")
+        if not os.path.exists(file_path):
+            raise Exception(f"Draft video file '{file_path}' not found. Please click 'Video' to generate a draft first.")
+        
+        # Step 2: Upload S3
+        mosaic_runs[job_key]["status"] = "requesting upload URL"
+        mosaic_runs[job_key]["progress"] = 10
+        print(f"[{project_id}][Clip {clip_num}] Requesting upload URL from Mosaic...")
+        
+        headers = {"Authorization": f"Bearer {api_key}"}
+        base_url = "https://api.mosaic.so"
+        
+        # Get upload details
+        res = requests.post(f"{base_url}/uploads/video/get_upload_url", headers=headers)
+        if res.status_code != 200:
+            raise Exception(f"Mosaic get_upload_url failed: {res.text}")
+        
+        upload_data = res.json()
+        upload_url = upload_data.get("upload_url")
+        upload_fields = upload_data.get("upload_fields", {})
+        video_id = upload_data.get("video_id")
+        
+        if not upload_url or not video_id:
+            raise Exception("Failed to retrieve upload parameters from Mosaic.")
+        
+        # Post file to S3
+        mosaic_runs[job_key]["status"] = "uploading media"
+        mosaic_runs[job_key]["progress"] = 30
+        print(f"[{project_id}][Clip {clip_num}] Uploading {file_path} to Mosaic S3 storage...")
+        
+        with open(file_path, "rb") as f:
+            files = {
+                "file": (os.path.basename(file_path), f, "video/mp4")
+            }
+            res_s3 = requests.post(upload_url, data=upload_fields, files=files)
+            
+        if res_s3.status_code not in (200, 201, 204):
+            raise Exception(f"S3 upload failed: Status code {res_s3.status_code}, response: {res_s3.text}")
+        
+        # Finalize upload
+        mosaic_runs[job_key]["status"] = "finalizing upload"
+        mosaic_runs[job_key]["progress"] = 50
+        print(f"[{project_id}][Clip {clip_num}] Finalizing upload on Mosaic...")
+        
+        res_finalize = requests.post(
+            f"{base_url}/uploads/video/finalize_upload",
+            headers=headers,
+            json={"video_id": video_id}
+        )
+        if res_finalize.status_code != 200:
+            raise Exception(f"Mosaic finalize_upload failed: {res_finalize.text}")
+        
+        # Step 3: Trigger Agent Run
+        mosaic_runs[job_key]["status"] = "triggering run"
+        mosaic_runs[job_key]["progress"] = 60
+        print(f"[{project_id}][Clip {clip_num}] Triggering Mosaic agent run...")
+        
+        update_params = {}
+        if mogr_node_id:
+            update_params[mogr_node_id] = {
+                "prompt": prompt_content,
+                "model_tier": "pro",
+                "only_generate_full_screen_graphics": False
+            }
+        if captions_node_id:
+            update_params[captions_node_id] = {
+                "font1": "Montserrat",
+                "font2": "Besley",
+                "animation_style": "cinematic",
+                "caption_position": "bottom"
+            }
+        
+        run_body = {
+            "video_ids": [video_id]
+        }
+        if update_params:
+            run_body["update_params"] = update_params
+        
+        res_run = requests.post(
+            f"{base_url}/agent/{agent_id}/run",
+            headers=headers,
+            json=run_body
+        )
+        if res_run.status_code != 200:
+            raise Exception(f"Failed to start agent run on Mosaic: {res_run.text}")
+        
+        run_id = res_run.json().get("run_id")
+        if not run_id:
+            raise Exception("Failed to retrieve run ID from Mosaic execution response.")
+            
+        mosaic_runs[job_key]["run_id"] = run_id
+        mosaic_runs[job_key]["status"] = "running"
+        mosaic_runs[job_key]["progress"] = 70
+        print(f"[{project_id}][Clip {clip_num}] Mosaic agent run {run_id} is now processing...")
+        
+        # Step 4: Polling
+        max_attempts = 120  # 10 minutes max
+        attempt = 0
+        final_video_url = None
+        
+        while attempt < max_attempts:
+            time.sleep(5)
+            attempt += 1
+            
+            res_status = requests.get(f"{base_url}/agent_run/{run_id}", headers=headers)
+            if res_status.status_code != 200:
+                print(f"Error checking Mosaic run status: {res_status.text}")
+                continue
+            
+            run_info = res_status.json()
+            status = run_info.get("status")
+            
+            print(f"[{project_id}][Clip {clip_num}] Polling Mosaic run status: {status}")
+            
+            if status == "completed":
+                outputs = run_info.get("outputs", [])
+                if outputs and outputs[0].get("video_url"):
+                    final_video_url = outputs[0]["video_url"]
+                    break
+                else:
+                    raise Exception("Mosaic run completed but no output video URL was returned.")
+            elif status in ("failed", "cancelled"):
+                err_msg = run_info.get("status_message") or "Unknown run error."
+                node_errors = run_info.get("errors", [])
+                if node_errors:
+                    err_msg += f" Detailed errors: {json.dumps(node_errors)}"
+                raise Exception(f"Mosaic run ended with status '{status}': {err_msg}")
+            
+            # Update progress incrementally while running
+            mosaic_runs[job_key]["progress"] = min(70 + int(attempt * 0.2), 90)
+        
+        if not final_video_url:
+            raise Exception("Mosaic run timed out after 10 minutes.")
+            
+        # Step 5: Download finished video
+        mosaic_runs[job_key]["status"] = "downloading output"
+        mosaic_runs[job_key]["progress"] = 95
+        print(f"[{project_id}][Clip {clip_num}] Downloading rendered video from Mosaic S3...")
+        
+        # Backup original
+        backup_path = os.path.join("clips", f"{ep_num}-{clip_num}-original.mp4")
+        try:
+            if os.path.exists(file_path):
+                if os.path.exists(backup_path):
+                    os.remove(backup_path)
+                os.rename(file_path, backup_path)
+        except Exception as backup_err:
+            print(f"Failed to backup original file: {backup_err}")
+        
+        res_download = requests.get(final_video_url, stream=True)
+        if res_download.status_code != 200:
+            if os.path.exists(backup_path):
+                os.rename(backup_path, file_path)
+            raise Exception(f"Failed to download rendered video from Mosaic: {res_download.status_code}")
+            
+        with open(file_path, "wb") as f_out:
+            for chunk in res_download.iter_content(chunk_size=8192):
+                f_out.write(chunk)
+                
+        mosaic_runs[job_key]["status"] = "completed"
+        mosaic_runs[job_key]["progress"] = 100
+        print(f"[{project_id}][Clip {clip_num}] Mosaic export completed successfully! Overwrote {file_path}")
+        
+    except Exception as ex:
+        import traceback
+        tb_str = traceback.format_exc()
+        print(f"Error in run_mosaic_pipeline for clip {clip_num}: {ex}\n{tb_str}")
+        mosaic_runs[job_key]["status"] = "failed"
+        mosaic_runs[job_key]["error"] = str(ex)
+        mosaic_runs[job_key]["progress"] = 0
 
 # Background thread helper for running Whisper transcription
 def run_transcribe(project_id, audio_path, out_json_path, info_path):
@@ -945,6 +1141,87 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_error(500, str(e))
                 return
 
+        elif parsed_url.path == '/export-to-mosaic':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            try:
+                if not project_id or not clip_num:
+                    raise Exception("Missing project id or clip number.")
+                
+                # Check settings
+                settings_path = "settings.json"
+                settings = {}
+                if os.path.exists(settings_path):
+                    with open(settings_path, "r", encoding="utf-8") as f:
+                        settings = json.load(f)
+                
+                api_key = settings.get("mosaic_api_key")
+                agent_id = settings.get("mosaic_agent_id")
+                if not api_key or not agent_id:
+                    raise Exception("Mosaic API Key and Agent ID must be configured in System Settings first.")
+                
+                # Retrieve clip text and title from project plan.json
+                project_dir = os.path.join("projects", project_id)
+                plan_path = os.path.join(project_dir, "plan.json")
+                if not os.path.exists(plan_path):
+                    raise Exception(f"plan.json for project {project_id} not found.")
+                
+                with open(plan_path, "r", encoding="utf-8") as f:
+                    plan = json.load(f)
+                
+                # Find matching clip
+                target_clip = None
+                for clip in plan:
+                    if int(clip.get("num", -1)) == int(clip_num):
+                        target_clip = clip
+                        break
+                
+                if not target_clip:
+                    raise Exception(f"Clip number {clip_num} not found in plan.")
+                
+                # Concatenate segment texts to get complete script
+                speech_texts = []
+                for seg in target_clip.get("segments", []):
+                    if seg.get("type") == "audio" and seg.get("text"):
+                        speech_texts.append(seg.get("text").strip())
+                transcript = " ".join(speech_texts)
+                
+                # Generate custom prompt
+                title = target_clip.get("title", f"Clip {clip_num}")
+                prompt_content = f"Vox-style infographic overlays that highlight statistics during key sentences, clean modern typography, minimal color palette, educational tone, explaining: {title}"
+                if transcript:
+                    prompt_content += f". Context: {transcript}"
+                
+                if len(prompt_content) > 900:
+                    prompt_content = prompt_content[:897] + "..."
+                
+                # Check if already running
+                job_key = (project_id, int(clip_num))
+                if job_key in mosaic_runs and mosaic_runs[job_key].get("status") in ("starting", "requesting upload URL", "uploading media", "finalizing upload", "triggering run", "running", "downloading output"):
+                    raise Exception("An export is already in progress for this clip.")
+                
+                # Kick off thread
+                t = threading.Thread(
+                    target=run_mosaic_pipeline,
+                    args=(project_id, int(clip_num), settings, prompt_content),
+                    daemon=True
+                )
+                t.start()
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "message": "Mosaic run started."}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                return
+
         self.send_error(404, "Not Found")
 
     def do_GET(self):
@@ -1102,6 +1379,30 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
             except Exception as e:
                 self.send_error(500, str(e))
+                return
+                
+        elif parsed_url.path == '/get-mosaic-status':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            try:
+                if not project_id or not clip_num:
+                    raise Exception("Missing project id or clip number.")
+                
+                job_key = (project_id, int(clip_num))
+                job = mosaic_runs.get(job_key, {"status": "idle", "progress": 0, "error": None})
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps(job).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
                 return
                 
         elif parsed_url.path == '/project-audio':

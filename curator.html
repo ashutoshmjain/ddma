@@ -1341,6 +1341,26 @@
                         <!-- Dynamically populated global music files -->
                     </div>
                 </div>
+                
+                <div style="border-top: 1px solid var(--border-color); padding-top: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label style="font-size: 0.75rem; font-weight: 600; margin-bottom: 0.2rem; display: block;">Mosaic Integration:</label>
+                    <div class="music-editor-field" style="width: 100%;">
+                        <label style="font-size: 0.65rem; color: var(--text-muted);">API Key (mk_...):</label>
+                        <input type="password" id="settingsMosaicApiKey" placeholder="Enter Mosaic API Key" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                    </div>
+                    <div class="music-editor-field" style="width: 100%;">
+                        <label style="font-size: 0.65rem; color: var(--text-muted);">Agent ID (UUID):</label>
+                        <input type="text" id="settingsMosaicAgentId" placeholder="Enter Agent ID" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                    </div>
+                    <div class="music-editor-field" style="width: 100%;">
+                        <label style="font-size: 0.65rem; color: var(--text-muted);">Motion Graphics Node ID:</label>
+                        <input type="text" id="settingsMosaicMogrNodeId" placeholder="Enter MOGR Node ID (Optional)" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                    </div>
+                    <div class="music-editor-field" style="width: 100%;">
+                        <label style="font-size: 0.65rem; color: var(--text-muted);">Cinematic Captions Node ID:</label>
+                        <input type="text" id="settingsMosaicCaptionsNodeId" placeholder="Enter Captions Node ID (Optional)" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                    </div>
+                </div>
             </div>
             <div class="export-actions" style="margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
                 <button class="btn btn-primary" id="saveSettingsBtn" style="width: 100%; justify-content: center;">Save & Close</button>
@@ -1602,7 +1622,11 @@
                 theme: theme,
                 export_format: format,
                 resolution: res,
-                bg_color: bg
+                bg_color: bg,
+                mosaic_api_key: localStorage.getItem('ddma-mosaic-api-key') || '',
+                mosaic_agent_id: localStorage.getItem('ddma-mosaic-agent-id') || '',
+                mosaic_mogr_node_id: localStorage.getItem('ddma-mosaic-mogr-node-id') || '',
+                mosaic_captions_node_id: localStorage.getItem('ddma-mosaic-captions-node-id') || ''
             };
             
             fetch('/save-settings', {
@@ -1683,6 +1707,11 @@
                         if (data.export_format) localStorage.setItem('ddma-export-format', data.export_format);
                         if (data.resolution) localStorage.setItem('ddma-video-res', data.resolution);
                         if (data.bg_color) localStorage.setItem('ddma-video-bg', data.bg_color);
+                        
+                        localStorage.setItem('ddma-mosaic-api-key', data.mosaic_api_key || '');
+                        localStorage.setItem('ddma-mosaic-agent-id', data.mosaic_agent_id || '');
+                        localStorage.setItem('ddma-mosaic-mogr-node-id', data.mosaic_mogr_node_id || '');
+                        localStorage.setItem('ddma-mosaic-captions-node-id', data.mosaic_captions_node_id || '');
                     })
                     .catch(err => {
                         console.warn("Could not load settings from server, using local fallback:", err);
@@ -1732,6 +1761,11 @@
                     customColorField.style.display = 'none';
                 }
 
+                document.getElementById('settingsMosaicApiKey').value = localStorage.getItem('ddma-mosaic-api-key') || '';
+                document.getElementById('settingsMosaicAgentId').value = localStorage.getItem('ddma-mosaic-agent-id') || '';
+                document.getElementById('settingsMosaicMogrNodeId').value = localStorage.getItem('ddma-mosaic-mogr-node-id') || '';
+                document.getElementById('settingsMosaicCaptionsNodeId').value = localStorage.getItem('ddma-mosaic-captions-node-id') || '';
+
                 renderSettingsMusicList();
                 settingsModalOverlay.classList.add('active');
             });
@@ -1774,6 +1808,11 @@
                     }
                 }
                 localStorage.setItem('ddma-video-bg', bg);
+                
+                localStorage.setItem('ddma-mosaic-api-key', document.getElementById('settingsMosaicApiKey').value.trim());
+                localStorage.setItem('ddma-mosaic-agent-id', document.getElementById('settingsMosaicAgentId').value.trim());
+                localStorage.setItem('ddma-mosaic-mogr-node-id', document.getElementById('settingsMosaicMogrNodeId').value.trim());
+                localStorage.setItem('ddma-mosaic-captions-node-id', document.getElementById('settingsMosaicCaptionsNodeId').value.trim());
                 
                 saveSettingsToServer();
 
@@ -3155,6 +3194,113 @@
             });
         }
 
+        function exportToMosaic(clipIdx, btnEl) {
+            const clip = clips[clipIdx];
+            if (!activeProjectId) return;
+            
+            const apiKey = localStorage.getItem('ddma-mosaic-api-key') || '';
+            const agentId = localStorage.getItem('ddma-mosaic-agent-id') || '';
+            
+            if (!apiKey || !agentId) {
+                alert("Mosaic API Key and Agent ID must be configured in System Settings first.");
+                settingsBtn.click();
+                return;
+            }
+            
+            btnEl.disabled = true;
+            btnEl.innerHTML = '⏳ Starting...';
+            btnEl.style.backgroundImage = 'linear-gradient(135deg, #4b5563 0%, #374151 100%)';
+            updateStateBar(`Mosaic: Initializing run for Clip ${clip.num}...`);
+            
+            fetch(`/export-to-mosaic?id=${activeProjectId}&num=${clip.num}`, {
+                method: 'POST'
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(data => {
+                        throw new Error(data.error || "Failed to start Mosaic pipeline.");
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                pollMosaicStatus(clipIdx, btnEl);
+            })
+            .catch(err => {
+                btnEl.disabled = false;
+                btnEl.innerHTML = '🌌 Mosaic';
+                btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
+                showDebug("Mosaic failed: " + err.message, true);
+                updateStateBar("Ready (Mosaic start failed)");
+            });
+        }
+        
+        function pollMosaicStatus(clipIdx, btnEl) {
+            const clip = clips[clipIdx];
+            const intervalId = setInterval(() => {
+                fetch(`/get-mosaic-status?id=${activeProjectId}&num=${clip.num}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Status check failed");
+                    return res.json();
+                })
+                .then(job => {
+                    const status = job.status || 'idle';
+                    const progress = job.progress || 0;
+                    const error = job.error;
+                    
+                    if (status === 'idle') {
+                        clearInterval(intervalId);
+                        btnEl.disabled = false;
+                        btnEl.innerHTML = '🌌 Mosaic';
+                        btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
+                        updateStateBar("Ready");
+                    }
+                    else if (status === 'completed') {
+                        clearInterval(intervalId);
+                        btnEl.disabled = false;
+                        btnEl.innerHTML = '🌌 Mosaic';
+                        btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
+                        updateStateBar("Ready");
+                        
+                        try {
+                            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                            const osc = audioCtx.createOscillator();
+                            const gain = audioCtx.createGain();
+                            osc.connect(gain);
+                            gain.connect(audioCtx.destination);
+                            osc.type = 'sine';
+                            osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                            osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+                            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                            osc.start();
+                            osc.stop(audioCtx.currentTime + 0.4);
+                        } catch (soundErr) {
+                            console.warn("Could not play notification sound:", soundErr);
+                        }
+                        
+                        showDebug(`Mosaic export completed! Overwrote clips/${episodeNum}-${clip.num}.mp4`, false);
+                        fetchCompiledVideos();
+                    }
+                    else if (status === 'failed') {
+                        clearInterval(intervalId);
+                        btnEl.disabled = false;
+                        btnEl.innerHTML = '🌌 Mosaic';
+                        btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
+                        updateStateBar("Ready (Mosaic failed)");
+                        showDebug("Mosaic failed: " + (error || "Unknown error during processing"), true);
+                    }
+                    else {
+                        btnEl.innerHTML = `⏳ ${progress}%`;
+                        updateStateBar(`Mosaic [Clip ${clip.num}] - ${status} (${progress}%)`);
+                    }
+                })
+                .catch(err => {
+                    console.warn("Polling error:", err);
+                });
+            }, 2000);
+        }
+
         // Update Undo button state in UI
         function updateUndoButtonState() {
             if (undoStack.length > 0) {
@@ -3461,8 +3607,10 @@
                 
                 const matchingVideo = compiledVideos.find(v => v.num === clip.num);
                 let videoBtnHtml = "";
+                let mosaicBtnHtml = "";
                 if (matchingVideo) {
                     videoBtnHtml = `<button class="btn btn-mini btn-card-video" id="playVideoBtn_${index}" style="font-weight:600;" title="Play compiled MP4 video">📹 Video</button>`;
+                    mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic" id="mosaicCardBtn_${index}" style="background-image: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; font-weight: 600; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" title="Send draft video to Mosaic API for graphics and captions">🌌 Mosaic</button>`;
                 }
                 
                 card.innerHTML = `
@@ -3494,6 +3642,7 @@
                             <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600;">${lockBtnIcon}</button>
                             <button class="btn-card-play" id="playCardBtn_${index}">▶ Audio</button>
                             ${videoBtnHtml}
+                            ${mosaicBtnHtml}
                             <button class="btn-card-export" id="exportCardBtn_${index}">📤 Export</button>
                             ${deleteCardBtnHtml}
                         </div>
@@ -3552,6 +3701,11 @@
                         downloadVideoBtn.href = matchingVideo.url;
                         videoModalOverlay.classList.add('active');
                         previewVideoPlayer.play();
+                    });
+                    
+                    card.querySelector(`#mosaicCardBtn_${index}`).addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        exportToMosaic(index, this);
                     });
                 }
 
