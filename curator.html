@@ -1406,7 +1406,12 @@
     </div>
 
     <!-- Visual Debug Status Banner for Local Auditing -->
-    <div id="debugStatus" style="position: fixed; bottom: 65px; right: 20px; background: rgba(22, 24, 34, 0.95); color: #f87171; font-family: monospace; padding: 10px 16px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.8rem; z-index: 9999; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(8px);"></div>
+    <div id="debugStatus" style="position: fixed; bottom: 65px; right: 20px; background: rgba(22, 24, 34, 0.95); border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.8rem; z-index: 9999; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(8px); max-width: 450px; min-width: 250px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px;">
+            <span id="debugStatusText" style="font-family: monospace; word-break: break-all; flex-grow: 1;"></span>
+            <button id="copyDebugBtn" class="btn btn-secondary btn-mini" style="padding: 2px 6px; font-size: 0.7rem; white-space: nowrap; font-weight: 600; cursor: pointer; align-self: center;">📋 Copy</button>
+        </div>
+    </div>
 
     <audio id="audioElement"></audio>
 
@@ -1552,11 +1557,33 @@
         const videoBgCustomInput = document.getElementById('videoBgCustomInput');
 
         function showDebug(msg, isError = true) {
-            debugStatus.textContent = msg;
-            debugStatus.style.color = isError ? '#f87171' : '#34d399';
+            const statusText = document.getElementById('debugStatusText');
+            const copyBtn = document.getElementById('copyDebugBtn');
+            
+            if (statusText) {
+                statusText.textContent = msg;
+                statusText.style.color = isError ? '#f87171' : '#34d399';
+            }
+            
             debugStatus.style.borderColor = isError ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.4)';
             debugStatus.style.display = 'block';
-            setTimeout(() => { debugStatus.style.display = 'none'; }, 8000);
+            
+            if (copyBtn) {
+                copyBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(msg).then(() => {
+                        const originalText = copyBtn.textContent;
+                        copyBtn.textContent = "✅ Copied!";
+                        setTimeout(() => { copyBtn.textContent = originalText; }, 1500);
+                    }).catch(err => {
+                        console.error("Failed to copy debug msg: ", err);
+                    });
+                };
+            }
+            
+            // Keep on screen for 15 seconds to allow ample time to copy
+            if (window.debugHideTimeout) clearTimeout(window.debugHideTimeout);
+            window.debugHideTimeout = setTimeout(() => { debugStatus.style.display = 'none'; }, 15000);
         }
 
         function updateStateBar(stateMsg) {
