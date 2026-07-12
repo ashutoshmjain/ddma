@@ -915,26 +915,36 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 has_snapshot = os.path.exists(os.path.join(project_dir, "plan_snapshot.json"))
                 
                 # Scan for compiled videos matching this project (e.g. episode 244 -> "244-*.mp4")
-                compiled_videos = []
+                compiled_videos_dict = {}
                 import re
                 ep_num_match = re.search(r'\d+', project_id)
                 if ep_num_match:
                     ep_num = ep_num_match.group(0)
                     clips_dir = "clips"
                     if os.path.exists(clips_dir):
-                        for file in os.listdir(clips_dir):
+                        # Sort files so that named files (e.g., 244-1-Title.mp4) are processed first,
+                        # and direct standard files (e.g., 244-1.mp4) are processed last, overwriting/prioritizing them.
+                        for file in sorted(os.listdir(clips_dir)):
                             if file.startswith(f"{ep_num}-") and file.endswith(".mp4") and not file.endswith("-original.mp4"):
                                 try:
                                     parts = file.split("-")
                                     if len(parts) >= 2:
-                                        clip_num = int(parts[1])
-                                        compiled_videos.append({
-                                            "num": clip_num,
-                                            "filename": file,
-                                            "url": f"/clips/{file}"
-                                        })
+                                        clip_num_str = parts[1]
+                                        if "." in clip_num_str:
+                                            clip_num_str = clip_num_str.split(".")[0]
+                                        clip_num = int(clip_num_str)
+                                        
+                                        # Prioritize the direct standard filename (e.g. 244-2.mp4) over named templates (e.g. 244-2-Title.mp4)
+                                        is_direct = (len(parts) == 2 or (len(parts) == 3 and parts[2] == ""))
+                                        if is_direct or clip_num not in compiled_videos_dict:
+                                            compiled_videos_dict[clip_num] = {
+                                                "num": clip_num,
+                                                "filename": file,
+                                                "url": f"/clips/{file}"
+                                            }
                                 except Exception:
                                     pass
+                compiled_videos = list(compiled_videos_dict.values())
                 
                 payload = {
                     "info": info,
