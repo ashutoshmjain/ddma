@@ -161,29 +161,66 @@ def main():
         bridge_text = clip_data.get("bridge_text", "") if clip_data else ""
         gap_path = f"temp_gap_{num}.mp4"
         
+        # Probe preceding clip duration to locate the end audio
+        clip_dur = None
+        try:
+            dur_cmd = [
+                "ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", path
+            ]
+            dur_res = subprocess.run(dur_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if dur_res.returncode == 0:
+                clip_dur = float(dur_res.stdout.strip())
+        except Exception as e:
+            print(f"Warning: Could not probe clip duration for {path}: {e}")
+
         if bridge_text:
             print(f"Generating 3.0s bridge card for Clip {num} -> Clip {num+1}...")
             temp_img = f"temp_bridge_{num}.png"
             render_bridge_image(bridge_text, v_width, v_height, font_path, temp_img)
             
-            # Convert image to 3.0-second silent MP4
-            cmd_gap = [
-                "ffmpeg", "-y",
-                "-loop", "1",
-                "-r", fps_str,
-                "-i", temp_img,
-                "-f", "lavfi", "-i", f"anullsrc=cl=stereo:r={ar_str}",
-                "-map", "0:v",
-                "-map", "1:a",
-                "-c:v", "libx264",
-                "-pix_fmt", "yuv420p",
-                "-video_track_timescale", tb_den,
-                "-c:a", "aac",
-                "-ar", ar_str,
-                "-ac", "2",
-                "-t", "3.0",
-                gap_path
-            ]
+            # Map the preceding clip's final 3.0s of audio and apply fade-out
+            if clip_dur is not None and clip_dur >= 3.0:
+                start_time = clip_dur - 3.0
+                print(f"  Extracting preceding audio starting at {start_time:.2f}s and fading out...")
+                cmd_gap = [
+                    "ffmpeg", "-y",
+                    "-loop", "1",
+                    "-r", fps_str,
+                    "-i", temp_img,
+                    "-ss", f"{start_time:.6f}",
+                    "-i", path,
+                    "-map", "0:v",
+                    "-map", "1:a",
+                    "-c:v", "libx264",
+                    "-pix_fmt", "yuv420p",
+                    "-video_track_timescale", tb_den,
+                    "-af", "afade=t=out:st=0:d=3.0",
+                    "-c:a", "aac",
+                    "-ar", ar_str,
+                    "-ac", "2",
+                    "-t", "3.0",
+                    gap_path
+                ]
+            else:
+                # Fallback to silent gap if preceding clip is too short or dur lookup failed
+                cmd_gap = [
+                    "ffmpeg", "-y",
+                    "-loop", "1",
+                    "-r", fps_str,
+                    "-i", temp_img,
+                    "-f", "lavfi", "-i", f"anullsrc=cl=stereo:r={ar_str}",
+                    "-map", "0:v",
+                    "-map", "1:a",
+                    "-c:v", "libx264",
+                    "-pix_fmt", "yuv420p",
+                    "-video_track_timescale", tb_den,
+                    "-c:a", "aac",
+                    "-ar", ar_str,
+                    "-ac", "2",
+                    "-t", "3.0",
+                    gap_path
+                ]
+                
             res_gap = subprocess.run(cmd_gap, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if os.path.exists(temp_img):
                 os.remove(temp_img)
@@ -192,23 +229,44 @@ def main():
                 print(f"Error generating bridge video: {res_gap.stderr}", file=sys.stderr)
                 sys.exit(1)
         else:
-            # Fallback to a simple 1.0s silent gap if no bridge text is provided
-            print(f"Generating 1.0s silent gap for Clip {num} -> Clip {num+1} (no bridge text)...")
-            cmd_gap = [
-                "ffmpeg", "-y",
-                "-f", "lavfi", "-i", f"color=c=black:s={v_width}x{v_height}:r={fps_str}",
-                "-f", "lavfi", "-i", f"anullsrc=cl=stereo:r={ar_str}",
-                "-map", "0:v",
-                "-map", "1:a",
-                "-c:v", "libx264",
-                "-pix_fmt", "yuv420p",
-                "-video_track_timescale", tb_den,
-                "-c:a", "aac",
-                "-ar", ar_str,
-                "-ac", "2",
-                "-t", "1.0",
-                gap_path
-            ]
+            # Fallback to a simple 1.0s gap if no bridge text is provided
+            print(f"Generating 1.0s gap for Clip {num} -> Clip {num+1} (no bridge text)...")
+            if clip_dur is not None and clip_dur >= 1.0:
+                start_time = clip_dur - 1.0
+                cmd_gap = [
+                    "ffmpeg", "-y",
+                    "-f", "lavfi", "-i", f"color=c=black:s={v_width}x{v_height}:r={fps_str}",
+                    "-ss", f"{start_time:.6f}",
+                    "-i", path,
+                    "-map", "0:v",
+                    "-map", "1:a",
+                    "-c:v", "libx264",
+                    "-pix_fmt", "yuv420p",
+                    "-video_track_timescale", tb_den,
+                    "-af", "afade=t=out:st=0:d=1.0",
+                    "-c:a", "aac",
+                    "-ar", ar_str,
+                    "-ac", "2",
+                    "-t", "1.0",
+                    gap_path
+                ]
+            else:
+                cmd_gap = [
+                    "ffmpeg", "-y",
+                    "-f", "lavfi", "-i", f"color=c=black:s={v_width}x{v_height}:r={fps_str}",
+                    "-f", "lavfi", "-i", f"anullsrc=cl=stereo:r={ar_str}",
+                    "-map", "0:v",
+                    "-map", "1:a",
+                    "-c:v", "libx264",
+                    "-pix_fmt", "yuv420p",
+                    "-video_track_timescale", tb_den,
+                    "-c:a", "aac",
+                    "-ar", ar_str,
+                    "-ac", "2",
+                    "-t", "1.0",
+                    gap_path
+                ]
+                
             res_gap = subprocess.run(cmd_gap, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if res_gap.returncode != 0:
                 print(f"Error generating default gap: {res_gap.stderr}", file=sys.stderr)
