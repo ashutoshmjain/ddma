@@ -16,6 +16,7 @@ DeepDive Media Automator (DDMA) is a python CLI toolkit and an interactive web c
   * **Audio (`.mp3`)**: Compiles mixed segments directly.
   * **Muxed Video (`.mp4`)**: Automatically overlays the mixed audio with a solid color canvas at custom resolutions (`740x740` square, `1080x1920` vertical reels, `1920x1080` landscape) and colors (presets or custom hex code).
 * **Automatic Title Card Intro Prepending**: Pillow generates clean title cards with multi-line wrapping and joins them to the master clip using FFmpeg timescale normalization.
+* **🌌 Mosaic API Ingest Integration**: Export your local draft video compiles directly to the Mosaic API to generate premium AI infographic motion graphics overlays and cinematic captions. Fully automated ingest upload, run triggering with contextually-generated transcripts prompts, and download-overwrite cascades.
 
 ---
 
@@ -64,3 +65,7 @@ This automatically opens the dashboard in your default browser:
 3. Click **`Create & Transcribe`**. OpenAI Whisper will transcribe the file in the background (showing a live status spinner).
 4. Once ready, select the project to load the word-level transcript and begin curating clips!
 5. Add audio/music segments, customize volumes, preview compiles, and click **`Export Clip`** to output production-ready audio/video assets!
+6. **🌌 Optional (Send to Mosaic)**: 
+   * Open the **System Settings** modal (footer shortcut) and configure your **Mosaic API Key** (`mk_...`) and **Agent ID**.
+   * Lock the card to compile its video draft. Once the **`📹 Video`** preview button appears, you'll see a gradient **`🌌 Mosaic`** button.
+   * Click **`🌌 Mosaic`** to upload the clip to Mosaic, run the agent with auto-generated contextual prompts (highlighting key stats/metaphors), track live status updates, and automatically replace your local draft preview file with the finalized infographic render!
