@@ -33,7 +33,7 @@ When developing or executing segmentation tasks, the agent must enforce the foll
     *   **Part 2+ Layout**: Shows `EPISODE [X] • PART [Y]` on the top line and the clip title on the bottom line.
     *   **Multi-Line Layout**: Titles are automatically split into two balanced lines to stay inside the Instagram safe zone. If the title contains explicit `\n` characters in `plan.json`, the script splits the text exactly at those positions (e.g., to force a 3-line format).
 7.  **Audio/Video Stream Duration Equalization**: Before compiling or combining video clips, always equalize their video and audio stream durations (by trimming the longer stream to match the duration of the shorter stream). This prevents cumulative audio/video desync or drift during concatenation and satisfies publishing requirements (e.g. Spotify's error regarding mismatched video/audio track lengths).
-8.  **Narrative Bridge Cards**: Insert 3.0-second silent black transition slides containing one single bold curiosity-provoking question between clips to preserve storyboard continuity. The texts are editable under the `"bridge_text"` key in `plan.json`. Text is rendered in **Segoe UI Bold (`34px`)** in white, fully centered on a black background. Audio is kept 100% digitally silent (`anullsrc` at 48kHz stereo) to prevent pops.
+8.  **Narrative Bridge Cards**: Insert 5.0-second black transition slides containing one single bold curiosity-provoking question between clips to preserve storyboard continuity. The texts are editable under the `"bridge_text"` key in `plan.json`. Text is rendered in **Segoe UI Bold (`34px`)** in white, fully centered on a black background. The slide audio is the final 5.0s of audio extracted from the preceding clip, linearly faded out, to prevent abrupt silences.
 9.  **Timebase Normalization**: When crossfading intro/outro streams using FFmpeg's `xfade`, apply `[in]settb=1/90000[out]` to both input streams to prevent timescale mismatch errors (specifically when combining Remotion-exported assets with custom PIL renders).
 
 ---
@@ -82,6 +82,6 @@ Below is the step-by-step operational workflow for processing podcast episodes, 
 
 ### 8. Combine Episode
 *   **Command**: `powershell -Command "python scratch/combine_clips_demuxer.py"`
-*   **Action**: Reads `plan.json` to generate 3.0-second silent, text-based question cards for transitions, and concatenates all clips and bridge cards in order. Applies re-encoding to force constant 30 fps and uniform 48 kHz stereo audio.
+*   **Action**: Reads `plan.json` to generate 5.0-second text-based question cards (overlaying a fade-out of the preceding music) for transitions, and concatenates all clips and bridge cards in order. Applies re-encoding to force constant 30 fps and uniform 48 kHz stereo audio.
 *   **Output**: Generates a unified `combined_<episode>.mp4` video with perfectly aligned audio and video streams.
 

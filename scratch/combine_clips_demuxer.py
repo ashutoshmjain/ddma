@@ -174,13 +174,13 @@ def main():
             print(f"Warning: Could not probe clip duration for {path}: {e}")
 
         if bridge_text:
-            print(f"Generating 3.0s bridge card for Clip {num} -> Clip {num+1}...")
+            print(f"Generating 5.0s bridge card for Clip {num} -> Clip {num+1}...")
             temp_img = f"temp_bridge_{num}.png"
             render_bridge_image(bridge_text, v_width, v_height, font_path, temp_img)
             
-            # Map the preceding clip's final 3.0s of audio and apply fade-out
-            if clip_dur is not None and clip_dur >= 3.0:
-                start_time = clip_dur - 3.0
+            # Map the preceding clip's final 5.0s of audio and apply fade-out
+            if clip_dur is not None and clip_dur >= 5.0:
+                start_time = clip_dur - 5.0
                 print(f"  Extracting preceding audio starting at {start_time:.2f}s and fading out...")
                 cmd_gap = [
                     "ffmpeg", "-y",
@@ -194,11 +194,11 @@ def main():
                     "-c:v", "libx264",
                     "-pix_fmt", "yuv420p",
                     "-video_track_timescale", tb_den,
-                    "-af", "afade=t=out:st=0:d=3.0",
+                    "-af", "afade=t=out:st=0:d=5.0",
                     "-c:a", "aac",
                     "-ar", ar_str,
                     "-ac", "2",
-                    "-t", "3.0",
+                    "-t", "5.0",
                     gap_path
                 ]
             else:
@@ -217,7 +217,7 @@ def main():
                     "-c:a", "aac",
                     "-ar", ar_str,
                     "-ac", "2",
-                    "-t", "3.0",
+                    "-t", "5.0",
                     gap_path
                 ]
                 
