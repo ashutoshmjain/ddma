@@ -1992,7 +1992,7 @@
                     updateStateBar("Project renamed successfully!");
                     if (activeProjectId === projectId) {
                         activeProjectId = data.new_id || projectId;
-                        loadActiveProject(activeProjectId);
+                        selectProject(activeProjectId);
                     } else {
                         loadProjectsList();
                     }
