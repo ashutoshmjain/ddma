@@ -100,7 +100,10 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content):
             update_params[mogr_node_id] = {
                 "prompt": prompt_content,
                 "model_tier": "pro",
-                "only_generate_full_screen_graphics": False
+                "style_video_url": "https://www.youtube.com/shorts/xybpfL1GnEQ",
+                "frequency_per_minute": "auto",
+                "reference_links": "",
+                "only_generate_full_screen_graphics": True
             }
         if captions_node_id:
             update_params[captions_node_id] = {
@@ -1186,14 +1189,31 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         speech_texts.append(seg.get("text").strip())
                 transcript = " ".join(speech_texts)
                 
-                # Generate custom prompt
+                # Generate custom prompt with user's baseline guidelines
                 title = target_clip.get("title", f"Clip {clip_num}")
-                prompt_content = f"Vox-style infographic overlays that highlight statistics during key sentences, clean modern typography, minimal color palette, educational tone, explaining: {title}"
-                if transcript:
-                    prompt_content += f". Context: {transcript}"
+                mogr_base_rules = (
+                    "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - around 150 to 180 seconds long)\n\n"
+                    "- Cover the full timeline of the video with Dan Koe–style motion graphics. Entire length of Video must be covered with no blanks\n\n"
+                    "- Plan around 13 to 15 segments of roughly ~ 16 seconds each. Each segment renders a graphic with changing visuals and multiple text reveals.\n\n"
+                    "- Leave ample border on top and same on the bottom for captions that I will add manually later - NO BORDER ON SIDES.\n\n"
+                    "- Assume background video is a blank black glossy screen - so you must keep persistent visuals (animation or text) through out the segments and segments must merge into each other like a relay race.\n\n"
+                    "--------------------------------------------------\n"
+                    "PACING & ANIMATION RULES\n"
+                    "--------------------------------------------------\n"
+                    "- No static holds beyond 6 seconds. Introduce visual changes every 2–4 seconds.\n"
+                    "- Use only basic transforms: opacity, position, scale. Keep animations single-property per element.\n"
+                    "- Prefer step-based reveals over continuous motion. Avoid preset/template animations.\n"
+                    "- All text fields must remain fully editable. Do not flatten or rasterize text layers.\n"
+                    "- No gaps in infographic coverage. No dependency on external assets."
+                )
                 
-                if len(prompt_content) > 900:
-                    prompt_content = prompt_content[:897] + "..."
+                # Append clip context to base guidelines
+                prompt_content = f"{mogr_base_rules}\n\n--------------------------------------------------\nDYNAMIC CLIP CONTEXT\n--------------------------------------------------\n- Animate visuals to explain this Clip Title: {title}"
+                if transcript:
+                    prompt_content += f"\n- Spoken Transcript Text: {transcript}"
+                
+                if len(prompt_content) > 1200:
+                    prompt_content = prompt_content[:1197] + "..."
                 
                 # Check if already running
                 job_key = (project_id, int(clip_num))
