@@ -1106,6 +1106,424 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         except:
                             pass
 
+        elif parsed_url.path == '/get-clip-intro':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            try:
+                if not project_id or not clip_num:
+                    raise Exception("Missing project id or clip number.")
+                clip_num = int(clip_num)
+                
+                project_dir = os.path.join("projects", project_id)
+                plan_path = os.path.join(project_dir, "plan.json")
+                if not os.path.exists(plan_path):
+                    raise Exception("plan.json not found.")
+                
+                with open(plan_path, "r", encoding="utf-8") as f:
+                    plan_data = json.load(f)
+                
+                clip = None
+                for c in plan_data:
+                    if c["num"] == clip_num:
+                        clip = c
+                        break
+                if not clip:
+                    raise Exception(f"Clip {clip_num} not found in plan.")
+                
+                title = clip.get("title", "")
+                
+                import re
+                ep_num_match = re.search(r'\d+', project_id)
+                ep_num = ep_num_match.group(0) if ep_num_match else project_id
+                
+                title_text = title if title else f"Part {clip_num}"
+                
+                from PIL import Image, ImageDraw, ImageFont
+                import glob
+                search_pattern = os.path.join("clips", f"*-{clip_num}.mp4")
+                master_files = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
+                
+                extracted = False
+                temp_extracted = f"temp_preview_frame_{project_id}_{clip_num}.png"
+                if master_files:
+                    master_path = master_files[0]
+                    base_name = os.path.splitext(os.path.basename(master_path))[0]
+                    backup_path = os.path.join("clips", f"{base_name}-original.mp4")
+                    target_video = backup_path if os.path.exists(backup_path) else master_path
+                    
+                    cmd_extract = [
+                        "ffmpeg", "-y",
+                        "-ss", "00:00:01.000",
+                        "-i", target_video,
+                        "-vframes", "1",
+                        temp_extracted
+                    ]
+                    try:
+                        res = subprocess.run(cmd_extract, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        if res.returncode == 0 and os.path.exists(temp_extracted):
+                            extracted = True
+                    except Exception as extract_err:
+                        print(f"Warning: Could not extract preview frame: {extract_err}")
+                
+                if extracted:
+                    img = Image.open(temp_extracted).convert("RGBA")
+                    width, height = img.size
+                else:
+                    width, height = 740, 740
+                    img = Image.new("RGBA", (width, height), (18, 18, 18, 255))
+                
+                overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+                draw = ImageDraw.Draw(overlay)
+                
+                def find_system_fonts():
+                    candidates = [
+                        (r"C:\Windows\Fonts\segoeuib.ttf", r"C:\Windows\Fonts\segoeui.ttf"),
+                        (r"C:\Windows\Fonts\arialbd.ttf", r"C:\Windows\Fonts\arial.ttf"),
+                    ]
+                    for bold, reg in candidates:
+                        if os.path.exists(bold) and os.path.exists(reg):
+                            return bold, reg
+                    return None, None
+                
+                font_bold, font_reg = find_system_fonts()
+                if font_bold and font_reg:
+                    font_title = ImageFont.truetype(font_bold, 40)
+                    font_sub = ImageFont.truetype(font_reg, 24)
+                else:
+                    font_title = ImageFont.load_default()
+                    font_sub = ImageFont.load_default()
+                
+                box_width = int(width * 0.85)
+                box_height = 280
+                x0 = (width - box_width) // 2
+                y0 = height // 2 - 160
+                x1 = x0 + box_width
+                y1 = y0 + box_height
+                draw.rounded_rectangle([(x0, y0), (x1, y1)], radius=15, fill=(18, 18, 18, 200))
+                
+                sub_text = f"EPISODE {ep_num}" if clip_num == 1 else f"EPISODE {ep_num} • PART {clip_num}"
+                if clip_num == 1:
+                    info_path = os.path.join(project_dir, "project_info.json")
+                    ep_title = "Life, Death and the Lysosome"
+                    if os.path.exists(info_path):
+                        with open(info_path, "r", encoding="utf-8") as inf_f:
+                            inf_data = json.load(inf_f)
+                            if inf_data.get("title"):
+                                ep_title = inf_data["title"]
+                    title_text = ep_title
+                
+                bbox_sub = draw.textbbox((0, 0), sub_text, font=font_sub)
+                w_sub = bbox_sub[2] - bbox_sub[0]
+                draw.text(((width - w_sub) // 2, y0 + 35), sub_text, font=font_sub, fill=(150, 150, 150, 255))
+                
+                def split_title(text):
+                    if "\n" in text:
+                        return [line.strip() for line in text.split("\n")]
+                    if " : " in text:
+                        return [p.strip() for p in text.split(" : ", 1)]
+                    words = text.split()
+                    if len(words) <= 1:
+                        return [text]
+                    best_diff = float('inf')
+                    best_idx = 1
+                    for i in range(1, len(words)):
+                        part1 = " ".join(words[:i])
+                        part2 = " ".join(words[i:])
+                        diff = abs(len(part1) - len(part2))
+                        if diff < best_diff:
+                            best_diff = diff
+                            best_idx = i
+                    return [" ".join(words[:best_idx]), " ".join(words[best_idx:])]
+                
+                title_lines = split_title(title_text)
+                
+                line_spacing = 10
+                line_heights = []
+                total_title_h = 0
+                for line in title_lines:
+                    bbox_l = draw.textbbox((0, 0), line, font=font_title)
+                    h_l = bbox_l[3] - bbox_l[1]
+                    line_heights.append(h_l)
+                    total_title_h += h_l
+                total_title_h += line_spacing * (len(title_lines) - 1)
+                
+                box_content_h = y1 - y0 - 120
+                start_y = y0 + 80 + (box_content_h - total_title_h) // 2
+                if start_y < y0 + 80:
+                    start_y = y0 + 80
+                
+                curr_y = start_y
+                for idx, line in enumerate(title_lines):
+                    bbox_line = draw.textbbox((0, 0), line, font=font_title)
+                    w_line = bbox_line[2] - bbox_line[0]
+                    draw.text(((width - w_line) // 2, curr_y), line, font=font_title, fill=(255, 255, 255, 255))
+                    curr_y += line_heights[idx] + line_spacing
+                
+                line_y = y1 - 35
+                line_w = 120
+                draw.line([((width - line_w) // 2, line_y), ((width - line_w) // 2 + line_w, line_y)], fill=(80, 80, 80, 255), width=2)
+                
+                final_img = Image.alpha_composite(img, overlay).convert("RGB")
+                temp_png = f"temp_intro_preview_{project_id}_{clip_num}.png"
+                final_img.save(temp_png)
+                
+                if os.path.exists(temp_extracted):
+                    try:
+                        os.remove(temp_extracted)
+                    except:
+                        pass
+                
+                os.makedirs("previews", exist_ok=True)
+                out_path = f"previews/intro_{project_id}_{clip_num}.mp4"
+                
+                music_file = "title-card-music.mp3"
+                cmd_ffmpeg = [
+                    "ffmpeg", "-y",
+                    "-loop", "1",
+                    "-r", "30",
+                    "-i", temp_png,
+                    "-i", music_file,
+                    "-c:v", "libx264",
+                    "-tune", "stillimage",
+                    "-c:a", "aac",
+                    "-b:a", "192k",
+                    "-ar", "48000",
+                    "-ac", "2",
+                    "-pix_fmt", "yuv420p",
+                    "-t", "2.0",
+                    out_path
+                ]
+                res_ffmpeg = subprocess.run(cmd_ffmpeg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                
+                if os.path.exists(temp_png):
+                    try:
+                        os.remove(temp_png)
+                    except:
+                        pass
+                        
+                if res_ffmpeg.returncode != 0:
+                    raise Exception(f"FFmpeg render failed: {res_ffmpeg.stderr.decode('utf-8')}")
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "success": True,
+                    "preview_url": f"/previews/intro_{project_id}_{clip_num}.mp4?t={int(time.time() * 1000)}"
+                }).encode('utf-8'))
+                return
+                
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
+                return
+
+        elif parsed_url.path == '/get-clip-outro':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            try:
+                if not project_id or not clip_num:
+                    raise Exception("Missing project id or clip number.")
+                clip_num = int(clip_num)
+                
+                project_dir = os.path.join("projects", project_id)
+                plan_path = os.path.join(project_dir, "plan.json")
+                if not os.path.exists(plan_path):
+                    raise Exception("plan.json not found.")
+                
+                with open(plan_path, "r", encoding="utf-8") as f:
+                    plan_data = json.load(f)
+                
+                clip = None
+                for c in plan_data:
+                    if c["num"] == clip_num:
+                        clip = c
+                        break
+                if not clip:
+                    raise Exception(f"Clip {clip_num} not found in plan.")
+                
+                sorted_clips = sorted(plan_data, key=lambda x: x["num"])
+                is_last_clip = (sorted_clips[-1]["num"] == clip_num)
+                
+                if is_last_clip:
+                    self.send_response(400)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        "success": False, 
+                        "error": "This is the last clip of the episode, so it does not have an outro transition card."
+                    }).encode('utf-8'))
+                    return
+                
+                bridge_text_input = clip.get("bridge_text", "")
+                if isinstance(bridge_text_input, list):
+                    bridge_text = " ".join(bridge_text_input)
+                else:
+                    bridge_text = str(bridge_text_input).strip()
+                
+                if not bridge_text:
+                    bridge_text = "Next question is coming up..."
+                
+                import glob
+                search_pattern = os.path.join("clips", f"*-{clip_num}.mp3")
+                audio_files = glob.glob(search_pattern)
+                
+                video_search = os.path.join("clips", f"*-{clip_num}.mp4")
+                video_files = [f for f in glob.glob(video_search) if not f.endswith("-original.mp4")]
+                
+                audio_source = None
+                if audio_files:
+                    audio_source = audio_files[0]
+                elif video_files:
+                    audio_source = video_files[0]
+                
+                if not audio_source:
+                    os.makedirs("previews", exist_ok=True)
+                    temp_compiled_audio = f"previews/temp_compiled_audio_{project_id}_{clip_num}.mp3"
+                    
+                    info_path = os.path.join(project_dir, "project_info.json")
+                    with open(info_path, "r", encoding="utf-8") as inf_f:
+                        info_data = json.load(inf_f)
+                    full_audio_path = os.path.join(project_dir, info_data["audio_filename"])
+                    
+                    self.compile_segments(clip["segments"], temp_compiled_audio, full_audio_path)
+                    audio_source = temp_compiled_audio
+                
+                duration = 5.0
+                try:
+                    dur_cmd = [
+                        "ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", audio_source
+                    ]
+                    dur_res = subprocess.run(dur_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                    if dur_res.returncode == 0:
+                        duration = float(dur_res.stdout.strip())
+                except:
+                    pass
+                
+                start_time = max(0.0, duration - 5.0)
+                
+                from PIL import Image, ImageDraw, ImageFont
+                v_width, v_height = 740, 740
+                
+                img_outro = Image.new("RGB", (v_width, v_height), color=(0, 0, 0))
+                draw_outro = ImageDraw.Draw(img_outro)
+                
+                font_path = "C:\\Windows\\Fonts\\segoeuib.ttf"
+                if os.path.exists(font_path):
+                    font = ImageFont.truetype(font_path, 34)
+                else:
+                    font = ImageFont.load_default()
+                
+                def wrap_text_outro(text, font_obj, max_w):
+                    lines = []
+                    for paragraph in text.split("\n"):
+                        words = paragraph.split()
+                        if not words:
+                            lines.append("")
+                            continue
+                        curr = []
+                        for word in words:
+                            test_line = " ".join(curr + [word])
+                            bbox = draw_outro.textbbox((0, 0), test_line, font=font_obj)
+                            w = bbox[2] - bbox[0]
+                            if w <= max_w:
+                                curr.append(word)
+                            else:
+                                if curr:
+                                    lines.append(" ".join(curr))
+                                curr = [word]
+                        if curr:
+                            lines.append(" ".join(curr))
+                    return lines
+                
+                lines = wrap_text_outro(bridge_text, font, v_width - 160)
+                
+                line_spacing = 18
+                line_heights = []
+                total_h = 0
+                for line in lines:
+                    bbox = draw_outro.textbbox((0, 0), line, font=font)
+                    h = bbox[3] - bbox[1]
+                    line_heights.append(h)
+                    total_h += h
+                total_h += line_spacing * (len(lines) - 1)
+                
+                curr_y = (v_height - total_h) // 2
+                for idx, line in enumerate(lines):
+                    bbox = draw_outro.textbbox((0, 0), line, font=font)
+                    w = bbox[2] - bbox[0]
+                    draw_outro.text(((v_width - w) // 2, curr_y), line, font=font, fill=(255, 255, 255))
+                    curr_y += line_heights[idx] + line_spacing
+                
+                temp_png_outro = f"temp_outro_preview_{project_id}_{clip_num}.png"
+                img_outro.save(temp_png_outro)
+                
+                os.makedirs("previews", exist_ok=True)
+                out_path = f"previews/outro_{project_id}_{clip_num}.mp4"
+                
+                cmd_ffmpeg_outro = [
+                    "ffmpeg", "-y",
+                    "-loop", "1",
+                    "-r", "30",
+                    "-i", temp_png_outro,
+                    "-ss", f"{start_time:.6f}",
+                    "-i", audio_source,
+                    "-map", "0:v",
+                    "-map", "1:a",
+                    "-c:v", "libx264",
+                    "-pix_fmt", "yuv420p",
+                    "-af", "afade=t=out:st=0:d=5.0",
+                    "-c:a", "aac",
+                    "-ar", "48000",
+                    "-ac", "2",
+                    "-t", "5.0",
+                    out_path
+                ]
+                res_ffmpeg = subprocess.run(cmd_ffmpeg_outro, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                
+                if os.path.exists(temp_png_outro):
+                    try:
+                        os.remove(temp_png_outro)
+                    except:
+                        pass
+                
+                temp_audio_gen = f"previews/temp_compiled_audio_{project_id}_{clip_num}.mp3"
+                if os.path.exists(temp_audio_gen):
+                    try:
+                        os.remove(temp_audio_gen)
+                    except:
+                        pass
+                
+                if res_ffmpeg.returncode != 0:
+                    raise Exception(f"FFmpeg render failed: {res_ffmpeg.stderr.decode('utf-8')}")
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "success": True,
+                    "preview_url": f"/previews/outro_{project_id}_{clip_num}.mp4?t={int(time.time() * 1000)}"
+                }).encode('utf-8'))
+                return
+                
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
+                return
+
         elif parsed_url.path == '/combine-project-video':
             project_id = params.get('id', [None])[0]
             try:

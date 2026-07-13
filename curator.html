@@ -863,6 +863,40 @@
             color: white;
         }
 
+        .btn-card-intro {
+            background-color: rgba(6, 182, 212, 0.1);
+            color: #06b6d4;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 6px;
+            padding: 0.35rem 0.7rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-card-intro:hover {
+            background-color: #06b6d4;
+            color: white;
+        }
+
+        .btn-card-outro {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 6px;
+            padding: 0.35rem 0.7rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-card-outro:hover {
+            background-color: #10b981;
+            color: white;
+        }
+
         .btn-card-video {
             background-color: rgba(236, 72, 153, 0.1);
             color: #ec4899;
@@ -3873,7 +3907,23 @@
                 
                 const totalDuration = calculateClipDuration(clip);
                 
-                let segmentsHtml = "";
+                // Prepend Intro Card HTML
+                const introSubtext = (clip.num === 1) ? `EPISODE ${episodeNum}` : `EPISODE ${episodeNum} • PART ${clip.num}`;
+                const introTitleText = (clip.num === 1) ? ((projectInfo && projectInfo.title) ? projectInfo.title : "Life, Death and the Lysosome") : (clip.title ? clip.title : `Part ${clip.num}`);
+                let introCardHtml = `
+                    <div class="segment-row segment-row-intro" style="border-left: 3px solid #06b6d4; padding: 0.4rem 0.6rem; margin-bottom: 0.4rem; background: rgba(6, 182, 212, 0.02); border-radius: 4px; border-top: 1px solid rgba(6, 182, 212, 0.1); border-bottom: 1px solid rgba(6, 182, 212, 0.1); border-right: 1px solid rgba(6, 182, 212, 0.1);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #06b6d4; display: flex; align-items: center; gap: 0.25rem;">🎬 Intro Clip (Title Card)</span>
+                            <span style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">Duration: 2.0s</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; display: flex; flex-direction: column; gap: 0.1rem;">
+                            <div><strong style="color: var(--text-main);">Layout Text:</strong> ${introSubtext}</div>
+                            <div><strong style="color: var(--text-main);">Title Text:</strong> "${introTitleText}"</div>
+                        </div>
+                    </div>
+                `;
+
+                let segmentsHtml = introCardHtml;
                 if (clip.segments.length === 0) {
                     segmentsHtml = `<div style="font-size: 0.8rem; color: var(--text-muted); font-style: italic; padding: 0.4rem 0;">No segments added yet. Select text on right and click "+ Add Audio" below.</div>`;
                 } else {
@@ -3969,6 +4019,38 @@
                         }
                     });
                 }
+
+                // Append Outro Card HTML
+                const isLastClip = (index === clips.length - 1);
+                let outroCardHtml = "";
+                if (isLastClip) {
+                    outroCardHtml = `
+                        <div class="segment-row segment-row-outro" style="border-left: 3px solid #6b7280; padding: 0.4rem 0.6rem; margin-top: 0.4rem; background: rgba(107, 114, 128, 0.02); border-radius: 4px; border-top: 1px solid rgba(107, 114, 128, 0.1); border-bottom: 1px solid rgba(107, 114, 128, 0.1); border-right: 1px solid rgba(107, 114, 128, 0.1); opacity: 0.6;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                <span style="font-size: 0.75rem; font-weight: 700; color: #6b7280; display: flex; align-items: center; gap: 0.25rem;">🎬 Outro Clip (No Bridge)</span>
+                                <span style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">Last Clip</span>
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; font-style: italic;">
+                                No outro transition card needed for the last clip.
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const bridgeTextVal = clip.bridge_text ? (Array.isArray(clip.bridge_text) ? clip.bridge_text.join(" ") : clip.bridge_text) : "";
+                    outroCardHtml = `
+                        <div class="segment-row segment-row-outro" style="border-left: 3px solid #10b981; padding: 0.4rem 0.6rem; margin-top: 0.4rem; background: rgba(16, 185, 129, 0.02); border-radius: 4px; border-top: 1px solid rgba(16, 185, 129, 0.1); border-bottom: 1px solid rgba(16, 185, 129, 0.1); border-right: 1px solid rgba(16, 185, 129, 0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                                <span style="font-size: 0.75rem; font-weight: 700; color: #10b981; display: flex; align-items: center; gap: 0.25rem;">🎬 Outro Clip (Bridge Card)</span>
+                                <span style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">Duration: 5.0s</span>
+                            </div>
+                            <div style="margin-top: 0.3rem;" onclick="event.stopPropagation();">
+                                <label style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 0.15rem; font-weight: 600;">Curiosity Question (editable):</label>
+                                <input type="text" class="outro-bridge-text-input" style="width: 100%; font-size: 0.75rem; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); padding: 0.25rem 0.4rem; border-radius: 4px; outline: none;" placeholder="Enter curiosity-provoking question for the next clip..." value="${bridgeTextVal.replace(/"/g, '&quot;')}" data-index="${index}" ${isLocked ? 'disabled' : ''}>
+                            </div>
+                        </div>
+                    `;
+                }
+                segmentsHtml += outroCardHtml;
                 
                 const lockBtnIcon = isLocked ? '🔒 Locked' : '🔓 Unlocked';
                 const deleteCardBtnHtml = isLocked ? '' : `<button class="icon-btn icon-btn-danger remove-clip" data-index="${index}">🗑</button>`;
@@ -4016,10 +4098,12 @@
                         </div>
 
                         <div class="clip-card-actions">
-                            <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600;">${lockBtnIcon}</button>
+                            <button class="btn btn-secondary btn-mini btn-card-intro" id="introCardBtn_${index}" style="font-weight:600;" title="Preview Intro Clip (Title Card + Music)">🎬 Intro</button>
+                            <button class="btn btn-secondary btn-mini btn-card-outro" id="outroCardBtn_${index}" style="font-weight:600;" title="Preview Outro Clip (Bridge Card Question + Fadeout)">🎬 Outro</button>
                             <button class="btn-card-play" id="playCardBtn_${index}">▶ Audio</button>
                             ${videoBtnHtml}
                             ${mosaicBtnHtml}
+                            <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600;">${lockBtnIcon}</button>
                             ${deleteCardBtnHtml}
                         </div>
                     </div>
@@ -4057,6 +4141,87 @@
 
                 card.querySelector(`#playCardBtn_${index}`).addEventListener('click', function(e) {
                     playFFmpegPreview(index, this, e);
+                });
+
+                card.querySelector(`#introCardBtn_${index}`).addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const btn = this;
+                    btn.innerHTML = '⏳ Rendering...';
+                    btn.disabled = true;
+                    updateStateBar("Rendering 2-second intro title card clip...");
+                    
+                    fetch(`/get-clip-intro?id=${activeProjectId}&num=${clip.num}`, {
+                        method: 'POST'
+                    })
+                    .then(res => {
+                        if (!res.ok) return res.json().then(data => { throw new Error(data.error || "Server error"); });
+                        return res.json();
+                    })
+                    .then(data => {
+                        audioElement.pause();
+                        playBtn.textContent = '▶';
+                        
+                        previewVideoPlayer.src = data.preview_url;
+                        videoModalTitle.textContent = `INTRO PREVIEW - Part ${clip.num}: ${clip.title}`;
+                        videoModalSubtitle.textContent = `previews/intro_${activeProjectId}_${clip.num}.mp4`;
+                        downloadVideoBtn.href = data.preview_url;
+                        videoModalOverlay.classList.add('active');
+                        previewVideoPlayer.play();
+                        
+                        updateStateBar("Playing intro card preview");
+                    })
+                    .catch(err => {
+                        alert("Error rendering intro: " + err.message);
+                        updateStateBar("Ready");
+                    })
+                    .finally(() => {
+                        btn.innerHTML = '🎬 Intro';
+                        btn.disabled = false;
+                    });
+                });
+
+                card.querySelector(`#outroCardBtn_${index}`).addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const btn = this;
+                    btn.innerHTML = '⏳ Rendering...';
+                    btn.disabled = true;
+                    updateStateBar("Rendering 5-second outro bridge card clip...");
+                    
+                    fetch(`/get-clip-outro?id=${activeProjectId}&num=${clip.num}`, {
+                        method: 'POST'
+                    })
+                    .then(res => {
+                        if (!res.ok) return res.json().then(data => { throw new Error(data.error || "Server error"); });
+                        return res.json();
+                    })
+                    .then(data => {
+                        audioElement.pause();
+                        playBtn.textContent = '▶';
+                        
+                        previewVideoPlayer.src = data.preview_url;
+                        videoModalTitle.textContent = `OUTRO PREVIEW (Bridge Card) - Part ${clip.num}`;
+                        videoModalSubtitle.textContent = `previews/outro_${activeProjectId}_${clip.num}.mp4`;
+                        downloadVideoBtn.href = data.preview_url;
+                        videoModalOverlay.classList.add('active');
+                        previewVideoPlayer.play();
+                        
+                        updateStateBar("Playing outro bridge preview");
+                    })
+                    .catch(err => {
+                        alert("Error rendering outro: " + err.message);
+                        updateStateBar("Ready");
+                    })
+                    .finally(() => {
+                        btn.innerHTML = '🎬 Outro';
+                        btn.disabled = false;
+                    });
+                });
+
+                card.querySelector('.outro-bridge-text-input')?.addEventListener('change', function(e) {
+                    const idx = parseInt(e.target.dataset.index);
+                    const val = e.target.value.trim();
+                    clips[idx].bridge_text = val ? [val] : [];
+                    savePlanToServer();
                 });
 
                 if (matchingVideo) {
