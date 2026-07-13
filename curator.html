@@ -3699,7 +3699,7 @@
                 if (data.success) {
                     showDebug(`Clip ${clip.num} successfully remixed!`);
                     updateStateBar(`Clip ${clip.num} successfully remixed.`);
-                    loadProjectDetails(activeProjectId);
+                    selectProject(activeProjectId);
                 } else {
                     throw new Error(data.error || "Unknown remix error.");
                 }
