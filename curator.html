@@ -3706,7 +3706,6 @@
             })
             .catch(err => {
                 console.error("Remix failed:", err);
-                alert("Remix failed: " + err.message);
                 showDebug("Remix failed: " + err.message);
                 updateStateBar("Ready (remix failed)");
                 btnEl.disabled = false;

@@ -772,13 +772,29 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
   "locked": false
 }}
 """
-                # Call Gemini
+                # Call Gemini with fallback chain
                 genai.configure(api_key=api_key)
-                model = genai.GenerativeModel("gemini-1.5-pro")
-                response = model.generate_content(
-                    prompt,
-                    generation_config={"response_mime_type": "application/json"}
-                )
+                model_names = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-flash-latest", "gemini-pro-latest"]
+                response = None
+                last_err = None
+                
+                for model_name in model_names:
+                    try:
+                        print(f"[{project_id}][Clip {clip_num}] Attempting remix with model {model_name}...")
+                        model = genai.GenerativeModel(model_name)
+                        response = model.generate_content(
+                            prompt,
+                            generation_config={"response_mime_type": "application/json"}
+                        )
+                        if response and response.text:
+                            print(f"[{project_id}][Clip {clip_num}] Successful response from model {model_name}!")
+                            break
+                    except Exception as me:
+                        print(f"[{project_id}][Clip {clip_num}] Model {model_name} failed: {me}")
+                        last_err = me
+                
+                if not response or not response.text:
+                    raise last_err or Exception("All Gemini models failed to generate content.")
                 
                 try:
                     recasted_clip = json.loads(response.text)
