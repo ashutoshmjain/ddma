@@ -4116,6 +4116,7 @@
                 
                 // Resolve Status Classes for buttons
                 const statusInfo = clipStatuses[clip.num] || { has_audio: false, video_state: "none" };
+                const matchingVideo = compiledVideos.find(v => v.num === clip.num);
                 
                 // 1. Intro status: green if title is customized, yellow if default/empty
                 const isIntroCustom = clip.title && clip.title.trim() !== "" && !clip.title.match(/^New Clip #\d+$/i);
