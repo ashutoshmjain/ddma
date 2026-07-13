@@ -243,29 +243,42 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         mosaic_runs[job_key]["progress"] = 95
         print(f"[{project_id}][Clip {clip_num}] Downloading rendered video from Mosaic S3...")
         
-        # Backup original
+        # Clean up existing files to prepare for download and compile-clip backup
         backup_path = os.path.join("clips", f"{ep_num}-{clip_num}-original.mp4")
-        try:
-            if os.path.exists(file_path):
-                if os.path.exists(backup_path):
-                    os.remove(backup_path)
-                os.rename(file_path, backup_path)
-        except Exception as backup_err:
-            print(f"Failed to backup original file: {backup_err}")
+        for p in [file_path, backup_path]:
+            if os.path.exists(p):
+                try:
+                    os.remove(p)
+                except Exception as rm_err:
+                    print(f"Warning: Failed to clean up file {p} before download: {rm_err}")
         
         res_download = requests.get(final_video_url, stream=True)
         if res_download.status_code != 200:
-            if os.path.exists(backup_path):
-                os.rename(backup_path, file_path)
             raise Exception(f"Failed to download rendered video from Mosaic: {res_download.status_code}")
             
         with open(file_path, "wb") as f_out:
             for chunk in res_download.iter_content(chunk_size=8192):
                 f_out.write(chunk)
                 
+        # Automatically compile clip locally to add the intro title card card
+        try:
+            mosaic_runs[job_key]["status"] = "compiling intro card"
+            print(f"[{project_id}][Clip {clip_num}] Automatically compiling clip to add intro card...")
+            cmd_compile = [
+                sys.executable, "ddma.py", "compile-clip",
+                "--num", str(clip_num),
+                "--plan-file", os.path.join("projects", project_id, "plan.json")
+            ]
+            comp_res = subprocess.run(cmd_compile, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if comp_res.returncode != 0:
+                raise Exception(f"Auto-compilation failed: {comp_res.stderr.decode('utf-8')}")
+            print(f"[{project_id}][Clip {clip_num}] Auto-compilation completed successfully!")
+        except Exception as comp_err:
+            print(f"[{project_id}][Clip {clip_num}] Warning: Auto-compilation failed: {comp_err}")
+            
         mosaic_runs[job_key]["status"] = "completed"
         mosaic_runs[job_key]["progress"] = 100
-        print(f"[{project_id}][Clip {clip_num}] Mosaic export completed successfully! Overwrote {file_path}")
+        print(f"[{project_id}][Clip {clip_num}] Mosaic export and auto-compilation completed successfully!")
         
     except Exception as ex:
         import traceback
