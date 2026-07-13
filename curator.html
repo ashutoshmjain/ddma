@@ -332,20 +332,6 @@
             background-color: transparent;
         }
 
-        .profile-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-mono);
-        }
-
         .profile-info {
             display: flex;
             flex-direction: column;
@@ -1193,7 +1179,7 @@
         }
         .help-chat-header {
             height: 35px;
-            padding: 0 0.8rem;
+            padding: 0 1.4rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1372,12 +1358,10 @@
                     <span>Settings</span>
                 </div>
                 <div class="sidebar-footer-item profile-item">
-                    <div class="profile-avatar">
-                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color: white; opacity: 0.95;">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                    </div>
+                    <svg class="sidebar-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
                     <div class="profile-info">
                         <span class="profile-name">Ashutosh</span>
                         <span class="profile-role">Creator</span>
