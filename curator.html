@@ -131,6 +131,49 @@
             border-right-color: transparent;
         }
 
+        .collapsed-tab {
+            width: 30px;
+            background-color: var(--panel-bg-darker);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s, width 0.2s;
+            z-index: 10;
+            gap: 0.8rem;
+            padding: 1rem 0;
+            flex-shrink: 0;
+        }
+        .collapsed-tab:hover {
+            background-color: var(--card-bg);
+        }
+        .collapsed-tab-right {
+            border-right: none;
+            border-left: 1px solid var(--border-color);
+        }
+        .collapsed-tab .tab-text {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+        }
+        .collapsed-tab:hover .tab-text {
+            color: var(--text-main);
+        }
+        .collapsed-tab .tab-icon {
+            font-size: 0.85rem;
+        }
+        .collapsed-tab .tab-arrow {
+            font-size: 0.6rem;
+            color: var(--primary);
+        }
+
         .project-list-container {
             flex: 1;
             overflow-y: auto;
@@ -1129,8 +1172,15 @@
     </header>
 
     <div class="main-container">
+        <!-- Left Collapsed Tab Indicator (Projects Switcher) -->
+        <div id="leftCollapsedTab" class="collapsed-tab collapsed-tab-left">
+            <span class="tab-icon">📁</span>
+            <span class="tab-text">PROJECTS</span>
+            <span class="tab-arrow">▶</span>
+        </div>
+
         <!-- Panel 1: Far Left Sidebar (Project Switcher) -->
-        <div class="sidebar-panel">
+        <div class="sidebar-panel collapsed">
             <div class="panel-header">
                 <h2>PROJECTS</h2>
                 <button id="collapseSidebarBtn" class="icon-btn" title="Collapse Sidebar" style="font-size: 0.7rem;">◀</button>
@@ -1159,7 +1209,7 @@
         </div>
 
         <!-- Panel 2: Middle Pane (Curated Clips) -->
-        <div class="left-panel">
+        <div class="left-panel" style="width: auto; flex: 1;">
             <div class="panel-header">
                 <div style="display: flex; align-items: center; gap: 0.4rem; overflow: hidden; flex: 1;">
                     <button id="expandSidebarBtn" class="btn btn-secondary btn-mini" style="display: none; font-weight: 600; flex-shrink: 0; padding: 0.2rem 0.5rem; gap: 0.25rem;">▶ Projects</button>
@@ -1202,10 +1252,10 @@
         </div>
 
         <!-- Interactive Pane Resizer bar -->
-        <div id="panelResizer" class="panel-resizer" title="Drag to Resize panels"></div>
+        <div id="panelResizer" class="panel-resizer" title="Drag to Resize panels" style="display: none;"></div>
 
         <!-- Panel 3: Right Pane (Transcription) -->
-        <div class="right-panel">
+        <div class="right-panel collapsed">
             <div class="panel-header" style="display: flex; align-items: center; justify-content: space-between;">
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                     <button id="collapseTranscriptBtn" class="icon-btn" title="Collapse Transcript" style="font-size: 0.7rem; padding: 0.2rem; cursor: pointer;">▶</button>
@@ -1232,6 +1282,13 @@
                     <span>Duration: <strong id="selDuration">0.00</strong>s</span>
                 </div>
             </div>
+        </div>
+
+        <!-- Right Collapsed Tab Indicator (Transcription View) -->
+        <div id="rightCollapsedTab" class="collapsed-tab collapsed-tab-right">
+            <span class="tab-arrow">◀</span>
+            <span class="tab-text">TRANSCRIPT</span>
+            <span class="tab-icon">📝</span>
         </div>
     </div>
 
@@ -1556,6 +1613,8 @@
         const expandSidebarBtn = document.getElementById('expandSidebarBtn');
         const collapseTranscriptBtn = document.getElementById('collapseTranscriptBtn');
         const expandTranscriptBtn = document.getElementById('expandTranscriptBtn');
+        const leftCollapsedTab = document.getElementById('leftCollapsedTab');
+        const rightCollapsedTab = document.getElementById('rightCollapsedTab');
 
         // Settings Elements
         const settingsBtn = document.getElementById('settingsBtn');
@@ -1952,13 +2011,19 @@
             collapseSidebarBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 sidebarPanel.classList.add('collapsed');
-                expandSidebarBtn.style.display = 'inline-flex';
+                leftCollapsedTab.style.display = 'flex';
+            });
+            
+            leftCollapsedTab.addEventListener('click', function(e) {
+                e.stopPropagation();
+                sidebarPanel.classList.remove('collapsed');
+                leftCollapsedTab.style.display = 'none';
             });
             
             expandSidebarBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 sidebarPanel.classList.remove('collapsed');
-                expandSidebarBtn.style.display = 'none';
+                leftCollapsedTab.style.display = 'none';
             });
         }
 
@@ -1971,10 +2036,20 @@
                 
                 rightPanel.classList.add('collapsed');
                 resizer.style.display = 'none';
-                expandTranscriptBtn.style.display = 'inline-flex';
+                rightCollapsedTab.style.display = 'flex';
                 
                 leftPanel.style.width = 'auto';
                 leftPanel.style.flex = '1';
+            });
+            
+            rightCollapsedTab.addEventListener('click', function(e) {
+                e.stopPropagation();
+                leftPanel.style.flex = 'none';
+                leftPanel.style.width = `${lastLeftPanelWidth}px`;
+                
+                rightPanel.classList.remove('collapsed');
+                resizer.style.display = 'block';
+                rightCollapsedTab.style.display = 'none';
             });
             
             expandTranscriptBtn.addEventListener('click', function(e) {
@@ -1984,7 +2059,7 @@
                 
                 rightPanel.classList.remove('collapsed');
                 resizer.style.display = 'block';
-                expandTranscriptBtn.style.display = 'none';
+                rightCollapsedTab.style.display = 'none';
             });
         }
 
