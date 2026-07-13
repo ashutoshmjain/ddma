@@ -563,6 +563,12 @@
             opacity: 0.95;
             border-color: var(--border-color);
             border-left: 4px solid var(--primary);
+        }
+
+        .clip-card.collapsed .segments-container,
+        .clip-card.collapsed .card-controls {
+            display: none !important;
+        }
             background-color: var(--card-locked-bg);
             cursor: not-allowed;
         }
@@ -1433,6 +1439,11 @@
                         <span style="font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono);" id="undoCountLabel"></span>
                         <button class="btn btn-secondary btn-mini" id="playLockedBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">▶ Play Locked</button>
                     </div>
+                    <!-- Group: Collapse Toggles -->
+                    <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
+                        <button class="btn btn-secondary btn-mini" id="collapseAllBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem;" title="Collapse all clip cards">📁 Collapse All</button>
+                        <button class="btn btn-secondary btn-mini" id="expandAllBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem;" title="Expand all clip cards">📂 Expand All</button>
+                    </div>
                     <!-- Group 3: Snapshot System -->
                     <div style="display: flex; gap: 0.4rem; align-items: center;">
                         <button class="btn btn-secondary btn-mini" id="saveSnapshotBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">📸 Take Snapshot</button>
@@ -1762,6 +1773,8 @@
         const exportBtn = document.getElementById('exportBtn');
         const combineVideoBtn = document.getElementById('combineVideoBtn');
         const newClipBtn = document.getElementById('newClipBtn');
+        const collapseAllBtn = document.getElementById('collapseAllBtn');
+        const expandAllBtn = document.getElementById('expandAllBtn');
         
         const clipsToolbar = document.getElementById('clipsToolbar');
         const undoBtn = document.getElementById('undoBtn');
@@ -3764,6 +3777,24 @@
             savePlanToServer();
         });
 
+        // Collapse All
+        collapseAllBtn.addEventListener('click', () => {
+            if (!activeProjectId) return;
+            clips.forEach((_, idx) => {
+                localStorage.setItem(`ddma-collapsed-${activeProjectId}-${idx}`, 'true');
+            });
+            renderClips();
+        });
+
+        // Expand All
+        expandAllBtn.addEventListener('click', () => {
+            if (!activeProjectId) return;
+            clips.forEach((_, idx) => {
+                localStorage.removeItem(`ddma-collapsed-${activeProjectId}-${idx}`);
+            });
+            renderClips();
+        });
+
         // Undo button listener
         undoBtn.addEventListener('click', () => {
             if (undoStack.length === 0) return;
@@ -3900,8 +3931,11 @@
                 clip.num = index + 1;
                 const isLocked = clip.locked || false;
                 
+                const isCollapsed = localStorage.getItem(`ddma-collapsed-${activeProjectId}-${index}`) === 'true';
+                const caretText = isCollapsed ? '▶' : '▼';
+                
                 const card = document.createElement('div');
-                card.className = `clip-card ${isLocked ? 'locked' : ''}`;
+                card.className = `clip-card ${isLocked ? 'locked' : ''} ${isCollapsed ? 'collapsed' : ''}`;
                 card.dataset.index = index;
                 card.draggable = !isLocked;
                 
@@ -4076,6 +4110,7 @@
                     <div class="clip-card-header">
                         <div class="clip-card-title-container">
                             <div style="display: flex; align-items: center; width: 100%; gap: 0.4rem;">
+                                <span class="clip-collapse-caret" style="cursor: pointer; font-size: 0.85rem; user-select: none; margin-right: 0.2rem; font-family: var(--font-mono); color: var(--text-muted);" data-index="${index}">${caretText}</span>
                                 <span class="clip-num-badge" style="background-color: var(--primary); color: white; padding: 0.15rem 0.35rem; border-radius: 4px; font-weight: bold; font-size: 0.75rem; font-family: var(--font-mono); white-space: nowrap;">${episodeNum}-${clip.num}</span>
                                 <input type="text" class="clip-card-title" placeholder="Enter title description..." value="${clip.title}" data-index="${index}" ${isLocked ? 'disabled' : ''}>
                             </div>
@@ -4121,6 +4156,19 @@
                 card.querySelector('.clip-card-title').addEventListener('change', function(e) {
                     clips[index].title = e.target.value.trim();
                     savePlanToServer();
+                });
+
+                card.querySelector('.clip-collapse-caret').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const idx = parseInt(this.dataset.index);
+                    const isCollapsedNow = card.classList.toggle('collapsed');
+                    if (isCollapsedNow) {
+                        this.textContent = '▶';
+                        localStorage.setItem(`ddma-collapsed-${activeProjectId}-${idx}`, 'true');
+                    } else {
+                        this.textContent = '▼';
+                        localStorage.removeItem(`ddma-collapsed-${activeProjectId}-${idx}`);
+                    }
                 });
 
                 card.querySelector('.clip-volume').addEventListener('change', function(e) {
