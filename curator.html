@@ -3967,8 +3967,8 @@
             clipListContainer.scrollTop = savedScrollTop;
 
             // Auto-detect and resume UI polling for clips with active runs (cache/recovery sync)
-            if (activeProjectPlan) {
-                activeProjectPlan.forEach((clip, index) => {
+            if (clips) {
+                clips.forEach((clip, index) => {
                     if (clip.locked && clip.mosaic_run_id) {
                         const btnEl = document.getElementById(`mosaicCardBtn_${index}`);
                         if (btnEl && !btnEl.disabled) {
