@@ -1371,18 +1371,32 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not bridge_text:
                     bridge_text = "Next question is coming up..."
                 
+                import re
                 import glob
-                search_pattern = os.path.join("clips", f"*-{clip_num}.mp3")
-                audio_files = glob.glob(search_pattern)
+                ep_num = "244"
+                ep_num_match = re.search(r'\d+', project_id)
+                if ep_num_match:
+                    ep_num = ep_num_match.group(0)
                 
-                video_search = os.path.join("clips", f"*-{clip_num}.mp4")
-                video_files = [f for f in glob.glob(video_search) if not f.endswith("-original.mp4")]
+                direct_audio = os.path.join("clips", f"{ep_num}-{clip_num}.mp3")
+                direct_video = os.path.join("clips", f"{ep_num}-{clip_num}.mp4")
                 
                 audio_source = None
-                if audio_files:
-                    audio_source = audio_files[0]
-                elif video_files:
-                    audio_source = video_files[0]
+                if os.path.exists(direct_audio):
+                    audio_source = direct_audio
+                elif os.path.exists(direct_video):
+                    audio_source = direct_video
+                else:
+                    search_pattern = os.path.join("clips", f"*-{clip_num}.mp3")
+                    audio_files = glob.glob(search_pattern)
+                    
+                    video_search = os.path.join("clips", f"*-{clip_num}.mp4")
+                    video_files = [f for f in glob.glob(video_search) if not f.endswith("-original.mp4")]
+                    
+                    if audio_files:
+                        audio_source = max(audio_files, key=os.path.getmtime)
+                    elif video_files:
+                        audio_source = max(video_files, key=os.path.getmtime)
                 
                 if not audio_source:
                     os.makedirs("previews", exist_ok=True)
