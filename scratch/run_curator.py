@@ -796,8 +796,43 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                 if not response or not response.text:
                     raise last_err or Exception("All Gemini models failed to generate content.")
                 
+                def clean_and_parse_json(text):
+                    text = text.strip()
+                    if text.startswith("```"):
+                        lines = text.splitlines()
+                        if lines[0].startswith("```"):
+                            lines = lines[1:]
+                        if lines and lines[-1].strip() == "```":
+                            lines = lines[:-1]
+                        text = "\n".join(lines).strip()
+                    try:
+                        return json.loads(text)
+                    except json.JSONDecodeError:
+                        pass
+                    first_brace = text.find("{")
+                    if first_brace != -1:
+                        brace_count = 0
+                        for i in range(first_brace, len(text)):
+                            if text[i] == "{":
+                                brace_count += 1
+                            elif text[i] == "}":
+                                brace_count -= 1
+                                if brace_count == 0:
+                                    candidate = text[first_brace:i+1]
+                                    try:
+                                        return json.loads(candidate)
+                                    except json.JSONDecodeError:
+                                        pass
+                    temp = text
+                    while temp.endswith("}"):
+                        try:
+                            return json.loads(temp)
+                        except json.JSONDecodeError:
+                            temp = temp[:-1].strip()
+                    return json.loads(text)
+
                 try:
-                    recasted_clip = json.loads(response.text)
+                    recasted_clip = clean_and_parse_json(response.text)
                 except Exception as je:
                     raise Exception(f"Failed to parse Gemini response as JSON: {je}\nResponse was:\n{response.text}")
                 
