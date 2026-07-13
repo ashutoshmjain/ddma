@@ -782,26 +782,154 @@ def compile_clip(
         out_filename = f"{base_name}.mp4"
         out_path = os.path.join(out_dir, out_filename)
 
-        typer.echo(f"Compiling with cross-fade (1.0s fade transition) into {out_path}...")
-        cmd_concat = [
-            "ffmpeg", "-y",
-            "-i", intro_video_path,
-            "-i", body_video_path,
-            "-filter_complex",
-            "[0:v]settb=1/90000[v0];"
-            "[1:v]settb=1/90000[v1];"
-            "[v0][v1]xfade=transition=fade:duration=1.0:offset=1.0[v];"
-            "[0:a][1:a]acrossfade=d=1.0:c1=tri:c2=tri[a]",
-            "-map", "[v]",
-            "-map", "[a]",
-            "-c:v", "libx264",
-            "-crf", "18",
-            "-preset", "fast",
-            "-pix_fmt", "yuv420p",
-            "-c:a", "aac",
-            "-b:a", "192k",
-            out_path
-        ]
+        sorted_clips = sorted(plan_data, key=lambda x: x["num"])
+        is_last_clip = (sorted_clips[-1]["num"] == num)
+
+        temp_img_outro_path = f"temp_outro_img_{num}.png"
+        temp_outro_video_path = f"temp_outro_{num}.mp4"
+        body_duration = 5.0
+
+        if not is_last_clip:
+            typer.echo(f"Rendering 5-second outro transition card (curiosity question)...")
+            
+            # Resolve bridge_text
+            bridge_text_input = clip.get("bridge_text", "")
+            if isinstance(bridge_text_input, list):
+                bridge_text = " ".join(bridge_text_input)
+            else:
+                bridge_text = str(bridge_text_input).strip()
+            if not bridge_text:
+                bridge_text = "Next question is coming up..."
+
+            # Generate outro image
+            img_outro = Image.new("RGB", (width, height), color=(0, 0, 0))
+            draw_outro = ImageDraw.Draw(img_outro)
+            
+            if font_path_bold and os.path.exists(font_path_bold):
+                font_outro = ImageFont.truetype(font_path_bold, 34)
+            else:
+                font_outro = ImageFont.load_default()
+
+            def wrap_text_outro(text, font_obj, max_w):
+                words = text.split()
+                lines = []
+                curr = []
+                for word in words:
+                    test_line = " ".join(curr + [word])
+                    bbox = draw_outro.textbbox((0, 0), test_line, font=font_obj)
+                    w = bbox[2] - bbox[0]
+                    if w <= max_w:
+                        curr.append(word)
+                    else:
+                        if curr:
+                            lines.append(" ".join(curr))
+                        curr = [word]
+                if curr:
+                    lines.append(" ".join(curr))
+                return lines
+
+            lines_outro = wrap_text_outro(bridge_text, font_outro, width - 160)
+            line_spacing_outro = 18
+            line_heights_outro = []
+            total_h_outro = 0
+            for line in lines_outro:
+                bbox = draw_outro.textbbox((0, 0), line, font=font_outro)
+                h = bbox[3] - bbox[1]
+                line_heights_outro.append(h)
+                total_h_outro += h
+            total_h_outro += line_spacing_outro * (len(lines_outro) - 1)
+
+            curr_y_outro = (height - total_h_outro) // 2
+            for idx, line in enumerate(lines_outro):
+                bbox = draw_outro.textbbox((0, 0), line, font=font_outro)
+                w = bbox[2] - bbox[0]
+                draw_outro.text(((width - w) // 2, curr_y_outro), line, font=font_outro, fill=(255, 255, 255))
+                curr_y_outro += line_heights_outro[idx] + line_spacing_outro
+
+            img_outro.save(temp_img_outro_path)
+
+            # Probe duration of equalized master body to slice end audio
+            try:
+                dur_cmd = [
+                    "ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", body_video_path
+                ]
+                dur_res = subprocess.run(dur_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                if dur_res.returncode == 0:
+                    body_duration = float(dur_res.stdout.strip())
+            except:
+                pass
+            start_time = max(0.0, body_duration - 5.0)
+
+            # Generate outro card video
+            cmd_outro = [
+                "ffmpeg", "-y",
+                "-loop", "1",
+                "-r", fps_str,
+                "-i", temp_img_outro_path,
+                "-ss", f"{start_time:.6f}",
+                "-i", body_video_path,
+                "-map", "0:v",
+                "-map", "1:a",
+                "-c:v", "libx264",
+                "-tune", "stillimage",
+                "-c:a", "aac",
+                "-b:a", "192k",
+                "-ar", ar_str,
+                "-ac", "2",
+                "-pix_fmt", "yuv420p",
+                "-video_track_timescale", tb_den,
+                "-af", "afade=t=out:st=0:d=5.0",
+                "-t", "5.0",
+                temp_outro_video_path
+            ]
+            subprocess.run(cmd_outro, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        if not is_last_clip and os.path.exists(temp_outro_video_path):
+            typer.echo(f"Compiling with cross-fade (Intro -> Body -> Outro) into {out_path}...")
+            cmd_concat = [
+                "ffmpeg", "-y",
+                "-i", intro_video_path,
+                "-i", body_video_path,
+                "-i", temp_outro_video_path,
+                "-filter_complex",
+                "[0:v]settb=1/90000[v0];"
+                "[1:v]settb=1/90000[v1];"
+                "[2:v]settb=1/90000[v2];"
+                "[v0][v1]xfade=transition=fade:duration=1.0:offset=1.0[v01];"
+                f"[v01][v2]xfade=transition=fade:duration=1.0:offset={body_duration + 1.0 - 1.0:.3f}[v];"
+                "[0:a][1:a]acrossfade=d=1.0:c1=tri:c2=tri[a0];"
+                "[a0][2:a]acrossfade=d=1.0:c1=tri:c2=tri[a]",
+                "-map", "[v]",
+                "-map", "[a]",
+                "-c:v", "libx264",
+                "-crf", "18",
+                "-preset", "fast",
+                "-pix_fmt", "yuv420p",
+                "-c:a", "aac",
+                "-b:a", "192k",
+                out_path
+            ]
+        else:
+            typer.echo(f"Compiling with cross-fade (Intro -> Body) into {out_path}...")
+            cmd_concat = [
+                "ffmpeg", "-y",
+                "-i", intro_video_path,
+                "-i", body_video_path,
+                "-filter_complex",
+                "[0:v]settb=1/90000[v0];"
+                "[1:v]settb=1/90000[v1];"
+                "[v0][v1]xfade=transition=fade:duration=1.0:offset=1.0[v];"
+                "[0:a][1:a]acrossfade=d=1.0:c1=tri:c2=tri[a]",
+                "-map", "[v]",
+                "-map", "[a]",
+                "-c:v", "libx264",
+                "-crf", "18",
+                "-preset", "fast",
+                "-pix_fmt", "yuv420p",
+                "-c:a", "aac",
+                "-b:a", "192k",
+                out_path
+            ]
         res_concat = subprocess.run(cmd_concat, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         if res_concat.returncode == 0:
@@ -826,7 +954,10 @@ def compile_clip(
 
     finally:
         # Clean up temp files
-        temp_files_to_remove = [temp_img_path, intro_video_path, concat_txt_path, temp_body_path, temp_extracted_frame]
+        temp_files_to_remove = [
+            temp_img_path, intro_video_path, concat_txt_path, temp_body_path, 
+            temp_extracted_frame, temp_img_outro_path, temp_outro_video_path
+        ]
         for temp_f in temp_files_to_remove:
             if os.path.exists(temp_f):
                 try:
