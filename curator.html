@@ -1162,6 +1162,137 @@
             height: 48px;
             stroke: var(--border-color);
         }
+
+        /* Help Chatbot panel styles */
+        .help-chat-panel {
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid var(--border-color);
+            background-color: rgba(0, 0, 0, 0.12);
+            transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+        .help-chat-panel.collapsed {
+            height: 35px;
+        }
+        .help-chat-panel:not(.collapsed) {
+            height: 280px;
+        }
+        .help-chat-header {
+            height: 35px;
+            padding: 0 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            cursor: pointer;
+            user-select: none;
+            background-color: var(--panel-bg-darker);
+            border-bottom: 1px solid transparent;
+        }
+        .help-chat-panel:not(.collapsed) .help-chat-header {
+            border-bottom-color: var(--border-color);
+            color: var(--text-main);
+        }
+        .help-chat-header:hover {
+            color: var(--text-main);
+        }
+        .help-chat-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0.6rem;
+            overflow: hidden;
+            gap: 0.5rem;
+        }
+        .help-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding-right: 0.2rem;
+        }
+        .help-chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+        .help-chat-messages::-webkit-scrollbar-thumb {
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 2px;
+        }
+        .help-chat-messages::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        .msg {
+            max-width: 90%;
+            padding: 0.4rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            line-height: 1.35;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+        .msg-model {
+            align-self: flex-start;
+            background-color: var(--card-bg);
+            color: var(--text-muted);
+            border-left: 3px solid var(--primary);
+            border-bottom-left-radius: 2px;
+        }
+        .msg-user {
+            align-self: flex-end;
+            background-color: var(--primary);
+            color: #ffffff;
+            border-bottom-right-radius: 2px;
+        }
+        .help-chat-chips {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            margin-top: 0.2rem;
+        }
+        .chat-chip {
+            background-color: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .chat-chip:hover {
+            background-color: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+        .help-chat-input-row {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+            margin-top: auto;
+        }
+        .help-chat-input-row input {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-size: 0.7rem;
+            padding: 0.25rem 0.4rem;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .help-chat-input-row input:focus {
+            border-color: var(--primary);
+        }
     </style>
 </head>
 <body>
@@ -1189,6 +1320,28 @@
                 <button class="btn btn-primary btn-mini" id="newProjectBtn" style="width: 100%; justify-content: center; margin-bottom: 0.8rem; font-weight: 600;">➕ New Project</button>
                 <div id="projectList" style="display: flex; flex-direction: column; gap: 0.4rem;">
                     <!-- Dynamically populated projects -->
+                </div>
+            </div>
+
+            <!-- Panel 4: Embedded Help Chatbot (Co-Pilot) -->
+            <div class="help-chat-panel collapsed" id="helpChatPanel">
+                <div class="help-chat-header" id="toggleHelpChatBtn">
+                    <span>💡 CO-PILOT</span>
+                    <span id="helpChatToggleArrow">▲</span>
+                </div>
+                <div class="help-chat-body" id="helpChatBody" style="display: none;">
+                    <div class="help-chat-messages" id="helpChatMessages">
+                        <div class="msg msg-model">Hi! I am your DDMA Co-Pilot. Ask me anything about Whisper transcription, crossfades, music stings, video resolutions, or settings!</div>
+                    </div>
+                    <div class="help-chat-chips">
+                        <button class="chat-chip" data-text="Explain segment vs clip crossfades.">🎛️ Crossfades</button>
+                        <button class="chat-chip" data-text="How does sting volume mapping work?">🔊 Music Vol</button>
+                        <button class="chat-chip" data-text="How does Whisper transcription work?">🎙️ Whisper</button>
+                    </div>
+                    <div class="help-chat-input-row">
+                        <input type="text" id="helpChatInput" placeholder="Ask Co-Pilot...">
+                        <button class="btn btn-primary btn-mini" id="sendHelpChatBtn" style="padding: 0.2rem 0.5rem; font-size: 0.65rem;">Send</button>
+                    </div>
                 </div>
             </div>
             
@@ -1418,6 +1571,14 @@
                         <input type="text" id="settingsMosaicCaptionsNodeId" placeholder="Enter Captions Node ID (Optional)" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
                     </div>
                 </div>
+                
+                <div style="border-top: 1px solid var(--border-color); padding-top: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <label style="font-size: 0.75rem; font-weight: 600; margin-bottom: 0.2rem; display: block;">Co-Pilot Integration:</label>
+                    <div class="music-editor-field" style="width: 100%;">
+                        <label style="font-size: 0.65rem; color: var(--text-muted);">Gemini API Key:</label>
+                        <input type="password" id="settingsGeminiApiKey" placeholder="Enter Gemini API Key (Optional)" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                    </div>
+                </div>
             </div>
             <div class="export-actions" style="margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
                 <button class="btn btn-primary" id="saveSettingsBtn" style="width: 100%; justify-content: center;">Save & Close</button>
@@ -1616,6 +1777,15 @@
         const leftCollapsedTab = document.getElementById('leftCollapsedTab');
         const rightCollapsedTab = document.getElementById('rightCollapsedTab');
 
+        // Help Chat Elements
+        const helpChatPanel = document.getElementById('helpChatPanel');
+        const toggleHelpChatBtn = document.getElementById('toggleHelpChatBtn');
+        const helpChatToggleArrow = document.getElementById('helpChatToggleArrow');
+        const helpChatBody = document.getElementById('helpChatBody');
+        const helpChatMessages = document.getElementById('helpChatMessages');
+        const helpChatInput = document.getElementById('helpChatInput');
+        const sendHelpChatBtn = document.getElementById('sendHelpChatBtn');
+
         // Settings Elements
         const settingsBtn = document.getElementById('settingsBtn');
         const settingsModalOverlay = document.getElementById('settingsModalOverlay');
@@ -1685,7 +1855,8 @@
                 mosaic_api_key: localStorage.getItem('ddma-mosaic-api-key') || '',
                 mosaic_agent_id: localStorage.getItem('ddma-mosaic-agent-id') || '',
                 mosaic_mogr_node_id: localStorage.getItem('ddma-mosaic-mogr-node-id') || '',
-                mosaic_captions_node_id: localStorage.getItem('ddma-mosaic-captions-node-id') || ''
+                mosaic_captions_node_id: localStorage.getItem('ddma-mosaic-captions-node-id') || '',
+                gemini_api_key: localStorage.getItem('ddma-gemini-api-key') || ''
             };
             
             fetch('/save-settings', {
@@ -1752,6 +1923,7 @@
                 setupSidebarCollapse();
                 setupTranscriptCollapse();
                 setupSettingsModal();
+                setupHelpChat();
             };
 
             if (window.location.protocol.startsWith('http')) {
@@ -1771,6 +1943,7 @@
                         localStorage.setItem('ddma-mosaic-agent-id', data.mosaic_agent_id || '');
                         localStorage.setItem('ddma-mosaic-mogr-node-id', data.mosaic_mogr_node_id || '');
                         localStorage.setItem('ddma-mosaic-captions-node-id', data.mosaic_captions_node_id || '');
+                        localStorage.setItem('ddma-gemini-api-key', data.gemini_api_key || '');
                     })
                     .catch(err => {
                         console.warn("Could not load settings from server, using local fallback:", err);
@@ -1824,6 +1997,7 @@
                 document.getElementById('settingsMosaicAgentId').value = localStorage.getItem('ddma-mosaic-agent-id') || '';
                 document.getElementById('settingsMosaicMogrNodeId').value = localStorage.getItem('ddma-mosaic-mogr-node-id') || '';
                 document.getElementById('settingsMosaicCaptionsNodeId').value = localStorage.getItem('ddma-mosaic-captions-node-id') || '';
+                document.getElementById('settingsGeminiApiKey').value = localStorage.getItem('ddma-gemini-api-key') || '';
 
                 renderSettingsMusicList();
                 settingsModalOverlay.classList.add('active');
@@ -1872,6 +2046,7 @@
                 localStorage.setItem('ddma-mosaic-agent-id', document.getElementById('settingsMosaicAgentId').value.trim());
                 localStorage.setItem('ddma-mosaic-mogr-node-id', document.getElementById('settingsMosaicMogrNodeId').value.trim());
                 localStorage.setItem('ddma-mosaic-captions-node-id', document.getElementById('settingsMosaicCaptionsNodeId').value.trim());
+                localStorage.setItem('ddma-gemini-api-key', document.getElementById('settingsGeminiApiKey').value.trim());
                 
                 saveSettingsToServer();
 
@@ -2061,6 +2236,105 @@
                 resizer.style.display = 'block';
                 rightCollapsedTab.style.display = 'none';
             });
+        }
+
+        // Help Chatbot logic (Co-Pilot)
+        let helpChatHistory = [];
+        function setupHelpChat() {
+            // Toggle collapse state
+            toggleHelpChatBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isCollapsed = helpChatPanel.classList.contains('collapsed');
+                if (isCollapsed) {
+                    helpChatPanel.classList.remove('collapsed');
+                    helpChatBody.style.display = 'flex';
+                    helpChatToggleArrow.textContent = '▼';
+                    setTimeout(() => {
+                        helpChatMessages.scrollTop = helpChatMessages.scrollHeight;
+                    }, 50);
+                } else {
+                    helpChatPanel.classList.add('collapsed');
+                    helpChatBody.style.display = 'none';
+                    helpChatToggleArrow.textContent = '▲';
+                }
+            });
+            
+            // Suggestion chips
+            document.querySelectorAll('.chat-chip').forEach(chip => {
+                chip.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const text = this.getAttribute('data-text');
+                    if (text) {
+                        helpChatInput.value = text;
+                        sendHelpChatMessage();
+                    }
+                });
+            });
+            
+            // Send button
+            sendHelpChatBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                sendHelpChatMessage();
+            });
+            
+            // Enter key
+            helpChatInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendHelpChatMessage();
+                }
+            });
+        }
+        
+        function sendHelpChatMessage() {
+            const text = helpChatInput.value.trim();
+            if (!text) return;
+            
+            helpChatInput.value = '';
+            
+            appendChatMessage("user", text);
+            const typingIndicator = appendChatMessage("model", "⏳ Co-Pilot is thinking...");
+            
+            fetch('/help-bot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: text,
+                    history: helpChatHistory
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Server error");
+                return res.json();
+            })
+            .then(data => {
+                typingIndicator.remove();
+                appendChatMessage("model", data.reply);
+                
+                helpChatHistory.push({ role: "user", text: text });
+                helpChatHistory.push({ role: "model", text: data.reply });
+            })
+            .catch(err => {
+                typingIndicator.remove();
+                appendChatMessage("model", "❌ Error: Could not connect to Co-Pilot server.");
+            });
+        }
+        
+        function appendChatMessage(role, text) {
+            const msgEl = document.createElement('div');
+            msgEl.className = `msg msg-${role}`;
+            
+            let parsedText = text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\n/g, "<br>")
+                .replace(/`([^`]+)`/g, "<code>$1</code>");
+                
+            msgEl.innerHTML = parsedText;
+            helpChatMessages.appendChild(msgEl);
+            helpChatMessages.scrollTop = helpChatMessages.scrollHeight;
+            return msgEl;
         }
 
         // Project management helpers

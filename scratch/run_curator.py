@@ -12,6 +12,12 @@ import subprocess
 import requests
 from urllib.parse import urlparse, parse_qs
 
+try:
+    import google.generativeai as genai
+    HAS_GENAI = True
+except ImportError:
+    HAS_GENAI = False
+
 PORT = 8000
 
 # Global tracker for background Mosaic runs
@@ -486,7 +492,92 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         params = parse_qs(parsed_url.query)
         
-        if parsed_url.path == '/save-project-plan':
+        if parsed_url.path == '/help-bot':
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length)
+            
+            try:
+                if not HAS_GENAI:
+                    reply = "Co-Pilot Error: The 'google-generativeai' library is not installed in the python environment. Run 'pip install google-generativeai' to enable the chatbot."
+                else:
+                    settings_api_key = None
+                    if os.path.exists("settings.json"):
+                        try:
+                            with open("settings.json", "r", encoding="utf-8") as sf:
+                                s_data = json.load(sf)
+                                settings_api_key = s_data.get("gemini_api_key")
+                        except Exception as se:
+                            print(f"Warning: Failed to load settings.json: {se}")
+                    
+                    api_key = settings_api_key or os.environ.get("GEMINI_API_KEY")
+                    if not api_key:
+                        reply = "Co-Pilot Error: The 'GEMINI_API_KEY' environment variable or settings config is not set. Please set it in your System Settings modal in DDMA first!"
+                    else:
+                        # Configure Gemini
+                        genai.configure(api_key=api_key)
+                        
+                        # Load request body
+                        req_json = json.loads(post_data.decode('utf-8'))
+                        user_message = req_json.get("message", "")
+                        history = req_json.get("history", [])
+                        
+                        # Load context files (cache/read on the fly)
+                        context = ""
+                        for doc_file in ["README.md", "CREATIVE_PROCESS.md", os.path.join(".agents", "AGENTS.md")]:
+                            if os.path.exists(doc_file):
+                                try:
+                                    with open(doc_file, "r", encoding="utf-8") as df:
+                                        context += f"\n\n=== FILE: {doc_file} ===\n" + df.read()
+                                except Exception as fe:
+                                    print(f"Warning: Failed to read {doc_file} for help bot: {fe}")
+                        
+                        system_instruction = (
+                            "You are the DDMA Co-Pilot, an expert AI tutor designed to assist user in curating, compiling, "
+                            "and automating their media pipeline using DeepDive Media Automator (DDMA).\n\n"
+                            "Your goal is to answer UI workflow, architectural, installation, Whisper, and creative curation questions "
+                            "accurately and concisely using the project documentation provided below. Keep your responses user-friendly "
+                            "and formatted in clean, concise markdown (using bold, lists, and code snippets as appropriate).\n\n"
+                            f"=== DOCUMENTATION CONTEXT ==={context}"
+                        )
+                        
+                        # Prepare history format for Gemini API
+                        model = genai.GenerativeModel(
+                            model_name="gemini-1.5-flash",
+                            system_instruction=system_instruction
+                        )
+                        
+                        # Convert history format
+                        contents = []
+                        for h in history:
+                            contents.append({
+                                "role": "user" if h.get("role") == "user" else "model",
+                                "parts": [h.get("text", "")]
+                            })
+                        contents.append({
+                            "role": "user",
+                            "parts": [user_message]
+                        })
+                        
+                        # Generate content
+                        response = model.generate_content(contents)
+                        reply = response.text
+                        
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"reply": reply}).encode('utf-8'))
+                return
+            except Exception as e:
+                print(f"Error in help chatbot: {e}")
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"reply": f"Co-Pilot Error: {str(e)}"}).encode('utf-8'))
+                return
+                
+        elif parsed_url.path == '/save-project-plan':
             project_id = params.get('id', [None])[0]
             content_length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(content_length)

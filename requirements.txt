@@ -2,3 +2,4 @@ openai-whisper==20250625
 typer
 pillow
 numpy
+google-generativeai
