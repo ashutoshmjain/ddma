@@ -4020,7 +4020,6 @@
                             <button class="btn-card-play" id="playCardBtn_${index}">▶ Audio</button>
                             ${videoBtnHtml}
                             ${mosaicBtnHtml}
-                            <button class="btn-card-export" id="exportCardBtn_${index}">📤 Export</button>
                             ${deleteCardBtnHtml}
                         </div>
                     </div>
@@ -4058,10 +4057,6 @@
 
                 card.querySelector(`#playCardBtn_${index}`).addEventListener('click', function(e) {
                     playFFmpegPreview(index, this, e);
-                });
-
-                card.querySelector(`#exportCardBtn_${index}`).addEventListener('click', function(e) {
-                    exportClipAudio(index, this, e);
                 });
 
                 if (matchingVideo) {
