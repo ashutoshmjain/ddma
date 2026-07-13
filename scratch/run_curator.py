@@ -542,7 +542,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         
                         # Prepare history format for Gemini API
                         model = genai.GenerativeModel(
-                            model_name="gemini-1.5-flash",
+                            model_name="gemini-2.0-flash",
                             system_instruction=system_instruction
                         )
                         
@@ -570,7 +570,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
             except Exception as e:
                 print(f"Error in help chatbot: {e}")
-                self.send_response(500)
+                self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()

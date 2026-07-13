@@ -1248,6 +1248,11 @@
             color: #ffffff;
             border-bottom-right-radius: 2px;
         }
+        .msg-error {
+            border-left-color: var(--danger) !important;
+            background-color: rgba(239, 68, 68, 0.08) !important;
+            color: var(--danger) !important;
+        }
         .help-chat-chips {
             display: flex;
             gap: 0.3rem;
@@ -2331,7 +2336,11 @@
         
         function appendChatMessage(role, text) {
             const msgEl = document.createElement('div');
-            msgEl.className = `msg msg-${role}`;
+            if (role === 'model' && (text.startsWith('Co-Pilot Error:') || text.startsWith('❌'))) {
+                msgEl.className = 'msg msg-model msg-error';
+            } else {
+                msgEl.className = `msg msg-${role}`;
+            }
             
             let parsedText = text
                 .replace(/&/g, "&amp;")
