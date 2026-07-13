@@ -314,6 +314,17 @@
             color: var(--text-main);
         }
 
+        .sidebar-icon {
+            flex-shrink: 0;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar-footer-item:hover .sidebar-icon,
+        .help-chat-header:hover .sidebar-icon {
+            opacity: 1;
+        }
+
         .profile-item {
             cursor: default;
         }
@@ -1326,7 +1337,13 @@
             <!-- Panel 4: Embedded Help Chatbot (Co-Pilot) -->
             <div class="help-chat-panel collapsed" id="helpChatPanel">
                 <div class="help-chat-header" id="toggleHelpChatBtn">
-                    <span>💡 CO-PILOT</span>
+                    <div style="display: flex; align-items: center;">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.4rem;">
+                            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41M12 7a5 5 0 0 1 5 5c0 2.5-1.5 3.5-2.5 4.5h-5C8.5 15.5 7 14.5 7 12a5 5 0 0 1 5-5z"></path>
+                            <path d="M9 20h6"></path>
+                        </svg>
+                        <span>CO-PILOT</span>
+                    </div>
                     <span id="helpChatToggleArrow">▲</span>
                 </div>
                 <div class="help-chat-body" id="helpChatBody" style="display: none;">
@@ -1348,11 +1365,19 @@
             <!-- Sidebar Footer (Placeholder Settings/Profile) -->
             <div class="sidebar-footer">
                 <div class="sidebar-footer-item" id="settingsBtn">
-                    <span style="font-size: 0.95rem;">⚙️</span>
+                    <svg class="sidebar-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
                     <span>Settings</span>
                 </div>
                 <div class="sidebar-footer-item profile-item">
-                    <div class="profile-avatar">A</div>
+                    <div class="profile-avatar">
+                        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color: white; opacity: 0.95;">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
                     <div class="profile-info">
                         <span class="profile-name">Ashutosh</span>
                         <span class="profile-role">Creator</span>
