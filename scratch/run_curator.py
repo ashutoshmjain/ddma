@@ -1371,44 +1371,16 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not bridge_text:
                     bridge_text = "Next question is coming up..."
                 
-                import re
-                import glob
-                ep_num = "244"
-                ep_num_match = re.search(r'\d+', project_id)
-                if ep_num_match:
-                    ep_num = ep_num_match.group(0)
+                os.makedirs("previews", exist_ok=True)
+                temp_compiled_audio = f"previews/temp_compiled_audio_{project_id}_{clip_num}.mp3"
                 
-                direct_audio = os.path.join("clips", f"{ep_num}-{clip_num}.mp3")
-                direct_video = os.path.join("clips", f"{ep_num}-{clip_num}.mp4")
+                info_path = os.path.join(project_dir, "project_info.json")
+                with open(info_path, "r", encoding="utf-8") as inf_f:
+                    info_data = json.load(inf_f)
+                full_audio_path = os.path.join(project_dir, info_data["audio_filename"])
                 
-                audio_source = None
-                if os.path.exists(direct_audio):
-                    audio_source = direct_audio
-                elif os.path.exists(direct_video):
-                    audio_source = direct_video
-                else:
-                    search_pattern = os.path.join("clips", f"*-{clip_num}.mp3")
-                    audio_files = glob.glob(search_pattern)
-                    
-                    video_search = os.path.join("clips", f"*-{clip_num}.mp4")
-                    video_files = [f for f in glob.glob(video_search) if not f.endswith("-original.mp4")]
-                    
-                    if audio_files:
-                        audio_source = max(audio_files, key=os.path.getmtime)
-                    elif video_files:
-                        audio_source = max(video_files, key=os.path.getmtime)
-                
-                if not audio_source:
-                    os.makedirs("previews", exist_ok=True)
-                    temp_compiled_audio = f"previews/temp_compiled_audio_{project_id}_{clip_num}.mp3"
-                    
-                    info_path = os.path.join(project_dir, "project_info.json")
-                    with open(info_path, "r", encoding="utf-8") as inf_f:
-                        info_data = json.load(inf_f)
-                    full_audio_path = os.path.join(project_dir, info_data["audio_filename"])
-                    
-                    self.compile_segments(clip["segments"], temp_compiled_audio, full_audio_path)
-                    audio_source = temp_compiled_audio
+                self.compile_segments(clip["segments"], temp_compiled_audio, full_audio_path)
+                audio_source = temp_compiled_audio
                 
                 duration = 5.0
                 try:
