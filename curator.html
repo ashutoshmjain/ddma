@@ -3610,6 +3610,8 @@
                 let mosaicBtnHtml = "";
                 if (matchingVideo) {
                     videoBtnHtml = `<button class="btn btn-mini btn-card-video" id="playVideoBtn_${index}" style="font-weight:600;" title="Play compiled MP4 video">📹 Video</button>`;
+                }
+                if (isLocked) {
                     mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic" id="mosaicCardBtn_${index}" style="background-image: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; font-weight: 600; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" title="Send draft video to Mosaic API for graphics and captions">🌌 Mosaic</button>`;
                 }
                 
@@ -3702,7 +3704,9 @@
                         videoModalOverlay.classList.add('active');
                         previewVideoPlayer.play();
                     });
-                    
+                }
+                
+                if (isLocked) {
                     card.querySelector(`#mosaicCardBtn_${index}`).addEventListener('click', function(e) {
                         e.stopPropagation();
                         exportToMosaic(index, this);
