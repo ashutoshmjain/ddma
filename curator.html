@@ -869,10 +869,12 @@
             color: white;
         }
 
-        .btn-card-intro {
-            background-color: rgba(6, 182, 212, 0.1);
-            color: #06b6d4;
-            border: 1px solid rgba(6, 182, 212, 0.3);
+        /* Generic Base Card Button Style */
+        .btn-card-intro,
+        .btn-card-outro,
+        .btn-card-video,
+        .btn-card-play,
+        .btn-card-mosaic {
             border-radius: 6px;
             padding: 0.35rem 0.7rem;
             font-weight: 600;
@@ -881,46 +883,45 @@
             transition: all 0.15s ease;
         }
 
-        .btn-card-intro:hover {
-            background-color: #06b6d4;
-            color: white;
+        /* Status Colors */
+        .btn-status-success {
+            background-color: rgba(16, 185, 129, 0.1) !important;
+            color: #10b981 !important;
+            border: 1px solid rgba(16, 185, 129, 0.3) !important;
+        }
+        .btn-status-success:hover {
+            background-color: #10b981 !important;
+            color: white !important;
         }
 
-        .btn-card-outro {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 6px;
-            padding: 0.35rem 0.7rem;
-            font-weight: 600;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.15s ease;
+        .btn-status-warning {
+            background-color: rgba(245, 158, 11, 0.1) !important;
+            color: #f59e0b !important;
+            border: 1px solid rgba(245, 158, 11, 0.3) !important;
+        }
+        .btn-status-warning:hover {
+            background-color: #f59e0b !important;
+            color: white !important;
         }
 
-        .btn-card-outro:hover {
-            background-color: #10b981;
-            color: white;
+        .btn-status-gray {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            color: var(--text-muted) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+        .btn-status-gray:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            color: var(--text-main) !important;
         }
 
-        .btn-card-video {
-            background-color: rgba(236, 72, 153, 0.1);
-            color: #ec4899;
-            border: 1px solid rgba(236, 72, 153, 0.3);
-            border-radius: 6px;
-            padding: 0.35rem 0.7rem;
-            font-weight: 600;
-            font-size: 0.75rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            transition: all 0.15s ease;
+        .btn-status-purple {
+            background-color: rgba(99, 102, 241, 0.1) !important;
+            color: #6366f1 !important;
+            border: 1px solid rgba(99, 102, 241, 0.3) !important;
         }
-
-        .btn-card-video:hover {
-            background-color: #ec4899;
-            color: white;
+        .btn-status-purple:hover {
+            background-color: #6366f1 !important;
+            color: white !important;
         }
 
         .icon-btn {
@@ -1729,6 +1730,7 @@
         let activeClipPlayIdx = null;
         let lastCombinedUrl = "";
         let compiledVideos = [];
+        let clipStatuses = {};
         let dragSrcCardIdx = null;
         let showUsedRanges = false;
         let editingSegmentRef = null; // { clipIdx, segIdx }
@@ -2617,6 +2619,7 @@
                     clips = data.plan || [];
                     transcriptionData = data.transcription;
                     compiledVideos = data.compiled_videos || [];
+                    clipStatuses = data.clip_statuses || {};
                     
                     // Initialize Undo stack and baseline save state
                     undoStack = [];
@@ -3599,6 +3602,7 @@
                 btnEl.innerHTML = '📤 Exported';
                 updateStateBar(`Ready`);
                 showDebug(`Exported successfully to: ${data.filename}`, false);
+                fetchCompiledVideos();
             })
             .catch(err => {
                 btnEl.disabled = false;
@@ -3721,6 +3725,20 @@
                     console.warn("Polling error:", err);
                 });
             }, 2000);
+        }
+
+        function fetchCompiledVideos() {
+            if (!activeProjectId) return;
+            fetch(`/get-project?id=${activeProjectId}`)
+                .then(r => r.json())
+                .then(data => {
+                    compiledVideos = data.compiled_videos || [];
+                    clipStatuses = data.clip_statuses || {};
+                    renderClips();
+                })
+                .catch(err => {
+                    console.warn("Error refreshing compiled videos and statuses:", err);
+                });
         }
 
         // Update Undo button state in UI
@@ -4096,14 +4114,50 @@
                     </div>
                 `;
                 
-                const matchingVideo = compiledVideos.find(v => v.num === clip.num);
-                let videoBtnHtml = "";
-                let mosaicBtnHtml = "";
-                if (matchingVideo) {
-                    videoBtnHtml = `<button class="btn btn-mini btn-card-video" id="playVideoBtn_${index}" style="font-weight:600;" title="Play compiled MP4 video">📹 Video</button>`;
+                // Resolve Status Classes for buttons
+                const statusInfo = clipStatuses[clip.num] || { has_audio: false, video_state: "none" };
+                
+                // 1. Intro status: green if title is customized, yellow if default/empty
+                const isIntroCustom = clip.title && clip.title.trim() !== "" && !clip.title.match(/^New Clip #\d+$/i);
+                const introStatusClass = isIntroCustom ? "btn-status-success" : "btn-status-warning";
+                
+                // 2. Outro status: gray/disabled if last clip, green if has question, yellow if empty question
+                let outroStatusClass = "btn-status-warning";
+                let outroBtnDisabled = "";
+                if (isLastClip) {
+                    outroStatusClass = "btn-status-gray";
+                    outroBtnDisabled = "disabled style='opacity: 0.5; cursor: not-allowed;'";
+                } else {
+                    const hasOutroQuestion = clip.bridge_text && (Array.isArray(clip.bridge_text) ? clip.bridge_text.length > 0 && clip.bridge_text[0].trim() !== "" : clip.bridge_text.trim() !== "");
+                    outroStatusClass = hasOutroQuestion ? "btn-status-success" : "btn-status-warning";
                 }
+                
+                // 3. Audio status: green if audio exists on disk, gray/default if not
+                const audioStatusClass = statusInfo.has_audio ? "btn-status-success" : "btn-status-gray";
+                
+                // 4. Video status: green if compiled with intro, yellow if draft raw Mosaic, gray if no video
+                let videoStatusClass = "btn-status-gray";
+                if (statusInfo.video_state === 'compiled') {
+                    videoStatusClass = "btn-status-success";
+                } else if (statusInfo.video_state === 'draft') {
+                    videoStatusClass = "btn-status-warning";
+                }
+                
+                // 5. Mosaic status: green if Mosaic exists, purple if not
+                const mosaicStatusClass = (statusInfo.video_state === 'draft' || statusInfo.video_state === 'compiled') ? "btn-status-success" : "btn-status-purple";
+                
+                let videoBtnHtml = "";
+                if (statusInfo.video_state !== 'none') {
+                    videoBtnHtml = `<button class="btn btn-mini btn-card-video ${videoStatusClass}" id="playVideoBtn_${index}" style="font-weight:600;" title="Play compiled MP4 video">📹 Video</button>`;
+                } else {
+                    videoBtnHtml = `<button class="btn btn-mini btn-card-video ${videoStatusClass}" style="font-weight:600; opacity: 0.4; cursor: not-allowed;" disabled title="Video not generated yet">📹 Video</button>`;
+                }
+                
+                let mosaicBtnHtml = "";
                 if (isLocked) {
-                    mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic" id="mosaicCardBtn_${index}" style="background-image: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; font-weight: 600; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.2s;" title="Send draft video to Mosaic API for graphics and captions">🌌 Mosaic</button>`;
+                    mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic ${mosaicStatusClass}" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Send draft video to Mosaic API for graphics and captions">🌌 Mosaic</button>`;
+                } else {
+                    mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-gray" style="font-weight: 600; opacity: 0.4; cursor: not-allowed;" disabled title="Lock clip first to enable Mosaic">🌌 Mosaic</button>`;
                 }
                 
                 card.innerHTML = `
@@ -4133,9 +4187,9 @@
                         </div>
 
                         <div class="clip-card-actions">
-                            <button class="btn btn-secondary btn-mini btn-card-intro" id="introCardBtn_${index}" style="font-weight:600;" title="Preview Intro Clip (Title Card + Music)">🎬 Intro</button>
-                            <button class="btn btn-secondary btn-mini btn-card-outro" id="outroCardBtn_${index}" style="font-weight:600;" title="Preview Outro Clip (Bridge Card Question + Fadeout)">🎬 Outro</button>
-                            <button class="btn-card-play" id="playCardBtn_${index}">▶ Audio</button>
+                            <button class="btn btn-secondary btn-mini btn-card-intro ${introStatusClass}" id="introCardBtn_${index}" style="font-weight:600;" title="Preview Intro Clip (Title Card + Music)">🎬 Intro</button>
+                            <button class="btn btn-secondary btn-mini btn-card-outro ${outroStatusClass}" id="outroCardBtn_${index}" style="font-weight:600;" ${outroBtnDisabled} title="Preview Outro Clip (Bridge Card Question + Fadeout)">🎬 Outro</button>
+                            <button class="btn-card-play ${audioStatusClass}" id="playCardBtn_${index}">▶ Audio</button>
                             ${videoBtnHtml}
                             ${mosaicBtnHtml}
                             <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600;">${lockBtnIcon}</button>

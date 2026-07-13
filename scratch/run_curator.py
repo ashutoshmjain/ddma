@@ -2008,12 +2008,40 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                     pass
                 compiled_videos = list(compiled_videos_dict.values())
                 
+                # Scan for status indicators for all clip numbers
+                clip_statuses = {}
+                if ep_num_match and os.path.exists(clips_dir):
+                    ep_num = ep_num_match.group(0)
+                    for file in os.listdir(clips_dir):
+                        if file.startswith(f"{ep_num}-"):
+                            try:
+                                parts = file.split("-")
+                                if len(parts) >= 2:
+                                    clip_num_str = parts[1]
+                                    if "." in clip_num_str:
+                                        clip_num_str = clip_num_str.split(".")[0]
+                                    clip_num = int(clip_num_str)
+                                    
+                                    if clip_num not in clip_statuses:
+                                        clip_statuses[clip_num] = {"has_audio": False, "video_state": "none"}
+                                    
+                                    if file.endswith(".mp3"):
+                                        clip_statuses[clip_num]["has_audio"] = True
+                                    elif file.endswith("-original.mp4"):
+                                        clip_statuses[clip_num]["video_state"] = "compiled"
+                                    elif file.endswith(".mp4"):
+                                        if clip_statuses[clip_num].get("video_state") != "compiled":
+                                            clip_statuses[clip_num]["video_state"] = "draft"
+                            except Exception:
+                                pass
+                                
                 payload = {
                     "info": info,
                     "plan": plan_data,
                     "transcription": trans_data,
                     "has_snapshot": has_snapshot,
-                    "compiled_videos": compiled_videos
+                    "compiled_videos": compiled_videos,
+                    "clip_statuses": clip_statuses
                 }
                 
                 self.send_response(200)
