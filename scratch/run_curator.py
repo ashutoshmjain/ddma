@@ -1200,6 +1200,13 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 # Retrieve clip text and title from project plan.json
                 project_dir = os.path.join("projects", project_id)
+                
+                info_path = os.path.join(project_dir, "project_info.json")
+                if not os.path.exists(info_path):
+                    raise Exception(f"project_info.json for project {project_id} not found.")
+                with open(info_path, "r", encoding="utf-8") as f:
+                    info = json.load(f)
+                    
                 plan_path = os.path.join(project_dir, "plan.json")
                 if not os.path.exists(plan_path):
                     raise Exception(f"plan.json for project {project_id} not found.")
