@@ -1,5 +1,5 @@
 {
-    "theme": "midnight",
+    "theme": "light",
     "export_format": "video",
     "resolution": "740x740",
     "bg_color": "black",
@@ -7,5 +7,5 @@
     "mosaic_agent_id": "674ba8d3-bf72-475f-9a0a-e34464d81a5b",
     "mosaic_mogr_node_id": "7f483a72-56bf-4da8-9852-466a538933f1",
     "mosaic_captions_node_id": "",
-    "gemini_api_key": ""
+    "gemini_api_key": "AQ.Ab8RN6JxJ3CqJ39F2UZ-4EtC0JlMWFqeevssnX52cP--C6kyDQ"
 }
