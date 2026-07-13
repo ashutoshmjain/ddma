@@ -87,7 +87,20 @@ A highly advanced creative choice in Episode 244 is the use of **Narrative Ancho
 
 ---
 
-## 6. Summary of the Unified Compilation Pipeline
+## 6. Granular Remixing & In-Context Template Casting
+
+To achieve granular intelligence, we implement a **few-shot in-context learning mechanism** for the Gemini creative agent:
+
+* **Initial Curation (Monolithic)**: We start by generating an initial end-to-end plan for the entire episode.
+* **The Template Foundation (Locked Clips)**: As the creator refines and locks early clips (e.g., Clips 1–7), they establish a concrete template containing specific pacing, music selection, voice-to-music ratios, and narrative flow.
+* **Granular Remixing (Recasting)**: When the user clicks the **Remix** button on an unlocked clip (e.g., Clip 8), the agent is fed:
+  1. **Historical Context**: The full structured data of all preceding locked clips (serving as few-shot training examples for layout, segment timings, and stings).
+  2. **Target Context**: The localized raw transcript segments matching the time window of the target clip.
+* **Result**: Gemini analyzes the preceding locked cards to recognize the established creative style and dynamically recasts the target clip's segments, titles, and stings to match that style. This aligns the new clip with the overall narrative arc without requiring a manual rebuild.
+
+---
+
+## 7. Summary of the Unified Compilation Pipeline
 
 When a creative agent triggers a build:
 1. **Segment Compile**: The backend slices individual audio segments and applies their specific segment volumes.
