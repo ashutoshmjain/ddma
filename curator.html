@@ -3890,6 +3890,32 @@
             
             // Restore scroll position to prevent jumping
             clipListContainer.scrollTop = savedScrollTop;
+
+            // Auto-detect and resume UI polling for clips with active runs (cache/recovery sync)
+            if (activeProjectPlan) {
+                activeProjectPlan.forEach((clip, index) => {
+                    if (clip.locked && clip.mosaic_run_id) {
+                        const btnEl = document.getElementById(`mosaicCardBtn_${index}`);
+                        if (btnEl && !btnEl.disabled) {
+                            fetch(`/get-mosaic-status?id=${activeProjectId}&num=${clip.num}`)
+                                .then(res => {
+                                    if (!res.ok) throw new Error("Status query failed");
+                                    return res.json();
+                                })
+                                .then(data => {
+                                    if (data.status && data.status !== "idle" && data.status !== "completed" && data.status !== "failed") {
+                                        // Resume UI polling
+                                        btnEl.disabled = true;
+                                        btnEl.innerHTML = `⏳ ${data.progress || 70}%`;
+                                        btnEl.style.backgroundImage = 'linear-gradient(135deg, #4b5563 0%, #374151 100%)';
+                                        pollMosaicStatus(index, btnEl);
+                                    }
+                                })
+                                .catch(err => console.warn("Error auto-resuming Mosaic poll:", err));
+                        }
+                    }
+                });
+            }
         }
 
         // Combine Audio
