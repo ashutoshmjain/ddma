@@ -19,9 +19,9 @@ PORT = 8000
 mosaic_runs = {}
 
 # Background thread helper for executing the Mosaic API pipeline (upload, run, poll, download)
-def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments, audio_path):
+def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments, audio_path, run_id=None):
     job_key = (project_id, int(clip_num))
-    mosaic_runs[job_key] = {"status": "starting", "progress": 0, "error": None, "run_id": None}
+    mosaic_runs[job_key] = {"status": "starting", "progress": 0, "error": None, "run_id": run_id}
     
     try:
         api_key = settings.get("mosaic_api_key")
@@ -32,6 +32,9 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         if not api_key or not agent_id:
             raise Exception("Mosaic API Key and Agent ID must be configured in System Settings first.")
         
+        headers = {"Authorization": f"Bearer {api_key}"}
+        base_url = "https://api.mosaic.so"
+        
         # 1. Locate local file
         ep_num_match = re.search(r'\d+', project_id)
         if not ep_num_match:
@@ -39,136 +42,152 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         ep_num = ep_num_match.group(0)
         
         file_path = os.path.join("clips", f"{ep_num}-{clip_num}.mp4")
-        if not os.path.exists(file_path):
-            # Compile draft video automatically!
-            mosaic_runs[job_key]["status"] = "compiling draft video"
-            mosaic_runs[job_key]["progress"] = 5
-            print(f"[{project_id}][Clip {clip_num}] Draft video file not found. Compiling automatically...")
-            
-            os.makedirs("clips", exist_ok=True)
-            temp_audio = f"temp_mosaic_audio_{project_id}_{clip_num}.mp3"
-            try:
-                compile_segments_helper(segments, temp_audio, audio_path)
-                
-                # Mux with a solid black canvas (740x740)
-                cmd = [
-                    "ffmpeg", "-y",
-                    "-f", "lavfi",
-                    "-i", "color=c=black:s=740x740:r=25",
-                    "-i", temp_audio,
-                    "-c:v", "libx264",
-                    "-tune", "stillimage",
-                    "-c:a", "aac",
-                    "-b:a", "192k",
-                    "-pix_fmt", "yuv420p",
-                    "-shortest",
-                    file_path
-                ]
-                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                if res.returncode != 0:
-                    raise Exception(f"FFmpeg automatic video compile failed: {res.stderr.decode('utf-8')}")
-            finally:
-                if os.path.exists(temp_audio):
-                    try:
-                        os.remove(temp_audio)
-                    except:
-                        pass
-        
-        # Step 2: Upload S3
-        mosaic_runs[job_key]["status"] = "requesting upload URL"
-        mosaic_runs[job_key]["progress"] = 10
-        print(f"[{project_id}][Clip {clip_num}] Requesting upload URL from Mosaic...")
-        
-        headers = {"Authorization": f"Bearer {api_key}"}
-        base_url = "https://api.mosaic.so"
-        
-        # Get upload details
-        res = requests.post(f"{base_url}/uploads/video/get_upload_url", headers=headers)
-        if res.status_code != 200:
-            raise Exception(f"Mosaic get_upload_url failed: {res.text}")
-        
-        upload_data = res.json()
-        upload_url = upload_data.get("upload_url")
-        upload_fields = upload_data.get("upload_fields", {})
-        video_id = upload_data.get("video_id")
-        
-        if not upload_url or not video_id:
-            raise Exception("Failed to retrieve upload parameters from Mosaic.")
-        
-        # Post file to S3
-        mosaic_runs[job_key]["status"] = "uploading media"
-        mosaic_runs[job_key]["progress"] = 30
-        print(f"[{project_id}][Clip {clip_num}] Uploading {file_path} to Mosaic S3 storage...")
-        
-        with open(file_path, "rb") as f:
-            files = {
-                "file": (os.path.basename(file_path), f, "video/mp4")
-            }
-            res_s3 = requests.post(upload_url, data=upload_fields, files=files)
-            
-        if res_s3.status_code not in (200, 201, 204):
-            raise Exception(f"S3 upload failed: Status code {res_s3.status_code}, response: {res_s3.text}")
-        
-        # Finalize upload
-        mosaic_runs[job_key]["status"] = "finalizing upload"
-        mosaic_runs[job_key]["progress"] = 50
-        print(f"[{project_id}][Clip {clip_num}] Finalizing upload on Mosaic...")
-        
-        res_finalize = requests.post(
-            f"{base_url}/uploads/video/finalize_upload",
-            headers=headers,
-            json={"video_id": video_id}
-        )
-        if res_finalize.status_code != 200:
-            raise Exception(f"Mosaic finalize_upload failed: {res_finalize.text}")
-        
-        # Step 3: Trigger Agent Run
-        mosaic_runs[job_key]["status"] = "triggering run"
-        mosaic_runs[job_key]["progress"] = 60
-        print(f"[{project_id}][Clip {clip_num}] Triggering Mosaic agent run...")
-        
-        update_params = {}
-        if mogr_node_id:
-            update_params[mogr_node_id] = {
-                "prompt": prompt_content,
-                "model_tier": "pro",
-                "style_video_url": "https://www.youtube.com/shorts/xybpfL1GnEQ",
-                "frequency_per_minute": "auto",
-                "reference_links": "",
-                "only_generate_full_screen_graphics": True
-            }
-        if captions_node_id:
-            update_params[captions_node_id] = {
-                "font1": "Montserrat",
-                "font2": "Besley",
-                "animation_style": "cinematic",
-                "caption_position": "bottom"
-            }
-        
-        run_body = {
-            "video_ids": [video_id]
-        }
-        if update_params:
-            run_body["update_params"] = update_params
-        
-        res_run = requests.post(
-            f"{base_url}/agent/{agent_id}/run",
-            headers=headers,
-            json=run_body
-        )
-        if res_run.status_code != 200:
-            raise Exception(f"Failed to start agent run on Mosaic: {res_run.text}")
-        
-        run_id = res_run.json().get("run_id")
+
         if not run_id:
-            raise Exception("Failed to retrieve run ID from Mosaic execution response.")
+            if not os.path.exists(file_path):
+                # Compile draft video automatically!
+                mosaic_runs[job_key]["status"] = "compiling draft video"
+                mosaic_runs[job_key]["progress"] = 5
+                print(f"[{project_id}][Clip {clip_num}] Draft video file not found. Compiling automatically...")
+                
+                os.makedirs("clips", exist_ok=True)
+                temp_audio = f"temp_mosaic_audio_{project_id}_{clip_num}.mp3"
+                try:
+                    compile_segments_helper(segments, temp_audio, audio_path)
+                    
+                    # Mux with a solid black canvas (740x740)
+                    cmd = [
+                        "ffmpeg", "-y",
+                        "-f", "lavfi",
+                        "-i", "color=c=black:s=740x740:r=25",
+                        "-i", temp_audio,
+                        "-c:v", "libx264",
+                        "-tune", "stillimage",
+                        "-c:a", "aac",
+                        "-b:a", "192k",
+                        "-pix_fmt", "yuv420p",
+                        "-shortest",
+                        file_path
+                    ]
+                    res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    if res.returncode != 0:
+                        raise Exception(f"FFmpeg automatic video compile failed: {res.stderr.decode('utf-8')}")
+                finally:
+                    if os.path.exists(temp_audio):
+                        try:
+                            os.remove(temp_audio)
+                        except:
+                            pass
             
-        mosaic_runs[job_key]["run_id"] = run_id
+            # Step 2: Upload S3
+            mosaic_runs[job_key]["status"] = "requesting upload URL"
+            mosaic_runs[job_key]["progress"] = 10
+            print(f"[{project_id}][Clip {clip_num}] Requesting upload URL from Mosaic...")
+            
+            # Get upload details
+            res = requests.post(f"{base_url}/uploads/video/get_upload_url", headers=headers)
+            if res.status_code != 200:
+                raise Exception(f"Mosaic get_upload_url failed: {res.text}")
+            
+            upload_data = res.json()
+            upload_url = upload_data.get("upload_url")
+            upload_fields = upload_data.get("upload_fields", {})
+            video_id = upload_data.get("video_id")
+            
+            if not upload_url or not video_id:
+                raise Exception("Failed to retrieve upload parameters from Mosaic.")
+            
+            # Post file to S3
+            mosaic_runs[job_key]["status"] = "uploading media"
+            mosaic_runs[job_key]["progress"] = 30
+            print(f"[{project_id}][Clip {clip_num}] Uploading {file_path} to Mosaic S3 storage...")
+            
+            with open(file_path, "rb") as f:
+                files = {
+                    "file": (os.path.basename(file_path), f, "video/mp4")
+                }
+                res_s3 = requests.post(upload_url, data=upload_fields, files=files)
+                
+            if res_s3.status_code not in (200, 201, 204):
+                raise Exception(f"S3 upload failed: Status code {res_s3.status_code}, response: {res_s3.text}")
+            
+            # Finalize upload
+            mosaic_runs[job_key]["status"] = "finalizing upload"
+            mosaic_runs[job_key]["progress"] = 50
+            print(f"[{project_id}][Clip {clip_num}] Finalizing upload on Mosaic...")
+            
+            res_finalize = requests.post(
+                f"{base_url}/uploads/video/finalize_upload",
+                headers=headers,
+                json={"video_id": video_id}
+            )
+            if res_finalize.status_code != 200:
+                raise Exception(f"Mosaic finalize_upload failed: {res_finalize.text}")
+            
+            # Step 3: Trigger Agent Run
+            mosaic_runs[job_key]["status"] = "triggering run"
+            mosaic_runs[job_key]["progress"] = 60
+            print(f"[{project_id}][Clip {clip_num}] Triggering Mosaic agent run...")
+            
+            update_params = {}
+            if mogr_node_id:
+                update_params[mogr_node_id] = {
+                    "prompt": prompt_content,
+                    "model_tier": "pro",
+                    "style_video_url": "https://www.youtube.com/shorts/xybpfL1GnEQ",
+                    "frequency_per_minute": "auto",
+                    "reference_links": "",
+                    "only_generate_full_screen_graphics": True
+                }
+            if captions_node_id:
+                update_params[captions_node_id] = {
+                    "font1": "Montserrat",
+                    "font2": "Besley",
+                    "animation_style": "cinematic",
+                    "caption_position": "bottom"
+                }
+            
+            run_body = {
+                "video_ids": [video_id]
+            }
+            if update_params:
+                run_body["update_params"] = update_params
+            
+            res_run = requests.post(
+                f"{base_url}/agent/{agent_id}/run",
+                headers=headers,
+                json=run_body
+            )
+            if res_run.status_code != 200:
+                raise Exception(f"Failed to start agent run on Mosaic: {res_run.text}")
+            
+            run_id = res_run.json().get("run_id")
+            if not run_id:
+                raise Exception("Failed to retrieve run ID from Mosaic execution response.")
+                
+            # Save the run_id inside plan.json persistently
+            try:
+                plan_path = os.path.join("projects", project_id, "plan.json")
+                if os.path.exists(plan_path):
+                    with open(plan_path, "r", encoding="utf-8") as f:
+                        plan = json.load(f)
+                    for c in plan:
+                        if int(c.get("num", -1)) == int(clip_num):
+                            c["mosaic_run_id"] = run_id
+                            break
+                    with open(plan_path, "w", encoding="utf-8") as f:
+                        json.dump(plan, f, indent=4)
+                    print(f"[{project_id}][Clip {clip_num}] Persisted mosaic_run_id {run_id} to plan.json")
+            except Exception as e:
+                print(f"[{project_id}][Clip {clip_num}] Warning: Failed to save mosaic_run_id: {e}")
+
+            mosaic_runs[job_key]["run_id"] = run_id
+
+        # Resume / Start Step 4: Polling
         mosaic_runs[job_key]["status"] = "running"
         mosaic_runs[job_key]["progress"] = 70
-        print(f"[{project_id}][Clip {clip_num}] Mosaic agent run {run_id} is now processing...")
+        print(f"[{project_id}][Clip {clip_num}] Polling Mosaic run {run_id} status...")
         
-        # Step 4: Polling
         max_attempts = 120  # 10 minutes max
         attempt = 0
         final_video_url = None
@@ -1262,11 +1281,80 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if job_key in mosaic_runs and mosaic_runs[job_key].get("status") in ("starting", "requesting upload URL", "uploading media", "finalizing upload", "triggering run", "running", "downloading output"):
                     raise Exception("An export is already in progress for this clip.")
                 
+                # Check for existing run ID in plan.json (cache/resume support)
+                force_param = params.get('force', ['false'])[0].lower() == 'true'
+                existing_run_id = target_clip.get("mosaic_run_id")
+                
+                if existing_run_id and not force_param:
+                    base_url = "https://api.mosaic.so"
+                    headers = {"Authorization": f"Bearer {api_key}"}
+                    try:
+                        res_status = requests.get(f"{base_url}/agent_run/{existing_run_id}", headers=headers)
+                        if res_status.status_code == 200:
+                            run_info = res_status.json()
+                            status = run_info.get("status")
+                            print(f"[{project_id}][Clip {clip_num}] Found existing run {existing_run_id} on Mosaic. API Status: {status}")
+                            
+                            if status == "completed":
+                                # Resume completed run to download video
+                                audio_path = os.path.join(project_dir, info["audio_filename"])
+                                segments = target_clip.get("segments", [])
+                                t = threading.Thread(
+                                    target=run_mosaic_pipeline,
+                                    args=(project_id, int(clip_num), settings, prompt_content, segments, audio_path, existing_run_id),
+                                    daemon=True
+                                )
+                                t.start()
+                                
+                                self.send_response(200)
+                                self.send_header('Content-type', 'application/json')
+                                self.send_header('Access-Control-Allow-Origin', '*')
+                                self.end_headers()
+                                self.wfile.write(json.dumps({"success": True, "message": "Resuming completed run to download video."}).encode('utf-8'))
+                                return
+                            elif status in ("running", "starting"):
+                                # Resume active run polling
+                                audio_path = os.path.join(project_dir, info["audio_filename"])
+                                segments = target_clip.get("segments", [])
+                                t = threading.Thread(
+                                    target=run_mosaic_pipeline,
+                                    args=(project_id, int(clip_num), settings, prompt_content, segments, audio_path, existing_run_id),
+                                    daemon=True
+                                )
+                                t.start()
+                                
+                                self.send_response(200)
+                                self.send_header('Content-type', 'application/json')
+                                self.send_header('Access-Control-Allow-Origin', '*')
+                                self.end_headers()
+                                self.wfile.write(json.dumps({"success": True, "message": "Resuming active run polling."}).encode('utf-8'))
+                                return
+                            else:
+                                print(f"[{project_id}][Clip {clip_num}] Existing run {existing_run_id} has failed or cancelled. Clearing to start fresh.")
+                        else:
+                            print(f"[{project_id}][Clip {clip_num}] Existing run {existing_run_id} not found on Mosaic API. Clearing to start fresh.")
+                    except Exception as poll_ex:
+                        print(f"[{project_id}][Clip {clip_num}] Warning: Failed to query existing run status: {poll_ex}")
+                
+                # If force rerun, or if the existing run has failed/is missing, clear it in plan.json
+                if existing_run_id:
+                    try:
+                        for c in plan:
+                            if int(c.get("num", -1)) == int(clip_num):
+                                if "mosaic_run_id" in c:
+                                    del c["mosaic_run_id"]
+                                break
+                        with open(plan_path, "w", encoding="utf-8") as f:
+                            json.dump(plan, f, indent=4)
+                        print(f"[{project_id}][Clip {clip_num}] Cleared previous mosaic_run_id from plan.json")
+                    except Exception as clear_ex:
+                        print(f"Warning: Failed to clear mosaic_run_id: {clear_ex}")
+
                 # Load segments and audio source path for automatic draft video generation if needed
                 audio_path = os.path.join(project_dir, info["audio_filename"])
                 segments = target_clip.get("segments", [])
 
-                # Kick off thread
+                # Kick off new thread
                 t = threading.Thread(
                     target=run_mosaic_pipeline,
                     args=(project_id, int(clip_num), settings, prompt_content, segments, audio_path),
@@ -1455,7 +1543,87 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     raise Exception("Missing project id or clip number.")
                 
                 job_key = (project_id, int(clip_num))
-                job = mosaic_runs.get(job_key, {"status": "idle", "progress": 0, "error": None})
+                job = mosaic_runs.get(job_key)
+                
+                if not job:
+                    # Self-healing check: check if a run was already registered in plan.json
+                    project_dir = os.path.join("projects", project_id)
+                    plan_path = os.path.join(project_dir, "plan.json")
+                    mosaic_run_id = None
+                    target_clip = None
+                    if os.path.exists(plan_path):
+                        try:
+                            with open(plan_path, "r", encoding="utf-8") as f:
+                                plan = json.load(f)
+                            for c in plan:
+                                if int(c.get("num", -1)) == int(clip_num):
+                                    mosaic_run_id = c.get("mosaic_run_id")
+                                    target_clip = c
+                                    break
+                        except Exception as pe:
+                            print(f"Warning: Failed to parse plan.json for run recovery: {pe}")
+                    
+                    if mosaic_run_id:
+                        print(f"[{project_id}][Clip {clip_num}] Found persisted mosaic_run_id {mosaic_run_id}. Restoring pipeline run...")
+                        
+                        # Load settings
+                        settings_path = "settings.json"
+                        settings = {}
+                        if os.path.exists(settings_path):
+                            with open(settings_path, "r", encoding="utf-8") as f:
+                                settings = json.load(f)
+                        
+                        # Load project info for audio
+                        info_path = os.path.join(project_dir, "project_info.json")
+                        info = {}
+                        if os.path.exists(info_path):
+                            with open(info_path, "r", encoding="utf-8") as f:
+                                info = json.load(f)
+                        
+                        audio_path = os.path.join(project_dir, info.get("audio_filename", ""))
+                        segments = target_clip.get("segments", [])
+                        
+                        # Construct prompt
+                        title = target_clip.get("title", f"Clip {clip_num}")
+                        speech_texts = []
+                        for seg in segments:
+                            if seg.get("type") == "audio" and seg.get("text"):
+                                speech_texts.append(seg.get("text").strip())
+                        transcript = " ".join(speech_texts)
+                        
+                        mogr_base_rules = (
+                            "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - around 150 to 180 seconds long)\n\n"
+                            "- Cover the full timeline of the video with Dan Koe–style motion graphics. Entire length of Video must be covered with no blanks\n\n"
+                            "- Plan around 13 to 15 segments of roughly ~ 16 seconds each. Each segment renders a graphic with changing visuals and multiple text reveals.\n\n"
+                            "- Leave ample border on top and same on the bottom for captions that I will add manually later - NO BORDER ON SIDES.\n\n"
+                            "- Assume background video is a blank black glossy screen - so you must keep persistent visuals (animation or text) through out the segments and segments must merge into each other like a relay race.\n\n"
+                            "--------------------------------------------------\n"
+                            "PACING & ANIMATION RULES\n"
+                            "--------------------------------------------------\n"
+                            "- No static holds beyond 6 seconds. Introduce visual changes every 2–4 seconds.\n"
+                            "- Use only basic transforms: opacity, position, scale. Keep animations single-property per element.\n"
+                            "- Prefer step-based reveals over continuous motion. Avoid preset/template animations.\n"
+                            "- All text fields must remain fully editable. Do not flatten or rasterize text layers.\n"
+                            "- No gaps in infographic coverage. No dependency on external assets."
+                        )
+                        prompt_content = f"{mogr_base_rules}\n\n--------------------------------------------------\nDYNAMIC CLIP CONTEXT\n--------------------------------------------------\n- Animate visuals to explain this Clip Title: {title}"
+                        if transcript:
+                            prompt_content += f"\n- Spoken Transcript Text: {transcript}"
+                        if len(prompt_content) > 1200:
+                            prompt_content = prompt_content[:1197] + "..."
+                        
+                        # Spawn background thread to resume polling/download
+                        t = threading.Thread(
+                            target=run_mosaic_pipeline,
+                            args=(project_id, int(clip_num), settings, prompt_content, segments, audio_path, mosaic_run_id),
+                            daemon=True
+                        )
+                        t.start()
+                        
+                        job = {"status": "running", "progress": 70, "error": None, "run_id": mosaic_run_id}
+                        mosaic_runs[job_key] = job
+                    else:
+                        job = {"status": "idle", "progress": 0, "error": None}
                 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')

@@ -3207,12 +3207,20 @@
                 return;
             }
             
+            let force = false;
+            if (clip.mosaic_run_id) {
+                const reuse = confirm(`A previous Mosaic run was detected for Clip ${clip.num}.\n\nClick [OK] to recover/download the previous render instantly.\nClick [Cancel] to trigger a brand-new run.`);
+                if (!reuse) {
+                    force = true;
+                }
+            }
+            
             btnEl.disabled = true;
             btnEl.innerHTML = '⏳ Starting...';
             btnEl.style.backgroundImage = 'linear-gradient(135deg, #4b5563 0%, #374151 100%)';
             updateStateBar(`Mosaic: Initializing run for Clip ${clip.num}...`);
             
-            fetch(`/export-to-mosaic?id=${activeProjectId}&num=${clip.num}`, {
+            fetch(`/export-to-mosaic?id=${activeProjectId}&num=${clip.num}&force=${force}`, {
                 method: 'POST'
             })
             .then(res => {
