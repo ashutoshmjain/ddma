@@ -50,40 +50,46 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         file_path = os.path.join("clips", f"{ep_num}-{clip_num}.mp4")
 
         if not run_id:
-            if not os.path.exists(file_path):
-                # Compile draft video automatically!
-                mosaic_runs[job_key]["status"] = "compiling draft video"
-                mosaic_runs[job_key]["progress"] = 5
-                print(f"[{project_id}][Clip {clip_num}] Draft video file not found. Compiling automatically...")
-                
-                os.makedirs("clips", exist_ok=True)
-                temp_audio = f"temp_mosaic_audio_{project_id}_{clip_num}.mp3"
+            # Force recompilation of the black draft video on a fresh Mosaic run so any audio changes are captured!
+            if os.path.exists(file_path):
                 try:
-                    compile_segments_helper(segments, temp_audio, audio_path)
+                    os.remove(file_path)
+                except Exception as rm_err:
+                    print(f"Warning: could not delete old clip file: {rm_err}")
                     
-                    # Mux with a solid black canvas (740x740)
-                    cmd = [
-                        "ffmpeg", "-y",
-                        "-f", "lavfi",
-                        "-i", "color=c=black:s=740x740:r=25",
-                        "-i", temp_audio,
-                        "-c:v", "libx264",
-                        "-tune", "stillimage",
-                        "-c:a", "aac",
-                        "-b:a", "192k",
-                        "-pix_fmt", "yuv420p",
-                        "-shortest",
-                        file_path
-                    ]
-                    res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    if res.returncode != 0:
-                        raise Exception(f"FFmpeg automatic video compile failed: {res.stderr.decode('utf-8')}")
-                finally:
-                    if os.path.exists(temp_audio):
-                        try:
-                            os.remove(temp_audio)
-                        except:
-                            pass
+            # Compile draft video automatically!
+            mosaic_runs[job_key]["status"] = "compiling draft video"
+            mosaic_runs[job_key]["progress"] = 5
+            print(f"[{project_id}][Clip {clip_num}] Compiling fresh black draft video...")
+            
+            os.makedirs("clips", exist_ok=True)
+            temp_audio = f"temp_mosaic_audio_{project_id}_{clip_num}.mp3"
+            try:
+                compile_segments_helper(segments, temp_audio, audio_path)
+                
+                # Mux with a solid black canvas (740x740)
+                cmd = [
+                    "ffmpeg", "-y",
+                    "-f", "lavfi",
+                    "-i", "color=c=black:s=740x740:r=25",
+                    "-i", temp_audio,
+                    "-c:v", "libx264",
+                    "-tune", "stillimage",
+                    "-c:a", "aac",
+                    "-b:a", "192k",
+                    "-pix_fmt", "yuv420p",
+                    "-shortest",
+                    file_path
+                ]
+                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                if res.returncode != 0:
+                    raise Exception(f"FFmpeg automatic video compile failed: {res.stderr.decode('utf-8')}")
+            finally:
+                if os.path.exists(temp_audio):
+                    try:
+                        os.remove(temp_audio)
+                    except:
+                        pass
             
             # Step 2: Upload S3
             mosaic_runs[job_key]["status"] = "requesting upload URL"
