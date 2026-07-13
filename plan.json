@@ -231,7 +231,8 @@
                 "crossfade": 0.3
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "db6e1490-78e8-4667-b32a-42298957ac91"
     },
     {
         "num": 8,
