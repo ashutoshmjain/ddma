@@ -200,7 +200,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         mosaic_runs[job_key]["progress"] = 70
         print(f"[{project_id}][Clip {clip_num}] Polling Mosaic run {run_id} status...")
         
-        max_attempts = 120  # 10 minutes max
+        max_attempts = 360  # 30 minutes max
         attempt = 0
         final_video_url = None
         
@@ -232,11 +232,11 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                     err_msg += f" Detailed errors: {json.dumps(node_errors)}"
                 raise Exception(f"Mosaic run ended with status '{status}': {err_msg}")
             
-            # Update progress incrementally while running
-            mosaic_runs[job_key]["progress"] = min(70 + int(attempt * 0.2), 90)
+            # Update progress incrementally while running (scales to 90 over 360 attempts)
+            mosaic_runs[job_key]["progress"] = min(70 + int(attempt * 0.06), 90)
         
         if not final_video_url:
-            raise Exception("Mosaic run timed out after 10 minutes.")
+            raise Exception("Mosaic run timed out after 30 minutes.")
             
         # Step 5: Download finished video
         mosaic_runs[job_key]["status"] = "downloading output"

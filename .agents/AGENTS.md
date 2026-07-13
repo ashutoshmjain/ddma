@@ -66,7 +66,7 @@ Below is the step-by-step operational workflow for processing podcast episodes, 
 *   **Output**: Saves the draft video directly to `clips/<episode>-<num>.mp4` (e.g., `clips/243-1.mp4`).
 
 ### 6. Infographic Overlay (Mosaic)
-*   **Action**: Import the draft `clips/<episode>-<num>.mp4` video into Mosaic to add infographics and burn-in captions. Use Mosaic's timeline to trim any remaining millisecond-level room tone silence at the end to ensure the video loops seamlessly when auto-played on Instagram/TikTok.
+*   **Action**: Import the draft `clips/<episode>-<num>.mp4` video into Mosaic to add infographics and visual graphics. Use Mosaic's timeline to trim any remaining millisecond-level room tone silence at the end to ensure the video loops seamlessly when auto-played on Instagram/TikTok.
 *   **Output**: Export the finished animation, overwriting the file at `clips/<episode>-<num>.mp4`.
 
 ### 7. Add Intro
