@@ -202,13 +202,14 @@
             },
             {
                 "type": "music",
-                "music_file": "Operator Error (Sting) - Gunnar Olsen.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 9,
+                "crossfade": 1.5
             }
         ],
         "locked": true,
-        "crossfade": 0.5
+        "crossfade": 0.5,
+        "mosaic_run_id": "bdf153ac-112d-4588-8b7b-d1c0f038b3b8"
     },
     {
         "num": 7,
@@ -219,40 +220,68 @@
         "segments": [
             {
                 "type": "audio",
-                "start": 615.2,
-                "end": 739.26,
-                "duration": 124.05999999999995,
-                "text": "(Speech Segment)"
+                "start": 626.42,
+                "end": 636.34,
+                "duration": 9.92,
+                "text": "if  you  are  a  revolutionary,  gently  presenting  new  empirical  data  is  a  losing  strategy.  The  old  guard  will  just  duct  tape  their  theory  to  absorb  your  data."
             },
             {
                 "type": "music",
-                "music_file": "Demilitarized Zone (Sting) - Ethan Meixsell.mp3",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
                 "duration": 4.5,
-                "crossfade": 0.3
+                "crossfade": 1
+            },
+            {
+                "type": "audio",
+                "start": 675.82,
+                "end": 822.26,
+                "duration": 146.44,
+                "text": "The  pioneers  of  the  early  modern  era  systematically  demolished  ancient  orthodoxy,  not  with  overwhelmingly  better  telescopes  or  better  data,  but  by  exploiting  massive  conceptual  holes  in  the  classical  logic.  Let's  look  at  exactly  how  they  executed  that.  Starting  with  the  demolition  of  classical  astronomy.  Let's  do  it.  When  we  think  of  Nicholas  Copernicus,  the  myth  we  are  taught  in  elementary  school  is  very  simple.  He  looked  up  at  the  stars,  gathered  better  observational  data,  and  realized  that  a  heliocentric  model,  the  earth  orbiting  the  sun,  was  simpler,  cleaner,  and  more  accurate  than  the  1400  year  old  Talamex  system,  where  everything  orbited  a  stationary  earth.  Right.  That's  the  popular  narrative,  but  it  is  entirely  false.  Completely  false.  Copernicus  did  not  have  access  to  decisively  superior  data.  The  telescope  hadn't  even  been  invented  yet.  Oh,  wow.  Right.  He  was  using  the  exact  same  naked  eye  observations  that  the  ancient  Greeks  and  Islamic  astronomers  have  been  using  for  centuries.  In  fact,  initially,  his  empirical  data  was  arguably  inferior  to  the  highly  refined  established  models  of  his  day.  So  the  data  wasn't  better.  Not  at  all.  Furthermore,  his  heliocentric  model  was  not  immediately  simpler  in  terms  of  predictive  calculation.  The  research  paper  explicitly  debunks  something  called  the  8034  syndrome.  We  should  clear  this  up  because  I've  definitely  heard  this,  man.  It's  a  very  persistent  myth.  The  story  goes  that  Talame  used  80  convoluted  circles  called  epicycles  to  predict  planetary  motion.  And  Copernicus  elegantly  beautifully  reduced  it  to  just  34  circles.  The  math  just  got  simpler.  Right.  And  historians  of  science  have  proven  this  is  a  complete  mathematical  fiction.  It  never  happened.  Wait,  really?  It  never  happened.   To  match  the  naked  eye  predictive  accuracy  of  Talamex  established  earth -centered  model,  Copernicus'  own  sun -centered  model  had  to  retain  a  highly  complex  tangled  system  of  epicycles  and  eccentric  difference.  So  it  was  just  as  messy?  Mechanically,  calculating  where  Jupiter  would  be  next  Tuesday  using  Copernicus'  math  was  just  as  convoluted  and  exhausting  as  using  Talamex  math.  OK,  so  if  it  wasn't  better  data  and  it  wasn't  a  simpler  mathematical  calculation,  what  on  earth  was  Copernicus'  true  attack  vector?  How  did  he  actually  overthrow  1400  years  of  consensus?  What's  fascinating  here  is  that  Copernicus  directed  his  attack  entirely  at  a  conceptual  flaw  in  Talamex's  model.  He  didn't  attack  the  data.  He  attacked  a  highly  specific  geometric  cheat  code  that  Talamex  had  invented.  And  what  was  that  called?  The  Equant."
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 10,
+                "crossfade": 2
             }
         ],
-        "locked": false,
-        "mosaic_run_id": "db6e1490-78e8-4667-b32a-42298957ac91"
+        "locked": true,
+        "mosaic_run_id": "099cac0d-0c9d-43b8-9e1d-2197784209b9"
     },
     {
         "num": 8,
-        "title": "Ptolemy's Equant Cheat",
+        "title": "The Geometric Cheat Code",
         "bridge_text": [
-            "How did 18th-century chemists explain a substance that supposedly had negative weight?"
+            "How did Galileo use this exact same playbook of conceptual demolition to shatter the ancient laws of physics?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 790.54,
-                "end": 923.94,
-                "duration": 133.4000000000001,
-                "text": "(Speech Segment)"
+                "start": 822.4,
+                "end": 836.14,
+                "duration": 13.74,
+                "text": "OK, we need to explain the Equant using strict geometric facts. We can't gloss over this because the Equant is the specific mechanism of the intellectual crisis. It is the contradiction that brought down the classical universe. Exactly."
             },
             {
                 "type": "music",
-                "music_file": "Dewey, Cheedham, and Howe (Sting) - John Deley and the 41 Players.mp3",
+                "music_file": "Operator Error (Sting) - Gunnar Olsen.mp3",
                 "duration": 4.5,
-                "crossfade": 0.3
+                "crossfade": 0.3,
+                "volume": 1.0
+            },
+            {
+                "type": "audio",
+                "start": 836.7,
+                "end": 969.14,
+                "duration": 132.44,
+                "text": "To understand the Equant, you first have to understand the foundational, non-negotiable philosophical ideal of classical astronomy, dating all the way back to Aristotle and Plato. Which was? That ideal was. Yeah. Uniform circular motion. The heavens were considered a realm of divine perfection. Therefore celestial bodies, the planets, the sun, the stars, must move in perfect circles, and they must move at constant unvarying speeds around a central point. Perfection doesn't speed up or slow down. But there is a massive empirical problem with that ideal. When you actually stand in a field and observe the planets from Earth over a few months, they don't look like they're moving at constant speeds. They really don't. Mars, for instance, sometimes appears to speed up, sometimes it slows down, and sometimes it even appears to stop and move backward in the sky, which we call retrograde motion. Right. So Talamex had a massive headache. He had to make his Earth-centered model accurately predict these varying planetary speeds. While still pretending to adhere to the philosophical rule of perfect uniform circular motion. Talk about duct tape. Oh, this is the ultimate duct tape. To do this, he introduced a brilliant, but ultimately corrupt, geometric concept. The equant point. Walk us through the geometry of the equant. Where is it physically? Imagine the Earth is near the center of a massive circle, and a planet is traveling along the edge of that circle. The equant is an imaginary, empty offset point in space. So it's not the center of the circle. And it is not the Earth. No, it is just a mathematically defined, invisible dot floating in space opposite the Earth. Talamex posited that if you were standing exactly on this imaginary equant point looking out at the planet, the planet would appear to sweep out equal angles in equal times. In other words, from the highly specific perspective of this completely empty offset point in space, the angular motion looked mathematically uniform. The math worked out beautifully. Yes, the predictive math worked. But physically, along its actual circular path in the real universe, the planet was still changing physical speeds. I see. It had to be accelerating and decelerating to maintain that illusion of uniform angular velocity from the perspective of the equant point."
+            },
+            {
+                "type": "music",
+                "music_file": "deepDive-soft-ok.mp3",
+                "duration": 6.5,
+                "crossfade": 0.5,
+                "volume": 1.0
             }
         ],
         "locked": false

@@ -17,10 +17,14 @@ DeepDive Media Automator (DDMA) is a python CLI toolkit and an interactive web c
   * **Muxed Video (`.mp4`)**: Automatically overlays the mixed audio with a solid color canvas at custom resolutions (`740x740` square, `1080x1920` vertical reels, `1920x1080` landscape) and colors (presets or custom hex code).
 * **Automatic Title Card Intro Prepending**: Pillow generates clean title cards with multi-line wrapping and joins them to the master clip using FFmpeg timescale normalization.
 * **🌌 Mosaic AI Ingest & Recovery Integration**:
-  * **Automated Upload & Execution**: Export your local draft video compiles directly to the Mosaic API to generate premium AI infographic motion graphics overlays.
+  * **Automated Upload & Execution**: Export your local draft video compiles directly to the Mosaic API to generate premium AI infographic and motion graphics overlays (with a 30-minute timeout limit). Note: Cinematic captions have been disabled to focus purely on high-fidelity motion graphics.
   * **Persistent Run ID Storage**: Persists generated run IDs inside the project's `plan.json` database.
   * **Self-Healing Recovery & Cache**: If the server restarts or the browser page is refreshed, the backend automatically queries the Mosaic API to check status and resumes the background polling/download thread.
   * **One-Click Recovery & Force Rerun**: Prompt-guided download recovery allows you to retrieve completed renders instantly without wasting credits, while also supporting fresh reruns.
+* **🔄 Granular AI Remixing & In-Context Recasting**:
+  * **Granular Intelligence**: Click the `🔄 Remix` button on any unlocked clip to recast it using Gemini (supporting high-performance models like `gemini-2.5-flash`).
+  * **In-Context Few-Shot Templates**: Gemini automatically analyzes all preceding locked clips (incorporating their style, voice timings, music stings, and pacing) to structure the target clip's segments and curiosity questions seamlessly.
+
 
 ---
 
