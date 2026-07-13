@@ -630,6 +630,194 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_error(500, f"Error saving plan: {e}")
                 return
                 
+        elif parsed_url.path == '/remix-clip':
+            project_id = params.get('id', [None])[0]
+            clip_num = int(params.get('num', [-1])[0])
+            
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                if clip_num < 0:
+                    raise Exception("Invalid clip number.")
+                
+                # Check for Gemini API key
+                settings_api_key = None
+                if os.path.exists("settings.json"):
+                    try:
+                        with open("settings.json", "r", encoding="utf-8") as sf:
+                            s_data = json.load(sf)
+                            settings_api_key = s_data.get("gemini_api_key")
+                    except Exception as se:
+                        print(f"Warning: Failed to load settings.json: {se}")
+                
+                api_key = settings_api_key or os.environ.get("GEMINI_API_KEY")
+                if not api_key:
+                    raise Exception("GEMINI_API_KEY environment variable or settings config is not set.")
+                
+                project_dir = os.path.join("projects", project_id)
+                plan_path = os.path.join(project_dir, "plan.json")
+                if not os.path.exists(plan_path):
+                    raise Exception(f"plan.json not found for project {project_id}.")
+                
+                with open(plan_path, "r", encoding="utf-8") as f:
+                    plan_data = json.load(f)
+                
+                # Find current clip and preceding locked clips
+                target_clip = None
+                preceding_locked_clips = []
+                for c in plan_data:
+                    c_num = int(c.get("num", -1))
+                    if c_num == clip_num:
+                        target_clip = c
+                    elif c_num < clip_num and c.get("locked"):
+                        preceding_locked_clips.append(c)
+                
+                if not target_clip:
+                    raise Exception(f"Clip {clip_num} not found in project plan.")
+                
+                # Load transcription.json
+                trans_path = os.path.join(project_dir, "transcription.json")
+                if not os.path.exists(trans_path):
+                    raise Exception("transcription.json not found in project directory.")
+                
+                with open(trans_path, "r", encoding="utf-8") as f:
+                    trans_data = json.load(f)
+                
+                # Collect neighborhood of current clip from transcription
+                orig_start = None
+                orig_end = None
+                for seg in target_clip.get("segments", []):
+                    if seg.get("type") == "audio":
+                        s = float(seg.get("start", 0))
+                        e = float(seg.get("end", 0))
+                        if orig_start is None or s < orig_start:
+                            orig_start = s
+                        if orig_end is None or e > orig_end:
+                            orig_end = e
+                
+                if orig_start is None:
+                    orig_start = 0.0
+                    orig_end = 120.0
+                
+                # Expand neighborhood by ± 120 seconds
+                neigh_start = max(0.0, orig_start - 120.0)
+                neigh_end = orig_end + 120.0
+                
+                # Filter segments from transcript
+                all_segments = trans_data.get("segments", [])
+                neigh_segments = []
+                for s in all_segments:
+                    s_start = float(s.get("start", 0))
+                    s_end = float(s.get("end", 0))
+                    if s_start >= neigh_start and s_end <= neigh_end:
+                        neigh_segments.append({
+                            "start": round(s_start, 2),
+                            "end": round(s_end, 2),
+                            "text": s.get("text", "").strip()
+                        })
+                
+                # Load available music stings
+                music_dir = "music"
+                music_files = []
+                if os.path.exists(music_dir):
+                    music_files = [f for f in os.listdir(music_dir) if f.lower().endswith(('.mp3', '.wav'))]
+                
+                # Formulate prompt for Gemini
+                prompt = f"""You are the Creative Remix Agent for the DeepDive Media Automator (DDMA).
+Your task is to recast the segments, title, and bridge transition text of Clip {clip_num} in the plan.
+
+### Preceding Locked Clips (Context):
+{json.dumps(preceding_locked_clips, indent=2)}
+
+### Transcript Segments in the Neighborhood:
+{json.dumps(neigh_segments, indent=2)}
+
+### Available Music Stings:
+{json.dumps(music_files, indent=2)}
+
+### Creative & Structural Rules:
+1. **Total Duration**: The total duration of the clip MUST be strictly under 2 minutes and 55 seconds (175 seconds).
+   Calculated as: `Total = Sum(segment_durations) - Sum(segment_crossfades)`.
+2. **Storyboard Structure**:
+   - Begin with a short welcome hook / high-power speech segment (10-15 seconds) from the transcript.
+   - Followed by a quick music sting (typically 4.0 - 5.0 seconds long, 0.3s crossfade, 1.0 volume).
+   - Followed by the main audio segment (content/discussion).
+   - Followed by ending music (music segment at the end that leads into the outro).
+3. **Bridge Text**: Provide a single bold curiosity-provoking transition question in "bridge_text" (a list of string(s)).
+4. **Tone & Continuity**: Reference the narrative arc from the preceding locked clips to ensure this clip continues the story logically and maintains engaging hook titles.
+
+You MUST respond with a single JSON object for Clip {clip_num} matching the schema below. Do not include markdown code block formatting or explanations outside the JSON object:
+{{
+  "num": {clip_num},
+  "title": "Recasted Clip Title",
+  "bridge_text": [
+    "Curiosity question?"
+  ],
+  "segments": [
+    {{
+      "type": "audio",
+      "start": 0.0,
+      "end": 45.5,
+      "duration": 45.5,
+      "text": "Exact text matching transcription segments"
+    }},
+    {{
+      "type": "music",
+      "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+      "duration": 4.5,
+      "crossfade": 0.3,
+      "volume": 1.0
+    }}
+  ],
+  "locked": false
+}}
+"""
+                # Call Gemini
+                genai.configure(api_key=api_key)
+                model = genai.GenerativeModel("gemini-1.5-pro")
+                response = model.generate_content(
+                    prompt,
+                    generation_config={"response_mime_type": "application/json"}
+                )
+                
+                try:
+                    recasted_clip = json.loads(response.text)
+                except Exception as je:
+                    raise Exception(f"Failed to parse Gemini response as JSON: {je}\nResponse was:\n{response.text}")
+                
+                recasted_clip["locked"] = False
+                
+                # Update plan_data
+                for idx, c in enumerate(plan_data):
+                    if int(c.get("num", -1)) == clip_num:
+                        plan_data[idx] = recasted_clip
+                        break
+                
+                # Save to project's plan.json
+                with open(plan_path, 'w', encoding='utf-8') as f:
+                    json.dump(plan_data, f, indent=4)
+                
+                # Sync to root plan.json
+                with open('plan.json', 'w', encoding='utf-8') as f:
+                    json.dump(plan_data, f, indent=4)
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "clip": recasted_clip}).encode('utf-8'))
+                return
+            except Exception as e:
+                import traceback
+                tb_str = traceback.format_exc()
+                print(f"Error in remixing clip {clip_num}: {e}\n{tb_str}")
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
+                return
+                
         elif parsed_url.path == '/save-project-snapshot':
             project_id = params.get('id', [None])[0]
             try:

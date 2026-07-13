@@ -874,13 +874,23 @@
         .btn-card-outro,
         .btn-card-video,
         .btn-card-play,
-        .btn-card-mosaic {
+        .btn-card-mosaic,
+        .btn-card-remix {
             border-radius: 6px;
             padding: 0.35rem 0.7rem;
             font-weight: 600;
             font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.15s ease;
+        }
+
+        .actions-separator {
+            width: 1px;
+            height: 1.25rem;
+            background-color: rgba(255, 255, 255, 0.12);
+            margin: 0 0.4rem;
+            align-self: center;
+            display: inline-block;
         }
 
         /* Status Colors */
@@ -3661,6 +3671,51 @@
             });
         }
         
+        function remixClip(clipIdx, btnEl) {
+            const clip = clips[clipIdx];
+            if (!activeProjectId) return;
+            
+            const proceed = confirm(`Are you sure you want to remix Clip ${clip.num}?\n\nThis will use Creative AI to autonomously recast the clip's segments, title, and bridge text based on preceding locked clips.`);
+            if (!proceed) return;
+            
+            btnEl.disabled = true;
+            btnEl.innerHTML = '⏳ Remixing...';
+            btnEl.classList.remove('btn-status-purple');
+            btnEl.classList.add('btn-status-warning');
+            updateStateBar(`Remixing: Recasting Clip ${clip.num}...`);
+            
+            fetch(`/remix-clip?id=${activeProjectId}&num=${clip.num}`, {
+                method: 'POST'
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(data => {
+                        throw new Error(data.error || "Failed to remix clip.");
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showDebug(`Clip ${clip.num} successfully remixed!`);
+                    updateStateBar(`Clip ${clip.num} successfully remixed.`);
+                    loadProjectDetails(activeProjectId);
+                } else {
+                    throw new Error(data.error || "Unknown remix error.");
+                }
+            })
+            .catch(err => {
+                console.error("Remix failed:", err);
+                alert("Remix failed: " + err.message);
+                showDebug("Remix failed: " + err.message);
+                updateStateBar("Ready (remix failed)");
+                btnEl.disabled = false;
+                btnEl.innerHTML = '🔄 Remix';
+                btnEl.classList.remove('btn-status-warning');
+                btnEl.classList.add('btn-status-purple');
+            });
+        }
+        
         function pollMosaicStatus(clipIdx, btnEl) {
             const clip = clips[clipIdx];
             const intervalId = setInterval(() => {
@@ -4192,7 +4247,11 @@
                             <button class="btn btn-secondary btn-mini btn-card-outro ${outroStatusClass}" id="outroCardBtn_${index}" style="font-weight:600;" ${outroBtnDisabled} title="Preview Outro Clip (Bridge Card Question + Fadeout)">🎬 Outro</button>
                             <button class="btn-card-play ${audioStatusClass}" id="playCardBtn_${index}">▶ Audio</button>
                             ${videoBtnHtml}
+                            
+                            <div class="actions-separator"></div>
+                            
                             ${mosaicBtnHtml}
+                            <button class="btn btn-mini btn-card-remix btn-status-purple" id="remixCardBtn_${index}" style="font-weight:600;" ${isLocked ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''} title="Recast this clip using Creative AI based on preceding locked clips">🔄 Remix</button>
                             <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600;">${lockBtnIcon}</button>
                             ${deleteCardBtnHtml}
                         </div>
@@ -4348,6 +4407,13 @@
                     card.querySelector(`#mosaicCardBtn_${index}`).addEventListener('click', function(e) {
                         e.stopPropagation();
                         exportToMosaic(index, this);
+                    });
+                }
+                
+                if (!isLocked) {
+                    card.querySelector(`#remixCardBtn_${index}`).addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        remixClip(index, this);
                     });
                 }
 
