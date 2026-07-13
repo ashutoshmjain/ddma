@@ -16,7 +16,11 @@ DeepDive Media Automator (DDMA) is a python CLI toolkit and an interactive web c
   * **Audio (`.mp3`)**: Compiles mixed segments directly.
   * **Muxed Video (`.mp4`)**: Automatically overlays the mixed audio with a solid color canvas at custom resolutions (`740x740` square, `1080x1920` vertical reels, `1920x1080` landscape) and colors (presets or custom hex code).
 * **Automatic Title Card Intro Prepending**: Pillow generates clean title cards with multi-line wrapping and joins them to the master clip using FFmpeg timescale normalization.
-* **🌌 Mosaic API Ingest Integration**: Export your local draft video compiles directly to the Mosaic API to generate premium AI infographic motion graphics overlays and cinematic captions. Fully automated ingest upload, run triggering with contextually-generated transcripts prompts, and download-overwrite cascades.
+* **🌌 Mosaic AI Ingest & Recovery Integration**:
+  * **Automated Upload & Execution**: Export your local draft video compiles directly to the Mosaic API to generate premium AI infographic motion graphics overlays and cinematic captions.
+  * **Persistent Run ID Storage**: Persists generated run IDs inside the project's `plan.json` database.
+  * **Self-Healing Recovery & Cache**: If the server restarts or the browser page is refreshed, the backend automatically queries the Mosaic API to check status and resumes the background polling/download thread.
+  * **One-Click Recovery & Force Rerun**: Prompt-guided download recovery allows you to retrieve completed renders instantly without wasting credits, while also supporting fresh reruns.
 
 ---
 
@@ -68,4 +72,5 @@ This automatically opens the dashboard in your default browser:
 6. **🌌 Optional (Send to Mosaic)**: 
    * Open the **System Settings** modal (footer shortcut) and configure your **Mosaic API Key** (`mk_...`) and **Agent ID**.
    * Lock the card to compile its video draft. Once the **`📹 Video`** preview button appears, you'll see a gradient **`🌌 Mosaic`** button.
-   * Click **`🌌 Mosaic`** to upload the clip to Mosaic, run the agent with auto-generated contextual prompts (highlighting key stats/metaphors), track live status updates, and automatically replace your local draft preview file with the finalized infographic render!
+   * Click **`🌌 Mosaic`** to upload the clip to Mosaic, trigger the run with auto-generated contextual prompts (highlighting key stats/metaphors), and track status updates inside the dashboard.
+   * **Cache & Recovery**: If your server restarts, simply open the page and the dashboard will automatically pick up where the render left off. Clicking `🌌 Mosaic` on an already-submitted clip allows you to immediately retrieve/redownload the finished render or start a fresh rerun. Once completed, the local draft preview file is automatically replaced with the finalized infographic render!
