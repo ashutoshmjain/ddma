@@ -208,12 +208,16 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             time.sleep(5)
             attempt += 1
             
-            res_status = requests.get(f"{base_url}/agent_run/{run_id}", headers=headers)
-            if res_status.status_code != 200:
-                print(f"Error checking Mosaic run status: {res_status.text}")
+            try:
+                res_status = requests.get(f"{base_url}/agent_run/{run_id}", headers=headers)
+                if res_status.status_code != 200:
+                    print(f"Error checking Mosaic run status: {res_status.text}")
+                    continue
+                run_info = res_status.json()
+            except Exception as poll_ex:
+                print(f"[{project_id}][Clip {clip_num}] Warning: Connection glitch while polling Mosaic status: {poll_ex}. Retrying...")
                 continue
             
-            run_info = res_status.json()
             status = run_info.get("status")
             
             print(f"[{project_id}][Clip {clip_num}] Polling Mosaic run status: {status}")
