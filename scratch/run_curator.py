@@ -2260,6 +2260,16 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                             except Exception:
                                 pass
                                 
+                    # Scan active background jobs in mosaic_runs to override status to 'processing'
+                    for job_key, job in mosaic_runs.items():
+                        if job_key[0] == project_id:
+                            job_clip_num = job_key[1]
+                            job_status = job.get("status")
+                            if job_status in ("starting", "compiling draft video", "requesting upload URL", "uploading media", "finalizing upload", "triggering run", "running", "downloading output", "compiling intro card"):
+                                if job_clip_num not in clip_statuses:
+                                    clip_statuses[job_clip_num] = {"has_audio": False, "video_state": "none"}
+                                clip_statuses[job_clip_num]["video_state"] = "processing"
+                                
                 payload = {
                     "info": info,
                     "plan": plan_data,
