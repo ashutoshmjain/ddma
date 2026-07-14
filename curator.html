@@ -3656,12 +3656,22 @@
                 return;
             }
             
+            const statusInfo = clipStatuses[clip.num] || { has_audio: false, video_state: "none" };
+            const hasExistingVideo = (statusInfo.video_state === 'compiled' || statusInfo.video_state === 'draft');
+            
             let force = false;
             if (clip.mosaic_run_id) {
                 const reuse = confirm(`A previous Mosaic run was detected for Clip ${clip.num}.\n\nClick [OK] to recover/download the previous render instantly.\nClick [Cancel] to trigger a brand-new run.`);
                 if (!reuse) {
                     force = true;
+                    if (hasExistingVideo) {
+                        const confirmOverwrite = confirm(`WARNING: A compiled video already exists for Clip ${clip.num}.\n\nTriggering a brand-new run will delete the existing video file.\n\nAre you sure you want to overwrite it?`);
+                        if (!confirmOverwrite) return;
+                    }
                 }
+            } else if (hasExistingVideo) {
+                const confirmOverwrite = confirm(`WARNING: A compiled video already exists for Clip ${clip.num}.\n\nTriggering a new Mosaic run will delete the existing video file.\n\nAre you sure you want to overwrite it?`);
+                if (!confirmOverwrite) return;
             }
             
             btnEl.disabled = true;
