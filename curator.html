@@ -1527,6 +1527,7 @@
         <div class="player-controls">
             <button class="icon-btn" id="playBtn" style="font-size: 1.4rem;">▶</button>
             <input type="range" class="player-slider" id="playerSlider" value="0" min="0" max="100">
+            <a href="#" id="playerDownloadBtn" download style="display: none; color: var(--text); margin-left: 10px; font-size: 1.2rem; text-decoration: none; align-items: center; justify-content: center;" title="Download current audio file">📥</a>
         </div>
     </div>
 
@@ -1801,6 +1802,7 @@
         const currTime = document.getElementById('currTime');
         const totTime = document.getElementById('totTime');
         const nowPlayingTitle = document.getElementById('nowPlayingTitle');
+        const playerDownloadBtn = document.getElementById('playerDownloadBtn');
         
         const exportModalOverlay = document.getElementById('exportModalOverlay');
         const closeModalBtn = document.getElementById('closeModalBtn');
@@ -2865,6 +2867,25 @@
 
         audioElement.addEventListener('loadedmetadata', function() {
             totTime.textContent = formatTime(audioElement.duration);
+        });
+
+        audioElement.addEventListener('loadstart', function() {
+            const src = audioElement.getAttribute('src') || audioElement.src;
+            if (src && src !== "" && !src.endsWith('#') && !src.endsWith('curator.html')) {
+                playerDownloadBtn.href = src;
+                playerDownloadBtn.style.display = 'inline-flex';
+                let filename = "audio_clip.mp3";
+                if (src.includes("combined_")) {
+                    filename = `combined_${activeProjectId}.mp3`;
+                } else if (src.includes("preview_")) {
+                    filename = `preview_${activeProjectId}.mp3`;
+                } else if (src.includes("project-audio")) {
+                    filename = `${activeProjectId}_full.mp3`;
+                }
+                playerDownloadBtn.download = filename;
+            } else {
+                playerDownloadBtn.style.display = 'none';
+            }
         });
 
         playerSlider.addEventListener('input', function() {
