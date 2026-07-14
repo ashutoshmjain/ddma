@@ -4230,7 +4230,7 @@
                 }
                 
                 // 5. Mosaic status: green if Mosaic exists, purple if not
-                const mosaicStatusClass = (statusInfo.video_state === 'draft' || statusInfo.video_state === 'compiled') ? "btn-status-success" : "btn-status-purple";
+                const mosaicStatusClass = statusInfo.video_state === 'compiled' ? "btn-status-success" : "btn-status-purple";
                 
                 let videoBtnHtml = "";
                 if (statusInfo.video_state === 'processing') {
