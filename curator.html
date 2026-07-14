@@ -934,6 +934,16 @@
             color: white !important;
         }
 
+        .btn-status-blue {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+            color: #3b82f6 !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+        }
+        .btn-status-blue:hover {
+            background-color: #3b82f6 !important;
+            color: white !important;
+        }
+
         .icon-btn {
             background: transparent;
             border: none;
@@ -3643,6 +3653,37 @@
             });
         }
 
+        function compileClipDirectly(clipIdx, btnEl) {
+            const clip = clips[clipIdx];
+            if (!activeProjectId || !clip) return;
+            
+            btnEl.disabled = true;
+            btnEl.innerHTML = '⏳ Compiling...';
+            updateStateBar(`Compile: Launching compilation for Clip ${clip.num}...`);
+            
+            fetch(`/compile-clip?id=${activeProjectId}&num=${clip.num}`, {
+                method: 'POST'
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(data => {
+                        throw new Error(data.error || "Failed to trigger compilation.");
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                updateStateBar(`Compile: Clip ${clip.num} compilation started in the background.`);
+                refreshProject();
+            })
+            .catch(err => {
+                console.error("Compilation error:", err);
+                alert(`Error compiling Clip ${clip.num}: ` + err.message);
+                updateStateBar(`Compile Error: ${err.message}`, true);
+                refreshProject();
+            });
+        }
+
         function exportToMosaic(clipIdx, btnEl) {
             const clip = clips[clipIdx];
             if (!activeProjectId) return;
@@ -4237,6 +4278,7 @@
                     videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-gray" style="font-weight:600; opacity: 0.5; cursor: not-allowed;" disabled title="Video is currently compiling/processing...">⏳ Processing</button>`;
                 } else if (statusInfo.video_state !== 'none') {
                     videoBtnHtml = `<button class="btn btn-mini btn-card-video ${videoStatusClass}" id="playVideoBtn_${index}" style="font-weight:600;" title="Play compiled MP4 video">📹 Video</button>`;
+                    videoBtnHtml += ` <button class="btn btn-mini btn-card-compile btn-status-blue" id="compileCardBtn_${index}" style="font-weight:600; margin-left: 4px;" title="Re-compile intro card and outro bridge transitions from plan.json">⚙️ Compile</button>`;
                 } else {
                     videoBtnHtml = `<button class="btn btn-mini btn-card-video ${videoStatusClass}" style="font-weight:600; opacity: 0.4; cursor: not-allowed;" disabled title="Video not generated yet">📹 Video</button>`;
                 }
@@ -4437,6 +4479,14 @@
                         videoModalOverlay.classList.add('active');
                         previewVideoPlayer.play();
                     });
+
+                    const compileBtn = card.querySelector(`#compileCardBtn_${index}`);
+                    if (compileBtn) {
+                        compileBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            compileClipDirectly(index, this);
+                        });
+                    }
                 }
                 
                 if (isLocked) {
