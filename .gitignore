@@ -41,3 +41,8 @@ projects/*
 .vscode/
 .idea/
 .DS_Store
+
+# Credentials
+gemini-creds.json
+*-creds.json
+*credentials*.json
