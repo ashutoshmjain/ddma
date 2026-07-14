@@ -580,12 +580,6 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             f"=== DOCUMENTATION CONTEXT ==={context}"
                         )
                         
-                        # Prepare history format for Gemini API
-                        model = genai.GenerativeModel(
-                            model_name="gemini-flash-latest",
-                            system_instruction=system_instruction
-                        )
-                        
                         # Convert history format
                         contents = []
                         for h in history:
@@ -598,9 +592,24 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             "parts": [user_message]
                         })
                         
-                        # Generate content
-                        response = model.generate_content(contents)
-                        reply = response.text
+                        # Generate content with fallback list of models
+                        model_names = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-pro-latest"]
+                        reply = None
+                        last_err = None
+                        for model_name in model_names:
+                            try:
+                                model = genai.GenerativeModel(
+                                    model_name=model_name,
+                                    system_instruction=system_instruction
+                                )
+                                response = model.generate_content(contents)
+                                reply = response.text
+                                break
+                            except Exception as e:
+                                print(f"Co-Pilot model {model_name} failed: {e}")
+                                last_err = e
+                        if not reply:
+                            reply = f"Co-Pilot Error: Failed to generate content. Last error: {last_err}"
                         
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
@@ -795,7 +804,7 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
 """
                 # Call Gemini with fallback chain
                 configure_gemini(api_key)
-                model_names = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-flash-latest", "gemini-pro-latest"]
+                model_names = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-flash-latest", "gemini-pro-latest"]
                 response = None
                 last_err = None
                 
