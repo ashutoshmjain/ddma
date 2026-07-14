@@ -18,6 +18,25 @@ try:
 except ImportError:
     HAS_GENAI = False
 
+def configure_gemini(api_key=None):
+    if not HAS_GENAI:
+        return False
+    creds_path = "gemini-creds.json"
+    if os.path.exists(creds_path):
+        try:
+            from google.oauth2 import service_account
+            creds = service_account.Credentials.from_service_account_file(creds_path)
+            genai.configure(credentials=creds)
+            print("[Gemini] Configured successfully using service account JSON credentials.")
+            return True
+        except Exception as e:
+            print(f"[Gemini] Warning: Failed to load service account credentials: {e}")
+            
+    if api_key:
+        genai.configure(api_key=api_key)
+        return True
+    return False
+
 PORT = 8000
 
 # Global tracker for background Mosaic runs
@@ -533,11 +552,9 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             print(f"Warning: Failed to load settings.json: {se}")
                     
                     api_key = settings_api_key or os.environ.get("GEMINI_API_KEY")
-                    if not api_key:
-                        reply = "Co-Pilot Error: The 'GEMINI_API_KEY' environment variable or settings config is not set. Please set it in your System Settings modal in DDMA first!"
+                    if not configure_gemini(api_key):
+                        reply = "Co-Pilot Error: Neither 'gemini-creds.json' credentials nor 'GEMINI_API_KEY' in settings are configured. Please set them up in DDMA first!"
                     else:
-                        # Configure Gemini
-                        genai.configure(api_key=api_key)
                         
                         # Load request body
                         req_json = json.loads(post_data.decode('utf-8'))
@@ -655,8 +672,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         print(f"Warning: Failed to load settings.json: {se}")
                 
                 api_key = settings_api_key or os.environ.get("GEMINI_API_KEY")
-                if not api_key:
-                    raise Exception("GEMINI_API_KEY environment variable or settings config is not set.")
+                if not api_key and not os.path.exists("gemini-creds.json"):
+                    raise Exception("GEMINI_API_KEY settings config is not set, and gemini-creds.json was not found.")
                 
                 project_dir = os.path.join("projects", project_id)
                 plan_path = os.path.join(project_dir, "plan.json")
@@ -777,7 +794,7 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
 }}
 """
                 # Call Gemini with fallback chain
-                genai.configure(api_key=api_key)
+                configure_gemini(api_key)
                 model_names = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-flash-latest", "gemini-pro-latest"]
                 response = None
                 last_err = None
