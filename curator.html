@@ -3837,6 +3837,15 @@
                     compiledVideos = data.compiled_videos || [];
                     clipStatuses = data.clip_statuses || {};
                     renderClips();
+                    
+                    // Auto-poll if any clip is in processing/compiling state
+                    const hasProcessing = Object.values(clipStatuses).some(status => status.video_state === 'processing');
+                    if (hasProcessing) {
+                        if (window.fetchCompiledVideosTimeout) {
+                            clearTimeout(window.fetchCompiledVideosTimeout);
+                        }
+                        window.fetchCompiledVideosTimeout = setTimeout(fetchCompiledVideos, 3000);
+                    }
                 })
                 .catch(err => {
                     console.warn("Error refreshing compiled videos and statuses:", err);
