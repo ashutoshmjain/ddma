@@ -165,7 +165,7 @@
             {
                 "type": "music",
                 "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
-                "duration": 2.5,
+                "duration": 8,
                 "crossfade": 0.3
             }
         ],
@@ -246,13 +246,14 @@
             }
         ],
         "locked": true,
-        "mosaic_run_id": "099cac0d-0c9d-43b8-9e1d-2197784209b9"
+        "mosaic_run_id": "099cac0d-0c9d-43b8-9e1d-2197784209b9",
+        "crossfade": 0.5
     },
     {
         "num": 8,
         "title": "The Geometric Cheat Code",
         "bridge_text": [
-            "How did Galileo use this exact same playbook of conceptual demolition to shatter the ancient laws of physics?"
+            "How did  Newton  destroy the elegant idea of cosmic whirlpools?"
         ],
         "segments": [
             {
@@ -264,10 +265,10 @@
             },
             {
                 "type": "music",
-                "music_file": "Operator Error (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Cartoon Bank Heist (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
-                "volume": 1.0
+                "volume": 1
             },
             {
                 "type": "audio",
@@ -278,79 +279,126 @@
             },
             {
                 "type": "music",
-                "music_file": "deepDive-soft-ok.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 6.5,
                 "crossfade": 0.5,
-                "volume": 1.0
+                "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "6a3675dc-0252-468e-aed5-3019fc7f19e2"
     },
     {
         "num": 9,
-        "title": "Cartesian Vortices",
+        "title": "The Cosmic Whirlpool",
         "bridge_text": [
-            "How did the simple balance scale spark a revolution that laid the foundation of modern chemistry?"
+            "How did Isaac Newton use Kepler's laws of planetary motion to mathematically destroy the elegant idea of cosmic whirlpools?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 1369.52,
-                "end": 1496.78,
-                "duration": 127.25999999999999,
-                "text": "(Speech Segment)"
+                "start": 1374.28,
+                "end": 1404.48,
+                "duration": 30.2,
+                "text": "reading  the  research,  Newton  also  faced  a  massive  entrenched  paradigm  that  he  had  systematically  demolished  before  anyone  would  listen  to  him.   By  the  late  17th  century,  the  dominant  model  of  the  cosmos  on  the  European  continent  wasn't  Aristotelian  anymore.  It  was  Cartesian.  Renee  Descartes  had  proposed  in  1644  that  the  universe  was  a  plenum.  A  plenum.  I  want  to  make  sure  I  grasp  this.  This  means  space  is  completely  100 %  filled  with  physical  matter.  There  is  no  such  thing  as  an  empty  vacuum  anywhere  in  the  universe."
             },
             {
                 "type": "music",
-                "music_file": "Dizzy (Sting) - Max Surla_Media Right Productions.mp3",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
                 "duration": 4.5,
-                "crossfade": 0.3
+                "crossfade": 0.3,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 1405.7,
+                "end": 1540.3,
+                "duration": 134.6,
+                "text": "Descartes  argued  that  the  universe  was  filled  with  a  subtle  invisible  fluid  matter.  And  he  argued  that  planetary  motion  was  driven  by  massive  cosmic  whirlpools  or  vortices  within  this  fluid.  Like  whirlpools  in  a  river.  Think  of  water  swirling  down  a  drain,  pulling  a  leaf  along  with  it.  The  planets  were  the  leaves.  They  were  literally  caught  in  a  physical  fluid  current  of  subtle  matter  that  swept  them  in  circles  around  the  sun.  And  I  assume  this  theory  was  incredibly  popular  because  it  made  intuitive  sense.  It  provided  a  tangible  mechanical  explanation  for  why  planets  orbit.  You  didn't  need  any  mysterious  forces.  It  was  just  fluid  dynamics.   It  completely  avoided  the  philosophically  terrifying  concept  of  action  at  a  distance.  The  idea  that  bodies  could  pull  on  each  other  across  millions  of  miles  of  completely  empty  dead  space.  To  a  17th  century  mind  action  at  a  distance  sounded  like  a  cult  magic.  It  sounded  deeply  unscientific.  So  when  Newton  was  preparing  to  publish  his  Principium  Athimatica  in  1687,  proposing  universal  gravitation  and  invisible  attractive  force  acting  instantaneously  across  a  vast,  empty  vacuum.  He  knew  the  Cartesian  would  reject  it  out  of  hand.  They  would  call  it  mysticism.  They  would.  So  how  did  he  convince  them?  He  didn't  just  present  the  beautiful  math  for  gravity  and  hope  for  the  best.  He  executed  move  to  establishing  the  niche.   He  dedicated  the  entirety  of  Book  II  of  the  Principia  to  ruthlessly  dissecting  the  fluid  dynamics  of  Cartesian  vortices.  It's  fascinating  here  is  the  sheer  rigorous  exhausting  scale  of  Newton's  attack.  He  didn't  use  philosophical  arguments  or  clever  thought  experiments  like  Galileo.  He  used  strict,  winding,  physical  mathematics.  He  calculated  everything.  He  calculated  the  fluid  friction.  He  calculated  the  mutual  attrition  of  parts  of  a  fluid  rubbing  against  each  other.  He  calculated  the  exact  transfer  of  angular  momentum  within  a  swirling  fluid  medium.  He  mathematically  modeled  solid  cylinders  and  spheres  revolving  in  a  uniform,  infinite  fluid,  to  see  exactly  how  the  periodic  times  of  the  fluid's  various  layers  would  behave.  He  treated  Descartes'  philosophical  idea  as  a  literal  engineering  problem  and  ran  the  numbers.  And  through  these  exhaustive  geometric  proofs,  Newton  demonstrated  a  devastating,  irreconcilable  conflict  with  existing  data."
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 6.5,
+                "crossfade": 0.5,
+                "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "6b01c8e7-ee18-4543-b41b-bcf9a327678f"
     },
     {
         "num": 10,
-        "title": "The Phlogiston Anomaly",
+        "title": "The Crisis and the Cure",
         "bridge_text": [
-            "Why did Darwin focus on the imperfections and cruelties of nature to prove evolution?"
+            "How did an enduring theory that claimed burning objects lose weight survive when experiments proved they actually grew heavier?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 1640.56,
-                "end": 1736.54,
-                "duration": 95.98000000000002,
-                "text": "(Speech Segment)"
+                "start": 1540.8,
+                "end": 1550.96,
+                "duration": 10.16,
+                "text": "Johannes Kepler had already established his third law of planetary motion. This law was based on massive amounts of highly precise observational data,"
             },
             {
                 "type": "music",
-                "music_file": "Double Helix (Sting) - Ethan Meixsell.mp3",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
                 "duration": 4.5,
-                "crossfade": 0.3
+                "crossfade": 0.3,
+                "volume": 1.0
+            },
+            {
+                "type": "audio",
+                "start": 1551.32,
+                "end": 1637.68,
+                "duration": 86.36,
+                "text": "and it states that the square of a planet's orbital period is strictly proportional to the cube of its distance from the sun. But Newton proved mathematically that the periodic times of layers of fluid swirling in a vortex are proportional to the square of their distances from the center. Which directly fatally contradicts Kepler's third law? Exactly. Newton proved that a physical vortex governed by the laws of fluid dynamics simply cannot sustain the observed orbital patterns of the planets. If the planets were driven by fluid, they would be an entirely different locations in the sky. It was mathematically impossible. He concluded book two by declaring that the hypothesis of wortices was completely at odds with astronomical phenomena and served only to confuse rather than explain them. He completely dismantled the Cartesian machinery. He proved that the leading materialist alternative to his theory was physically incoherent. So when he finally introduces universal gravitation of book three, it wasn't just an elegant new idea competing in a crowded marketplace. It was adopted because Newton had ruthlessly annihilated the structural foundation of the territory, leaving his theory of gravity as the only mathematical framework left standing that didn't contradict Kepler's laws. He created the crisis, then offered the cure. And this structural necessity of paradigm destruction extends far beyond physics and astronomy. We see the exact same rhetorical maneuver defining the crises that birth modern chemistry. Oh, absolutely. Chemistry is a great example."
+            },
+            {
+                "type": "music",
+                "music_file": "Cold Killa (Sting) - MK2.mp3",
+                "duration": 5.0,
+                "crossfade": 0.5,
+                "volume": 0.8
             }
         ],
         "locked": false
     },
     {
         "num": 11,
-        "title": "The Analytical Balance",
+        "title": "The Magic of Negative Weight",
         "bridge_text": [
-            "Why would a bat's wing, a whale's flipper, and a human hand share the exact same bone structure?"
+            "**How did Charles Darwin use the biological 'imperfections' of nature to dismantle the deeply entrenched doctrine of perfect divine design?**"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 1753.34,
-                "end": 1864.32,
-                "duration": 110.98000000000002,
-                "text": "(Speech Segment)"
+                "start": 1715.02,
+                "end": 1728.3,
+                "duration": 13.28,
+                "text": "If combustion or calcination is fundamentally defined as the physical loss of a substance called flogiston, how on earth could losing a physical substance result in a net gain in physical weight? It makes no sense."
             },
             {
                 "type": "music",
-                "music_file": "Dub Hub (Sting) - Jimmy Fontanez_Media Right Productions.mp3",
+                "music_file": "Slay Well (Sting) - Gunnar Olsen.mp3",
                 "duration": 4.5,
-                "crossfade": 0.3
+                "crossfade": 0.3,
+                "volume": 1.0
+            },
+            {
+                "type": "audio",
+                "start": 1728.3,
+                "end": 1849.44,
+                "duration": 121.14,
+                "text": "That violates the most basic logic of mass. It absolutely does. And this is where we see the intellectual duct tape applied in full force. To protect the flogiston paradigm from this catastrophic contradiction, the entrenched chemists had to invent extreme ad hoc hypotheses. What did they come up with? Some of the most prominent chemists in Europe actually suggested in print that flogiston possessed negative weight or absolute levity. Yeah, get of weight. They argued that flogiston's departure made a substance heavier because, while the flogiston was trapped inside the metal, it naturally exerted an upward buoyant force, constantly defying gravity. Once it escaped, the metal was free to express its true heavier weight. That is unbelievable. Lavelasia's brilliance then was not just in discovering oxygen. Oxygen wouldn't matter to someone who believed in negative weight. Exactly. Lavelasia's primary strategic move was to channel the absolute totality of the scientific community's attention toward the logical absurdity of this negative weight defense. He utilized the relentless, unforgiving precision of the analytical balance scale and the foundational principle of the conservation of mass to force a crisis. He pointed out that the flogistiness were essentially relying on magical thinking, inventing a physical substance that actively defies gravity and conveniently changes its physical properties depending on the specific experiment being run. He made defending flogiston intellectually embarrassing. That's exactly what he did. He conducted sealed experiments demonstrating that the increased mass of a metal oxide is simply the exact sum of the original metal plus the specific volume of gas absorbed from the air and the flask. His new theory that combustion is the chemical absorption of a wayable gas he called oxygen relied strictly on inviolable conservation laws. He didn't just offer an alternative. He demonstrated that the previous consensus required believing in physics-defying magic. By making the old theory logically untenable, he cleared the space for his own paradigm."
+            },
+            {
+                "type": "music",
+                "music_file": "deepDive-soft-ok.mp3",
+                "duration": 8.0,
+                "crossfade": 0.5,
+                "volume": 0.8
             }
         ],
         "locked": false
