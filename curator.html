@@ -3701,7 +3701,7 @@
                 return res.json();
             })
             .then(data => {
-                pollMosaicStatus(clipIdx, btnEl);
+                fetchCompiledVideos();
             })
             .catch(err => {
                 btnEl.disabled = false;
@@ -3763,70 +3763,23 @@
             });
         }
         
-        function pollMosaicStatus(clipIdx, btnEl) {
-            const clip = clips[clipIdx];
-            const intervalId = setInterval(() => {
-                fetch(`/get-mosaic-status?id=${activeProjectId}&num=${clip.num}`)
-                .then(res => {
-                    if (!res.ok) throw new Error("Status check failed");
-                    return res.json();
-                })
-                .then(job => {
-                    const status = job.status || 'idle';
-                    const progress = job.progress || 0;
-                    const error = job.error;
-                    
-                    if (status === 'idle') {
-                        clearInterval(intervalId);
-                        btnEl.disabled = false;
-                        btnEl.innerHTML = '🌌 Mosaic';
-                        btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
-                        updateStateBar("Ready");
-                    }
-                    else if (status === 'completed') {
-                        clearInterval(intervalId);
-                        btnEl.disabled = false;
-                        btnEl.innerHTML = '🌌 Mosaic';
-                        btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
-                        updateStateBar("Ready");
-                        
-                        try {
-                            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                            const osc = audioCtx.createOscillator();
-                            const gain = audioCtx.createGain();
-                            osc.connect(gain);
-                            gain.connect(audioCtx.destination);
-                            osc.type = 'sine';
-                            osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-                            osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15); // A5
-                            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-                            osc.start();
-                            osc.stop(audioCtx.currentTime + 0.4);
-                        } catch (soundErr) {
-                            console.warn("Could not play notification sound:", soundErr);
-                        }
-                        
-                        showDebug(`Mosaic export completed! Overwrote clips/${episodeNum}-${clip.num}.mp4`, false);
-                        fetchCompiledVideos();
-                    }
-                    else if (status === 'failed') {
-                        clearInterval(intervalId);
-                        btnEl.disabled = false;
-                        btnEl.innerHTML = '🌌 Mosaic';
-                        btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
-                        updateStateBar("Ready (Mosaic failed)");
-                        showDebug("Mosaic failed: " + (error || "Unknown error during processing"), true);
-                    }
-                    else {
-                        btnEl.innerHTML = `⏳ ${progress}%`;
-                        updateStateBar(`Mosaic [Clip ${clip.num}] - ${status} (${progress}%)`);
-                    }
-                })
-                .catch(err => {
-                    console.warn("Polling error:", err);
-                });
-            }, 2000);
+        function playNotificationSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            } catch (soundErr) {
+                console.warn("Could not play notification sound:", soundErr);
+            }
         }
 
         function fetchCompiledVideos() {
@@ -3835,8 +3788,30 @@
                 .then(r => r.json())
                 .then(data => {
                     compiledVideos = data.compiled_videos || [];
+                    const oldStatuses = clipStatuses || {};
                     clipStatuses = data.clip_statuses || {};
                     renderClips();
+                    
+                    // Track state transitions to play sound when compilation completes
+                    if (!window.previouslyProcessingClips) {
+                        window.previouslyProcessingClips = {};
+                    }
+                    
+                    Object.keys(clipStatuses).forEach(num => {
+                        const state = clipStatuses[num].video_state;
+                        const wasProcessing = window.previouslyProcessingClips[num];
+                        if (state === 'processing') {
+                            window.previouslyProcessingClips[num] = true;
+                        } else if (wasProcessing && state !== 'processing') {
+                            delete window.previouslyProcessingClips[num];
+                            if (state === 'compiled' || state === 'draft') {
+                                playNotificationSound();
+                                showDebug(`Clip ${num} processing completed successfully!`, false);
+                            } else {
+                                showDebug(`Clip ${num} processing completed with state: ${state}`, true);
+                            }
+                        }
+                    });
                     
                     // Auto-poll if any clip is in processing/compiling state
                     const hasProcessing = Object.values(clipStatuses).some(status => status.video_state === 'processing');
@@ -4270,7 +4245,8 @@
                 let mosaicBtnHtml = "";
                 if (isLocked) {
                     if (statusInfo.video_state === 'processing') {
-                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-warning" id="mosaicCardBtn_${index}" style="font-weight: 600; opacity: 0.8; cursor: not-allowed;" disabled title="Mosaic generation in progress...">⏳ Processing</button>`;
+                        const pct = statusInfo.progress !== undefined ? statusInfo.progress : 0;
+                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-warning" id="mosaicCardBtn_${index}" style="font-weight: 600; opacity: 0.8; cursor: not-allowed;" disabled title="Mosaic generation in progress...">⏳ ${pct}%</button>`;
                     } else {
                         mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic ${mosaicStatusClass}" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Send draft video to Mosaic API for overlaying infographics and visual graphics">🌌 Mosaic</button>`;
                     }
@@ -4649,31 +4625,6 @@
             // Restore scroll position to prevent jumping
             clipListContainer.scrollTop = savedScrollTop;
 
-            // Auto-detect and resume UI polling for clips with active runs (cache/recovery sync)
-            if (clips) {
-                clips.forEach((clip, index) => {
-                    if (clip.locked && clip.mosaic_run_id) {
-                        const btnEl = document.getElementById(`mosaicCardBtn_${index}`);
-                        if (btnEl && !btnEl.disabled) {
-                            fetch(`/get-mosaic-status?id=${activeProjectId}&num=${clip.num}`)
-                                .then(res => {
-                                    if (!res.ok) throw new Error("Status query failed");
-                                    return res.json();
-                                })
-                                .then(data => {
-                                    if (data.status && data.status !== "idle" && data.status !== "completed" && data.status !== "failed") {
-                                        // Resume UI polling
-                                        btnEl.disabled = true;
-                                        btnEl.innerHTML = `⏳ ${data.progress || 70}%`;
-                                        btnEl.style.backgroundImage = 'linear-gradient(135deg, #4b5563 0%, #374151 100%)';
-                                        pollMosaicStatus(index, btnEl);
-                                    }
-                                })
-                                .catch(err => console.warn("Error auto-resuming Mosaic poll:", err));
-                        }
-                    }
-                });
-            }
         }
 
         // Combine Audio
