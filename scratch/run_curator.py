@@ -639,15 +639,87 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not os.path.exists(project_dir):
                     raise Exception(f"Project directory {project_id} not found.")
                 
+                # Load the old plan to compare metadata changes
+                old_plan = []
+                plan_file_path = os.path.join(project_dir, 'plan.json')
+                if os.path.exists(plan_file_path):
+                    try:
+                        with open(plan_file_path, "r", encoding="utf-8") as f:
+                            old_plan = json.load(f)
+                    except Exception as e:
+                        print(f"Warning: Failed to load old plan for comparison: {e}")
+                
                 json_data = json.loads(post_data.decode('utf-8'))
                 
+                # Check for metadata changes that warrant auto-recompilation
+                changed_clips = []
+                for clip in json_data:
+                    num = clip.get("num")
+                    if num is None:
+                        continue
+                    
+                    old_clip = None
+                    for oc in old_plan:
+                        if oc.get("num") == num:
+                            old_clip = oc
+                            break
+                    
+                    if old_clip:
+                        title_changed = clip.get("title") != old_clip.get("title")
+                        bridge_changed = clip.get("bridge_text") != old_clip.get("bridge_text")
+                        segments_changed = clip.get("segments") != old_clip.get("segments")
+                        
+                        if title_changed or bridge_changed or segments_changed:
+                            # Verify that a video file exists on disk for this clip
+                            video_path = os.path.join("clips", f"{project_id}-{num}.mp4")
+                            if os.path.exists(video_path):
+                                changed_clips.append(num)
+                
                 # Save to project's plan.json
-                with open(os.path.join(project_dir, 'plan.json'), 'w', encoding='utf-8') as f:
+                with open(plan_file_path, 'w', encoding='utf-8') as f:
                     json.dump(json_data, f, indent=4)
                 
                 # Sync to root plan.json
                 with open('plan.json', 'w', encoding='utf-8') as f:
                     json.dump(json_data, f, indent=4)
+                    
+                # Auto-compile changed clips in the background
+                for num in changed_clips:
+                    job_key = (project_id, int(num))
+                    if job_key in mosaic_runs and mosaic_runs[job_key].get("status") in ("starting", "running", "compiling", "processing"):
+                        continue
+                    
+                    def run_auto_compile(proj_id, n):
+                        mosaic_runs[job_key] = {
+                            "status": "processing",
+                            "progress": 0,
+                            "error": None,
+                            "run_id": "auto_compile"
+                        }
+                        try:
+                            cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(n)]
+                            print(f"[Auto-Compile][{proj_id}][Clip {n}] Starting background compilation: {' '.join(cmd)}")
+                            proc = subprocess.run(cmd, capture_output=True, text=True, cwd=".")
+                            if proc.returncode != 0:
+                                raise Exception(f"Auto-compile failed: {proc.stderr}")
+                            print(f"[Auto-Compile][{proj_id}][Clip {n}] Background compilation completed successfully!")
+                            if job_key in mosaic_runs:
+                                del mosaic_runs[job_key]
+                        except Exception as ex:
+                            print(f"[Auto-Compile][{proj_id}][Clip {n}] Background compilation failed: {ex}")
+                            mosaic_runs[job_key] = {
+                                "status": "failed",
+                                "progress": 0,
+                                "error": str(ex),
+                                "run_id": "auto_compile"
+                            }
+                    
+                    t = threading.Thread(
+                        target=run_auto_compile,
+                        args=(project_id, int(num)),
+                        daemon=True
+                    )
+                    t.start()
                     
                 self.send_response(200)
                 self.send_header('Content-type', 'text/plain')
@@ -773,7 +845,7 @@ Your task is to recast the segments, title, and bridge transition text of Clip {
    - Followed by a quick music sting (typically 4.0 - 5.0 seconds long, 0.3s crossfade, 1.0 volume).
    - Followed by the main audio segment (content/discussion).
    - Followed by ending music (music segment at the end that leads into the outro).
-3. **Bridge Text**: Provide a single bold curiosity-provoking transition question in "bridge_text" (a list of string(s)).
+3. **Bridge Text**: Provide a single bold curiosity-provoking transition question in "bridge_text" (a list of string(s)). This question must act as a forward-looking narrative bridge that introduces the topic/theme of the *next* clip in the storyboard (to transition the viewer's interest), rather than summarizing this current clip.
 4. **Tone & Continuity**: Reference the narrative arc from the preceding locked clips to ensure this clip continues the story logically and maintains engaging hook titles.
 
 You MUST respond with a single JSON object for Clip {clip_num} matching the schema below. Do not include markdown code block formatting or explanations outside the JSON object:
@@ -2150,6 +2222,63 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(json.dumps({"success": True, "message": "Mosaic run started."}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                return
+
+        elif parsed_url.path == '/compile-clip':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            try:
+                if not project_id or not clip_num:
+                    raise Exception("Missing project id or clip number.")
+                
+                job_key = (project_id, int(clip_num))
+                if job_key in mosaic_runs and mosaic_runs[job_key].get("status") in ("starting", "running", "compiling", "processing"):
+                    raise Exception("A compile or export job is already in progress for this clip.")
+                
+                def run_compile_job(proj_id, num):
+                    mosaic_runs[job_key] = {
+                        "status": "processing",
+                        "progress": 0,
+                        "error": None,
+                        "run_id": "local_compile"
+                    }
+                    try:
+                        cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(num)]
+                        print(f"[{proj_id}][Clip {num}] Starting background compilation: {' '.join(cmd)}")
+                        proc = subprocess.run(cmd, capture_output=True, text=True, cwd=".")
+                        if proc.returncode != 0:
+                            raise Exception(f"Compile-clip failed with return code {proc.returncode}: {proc.stderr}")
+                        print(f"[{proj_id}][Clip {num}] Background compilation completed successfully!")
+                        if job_key in mosaic_runs:
+                            del mosaic_runs[job_key]
+                    except Exception as ex:
+                        print(f"[{proj_id}][Clip {num}] Background compilation failed: {ex}")
+                        mosaic_runs[job_key] = {
+                            "status": "failed",
+                            "progress": 0,
+                            "error": str(ex),
+                            "run_id": "local_compile"
+                        }
+                
+                t = threading.Thread(
+                    target=run_compile_job,
+                    args=(project_id, int(clip_num)),
+                    daemon=True
+                )
+                t.start()
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "message": "Compilation started in the background."}).encode('utf-8'))
                 return
             except Exception as e:
                 self.send_response(500)
