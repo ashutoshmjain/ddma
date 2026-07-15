@@ -1668,6 +1668,26 @@
         </div>
     </div>
 
+    <!-- Mosaic Custom Prompt Modal -->
+    <div class="export-modal-overlay" id="mosaicPromptModalOverlay">
+        <div class="export-modal" style="max-width: 650px; width: 90%;">
+            <div class="export-modal-header">
+                <h3>MOSAIC PROMPT EDITOR</h3>
+                <button class="icon-btn" id="closeMosaicPromptModalBtn" style="font-size: 1.2rem;">✖</button>
+            </div>
+            <div style="margin-top: 1rem;">
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
+                    Review and modify the full prompt being sent to the Mosaic API for this clip. You can add special instructions or customize rules:
+                </p>
+                <textarea id="mosaicPromptTextarea" style="width: 100%; height: 380px; background: #1f2937; color: #f3f4f6; border: 1px solid #374151; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.8rem; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+                <button class="btn btn-secondary" id="cancelMosaicPromptBtn">Cancel</button>
+                <button class="btn btn-primary" id="submitMosaicPromptBtn" style="background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); border: none;">Start Render</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Combine Audio Modal -->
     <div class="export-modal-overlay" id="exportModalOverlay">
         <div class="export-modal">
@@ -1829,6 +1849,13 @@
         // Video Preview elements
         const videoModalOverlay = document.getElementById('videoModalOverlay');
         const closeVideoModalBtn = document.getElementById('closeVideoModalBtn');
+        
+        // Mosaic Prompt Modal elements
+        const mosaicPromptModalOverlay = document.getElementById('mosaicPromptModalOverlay');
+        const closeMosaicPromptModalBtn = document.getElementById('closeMosaicPromptModalBtn');
+        const cancelMosaicPromptBtn = document.getElementById('cancelMosaicPromptBtn');
+        const submitMosaicPromptBtn = document.getElementById('submitMosaicPromptBtn');
+        const mosaicPromptTextarea = document.getElementById('mosaicPromptTextarea');
         const previewVideoPlayer = document.getElementById('previewVideoPlayer');
         const videoModalTitle = document.getElementById('videoModalTitle');
         const videoModalSubtitle = document.getElementById('videoModalSubtitle');
@@ -3687,43 +3714,83 @@
                 if (!confirmOverwrite) return;
             }
             
-            let directive = "";
-            if (!clip.mosaic_run_id || force) {
-                const userDirective = prompt(
-                    `Clip ${clip.num}: Enter any optional motion design instructions for Mosaic (e.g. 'front load more aggressive infographics to engage the viewer right up front'):`
-                );
-                if (userDirective === null) return; // User clicked Cancel
-                directive = userDirective.trim();
+            function triggerExport(customPrompt) {
+                btnEl.disabled = true;
+                btnEl.innerHTML = '⏳ Starting...';
+                btnEl.style.backgroundImage = 'linear-gradient(135deg, #4b5563 0%, #374151 100%)';
+                updateStateBar(`Mosaic: Initializing run for Clip ${clip.num}...`);
+                
+                fetch(`/export-to-mosaic?id=${activeProjectId}&num=${clip.num}&force=${force}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: customPrompt })
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        return res.json().then(data => {
+                            throw new Error(data.error || "Failed to start Mosaic pipeline.");
+                        });
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    fetchCompiledVideos();
+                })
+                .catch(err => {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = '🌌 Mosaic';
+                    btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
+                    showDebug("Mosaic failed: " + err.message, true);
+                    updateStateBar("Ready (Mosaic start failed)");
+                });
             }
-            
-            btnEl.disabled = true;
-            btnEl.innerHTML = '⏳ Starting...';
-            btnEl.style.backgroundImage = 'linear-gradient(135deg, #4b5563 0%, #374151 100%)';
-            updateStateBar(`Mosaic: Initializing run for Clip ${clip.num}...`);
-            
-            fetch(`/export-to-mosaic?id=${activeProjectId}&num=${clip.num}&force=${force}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ directive: directive })
-            })
-            .then(res => {
-                if (!res.ok) {
-                    return res.json().then(data => {
-                        throw new Error(data.error || "Failed to start Mosaic pipeline.");
-                    });
-                }
-                return res.json();
-            })
-            .then(data => {
-                fetchCompiledVideos();
-            })
-            .catch(err => {
-                btnEl.disabled = false;
-                btnEl.innerHTML = '🌌 Mosaic';
-                btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
-                showDebug("Mosaic failed: " + err.message, true);
-                updateStateBar("Ready (Mosaic start failed)");
-            });
+
+            if (!clip.mosaic_run_id || force) {
+                // Fetch default prompt from server
+                btnEl.disabled = true;
+                btnEl.innerHTML = '⏳ Loading Prompt...';
+                updateStateBar(`Mosaic: Generating base prompt for Clip ${clip.num}...`);
+                
+                fetch(`/get-mosaic-prompt?id=${activeProjectId}&num=${clip.num}`)
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to get base prompt.");
+                    return res.json();
+                })
+                .then(data => {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = '🌌 Mosaic';
+                    btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
+                    updateStateBar("Ready");
+                    
+                    if (data.success && data.prompt) {
+                        mosaicPromptTextarea.value = data.prompt;
+                        mosaicPromptModalOverlay.classList.add('active');
+                        
+                        // Override submit click listener by replacing the element
+                        const newSubmitBtn = submitMosaicPromptBtn.cloneNode(true);
+                        submitMosaicPromptBtn.parentNode.replaceChild(newSubmitBtn, submitMosaicPromptBtn);
+                        
+                        const activeSubmitBtn = document.getElementById('submitMosaicPromptBtn');
+                        activeSubmitBtn.addEventListener('click', function() {
+                            const customPromptText = mosaicPromptTextarea.value.trim();
+                            mosaicPromptModalOverlay.classList.remove('active');
+                            triggerExport(customPromptText);
+                        });
+                    } else {
+                        alert("Could not load base prompt: " + (data.error || "unknown error"));
+                    }
+                })
+                .catch(err => {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = '🌌 Mosaic';
+                    btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
+                    updateStateBar("Ready");
+                    alert("Error fetching prompt: " + err.message);
+                });
+            } else {
+                // Recover completed or active run
+                triggerExport("");
+            }
         }
         
         function remixClip(clipIdx, btnEl) {
@@ -4858,6 +4925,18 @@
             videoModalOverlay.classList.remove('active');
             previewVideoPlayer.pause();
             previewVideoPlayer.src = "";
+        });
+
+        closeMosaicPromptModalBtn.addEventListener('click', function() {
+            mosaicPromptModalOverlay.classList.remove('active');
+        });
+        cancelMosaicPromptBtn.addEventListener('click', function() {
+            mosaicPromptModalOverlay.classList.remove('active');
+        });
+        mosaicPromptModalOverlay.addEventListener('click', function(e) {
+            if (e.target === mosaicPromptModalOverlay) {
+                mosaicPromptModalOverlay.classList.remove('active');
+            }
         });
 
         videoModalOverlay.addEventListener('click', function(e) {

@@ -2076,11 +2076,13 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                 
                 content_length = int(self.headers.get('Content-Length', 0))
                 custom_instructions = ""
+                custom_prompt = ""
                 if content_length > 0:
                     body = self.rfile.read(content_length).decode('utf-8')
                     try:
                         post_data = json.loads(body)
                         custom_instructions = post_data.get('directive', '').strip()
+                        custom_prompt = post_data.get('prompt', '').strip()
                     except Exception:
                         pass
                 
@@ -2147,15 +2149,18 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                     "- No gaps in infographic coverage. No dependency on external assets."
                 )
                 
-                # Append clip context to base guidelines
-                prompt_content = f"{mogr_base_rules}\n\n--------------------------------------------------\nDYNAMIC CLIP CONTEXT\n--------------------------------------------------\n- Animate visuals to explain this Clip Title: {title}"
-                if transcript:
-                    prompt_content += f"\n- Spoken Transcript Text: {transcript}"
-                if custom_instructions:
-                    prompt_content += f"\n- SPECIAL MOTION GRAPHICS INSTRUCTIONS: {custom_instructions}"
-                
-                if len(prompt_content) > 1200:
-                    prompt_content = prompt_content[:1197] + "..."
+                if custom_prompt:
+                    prompt_content = custom_prompt
+                else:
+                    # Append clip context to base guidelines
+                    prompt_content = f"{mogr_base_rules}\n\n--------------------------------------------------\nDYNAMIC CLIP CONTEXT\n--------------------------------------------------\n- Animate visuals to explain this Clip Title: {title}"
+                    if transcript:
+                        prompt_content += f"\n- Spoken Transcript Text: {transcript}"
+                    if custom_instructions:
+                        prompt_content += f"\n- SPECIAL MOTION GRAPHICS INSTRUCTIONS: {custom_instructions}"
+                    
+                    if len(prompt_content) > 1200:
+                        prompt_content = prompt_content[:1197] + "..."
                 
                 # Check if already running
                 job_key = (project_id, int(clip_num))
@@ -2352,6 +2357,71 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
             self.end_headers()
             self.wfile.write(json.dumps(files).encode('utf-8'))
             return
+            
+        elif parsed_url.path == '/get-mosaic-prompt':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            try:
+                if not project_id or not clip_num:
+                    raise Exception("Missing project id or clip number.")
+                
+                project_dir = os.path.join("projects", project_id)
+                plan_path = os.path.join(project_dir, "plan.json")
+                if not os.path.exists(plan_path):
+                    raise Exception(f"plan.json for project {project_id} not found.")
+                
+                with open(plan_path, "r", encoding="utf-8") as f:
+                    plan = json.load(f)
+                
+                target_clip = None
+                for clip in plan:
+                    if int(clip.get("num", -1)) == int(clip_num):
+                        target_clip = clip
+                        break
+                
+                if not target_clip:
+                    raise Exception(f"Clip number {clip_num} not found in plan.")
+                
+                speech_texts = []
+                for seg in target_clip.get("segments", []):
+                    if seg.get("type") == "audio" and seg.get("text"):
+                        speech_texts.append(seg.get("text").strip())
+                transcript = " ".join(speech_texts)
+                
+                title = target_clip.get("title", f"Clip {clip_num}")
+                mogr_base_rules = (
+                    "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - around 150 to 180 seconds long)\n\n"
+                    "- Cover the full timeline of the video with Dan Koe–style motion graphics. Entire length of Video must be covered with no blanks\n\n"
+                    "- Plan around 13 to 15 segments of roughly ~ 16 seconds each. Each segment renders a graphic with changing visuals and multiple text reveals.\n\n"
+                    "- Leave ample border on top and same on the bottom for captions that I will add manually later - NO BORDER ON SIDES.\n\n"
+                    "- Assume background video is a blank black glossy screen - so you must keep persistent visuals (animation or text) through out the segments and segments must merge into each other like a relay race.\n\n"
+                    "--------------------------------------------------\n"
+                    "PACING & ANIMATION RULES\n"
+                    "--------------------------------------------------\n"
+                    "- No static holds beyond 6 seconds. Introduce visual changes every 2–4 seconds.\n"
+                    "- Use only basic transforms: opacity, position, scale. Keep animations single-property per element.\n"
+                    "- Prefer step-based reveals over continuous motion. Avoid preset/template animations.\n"
+                    "- All text fields must remain fully editable. Do not flatten or rasterize text layers.\n"
+                    "- No gaps in infographic coverage. No dependency on external assets."
+                )
+                
+                prompt_content = f"{mogr_base_rules}\n\n--------------------------------------------------\nDYNAMIC CLIP CONTEXT\n--------------------------------------------------\n- Animate visuals to explain this Clip Title: {title}"
+                if transcript:
+                    prompt_content += f"\n- Spoken Transcript Text: {transcript}"
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "prompt": prompt_content}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
+                return
             
         elif parsed_url.path == '/get-project':
             project_id = params.get('id', [None])[0]
