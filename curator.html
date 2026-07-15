@@ -4432,7 +4432,7 @@
                     savePlanToServer();
                 });
 
-                if (matchingVideo) {
+                if (matchingVideo && statusInfo.video_state !== 'processing') {
                     card.querySelector(`#playVideoBtn_${index}`).addEventListener('click', function(e) {
                         e.stopPropagation();
                         // Pause the audio player
