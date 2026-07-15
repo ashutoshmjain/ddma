@@ -2074,6 +2074,16 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                 if not project_id or not clip_num:
                     raise Exception("Missing project id or clip number.")
                 
+                content_length = int(self.headers.get('Content-Length', 0))
+                custom_instructions = ""
+                if content_length > 0:
+                    body = self.rfile.read(content_length).decode('utf-8')
+                    try:
+                        post_data = json.loads(body)
+                        custom_instructions = post_data.get('directive', '').strip()
+                    except Exception:
+                        pass
+                
                 # Check settings
                 settings_path = "settings.json"
                 settings = {}
@@ -2141,6 +2151,8 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                 prompt_content = f"{mogr_base_rules}\n\n--------------------------------------------------\nDYNAMIC CLIP CONTEXT\n--------------------------------------------------\n- Animate visuals to explain this Clip Title: {title}"
                 if transcript:
                     prompt_content += f"\n- Spoken Transcript Text: {transcript}"
+                if custom_instructions:
+                    prompt_content += f"\n- SPECIAL MOTION GRAPHICS INSTRUCTIONS: {custom_instructions}"
                 
                 if len(prompt_content) > 1200:
                     prompt_content = prompt_content[:1197] + "..."

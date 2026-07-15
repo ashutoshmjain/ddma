@@ -3687,13 +3687,24 @@
                 if (!confirmOverwrite) return;
             }
             
+            let directive = "";
+            if (!clip.mosaic_run_id || force) {
+                const userDirective = prompt(
+                    `Clip ${clip.num}: Enter any optional motion design instructions for Mosaic (e.g. 'front load more aggressive infographics to engage the viewer right up front'):`
+                );
+                if (userDirective === null) return; // User clicked Cancel
+                directive = userDirective.trim();
+            }
+            
             btnEl.disabled = true;
             btnEl.innerHTML = '⏳ Starting...';
             btnEl.style.backgroundImage = 'linear-gradient(135deg, #4b5563 0%, #374151 100%)';
             updateStateBar(`Mosaic: Initializing run for Clip ${clip.num}...`);
             
             fetch(`/export-to-mosaic?id=${activeProjectId}&num=${clip.num}&force=${force}`, {
-                method: 'POST'
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ directive: directive })
             })
             .then(res => {
                 if (!res.ok) {
