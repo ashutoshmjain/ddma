@@ -667,9 +667,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     if old_clip:
                         title_changed = clip.get("title") != old_clip.get("title")
                         bridge_changed = clip.get("bridge_text") != old_clip.get("bridge_text")
-                        segments_changed = clip.get("segments") != old_clip.get("segments")
                         
-                        if title_changed or bridge_changed or segments_changed:
+                        if title_changed or bridge_changed:
                             # Verify that a video file exists on disk for this clip
                             video_path = os.path.join("clips", f"{project_id}-{num}.mp4")
                             if os.path.exists(video_path):
