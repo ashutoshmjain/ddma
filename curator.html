@@ -3716,8 +3716,11 @@
             const clip = clips[clipIdx];
             if (!activeProjectId) return;
             
-            const proceed = confirm(`Are you sure you want to remix Clip ${clip.num}?\n\nThis will use Creative AI to autonomously recast the clip's segments, title, and bridge text based on preceding locked clips.`);
-            if (!proceed) return;
+            const directive = prompt(
+                `Are you sure you want to remix Clip ${clip.num}?\n\nThis will use Creative AI to autonomously recast the clip's segments, title, and bridge text based on preceding locked clips.\n\nOptionally enter steering instructions for Gemini (e.g. 'skip Newton, focus on the next topic'):`,
+                ""
+            );
+            if (directive === null) return; // User cancelled
             
             btnEl.disabled = true;
             btnEl.innerHTML = '⏳ Remixing...';
@@ -3726,7 +3729,11 @@
             updateStateBar(`Remixing: Recasting Clip ${clip.num}...`);
             
             fetch(`/remix-clip?id=${activeProjectId}&num=${clip.num}`, {
-                method: 'POST'
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ directive: directive.trim() })
             })
             .then(res => {
                 if (!res.ok) {

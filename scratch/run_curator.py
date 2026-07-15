@@ -735,6 +735,16 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             project_id = params.get('id', [None])[0]
             clip_num = int(params.get('num', [-1])[0])
             
+            directive = ""
+            try:
+                content_length = int(self.headers.get('Content-Length', 0))
+                if content_length > 0:
+                    post_data = self.rfile.read(content_length)
+                    body_json = json.loads(post_data.decode('utf-8'))
+                    directive = body_json.get("directive", "").strip()
+            except Exception as body_ex:
+                print(f"Warning: Failed to parse remix body: {body_ex}")
+                
             try:
                 if not project_id:
                     raise Exception("Missing project id.")
@@ -826,8 +836,11 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 # Formulate prompt for Gemini
                 prompt = f"""You are the Creative Remix Agent for the DeepDive Media Automator (DDMA).
 Your task is to recast the segments, title, and bridge transition text of Clip {clip_num} in the plan.
+"""
+                if directive:
+                    prompt += f"\n### IMPORTANT - USER REMIX DIRECTIVE (Follow this instruction strictly!):\n- {directive}\n\n"
 
-### Preceding Locked Clips (Context):
+                prompt += f"""### Preceding Locked Clips (Context):
 {json.dumps(preceding_locked_clips, indent=2)}
 
 ### Transcript Segments in the Neighborhood:
@@ -846,6 +859,7 @@ Your task is to recast the segments, title, and bridge transition text of Clip {
    - Followed by ending music (music segment at the end that leads into the outro).
 3. **Bridge Text**: Provide a single bold curiosity-provoking transition question in "bridge_text" (a list of string(s)). This question must act as a forward-looking narrative bridge that introduces the topic/theme of the *next* clip in the storyboard (to transition the viewer's interest), rather than summarizing this current clip.
 4. **Tone & Continuity**: Reference the narrative arc from the preceding locked clips to ensure this clip continues the story logically and maintains engaging hook titles.
+5. **Standalone Thought Integrity**: Every clip MUST stand on its own as a complete, coherent, and interesting statement. Avoid creating 'part 2' or dependent continuation clips. If the preceding locked clips (see context) have already fully covered or resolved a topic, do not repeat or continue discussing it; skip ahead in the neighborhood transcript to a new high-engagement standalone concept.
 
 You MUST respond with a single JSON object for Clip {clip_num} matching the schema below. Do not include markdown code block formatting or explanations outside the JSON object:
 {{
