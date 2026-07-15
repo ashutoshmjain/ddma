@@ -1464,6 +1464,7 @@
                     <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
                         <button class="btn btn-secondary btn-mini" id="collapseAllBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem;" title="Collapse all clip cards">📁 Collapse All</button>
                         <button class="btn btn-secondary btn-mini" id="expandAllBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem;" title="Expand all clip cards">📂 Expand All</button>
+                        <button class="btn btn-secondary btn-mini" id="toggleShowHiddenBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Show or hide clips that are marked as hidden">👁️ Show Hidden</button>
                     </div>
                     <!-- Group 3: Snapshot System -->
                     <div style="display: flex; gap: 0.4rem; align-items: center;">
@@ -1754,6 +1755,7 @@
         let clipStatuses = {};
         let dragSrcCardIdx = null;
         let showUsedRanges = false;
+        let showHiddenClips = false;
         let editingSegmentRef = null; // { clipIdx, segIdx }
         
         let pollingInterval = null;
@@ -1798,6 +1800,7 @@
         const newClipBtn = document.getElementById('newClipBtn');
         const collapseAllBtn = document.getElementById('collapseAllBtn');
         const expandAllBtn = document.getElementById('expandAllBtn');
+        const toggleShowHiddenBtn = document.getElementById('toggleShowHiddenBtn');
         
         const clipsToolbar = document.getElementById('clipsToolbar');
         const undoBtn = document.getElementById('undoBtn');
@@ -3899,6 +3902,19 @@
             renderClips();
         });
 
+        // Toggle Show Hidden Clips
+        toggleShowHiddenBtn.addEventListener('click', () => {
+            showHiddenClips = !showHiddenClips;
+            if (showHiddenClips) {
+                toggleShowHiddenBtn.textContent = '👁️ Hide Hidden';
+                toggleShowHiddenBtn.style.backgroundImage = 'linear-gradient(135deg, #a855f7 0%, #d946ef 100%)';
+            } else {
+                toggleShowHiddenBtn.textContent = '👁️ Show Hidden';
+                toggleShowHiddenBtn.style.backgroundImage = '';
+            }
+            renderClips();
+        });
+
         // Undo button listener
         undoBtn.addEventListener('click', () => {
             if (undoStack.length === 0) return;
@@ -4033,14 +4049,56 @@
 
             clips.forEach((clip, index) => {
                 clip.num = index + 1;
+                
+                if (clip.hidden && !showHiddenClips) {
+                    return;
+                }
+                
+                const card = document.createElement('div');
+                card.dataset.index = index;
+                
+                if (clip.hidden) {
+                    card.className = `clip-card hidden-state collapsed`;
+                    card.style.opacity = '0.5';
+                    card.style.border = '1px dashed var(--border-color)';
+                    card.innerHTML = `
+                        <div class="clip-card-header" style="padding: 0.5rem 0.8rem;">
+                            <div class="clip-card-title-container" style="display: flex; align-items: center; gap: 0.5rem; flex-grow: 1;">
+                                <span class="clip-num-badge" style="background-color: var(--text-muted); color: white; padding: 0.15rem 0.35rem; border-radius: 4px; font-weight: bold; font-size: 0.75rem; font-family: var(--font-mono); white-space: nowrap;">${episodeNum}-${clip.num}</span>
+                                <span style="font-size: 0.8rem; font-weight: bold; color: var(--text-muted); font-style: italic;">(Hidden) ${clip.title || 'Untitled Clip'}</span>
+                            </div>
+                            <div class="clip-card-actions" style="display: flex; gap: 0.4rem; align-items: center;" onclick="event.stopPropagation();">
+                                <button class="btn btn-secondary btn-mini restore-clip" data-index="${index}" style="font-weight:600; padding: 0.2rem 0.4rem; font-size: 0.7rem;" title="Restore clip to active plan">👁️ Unhide</button>
+                                <button class="icon-btn icon-btn-danger remove-clip" data-index="${index}" style="font-size: 0.75rem; padding: 0.15rem 0.35rem;" title="Permanently delete this clip from project plan">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                    clipListContainer.appendChild(card);
+                    
+                    card.querySelector('.restore-clip').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        clip.hidden = false;
+                        renderClips();
+                        savePlanToServer();
+                    });
+                    
+                    card.querySelector('.remove-clip').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const confirmDelete = confirm(`Are you sure you want to permanently delete Clip ${clip.num}?\n\nThis action cannot be undone.`);
+                        if (!confirmDelete) return;
+                        clips.splice(index, 1);
+                        renderClips();
+                        savePlanToServer();
+                    });
+                    return;
+                }
+                
                 const isLocked = clip.locked || false;
                 
                 const isCollapsed = localStorage.getItem(`ddma-collapsed-${activeProjectId}-${index}`) === 'true';
                 const caretText = isCollapsed ? '▶' : '▼';
                 
-                const card = document.createElement('div');
                 card.className = `clip-card ${isLocked ? 'locked' : ''} ${isCollapsed ? 'collapsed' : ''}`;
-                card.dataset.index = index;
                 card.draggable = !isLocked;
                 
                 const totalDuration = calculateClipDuration(clip);
@@ -4577,7 +4635,10 @@
 
                     card.querySelector('.remove-clip').addEventListener('click', function(e) {
                         e.stopPropagation();
-                        clips.splice(index, 1);
+                        const confirmHide = confirm(`Are you sure you want to hide Clip ${clip.num}?\n\nThis will remove it from view but preserve its segments. You can toggle hidden clips anytime using the 'Show Hidden' button at the top.`);
+                        if (!confirmHide) return;
+                        clip.hidden = true;
+                        clip.locked = false; // unlock it just in case
                         renderClips();
                         savePlanToServer();
                     });

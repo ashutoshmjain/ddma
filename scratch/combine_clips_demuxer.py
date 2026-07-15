@@ -94,8 +94,7 @@ def main():
     
     pattern = re.compile(rf"^{episode}-(\d+)\.mp4$")
     
-    # Filter to only pick up locked clip numbers from the plan
-    locked_nums = {c["num"] for c in plan_data if c.get("locked", False)}
+    locked_nums = {c["num"] for c in plan_data if c.get("locked", False) and not c.get("hidden", False)}
     
     clip_files = []
     if os.path.exists(clips_dir):
