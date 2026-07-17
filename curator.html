@@ -1569,101 +1569,129 @@
     </div>
 
     <!-- System Settings Modal -->
+    <!-- System Settings Modal -->
     <div class="export-modal-overlay" id="settingsModalOverlay">
-        <div class="export-modal" style="max-width: 400px;">
-            <div class="export-modal-header">
-                <h3>SYSTEM SETTINGS</h3>
-                <button class="icon-btn" id="closeSettingsModalBtn" style="font-size: 1.2rem;">✖</button>
+        <div class="export-modal" style="max-width: 1200px; width: 95vw; height: 90vh; max-height: 90vh; display: flex; flex-direction: column; padding: 2rem; box-sizing: border-box; gap: 1rem;">
+            <div class="export-modal-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem; margin-bottom: 0.5rem;">
+                <h3 style="margin: 0; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-weight: 700; font-size: 1.3rem;">
+                    ⚙️ SYSTEM SETTINGS
+                </h3>
+                <button class="icon-btn" id="closeSettingsModalBtn" style="font-size: 1.2rem; cursor: pointer; background: transparent; border: none; color: var(--text-muted);">✖</button>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 1.2rem; margin-top: 0.5rem; max-height: 520px; overflow-y: auto; padding-right: 0.3rem;">
-                <div class="music-editor-field" style="width: 100%;">
-                    <label style="font-size: 0.75rem; font-weight: 600; margin-bottom: 0.4rem;">Color Theme:</label>
-                    <select id="themeSelector" style="width: 100%; padding: 0.6rem; font-size: 0.85rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;">
-                        <option value="midnight">🌌 Midnight Neon (Dark)</option>
-                        <option value="cyberpunk">⚡ Cyberpunk Cyber (Cyan/Purple)</option>
-                        <option value="light">☀️ Nordic Breeze (Light)</option>
-                    </select>
-                </div>
-                
-                <div style="border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
-                    <label style="font-size: 0.75rem; font-weight: 600; margin-bottom: 0.6rem; display: block;">Export Settings:</label>
-                    <div class="music-editor-field" style="width: 100%; margin-bottom: 0.6rem;">
-                        <label style="font-size: 0.65rem; color: var(--text-muted);">Default Format:</label>
-                        <select id="exportFormatSelector" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;">
-                            <option value="audio">🎵 Audio (MP3)</option>
-                            <option value="video">📹 Video (Muxed MP4)</option>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 2.5rem; flex-grow: 1; min-height: 0; overflow: hidden; margin-top: 0.5rem;">
+                <!-- Left Column: Core App Settings -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem; overflow-y: auto; padding-right: 0.8rem; min-height: 0;">
+                    <!-- Theme Selector -->
+                    <div>
+                        <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; display: block; color: var(--text-main);">COLOR THEME</label>
+                        <select id="themeSelector" style="width: 100%; padding: 0.6rem; font-size: 0.85rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;">
+                            <option value="midnight">🌌 Midnight Neon (Dark)</option>
+                            <option value="cyberpunk">⚡ Cyberpunk Cyber (Cyan/Purple)</option>
+                            <option value="light">☀️ Nordic Breeze (Light)</option>
                         </select>
                     </div>
                     
-                    <div id="videoSettingsArea" style="display: none; flex-direction: column; gap: 0.6rem;">
-                        <div class="music-editor-field" style="width: 100%;">
-                            <label style="font-size: 0.65rem; color: var(--text-muted);">Video Resolution:</label>
-                            <select id="videoResolutionSelector" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;">
-                                <option value="740x740">740 x 740 (Square Draft)</option>
-                                <option value="1080x1080">1080 x 1080 (HD Square)</option>
-                                <option value="1080x1920">1080 x 1920 (Vertical Short)</option>
-                                <option value="1920x1080">1920 x 1080 (Widescreen)</option>
+                    <!-- Export Settings -->
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 1.2rem;">
+                        <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.8rem; display: block; color: var(--text-main);">EXPORT FORMAT & CANVAS</label>
+                        <div class="music-editor-field" style="width: 100%; margin-bottom: 0.8rem;">
+                            <label style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Default Format:</label>
+                            <select id="exportFormatSelector" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;">
+                                <option value="audio">🎵 Audio (MP3)</option>
+                                <option value="video">📹 Video (Muxed MP4)</option>
                             </select>
                         </div>
-                        <div style="display: flex; gap: 0.5rem; width: 100%;">
-                            <div class="music-editor-field" style="flex: 1;">
-                                <label style="font-size: 0.65rem; color: var(--text-muted);">Background Color:</label>
-                                <select id="videoBgPresetSelector" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;">
-                                    <option value="black">Black (#000000)</option>
-                                    <option value="#161822">Charcoal (#161822)</option>
-                                    <option value="#475569">Nordic Slate (#475569)</option>
-                                    <option value="custom">Custom Color...</option>
+                        
+                        <div id="videoSettingsArea" style="display: none; flex-direction: column; gap: 0.8rem;">
+                            <div class="music-editor-field" style="width: 100%;">
+                                <label style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Video Resolution:</label>
+                                <select id="videoResolutionSelector" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;">
+                                    <option value="740x740">740 x 740 (Square Draft)</option>
+                                    <option value="1080x1080">1080 x 1080 (HD Square)</option>
+                                    <option value="1080x1920">1080 x 1920 (Vertical Short)</option>
+                                    <option value="1920x1080">1920 x 1080 (Widescreen)</option>
                                 </select>
                             </div>
-                            <div class="music-editor-field" id="customColorField" style="width: 100px; display: none;">
-                                <label style="font-size: 0.65rem; color: var(--text-muted);">Hex Code:</label>
-                                <input type="text" id="videoBgCustomInput" value="#000000" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                            
+                            <div style="display: flex; gap: 0.8rem; width: 100%;">
+                                <div class="music-editor-field" style="flex: 1;">
+                                    <label style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Background Color:</label>
+                                    <select id="videoBgPresetSelector" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;">
+                                        <option value="black">Black (#000000)</option>
+                                        <option value="#161822">Charcoal (#161822)</option>
+                                        <option value="#475569">Nordic Slate (#475569)</option>
+                                        <option value="custom">Custom Color...</option>
+                                    </select>
+                                </div>
+                                <div class="music-editor-field" id="customColorField" style="width: 120px; display: none;">
+                                    <label style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Hex Code:</label>
+                                    <input type="text" id="videoBgCustomInput" value="#000000" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Global Music Library -->
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 1.2rem;">
+                        <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.8rem; display: block; color: var(--text-main);">GLOBAL MUSIC LIBRARY</label>
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.8rem;">
+                            <button class="btn btn-secondary btn-mini" id="importMusicBtn" style="width: 100%; justify-content: center; font-weight: 600; padding: 0.5rem;">🎵 Import New Sting</button>
+                            <input type="file" id="musicUploadInput" accept=".mp3,.wav,.m4a" style="display: none;">
+                        </div>
+                        <div id="settingsMusicList" style="max-height: 140px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; padding: 0.5rem; background-color: var(--panel-bg-darker); display: flex; flex-direction: column; gap: 0.4rem;">
+                            <!-- Dynamically populated global music files -->
+                        </div>
+                    </div>
+                    
+                    <!-- Co-Pilot Integration -->
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 1.2rem;">
+                        <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.8rem; display: block; color: var(--text-main);">CO-PILOT INTEGRATION</label>
+                        <div class="music-editor-field" style="width: 100%;">
+                            <label style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Gemini API Key:</label>
+                            <input type="password" id="settingsGeminiApiKey" placeholder="Enter Gemini API Key (Optional)" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
                         </div>
                     </div>
                 </div>
                 
-                <div style="border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
-                    <label style="font-size: 0.75rem; font-weight: 600; margin-bottom: 0.6rem; display: block;">Global Music Library:</label>
-                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.8rem;">
-                        <button class="btn btn-secondary btn-mini" id="importMusicBtn" style="width: 100%; justify-content: center; font-weight: 600;">🎵 Import New Sting</button>
-                        <input type="file" id="musicUploadInput" accept=".mp3,.wav,.m4a" style="display: none;">
+                <!-- Right Column: Mosaic Integration & Default Prompt -->
+                <div style="display: flex; flex-direction: column; gap: 1.5rem; min-height: 0; height: 100%;">
+                    <!-- Mosaic Credentials -->
+                    <div>
+                        <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.8rem; display: block; color: var(--text-main);">MOSAIC INTEGRATION CREDENTIALS</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.8rem;">
+                            <div class="music-editor-field" style="width: 100%;">
+                                <label style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">API Key (mk_...):</label>
+                                <input type="password" id="settingsMosaicApiKey" placeholder="Enter Mosaic API Key" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                            </div>
+                            <div class="music-editor-field" style="width: 100%;">
+                                <label style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Agent ID (UUID):</label>
+                                <input type="text" id="settingsMosaicAgentId" placeholder="Enter Agent ID" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="music-editor-field" style="width: 100%;">
+                                <label style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Motion Graphics Node ID:</label>
+                                <input type="text" id="settingsMosaicMogrNodeId" placeholder="Enter MOGR Node ID (Optional)" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                            </div>
+                            <div class="music-editor-field" style="width: 100%;">
+                                <label style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Cinematic Captions Node ID:</label>
+                                <input type="text" id="settingsMosaicCaptionsNodeId" placeholder="Enter Captions Node ID (Optional)" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                            </div>
+                        </div>
                     </div>
-                    <div id="settingsMusicList" style="max-height: 110px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px; padding: 0.4rem; background-color: var(--panel-bg-darker); display: flex; flex-direction: column; gap: 0.3rem;">
-                        <!-- Dynamically populated global music files -->
-                    </div>
-                </div>
-                
-                <div style="border-top: 1px solid var(--border-color); padding-top: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                    <label style="font-size: 0.75rem; font-weight: 600; margin-bottom: 0.2rem; display: block;">Mosaic Integration:</label>
-                    <div class="music-editor-field" style="width: 100%;">
-                        <label style="font-size: 0.65rem; color: var(--text-muted);">API Key (mk_...):</label>
-                        <input type="password" id="settingsMosaicApiKey" placeholder="Enter Mosaic API Key" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
-                    </div>
-                    <div class="music-editor-field" style="width: 100%;">
-                        <label style="font-size: 0.65rem; color: var(--text-muted);">Agent ID (UUID):</label>
-                        <input type="text" id="settingsMosaicAgentId" placeholder="Enter Agent ID" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
-                    </div>
-                    <div class="music-editor-field" style="width: 100%;">
-                        <label style="font-size: 0.65rem; color: var(--text-muted);">Motion Graphics Node ID:</label>
-                        <input type="text" id="settingsMosaicMogrNodeId" placeholder="Enter MOGR Node ID (Optional)" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
-                    </div>
-                    <div class="music-editor-field" style="width: 100%;">
-                        <label style="font-size: 0.65rem; color: var(--text-muted);">Cinematic Captions Node ID:</label>
-                        <input type="text" id="settingsMosaicCaptionsNodeId" placeholder="Enter Captions Node ID (Optional)" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
-                    </div>
-                </div>
-                
-                <div style="border-top: 1px solid var(--border-color); padding-top: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                    <label style="font-size: 0.75rem; font-weight: 600; margin-bottom: 0.2rem; display: block;">Co-Pilot Integration:</label>
-                    <div class="music-editor-field" style="width: 100%;">
-                        <label style="font-size: 0.65rem; color: var(--text-muted);">Gemini API Key:</label>
-                        <input type="password" id="settingsGeminiApiKey" placeholder="Enter Gemini API Key (Optional)" style="width: 100%; padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                    
+                    <!-- Default Prompt Textarea -->
+                    <div style="display: flex; flex-direction: column; flex-grow: 1; min-height: 0; border-top: 1px solid var(--border-color); padding-top: 1.2rem;">
+                        <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.6rem; display: block; color: var(--text-main);">DEFAULT MOTION DESIGN INSTRUCTIONS</label>
+                        <textarea id="settingsMosaicDefaultPrompt" placeholder="Enter default Motion Design instructions..." style="width: 100%; flex-grow: 1; min-height: 200px; padding: 0.8rem; font-size: 0.85rem; font-family: var(--font-mono); line-height: 1.5; border-radius: 6px; background-color: var(--panel-bg-darker); border: 1px solid var(--border-color); color: var(--text-main); outline: none; resize: none; box-sizing: border-box;"></textarea>
                     </div>
                 </div>
             </div>
-            <div class="export-actions" style="margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
-                <button class="btn btn-primary" id="saveSettingsBtn" style="width: 100%; justify-content: center;">Save & Close</button>
+            
+            <div class="export-actions" style="margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem; display: flex; justify-content: flex-end; gap: 0.8rem;">
+                <button class="btn btn-secondary" onclick="document.getElementById('settingsModalOverlay').classList.remove('active')" style="font-weight: 600; padding: 0.6rem 1.2rem;">Cancel</button>
+                <button class="btn btn-primary" id="saveSettingsBtn" style="font-weight: 600; padding: 0.6rem 1.5rem; background-image: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);">Save Settings</button>
             </div>
         </div>
     </div>
@@ -1971,7 +1999,8 @@
                 mosaic_agent_id: localStorage.getItem('ddma-mosaic-agent-id') || '',
                 mosaic_mogr_node_id: localStorage.getItem('ddma-mosaic-mogr-node-id') || '',
                 mosaic_captions_node_id: localStorage.getItem('ddma-mosaic-captions-node-id') || '',
-                gemini_api_key: localStorage.getItem('ddma-gemini-api-key') || ''
+                gemini_api_key: localStorage.getItem('ddma-gemini-api-key') || '',
+                mosaic_default_prompt: localStorage.getItem('ddma-mosaic-default-prompt') || ''
             };
             
             fetch('/save-settings', {
@@ -2059,6 +2088,7 @@
                         localStorage.setItem('ddma-mosaic-mogr-node-id', data.mosaic_mogr_node_id || '');
                         localStorage.setItem('ddma-mosaic-captions-node-id', data.mosaic_captions_node_id || '');
                         localStorage.setItem('ddma-gemini-api-key', data.gemini_api_key || '');
+                        localStorage.setItem('ddma-mosaic-default-prompt', data.mosaic_default_prompt || '');
                     })
                     .catch(err => {
                         console.warn("Could not load settings from server, using local fallback:", err);
@@ -2113,6 +2143,7 @@
                 document.getElementById('settingsMosaicMogrNodeId').value = localStorage.getItem('ddma-mosaic-mogr-node-id') || '';
                 document.getElementById('settingsMosaicCaptionsNodeId').value = localStorage.getItem('ddma-mosaic-captions-node-id') || '';
                 document.getElementById('settingsGeminiApiKey').value = localStorage.getItem('ddma-gemini-api-key') || '';
+                document.getElementById('settingsMosaicDefaultPrompt').value = localStorage.getItem('ddma-mosaic-default-prompt') || '';
 
                 renderSettingsMusicList();
                 settingsModalOverlay.classList.add('active');
@@ -2162,6 +2193,7 @@
                 localStorage.setItem('ddma-mosaic-mogr-node-id', document.getElementById('settingsMosaicMogrNodeId').value.trim());
                 localStorage.setItem('ddma-mosaic-captions-node-id', document.getElementById('settingsMosaicCaptionsNodeId').value.trim());
                 localStorage.setItem('ddma-gemini-api-key', document.getElementById('settingsGeminiApiKey').value.trim());
+                localStorage.setItem('ddma-mosaic-default-prompt', document.getElementById('settingsMosaicDefaultPrompt').value);
                 
                 saveSettingsToServer();
 
@@ -4232,15 +4264,15 @@
                                     <div class="music-editor-row" style="margin-top: 0.2rem;" onclick="event.stopPropagation();">
                                         <div class="music-editor-field">
                                             <label>Duration (s):</label>
-                                            <input type="number" class="audio-duration" step="0.1" min="0" style="width: 55px;" value="${seg.duration.toFixed(2)}" data-clip="${index}" data-seg="${segIdx}">
+                                            <input type="number" class="audio-duration" step="any" min="0" style="width: 55px;" value="${seg.duration.toFixed(2)}" data-clip="${index}" data-seg="${segIdx}">
                                         </div>
                                         <div class="music-editor-field">
                                             <label>Volume:</label>
-                                            <input type="number" class="audio-volume" step="0.05" min="0" max="2" style="width: 55px;" value="${seg.volume !== undefined ? seg.volume : 1.00}" data-clip="${index}" data-seg="${segIdx}">
+                                            <input type="number" class="audio-volume" step="any" min="0" max="2" style="width: 55px;" value="${seg.volume !== undefined ? seg.volume : 1.00}" data-clip="${index}" data-seg="${segIdx}">
                                         </div>
                                         <div class="music-editor-field">
                                             <label>Crossfade (s):</label>
-                                            <input type="number" class="audio-crossfade" step="0.1" min="0" style="width: 55px;" value="${seg.crossfade !== undefined ? seg.crossfade : 0.0}" data-clip="${index}" data-seg="${segIdx}">
+                                            <input type="number" class="audio-crossfade" step="any" min="0" style="width: 55px;" value="${seg.crossfade !== undefined ? seg.crossfade : 0.0}" data-clip="${index}" data-seg="${segIdx}">
                                         </div>
                                     </div>
                                 `;
@@ -4275,15 +4307,15 @@
                                             </div>
                                             <div class="music-editor-field">
                                                 <label>Duration (s):</label>
-                                                <input type="number" class="music-duration" step="0.5" min="0" style="width: 55px;" value="${seg.duration}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
+                                                <input type="number" class="music-duration" step="any" min="0" style="width: 55px;" value="${seg.duration}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
                                             </div>
                                             <div class="music-editor-field">
                                                 <label>Volume:</label>
-                                                <input type="number" class="music-volume" step="0.05" min="0" max="2" style="width: 55px;" value="${seg.volume !== undefined ? seg.volume : 1.00}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
+                                                <input type="number" class="music-volume" step="any" min="0" max="2" style="width: 55px;" value="${seg.volume !== undefined ? seg.volume : 1.00}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
                                             </div>
                                             <div class="music-editor-field">
                                                 <label>Crossfade (s):</label>
-                                                <input type="number" class="music-crossfade" step="0.1" min="0" style="width: 55px;" value="${seg.crossfade !== undefined ? seg.crossfade : 0.0}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
+                                                <input type="number" class="music-crossfade" step="any" min="0" style="width: 55px;" value="${seg.crossfade !== undefined ? seg.crossfade : 0.0}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
                                             </div>
                                         </div>
                                     </div>
@@ -4407,11 +4439,11 @@
                                 </div>
                                 <div class="music-editor-field">
                                     <label style="font-size: 0.7rem;">Volume:</label>
-                                    <input type="number" class="clip-volume" step="0.05" min="0" max="2" style="width: 55px;" value="${clip.volume !== undefined ? clip.volume : 1.00}" data-index="${index}">
+                                    <input type="number" class="clip-volume" step="any" min="0" max="2" style="width: 55px;" value="${clip.volume !== undefined ? clip.volume : 1.00}" data-index="${index}">
                                 </div>
                                 <div class="music-editor-field">
                                     <label style="font-size: 0.7rem;">Crossfade (s):</label>
-                                    <input type="number" class="clip-crossfade" step="0.1" min="0" style="width: 55px;" value="${clip.crossfade !== undefined ? clip.crossfade : 0.0}" data-index="${index}">
+                                    <input type="number" class="clip-crossfade" step="any" min="0" style="width: 55px;" value="${clip.crossfade !== undefined ? clip.crossfade : 0.0}" data-index="${index}">
                                 </div>
                             </div>
                         </div>
@@ -4627,10 +4659,27 @@
                     });
 
                     card.querySelectorAll('.music-duration').forEach(el => {
-                        el.addEventListener('change', function() {
+                        el.addEventListener('input', function() {
                             const clipIdx = parseInt(this.dataset.clip);
                             const segIdx = parseInt(this.dataset.seg);
-                            updateSegmentField(clipIdx, segIdx, 'duration', parseFloat(this.value) || 0.0);
+                            const newDur = parseFloat(this.value) || 0.0;
+                            clips[clipIdx].segments[segIdx].duration = newDur;
+                            
+                            const segmentRow = this.closest('.segment-row');
+                            if (segmentRow) {
+                                const metaEl = segmentRow.querySelector('.music-meta');
+                                if (metaEl) {
+                                    metaEl.textContent = `🎵 Music Segment (${newDur}s)`;
+                                }
+                            }
+                            const totalDuration = calculateClipDuration(clips[clipIdx]);
+                            const clipDurInput = card.querySelector('.clip-dur-input');
+                            if (clipDurInput) {
+                                clipDurInput.value = totalDuration.toFixed(2);
+                            }
+                            savePlanToServer();
+                        });
+                        el.addEventListener('change', function() {
                             renderClips();
                         });
                     });
@@ -4645,23 +4694,48 @@
                     });
 
                     card.querySelectorAll('.music-crossfade').forEach(el => {
-                        el.addEventListener('change', function() {
+                        el.addEventListener('input', function() {
                             const clipIdx = parseInt(this.dataset.clip);
                             const segIdx = parseInt(this.dataset.seg);
-                            updateSegmentField(clipIdx, segIdx, 'crossfade', parseFloat(this.value) || 0.0);
+                            const newCf = parseFloat(this.value) || 0.0;
+                            clips[clipIdx].segments[segIdx].crossfade = newCf;
+                            
+                            const totalDuration = calculateClipDuration(clips[clipIdx]);
+                            const clipDurInput = card.querySelector('.clip-dur-input');
+                            if (clipDurInput) {
+                                clipDurInput.value = totalDuration.toFixed(2);
+                            }
+                            savePlanToServer();
+                        });
+                        el.addEventListener('change', function() {
                             renderClips();
                         });
                     });
 
                     card.querySelectorAll('.audio-duration').forEach(el => {
-                        el.addEventListener('change', function() {
+                        el.addEventListener('input', function() {
                             const clipIdx = parseInt(this.dataset.clip);
                             const segIdx = parseInt(this.dataset.seg);
                             const newDur = parseFloat(this.value) || 0.0;
                             const seg = clips[clipIdx].segments[segIdx];
                             seg.duration = newDur;
                             seg.end = parseFloat((seg.start + newDur).toFixed(2));
+                            
+                            const segmentRow = this.closest('.segment-row');
+                            if (segmentRow) {
+                                const metaEl = segmentRow.querySelector('.audio-meta');
+                                if (metaEl) {
+                                    metaEl.textContent = `🎙 Audio Segment (${newDur.toFixed(2)}s)`;
+                                }
+                            }
+                            const totalDuration = calculateClipDuration(clips[clipIdx]);
+                            const clipDurInput = card.querySelector('.clip-dur-input');
+                            if (clipDurInput) {
+                                clipDurInput.value = totalDuration.toFixed(2);
+                            }
                             savePlanToServer();
+                        });
+                        el.addEventListener('change', function() {
                             renderClips();
                         });
                     });
@@ -4676,10 +4750,20 @@
                     });
 
                     card.querySelectorAll('.audio-crossfade').forEach(el => {
-                        el.addEventListener('change', function() {
+                        el.addEventListener('input', function() {
                             const clipIdx = parseInt(this.dataset.clip);
                             const segIdx = parseInt(this.dataset.seg);
-                            updateSegmentField(clipIdx, segIdx, 'crossfade', parseFloat(this.value) || 0.0);
+                            const newCf = parseFloat(this.value) || 0.0;
+                            clips[clipIdx].segments[segIdx].crossfade = newCf;
+                            
+                            const totalDuration = calculateClipDuration(clips[clipIdx]);
+                            const clipDurInput = card.querySelector('.clip-dur-input');
+                            if (clipDurInput) {
+                                clipDurInput.value = totalDuration.toFixed(2);
+                            }
+                            savePlanToServer();
+                        });
+                        el.addEventListener('change', function() {
                             renderClips();
                         });
                     });

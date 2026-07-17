@@ -329,41 +329,49 @@
     },
     {
         "num": 10,
-        "title": "The Crisis and the Cure",
+        "title": "Negative Weight Theory",
         "bridge_text": [
-            "How did an enduring theory that claimed burning objects lose weight survive when experiments proved they actually grew heavier?"
+            "**How did a newly discovered invisible gas completely turn the chemistry of fire on its head?**"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 1540.8,
-                "end": 1550.96,
-                "duration": 10.16,
-                "text": "Johannes Kepler had already established his third law of planetary motion. This law was based on massive amounts of highly precise observational data,"
-            },
-            {
-                "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3,
-                "volume": 1.0
+                "start": 36.52,
+                "end": 48.18,
+                "duration": 11.66,
+                "text": "So today we aren't talking about how science is built. We are talking about how it is violently destroyed. Indeed, we are examining the precise calculated architecture of intellectual demolition."
             },
             {
                 "type": "audio",
-                "start": 1551.32,
-                "end": 1637.68,
-                "duration": 86.36,
-                "text": "and it states that the square of a planet's orbital period is strictly proportional to the cube of its distance from the sun. But Newton proved mathematically that the periodic times of layers of fluid swirling in a vortex are proportional to the square of their distances from the center. Which directly fatally contradicts Kepler's third law? Exactly. Newton proved that a physical vortex governed by the laws of fluid dynamics simply cannot sustain the observed orbital patterns of the planets. If the planets were driven by fluid, they would be an entirely different locations in the sky. It was mathematically impossible. He concluded book two by declaring that the hypothesis of wortices was completely at odds with astronomical phenomena and served only to confuse rather than explain them. He completely dismantled the Cartesian machinery. He proved that the leading materialist alternative to his theory was physically incoherent. So when he finally introduces universal gravitation of book three, it wasn't just an elegant new idea competing in a crowded marketplace. It was adopted because Newton had ruthlessly annihilated the structural foundation of the territory, leaving his theory of gravity as the only mathematical framework left standing that didn't contradict Kepler's laws. He created the crisis, then offered the cure. And this structural necessity of paradigm destruction extends far beyond physics and astronomy. We see the exact same rhetorical maneuver defining the crises that birth modern chemistry. Oh, absolutely. Chemistry is a great example."
+                "start": 1625.5,
+                "end": 1635.94,
+                "duration": 10.44,
+                "text": "And this structural necessity of paradigm destruction extends far beyond physics and astronomy. We see the exact same rhetorical maneuver defining the crises that birth modern chemistry."
             },
             {
                 "type": "music",
                 "music_file": "Cold Killa (Sting) - MK2.mp3",
-                "duration": 5.0,
+                "duration": 4.5,
                 "crossfade": 0.5,
-                "volume": 0.8
+                "volume": 0.9
+            },
+            {
+                "type": "audio",
+                "start": 1636.02,
+                "end": 1754.06,
+                "duration": 118.04,
+                "text": "Oh, absolutely. Chemistry is a great example. Let's shift our focus to the late 18th century. Before a man named Antoine LaBoisier came along, the universally accepted paradigm for how things burn was the flogiston theory. Flogiston was an incredibly enduring paradigm. It was believed to be an imponderable, fire-like element that was physically contained within all combustible bodies. Okay, so it was inside the wood, inside the metal. Right, when you burn a piece of wood or when you heat a metal until it rusts a process called calcination, the theory stated that the substance was physically releasing its internal flogiston into the surrounding air. So under this paradigm, combustion is a process of subtraction. You are losing something. Yes. And the error around the fire is just a passive receptacle, like a sponge, absorbing the escaping flogiston until the air becomes totally saturated and the fires goes out. That was the consensus. But there was a glaring empirical anomaly, one that chemists had actually known about for centuries, but had aggressively ignored. They just turned a blind eye. They really did. When you calcine a metal, like letter 10, yeah, an accrucible, it turns into a powder or ash. But if you carefully weigh that resulting ash, it actually weighs more than the original solid metal did. I want to pause here, because this is a severe conceptual problem that highlights the absurdity of the paradigm. If combustion or calcination is fundamentally defined as the physical loss of a substance called flogiston, how on earth could losing a physical substance result in a net gain in physical weight? It makes no sense. That violates the most basic logic of mass. It absolutely does. And this is where we see the intellectual duct tape applied in full force. To protect the flogiston paradigm from this catastrophic contradiction, the entrenched chemists had to invent extreme ad hoc hypotheses. What did they come up with? Some of the most prominent chemists in Europe actually suggested in print that flogiston possessed negative weight or absolute levity. Yeah, get of weight."
+            },
+            {
+                "type": "music",
+                "music_file": "Cold Killa (Sting) - MK2.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "f1dd911a-ebd3-45a0-a8ee-b6838d10b0f7"
     },
     {
         "num": 11,
@@ -384,7 +392,7 @@
                 "music_file": "Slay Well (Sting) - Gunnar Olsen.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
-                "volume": 1.0
+                "volume": 1
             },
             {
                 "type": "audio",
@@ -396,104 +404,158 @@
             {
                 "type": "music",
                 "music_file": "deepDive-soft-ok.mp3",
-                "duration": 8.0,
+                "duration": 8,
                 "crossfade": 0.5,
                 "volume": 0.8
             }
         ],
-        "locked": false
+        "locked": false,
+        "hidden": true
     },
     {
         "num": 12,
-        "title": "The Special Creation Doctrine",
+        "title": "The Imperfection of Design",
         "bridge_text": [
-            "How did a mathematical correction in a capacitor lead to discovering the nature of light?"
+            "**How does the same ruthless architecture of demolition apply when there are no physical objects to study, but only abstract mathematics?**"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 1920.22,
-                "end": 2013.6,
-                "duration": 93.37999999999988,
-                "text": "(Speech Segment)"
+                "start": 1930.7,
+                "end": 1943.56,
+                "duration": 12.86,
+                "text": "When  Darwin  was  preparing  to  publish  on  the  origin  of  species  in  1859,  he  wasn't  just  offering  a  biological  mechanism.  He  was  facing  a  culturally  and  scientifically  massive,  deeply  entrenched  paradigm.  The  doctrine  of  special  creation.",
+                "crossfade": 0.4
             },
             {
                 "type": "music",
-                "music_file": "Flow (Sting) - MK2.mp3",
+                "music_file": "Cruise (Sting) - John Deley and the 41 Players.mp3",
                 "duration": 4.5,
-                "crossfade": 0.3
+                "crossfade": 0.3,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 1943.58,
+                "end": 2066.4,
+                "duration": 122.82,
+                "text": "Right.  Special  creation  posited  that  every  single  species  on  earth  was  individually  perfectly  designed  by  a  benevolent  rational  creator  for  its  specific  environment.  It  was  a  biologically  comforting,  highly  structured  worldview.  It  went.  Darwin  knew  that  simply  offering  natural  selection  as  a  mechanical  alternative  wasn't  going  to  be  enough  to  displace  such  an  established  doctrine.  The  community  would  just  say,  well,  the  creator  used  natural  selection  as  his  tool.  So,  Darwin's  attack  vector  couldn't  just  be  about  how  a  species  change.  He  had  to  launch  a  relentless  critique  of  the  explanatory  holes  and  logical  failures  inherent  in  the  concept  of  perfect  design  itself.  He  attacked  what  philosophers  of  science  call  the  explanatory  of  the  security  of  special  creation.  He  looked  at  the  deep  imperfections  of  nature,  he  asked,  if  everything  was  perfectly  designed  by  a  rational  creator  from  scratch,  why  are  their  rudimentary,  functionalists  organs?  He  pointed  to  uplim  geese.  Right,  the  geese.  These  are  geese  that  never  swim,  they  live  entirely  on  dry  land,  yet  they  have  fully  webbed  feet.  Why  would  a  perfect  designer  give  land  birds  webbed  feet?  He  also  pointed  to  the  incredibly  cruel  inefficiencies  of  nature,  famously  citing  the  iknomon  wasp.  This  wasp  survives  by  laying  its  eggs  inside  the  bodies  of  live  caterpillars  so  that  the  hatching  larvae  can  eat  the  host  alive  slowly  from  the  inside  out.  It's  brutal.  Darwin  argued  that  invoking  the  benevolent  will  of  a  perfect  creator  to  explain  these  bizarre,  horrifying  and  cruel  biological  arrangements  essentially  explained  nothing.  It  offered  no  predictive  scientific  power.  Furthermore,  it  left  structural  homology  entirely  unexplained.  Homology  being  the  fact  that  bats,  humans,  and  whales  all  share  the  exact  same  basic,  complex  bone  structure  in  their  limbs,  the  same  arrangement  of  digits  and  joints,  despite  using  them  for  completely  different  functions  like  flying,  glass  being,  and  swimming.  Right,  a  perfect  designer  would  build  a  wing  from  scratch,  not  intuitively  modify  a  hand.   Darwin  expanded  this  into  a  devastating  logical  trap,  known  as  the  argument  from  independence."
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 7,
+                "crossfade": 0.5,
+                "volume": 0.8
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "b7a6c292-4143-4e60-b206-7360b1e43fc1"
     },
     {
         "num": 13,
-        "title": "Darwin's Homology Proofs",
+        "title": "Maxwell's Broken Circuit",
         "bridge_text": [
-            "Why did classical physics predict that any warm object should release a lethal dose of UV light?"
+            "**How did a purely mathematical placeholder in a broken circuit lead to the discovery of light itself?**"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 2028.72,
-                "end": 2113,
-                "duration": 84.27999999999997,
-                "text": "(Speech Segment)"
+                "start": 2135.08,
+                "end": 2144.8,
+                "duration": 9.72,
+                "text": "physicist  James  Clerk  Maxwell  Maxwell  provided  one  of  the  most  elegant  examples  of  course  correction  through  identifying  a  conceptual  whole  in  classical  electromagnetism.",
+                "crossfade": 0
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 2.5,
+                "crossfade": 0,
+                "volume": 0.5
+            },
+            {
+                "type": "audio",
+                "start": 2170.4,
+                "end": 2338.38,
+                "duration": 167.98,
+                "text": "he  looked  at  what  happens  in  an  electrical  capacitor  placed  in  a  circuit  with  alternating  current.  I  want  to  build  this  physically  in  the  listener's  mind  so  we  don't  get  lost  in  jargon.  Let's  visualize  the  physical  setup.  Okay,  visualize  a  standard  electrical  circuit,  a  loop  of  wire,  but  in  the  middle  of  it,  you  break  the  wire  and  attach  each  end  to  a  flat  metal  plate.  These  two  plates  are  separated  by  a  small  physical  gap,  which  is  either  a  vacuum  or  an  insulating  material.  This  is  a  capacitor.  Right.  When  you  run  an  alternating  current  through  this  circuit,  electrical  charge  flows  down  the  wire  and  builds  up  on  one  plate  and  then  reverses  and  builds  up  on  the  other.  The  charge  is  constantly  varying,  accumulating  on  the  surfaces.  But  here's  the  critical  physical  fact.  Absolutely  no  actual  physical  electrical  charge  flows  across  the  empty  gap  between  the  two  plates.  The  circuit  is  physically  broken.  Right.  And  here  is  where  Maxwell  points  out  a  fatal  logical  flaw  in  Ampere's  law  using  strict  geometry.  Now,  in  advanced  physics,  they  use  vector  calculus  to  describe  this,  specifically  an  operation  called  divergence  and  curl.  But  we  don't  need  the  equations.  We  just  need  the  geometry.  Ampere's  law  relates  the  magnetic  field  around  a  wire  to  the  current  flowing  through  it.  Geometric  rules  dictate  that  if  a  mathematical  field  is  perfectly  curling  back  on  itself  like  water  swirling  in  a  perfect  closed  whirlpool,  it  cannot  simultaneously  be  exploding  outward  from  a  central  point.  Meaning  the  flow  of  current  into  a  junction  must  equal  the  flow  out.  You  can't  just  have  current  vanishing  or  appearing  from  nowhere.  The  net  outward  flow,  the  divergence,  must  be  exactly  zero.  Precisely.  For  a  steady,  continuous  current  flowing  smoothly  through  a  closed  loop  of  wire,  that  geometric  rule  holds  perfectly  true.  The  math  balances  perfectly.  Ampere's  law  works.  But  Maxwell  looks  at  the  capacitor  and  identifies  the  crisis.  The  fundamental,  unbreakable  law  of  the  conservation  of  charge  dictates  that  charge  cannot  be  destroyed.  When  current  flows  down  the  wire  and  hits  the  capacitor  plate,  it  stops.  It  accumulates.  The  charge  is  building  up  on  the  plate  over  time.  It  is  not  flowing  out  the  other  side.  Therefore,  geometrically,  the  net  flow  at  that  specific  junction  is  not  zero.  It  is  accumulating.  Exactly.  So,  Max  will  prove  that  if  you  apply  Ampere's  law  to  a  charging  capacitor,  the  equation  violently  contradicts  the  conservation  of  charge.  Wow,  that's  a  massive  problem.  Ampere's  law  demanded  that  the  flow  be  continuous  and  zero  sum.  But  physical  reality  showed  charge  accumulating  on  a  dead  end  plate.  Maxwell  proved  that  Ampere's  law  was  strictly  geometrically  inconsistent,  unless  the  universe  was  completely  static. Maxwell's attack vector was not based on finding a new experimental anomaly in a lab. He didn't run an experiment that yielded weird data. It was a purely logical geometric contradiction within the existing laws of physics that had been sitting there all along.",
+                "crossfade": 1
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 5.5,
+                "crossfade": 1.3,
+                "volume": 1
+            }
+        ],
+        "locked": true
+    },
+    {
+        "num": 14,
+        "title": "Accidental Light",
+        "bridge_text": [
+            "**How did Albert Einstein use these same hidden structural asymmetries to unleash the revolution of special relativity?**"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2339.32,
+                "end": 2429.82,
+                "duration": 90.5,
+                "text": "To resolve this glaring hole, Maxwell challenged the community with a mathematical fix. He introduced a brand new theoretical term to the equations called the displacement current. The displacement current wasn't a physical flow of electrons. It was a mathematical term that accounted for the changing electric field across that physical gap in the capacitor. It represented the rate of change of the electric flux. It fixed the geometry. It made the math balance again, so it didn't violate the conservation of charge. But this conceptual solution did something far more profound. Restoring symmetry in mathematical consistency to Ampere's law led directly to one of the greatest leaps in human history. How so? By adding this displacement current term, Maxwell's newly balanced equation suddenly predicted that changing electric fields and changing magnetic fields would continuously generate each other, propagating forward through empty space as a self-sustaining wave. And when he calculated the speed of this theoretical electromagnetic wave, it perfectly matched the known speed of light. He found a geometric contradiction in a wire, fixed the math to say the conservation of charge, and accidentally proved what light itself is. It's an incredible testament to the power of exposing conceptual problems, which brings us to the turn of the century and the absolute maestro of this rhetorical strategy, Albert Einstein. The transition from classical 19th century physics to modern 20th century physics was driven almost entirely by the strategic exploitation of conceptual asymmetries.",
+                "crossfade": 0.5
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 5.5,
+                "crossfade": 0.3,
+                "volume": 0.7
+            }
+        ],
+        "locked": true,
+        "mosaic_run_id": "e2a0fcb1-8d2f-4809-a011-dc1f956f0a55"
+    },
+    {
+        "num": 15,
+        "title": "The Photonic Bullet",
+        "bridge_text": [
+            "How did the marriage of quantum mechanics and relativity threaten to blow up physics with a plague of literal infinities?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2693.32,
+                "end": 2743.62,
+                "duration": 50.3,
+                "text": "If  the  classical  continuous  wave  theory  were  true,  any  moderately  warm  object  in  your  house,  a  stove,  a  piece  of  metal,  or  even  your  own  human  body  would  instantly  release  a  lethal  infinite  torrent  of  ultraviolet  light  and  x -rays.  Which  obviously  doesn't  happen.  We  wouldn't  be  here  to  record  this.  Max  Planck  had  resolved  this  mathematical  nightmare  in  1900  by  introducing  a  trick  to  the  equations.  He  suggested,  just  for  the  sake  of  the  math,  that  energy  was  quantized,  that  it  is  emitted  in  tiny  discrete  packets  rather  than  a  continuous  flow.  The  Planck  was  deeply  conservative.  He  viewed  this  just  as  an  act  of  desperation,  a  mathematical  heuristic  to  make  the  equations  work.  He  did  not  believe  it  reflected  physical  reality.  Einstein  recognized  the  opening.  He  attacked  the  conceptual  gap  between  the  continuous  wave  theory  of  light,  and  the  discontinuous,  quantized  nature  of  matter."
             },
             {
                 "type": "music",
                 "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
                 "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ],
-        "locked": false
-    },
-    {
-        "num": 14,
-        "title": "The Displacement Current",
-        "bridge_text": [
-            "Could the boundaries of what we can physically observe contain the entire code of the universe?"
-        ],
-        "segments": [
+                "crossfade": 0.3,
+                "volume": 1
+            },
             {
                 "type": "audio",
-                "start": 2278.18,
-                "end": 2406.06,
-                "duration": 127.88000000000011,
-                "text": "(Speech Segment)"
+                "start": 2744.32,
+                "end": 2841.68,
+                "duration": 97.36,
+                "text": "He pointed out that the continuous wave theory fundamentally failed to logically explain another phenomenon, the photoelectric effect. This is the observable ejection of electrons from a metal plate when you shine a high-frequency light on it. According to the continuous wave theory, if you shine a very dim, low-intensity light on a piece of metal, the continuous wave of energy should slowly wash over the metal and build up over time water filling a bucket until it finally has enough force to knock an electron loose. There should be a measurable time lag. Furthermore, the kinetic energy of the ejected electron should logically depend on how intense or bright the light is. But the physical experiments showed the exact opposite reality. The ejection of electrons was completely instantaneous. There was absolutely no time lag, regardless of how incredibly dim the light was. Oh no. And more importantly, the energy of the ejected electron depended solely on the light's frequency its color, not its intensity. A bright red light would eject nothing, but a dim blue light would instantly eject energetic electrons. Einstein challenged the community to finally abandon the wave-only dogma. He insisted that the glaring theoretical hole of the ultraviolet catastrophe, combined with the instantaneous physical reality of the photoelectric effect, could only be logically resolved if light itself was physically literally discontinuous. Light had to travel into discrete, indivisible, bullets of energy, while we now call photons that transfer their energy instantly upon impact. By weaponizing Planck's mathematical trick and treating it as literal reality, Einstein shattered classical physics and laid the unassailable foundation for quantum mechanics."
             },
             {
                 "type": "music",
-                "music_file": "Leavin (Sting) - MK2.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 5.5,
+                "crossfade": 0.4,
+                "volume": 0.8
             }
         ],
-        "locked": false
-    },
-    {
-        "num": 15,
-        "title": "The Photoelectric Paradox",
-        "bridge_text": [
-            "How does the expansion of empty space challenge our basic understanding of time and gravity?"
-        ],
-        "segments": [
-            {
-                "type": "audio",
-                "start": 2620.8,
-                "end": 2749.14,
-                "duration": 128.3399999999997,
-                "text": "(Speech Segment)"
-            },
-            {
-                "type": "music",
-                "music_file": "Left U Into (Sting) - Otis McDonald.mp3",
-                "duration": 4.5,
-                "crossfade": 0.3
-            }
-        ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "79799a6c-9578-4c94-986a-218747d98405"
     },
     {
         "num": 16,

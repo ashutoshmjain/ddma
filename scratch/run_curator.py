@@ -76,6 +76,13 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                 except Exception as rm_err:
                     print(f"Warning: could not delete old clip file: {rm_err}")
                     
+            backup_path = os.path.join("clips", f"{ep_num}-{clip_num}-original.mp4")
+            if os.path.exists(backup_path):
+                try:
+                    os.remove(backup_path)
+                except Exception as rm_err:
+                    print(f"Warning: could not delete old backup file: {rm_err}")
+                    
             # Compile draft video automatically!
             mosaic_runs[job_key]["status"] = "compiling draft video"
             mosaic_runs[job_key]["progress"] = 5
@@ -523,6 +530,34 @@ def migrate_legacy_files():
                 print("Episode 244 successfully migrated to projects/episode_244/")
             except Exception as e:
                 print(f"Warning: Failed to migrate legacy files: {e}")
+
+
+def get_mosaic_default_prompt():
+    settings_path = "settings.json"
+    if os.path.exists(settings_path):
+        try:
+            with open(settings_path, "r", encoding="utf-8") as sf:
+                s_data = json.load(sf)
+                prompt = s_data.get("mosaic_default_prompt")
+                if prompt:
+                    return prompt
+        except Exception as se:
+            print(f"Warning: Failed to load settings.json for prompt: {se}")
+            
+    return (
+        "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - around 150 to 180 seconds long)\n\n"
+        "- Cover the full timeline of the video with Dan Koe–style motion graphics. Entire length of Video must be covered with no blanks\n\n"
+        "- Plan around 13 to 15 segments of roughly ~ 16 seconds each. Each segment renders a graphic with changing visuals and multiple text reveals.\n\n"
+        "- 'front load more aggressive infographics to engage the viewer right up front' or 'use bold Koe style shapes in the first 10 seconds').\n\n"
+        "- Assume background video is a blank black glossy screen - so you must keep persistent visuals (animation or text) through out the segments and segments must merge into each other like a relay race.\n\n"
+        "--------------------------------------------------\n"
+        "PACING & ANIMATION RULES\n"
+        "--------------------------------------------------\n"
+        "- No static holds beyond 6 seconds. Introduce visual changes every 2–4 seconds.\n"
+        "- Use only basic transforms: opacity, position, scale. Keep animations single-property per element.\n"
+        "- Prefer step-based reveals over continuous motion. Avoid preset/template animations.\n"
+        "- No gaps in infographic coverage. No dependency on external assets."
+    )
 
 
 class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -2133,21 +2168,7 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                 
                 # Generate custom prompt with user's baseline guidelines
                 title = target_clip.get("title", f"Clip {clip_num}")
-                mogr_base_rules = (
-                    "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - around 150 to 180 seconds long)\n\n"
-                    "- Cover the full timeline of the video with Dan Koe–style motion graphics. Entire length of Video must be covered with no blanks\n\n"
-                    "- Plan around 13 to 15 segments of roughly ~ 16 seconds each. Each segment renders a graphic with changing visuals and multiple text reveals.\n\n"
-                    "- Leave ample border on top and same on the bottom for captions that I will add manually later - NO BORDER ON SIDES.\n\n"
-                    "- Assume background video is a blank black glossy screen - so you must keep persistent visuals (animation or text) through out the segments and segments must merge into each other like a relay race.\n\n"
-                    "--------------------------------------------------\n"
-                    "PACING & ANIMATION RULES\n"
-                    "--------------------------------------------------\n"
-                    "- No static holds beyond 6 seconds. Introduce visual changes every 2–4 seconds.\n"
-                    "- Use only basic transforms: opacity, position, scale. Keep animations single-property per element.\n"
-                    "- Prefer step-based reveals over continuous motion. Avoid preset/template animations.\n"
-                    "- All text fields must remain fully editable. Do not flatten or rasterize text layers.\n"
-                    "- No gaps in infographic coverage. No dependency on external assets."
-                )
+                mogr_base_rules = get_mosaic_default_prompt()
                 
                 if custom_prompt:
                     prompt_content = custom_prompt
@@ -2389,21 +2410,7 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                 transcript = " ".join(speech_texts)
                 
                 title = target_clip.get("title", f"Clip {clip_num}")
-                mogr_base_rules = (
-                    "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - around 150 to 180 seconds long)\n\n"
-                    "- Cover the full timeline of the video with Dan Koe–style motion graphics. Entire length of Video must be covered with no blanks\n\n"
-                    "- Plan around 13 to 15 segments of roughly ~ 16 seconds each. Each segment renders a graphic with changing visuals and multiple text reveals.\n\n"
-                    "- Leave ample border on top and same on the bottom for captions that I will add manually later - NO BORDER ON SIDES.\n\n"
-                    "- Assume background video is a blank black glossy screen - so you must keep persistent visuals (animation or text) through out the segments and segments must merge into each other like a relay race.\n\n"
-                    "--------------------------------------------------\n"
-                    "PACING & ANIMATION RULES\n"
-                    "--------------------------------------------------\n"
-                    "- No static holds beyond 6 seconds. Introduce visual changes every 2–4 seconds.\n"
-                    "- Use only basic transforms: opacity, position, scale. Keep animations single-property per element.\n"
-                    "- Prefer step-based reveals over continuous motion. Avoid preset/template animations.\n"
-                    "- All text fields must remain fully editable. Do not flatten or rasterize text layers.\n"
-                    "- No gaps in infographic coverage. No dependency on external assets."
-                )
+                mogr_base_rules = get_mosaic_default_prompt()
                 
                 prompt_content = f"{mogr_base_rules}\n\n--------------------------------------------------\nDYNAMIC CLIP CONTEXT\n--------------------------------------------------\n- Animate visuals to explain this Clip Title: {title}"
                 if transcript:
@@ -2639,21 +2646,7 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                                 speech_texts.append(seg.get("text").strip())
                         transcript = " ".join(speech_texts)
                         
-                        mogr_base_rules = (
-                            "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - around 150 to 180 seconds long)\n\n"
-                            "- Cover the full timeline of the video with Dan Koe–style motion graphics. Entire length of Video must be covered with no blanks\n\n"
-                            "- Plan around 13 to 15 segments of roughly ~ 16 seconds each. Each segment renders a graphic with changing visuals and multiple text reveals.\n\n"
-                            "- Leave ample border on top and same on the bottom for captions that I will add manually later - NO BORDER ON SIDES.\n\n"
-                            "- Assume background video is a blank black glossy screen - so you must keep persistent visuals (animation or text) through out the segments and segments must merge into each other like a relay race.\n\n"
-                            "--------------------------------------------------\n"
-                            "PACING & ANIMATION RULES\n"
-                            "--------------------------------------------------\n"
-                            "- No static holds beyond 6 seconds. Introduce visual changes every 2–4 seconds.\n"
-                            "- Use only basic transforms: opacity, position, scale. Keep animations single-property per element.\n"
-                            "- Prefer step-based reveals over continuous motion. Avoid preset/template animations.\n"
-                            "- All text fields must remain fully editable. Do not flatten or rasterize text layers.\n"
-                            "- No gaps in infographic coverage. No dependency on external assets."
-                        )
+                        mogr_base_rules = get_mosaic_default_prompt()
                         prompt_content = f"{mogr_base_rules}\n\n--------------------------------------------------\nDYNAMIC CLIP CONTEXT\n--------------------------------------------------\n- Animate visuals to explain this Clip Title: {title}"
                         if transcript:
                             prompt_content += f"\n- Spoken Transcript Text: {transcript}"
