@@ -4461,7 +4461,7 @@
                             <div class="music-editor-row" style="margin-top: 0.4rem; padding: 0.3rem 0.5rem; background: rgba(255,255,255,0.02); border-radius: 4px; display: inline-flex; align-self: flex-start;" onclick="event.stopPropagation();">
                                 <div class="music-editor-field">
                                     <label style="font-size: 0.7rem; color: var(--text-muted);">Duration (s):</label>
-                                    <input type="text" class="clip-dur-input" style="width: 55px; background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-mono); padding: 0;" value="${totalDuration.toFixed(2)}" disabled>
+                                    <input type="text" class="clip-dur-input" style="width: 55px; background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-mono); padding: 0;" value="${formatTime(totalDuration)}" disabled>
                                 </div>
                                 <div class="music-editor-field">
                                     <label style="font-size: 0.7rem;">Volume:</label>

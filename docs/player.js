@@ -16,6 +16,8 @@ let currentVolume = 0.8;
 let analyser = null;
 let dataArray = null;
 let bufferLength = 0;
+let gainNode1 = null;
+let gainNode2 = null;
 
 // UI Elements
 const viewport = document.getElementById('viewport');
@@ -307,16 +309,22 @@ function initAudio() {
     mainGainNode.connect(analyser);
     analyser.connect(audioCtx.destination);
     
+    // Create individual gain nodes for crossfading
+    gainNode1 = audioCtx.createGain();
+    gainNode2 = audioCtx.createGain();
+    gainNode1.connect(mainGainNode);
+    gainNode2.connect(mainGainNode);
+    
     // Connect our video tags to the audio context
-    activeVideoPlayer.muted = false;
-    inactiveVideoPlayer.muted = true;
-    setupVideoAudioNode(videoPlayer1);
-    setupVideoAudioNode(videoPlayer2);
+    videoPlayer1.muted = false;
+    videoPlayer2.muted = false;
+    setupVideoAudioNode(videoPlayer1, gainNode1);
+    setupVideoAudioNode(videoPlayer2, gainNode2);
 }
 
-function setupVideoAudioNode(videoEl) {
+function setupVideoAudioNode(videoEl, gainNode) {
     const source = audioCtx.createMediaElementSource(videoEl);
-    source.connect(mainGainNode);
+    source.connect(gainNode);
     videoSources.push(source);
 }
 
@@ -488,9 +496,8 @@ function onTimelineItemChanged() {
     if (item.type === 'video') {
         const localTime = currentGlobalTime - item.startGlobal;
         
-        // Check if source matches inactive player (which has preloaded it)
+        // Check if source matches inactive player (which has preloaded it)        // Swap players!
         if (inactiveVideoPlayer.getAttribute('data-src') === item.src) {
-            // Swap players!
             const temp = activeVideoPlayer;
             activeVideoPlayer = inactiveVideoPlayer;
             inactiveVideoPlayer = temp;
@@ -499,10 +506,6 @@ function onTimelineItemChanged() {
             activeVideoPlayer.src = item.src;
             activeVideoPlayer.load();
         }
-        
-        // Mute state management
-        activeVideoPlayer.muted = false;
-        inactiveVideoPlayer.muted = true;
         
         const clipInfo = plan.find(c => c.num === item.clipNum);
         const isAudioOnly = clipInfo && clipInfo.audio_only === true;
@@ -565,7 +568,7 @@ function preloadNextVideo() {
     }
 }
 
-// Keep physical HTML5 video nodes synchronized
+// Keep physical HTML5 video nodes synchronized and handle crossfades
 function syncVideoPlayback() {
     const item = timeline[activeTimelineIndex];
     if (!item) return;
@@ -578,28 +581,77 @@ function syncVideoPlayback() {
             mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
         }
         
-        activeVideoPlayer.muted = false;
-        inactiveVideoPlayer.muted = true;
-        
+        // Find crossfade duration from plan.json
         const clipInfo = plan.find(c => c.num === item.clipNum);
+        const crossfadeDuration = (clipInfo && clipInfo.crossfade !== undefined) ? clipInfo.crossfade : 0.0;
+        
+        let activeFade = 1.0;
+        let inactiveFade = 0.0;
+        
+        if (crossfadeDuration > 0) {
+            if (localTime < crossfadeDuration) {
+                // Fade-in region for active player
+                activeFade = localTime / crossfadeDuration;
+                // Fade-out region for inactive player (fading out preceding clip)
+                inactiveFade = 1.0 - (localTime / crossfadeDuration);
+            } else if (localTime > item.duration - crossfadeDuration) {
+                // Fade-out region at the end of the active player
+                inactiveFade = 0.0;
+                activeFade = (item.duration - localTime) / crossfadeDuration;
+            }
+        }
+        
+        activeFade = Math.max(0, Math.min(1, activeFade));
+        inactiveFade = Math.max(0, Math.min(1, inactiveFade));
+        
+        // Apply gains to the respective player's GainNode
+        if (gainNode1 && gainNode2) {
+            const activeGainNode = getGainNodeForPlayer(activeVideoPlayer);
+            const inactiveGainNode = getGainNodeForPlayer(inactiveVideoPlayer);
+            
+            activeGainNode.gain.setValueAtTime(activeFade, audioCtx.currentTime);
+            inactiveGainNode.gain.setValueAtTime(inactiveFade, audioCtx.currentTime);
+        }
+        
         const isAudioOnly = clipInfo && clipInfo.audio_only === true;
         const playOffset = (currentMode === 'audio' && !isAudioOnly) ? 2.0 : 0.0;
         
         safeSetTimeAndPlay(activeVideoPlayer, localTime + playOffset);
-        inactiveVideoPlayer.pause();
+        
+        // Control playback of inactive player during crossfade
+        if (inactiveFade > 0 && isPlaying) {
+            // Keep playing inactive player for the crossfade tail
+            inactiveVideoPlayer.play().catch(() => {});
+        } else {
+            inactiveVideoPlayer.pause();
+        }
     } else if (item.type === 'bridge') {
-        activeVideoPlayer.muted = false;
-        inactiveVideoPlayer.muted = true;
+        if (gainNode1 && gainNode2) {
+            // Bridge card: active player fades out (preceding clip tail)
+            const activeGainNode = getGainNodeForPlayer(activeVideoPlayer);
+            
+            // Bridge fade: linearly fade preceding clip out over the 5-second bridge card
+            const elapsed = currentGlobalTime - item.startGlobal;
+            const fade = Math.max(0, Math.min(1, 1.0 - (elapsed / 5.0)));
+            
+            activeGainNode.gain.setValueAtTime(fade, audioCtx.currentTime);
+            
+            const inactiveGainNode = getGainNodeForPlayer(inactiveVideoPlayer);
+            inactiveGainNode.gain.setValueAtTime(0.0, audioCtx.currentTime);
+        }
         
         inactiveVideoPlayer.pause();
         
-        // Keep playing preceding video elements tail if applicable
         if (isPlaying) {
             activeVideoPlayer.play().catch(() => {});
         } else {
             activeVideoPlayer.pause();
         }
     }
+}
+
+function getGainNodeForPlayer(videoEl) {
+    return videoEl === videoPlayer1 ? gainNode1 : gainNode2;
 }
 
 // Update Seeker Progress UI
