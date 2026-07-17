@@ -83,8 +83,8 @@ function buildTimeline() {
     });
 
     filteredPlan.forEach((clip, index) => {
-        // 1. Add Bridge Card if it is not the first clip
-        if (index > 0 && clip.bridge_text && clip.bridge_text.length > 0) {
+        // 1. Add Bridge Card if it is not the first clip (skip in audio mode)
+        if (currentMode !== 'audio' && index > 0 && clip.bridge_text && clip.bridge_text.length > 0) {
             timeline.push({
                 type: 'bridge',
                 text: clip.bridge_text[0],
@@ -132,7 +132,15 @@ async function loadVideoDurations() {
         if (item.type === 'video') {
             // Query duration by pre-loading video metadata
             try {
-                const duration = await getVideoDuration(item.src);
+                let duration = await getVideoDuration(item.src);
+                
+                // Subtract 2.0s title card intro from video clips in audio preview mode
+                const clipInfo = plan.find(c => c.num === item.clipNum);
+                const isAudioOnly = clipInfo && clipInfo.audio_only === true;
+                if (currentMode === 'audio' && !isAudioOnly) {
+                    duration = Math.max(0, duration - 2.0);
+                }
+                
                 item.duration = duration;
                 item.startGlobal = runningTime;
                 item.endGlobal = runningTime + item.duration;
@@ -496,7 +504,11 @@ function onTimelineItemChanged() {
         activeVideoPlayer.muted = false;
         inactiveVideoPlayer.muted = true;
         
-        safeSetTimeAndPlay(activeVideoPlayer, localTime);
+        const clipInfo = plan.find(c => c.num === item.clipNum);
+        const isAudioOnly = clipInfo && clipInfo.audio_only === true;
+        const playOffset = (currentMode === 'audio' && !isAudioOnly) ? 2.0 : 0.0;
+        
+        safeSetTimeAndPlay(activeVideoPlayer, localTime + playOffset);
         
         // Pre-buffer next video clip into inactive player
         preloadNextVideo();
@@ -569,7 +581,11 @@ function syncVideoPlayback() {
         activeVideoPlayer.muted = false;
         inactiveVideoPlayer.muted = true;
         
-        safeSetTimeAndPlay(activeVideoPlayer, localTime);
+        const clipInfo = plan.find(c => c.num === item.clipNum);
+        const isAudioOnly = clipInfo && clipInfo.audio_only === true;
+        const playOffset = (currentMode === 'audio' && !isAudioOnly) ? 2.0 : 0.0;
+        
+        safeSetTimeAndPlay(activeVideoPlayer, localTime + playOffset);
         inactiveVideoPlayer.pause();
     } else if (item.type === 'bridge') {
         activeVideoPlayer.muted = false;
