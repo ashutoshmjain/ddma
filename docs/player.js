@@ -526,6 +526,7 @@ function onTimelineItemChanged() {
             activeVideoPlayer = inactiveVideoPlayer;
             inactiveVideoPlayer = temp;
         } else if (activeVideoPlayer.getAttribute('data-src') !== item.src) {
+            activeVideoPlayer.onloadedmetadata = null; // Clear old event listener to prevent leaks
             activeVideoPlayer.setAttribute('data-src', item.src);
             activeVideoPlayer.src = item.src;
             activeVideoPlayer.load();
@@ -558,7 +559,7 @@ function onTimelineItemChanged() {
                 const elapsedSinceVideoEnd = currentGlobalTime - prevVideoItem.endGlobal;
                 
                 try {
-                    activeVideoPlayer.currentTime = prevVideoItem.duration + elapsedSinceVideoEnd;
+                    activeVideoPlayer.currentTime = Math.max(0, prevVideoItem.duration - 5.0) + elapsedSinceVideoEnd;
                 } catch (e) {}
                 
                 if (isPlaying) {
@@ -585,6 +586,7 @@ function preloadNextVideo() {
     }
     
     if (nextVideoItem && inactiveVideoPlayer.getAttribute('data-src') !== nextVideoItem.src) {
+        inactiveVideoPlayer.onloadedmetadata = null; // Clear old event listener to prevent leaks
         inactiveVideoPlayer.setAttribute('data-src', nextVideoItem.src);
         inactiveVideoPlayer.src = nextVideoItem.src;
         inactiveVideoPlayer.preload = 'auto';
