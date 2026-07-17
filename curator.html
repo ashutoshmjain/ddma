@@ -4469,6 +4469,10 @@
                                     <label style="font-size: 0.7rem;">Crossfade (s):</label>
                                     <input type="number" class="clip-crossfade" step="any" min="0" style="width: 55px;" value="${clip.crossfade !== undefined ? clip.crossfade : 0.0}" data-index="${index}">
                                 </div>
+                                <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.25rem; margin-left: 0.4rem;">
+                                    <input type="checkbox" class="clip-audio-only-checkbox" id="clipAudioOnly_${index}" data-index="${index}" ${clip.audio_only ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="cursor: pointer; margin-top: 2px;">
+                                    <label for="clipAudioOnly_${index}" style="font-size: 0.7rem; cursor: pointer; user-select: none; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Audio Only</label>
+                                </div>
                             </div>
                         </div>
 
@@ -4526,6 +4530,14 @@
                     clips[index].crossfade = isNaN(val) ? 0.0 : val;
                     savePlanToServer();
                 });
+
+                const audioOnlyCheck = card.querySelector('.clip-audio-only-checkbox');
+                if (audioOnlyCheck) {
+                    audioOnlyCheck.addEventListener('change', function(e) {
+                        clips[index].audio_only = this.checked;
+                        savePlanToServer();
+                    });
+                }
 
                 card.querySelector(`#lockCardBtn_${index}`).addEventListener('click', function(e) {
                     toggleClipLock(index, e);

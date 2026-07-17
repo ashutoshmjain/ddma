@@ -71,7 +71,12 @@ function buildTimeline() {
 
     // Filter plan based on active mode
     const filteredPlan = plan.filter(clip => {
-        if (currentMode === 'video' && clip.hidden) {
+        // Both modes only play locked and unhidden clips
+        if (!clip.locked || clip.hidden) {
+            return false;
+        }
+        // Video Mode also filters out audio-only clips
+        if (currentMode === 'video' && clip.audio_only) {
             return false;
         }
         return true;
@@ -625,8 +630,16 @@ function drawFrame() {
         drawAudioVisualizerScreen(item);
     } else {
         if (item.type === 'video') {
-            // Paint active video frame onto Canvas
-            ctx.drawImage(activeVideoPlayer, 0, 0, viewport.width, viewport.height);
+            // Check if the source clip is marked audio_only in the plan
+            const clipInfo = plan.find(c => c.num === item.clipNum);
+            if (clipInfo && clipInfo.audio_only) {
+                // Keep the canvas solid black for audio only clips
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, viewport.width, viewport.height);
+            } else {
+                // Paint active video frame onto Canvas
+                ctx.drawImage(activeVideoPlayer, 0, 0, viewport.width, viewport.height);
+            }
         } else if (item.type === 'bridge') {
             drawBridgeSlide(item.text);
         }
