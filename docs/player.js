@@ -132,15 +132,20 @@ async function loadVideoDurations() {
     for (let i = 0; i < timeline.length; i++) {
         const item = timeline[i];
         if (item.type === 'video') {
-            // Query duration by pre-loading video metadata
             try {
                 let duration = await getVideoDuration(item.src);
-                
-                // Subtract 2.0s title card intro from video clips in audio preview mode
                 const clipInfo = plan.find(c => c.num === item.clipNum);
-                const isAudioOnly = clipInfo && clipInfo.audio_only === true;
-                if (currentMode === 'audio' && !isAudioOnly) {
-                    duration = Math.max(0, duration - 2.0);
+                
+                // Fallback if NaN or invalid duration probed
+                if (isNaN(duration) || duration <= 0) {
+                    const baseDur = calculateClipDuration(clipInfo);
+                    duration = baseDur + (currentMode === 'audio' ? 0.0 : 2.0);
+                } else {
+                    // Subtract 2.0s title card intro from video clips in audio preview mode
+                    const isAudioOnly = clipInfo && clipInfo.audio_only === true;
+                    if (currentMode === 'audio' && !isAudioOnly) {
+                        duration = Math.max(0, duration - 2.0);
+                    }
                 }
                 
                 item.duration = duration;
@@ -149,11 +154,23 @@ async function loadVideoDurations() {
                 runningTime += item.duration;
                 validatedTimeline.push(item);
             } catch (err) {
-                console.warn(`Excluding ${item.src} from player because video asset does not exist.`, err);
+                console.warn(`Could not probe duration for ${item.src}, trying fallback...`, err);
+                const clipInfo = plan.find(c => c.num === item.clipNum);
                 
-                // If the previous item was a bridge slide for this excluded clip, remove it too
-                if (validatedTimeline.length > 0 && validatedTimeline[validatedTimeline.length - 1].type === 'bridge' && validatedTimeline[validatedTimeline.length - 1].clipNum === item.clipNum) {
-                    validatedTimeline.pop();
+                if (currentMode === 'video') {
+                    // In Video Mode, exclude if the asset file is missing
+                    console.warn(`Excluding missing video asset: ${item.src}`);
+                    if (validatedTimeline.length > 0 && validatedTimeline[validatedTimeline.length - 1].type === 'bridge' && validatedTimeline[validatedTimeline.length - 1].clipNum === item.clipNum) {
+                        validatedTimeline.pop();
+                    }
+                } else {
+                    // In Audio Mode, fall back to calculated duration from plan segments
+                    const baseDur = calculateClipDuration(clipInfo);
+                    item.duration = baseDur;
+                    item.startGlobal = runningTime;
+                    item.endGlobal = runningTime + item.duration;
+                    runningTime += item.duration;
+                    validatedTimeline.push(item);
                 }
             }
         } else if (item.type === 'bridge') {
@@ -459,15 +476,21 @@ function updateTimelineState() {
 function safeSetTimeAndPlay(videoEl, time) {
     const playVideo = () => {
         try {
-            videoEl.currentTime = time;
+            if (Math.abs(videoEl.currentTime - time) > 0.3) {
+                videoEl.currentTime = time;
+            }
         } catch (e) {
             console.warn("Failed to set currentTime:", e);
         }
         
         if (isPlaying) {
-            videoEl.play().catch(err => console.log('Playback deferred:', err));
+            if (videoEl.paused) {
+                videoEl.play().catch(err => console.log('Playback deferred:', err));
+            }
         } else {
-            videoEl.pause();
+            if (!videoEl.paused) {
+                videoEl.pause();
+            }
         }
     };
     
@@ -620,10 +643,15 @@ function syncVideoPlayback() {
         
         // Control playback of inactive player during crossfade
         if (inactiveFade > 0 && isPlaying) {
-            // Keep playing inactive player for the crossfade tail
-            inactiveVideoPlayer.play().catch(() => {});
+            if (inactiveVideoPlayer.paused) {
+                inactiveVideoPlayer.play().catch(() => {});
+            }
         } else {
-            inactiveVideoPlayer.pause();
+            if (!inactiveVideoPlayer.paused) {
+                inactiveVideoPlayer.pause();
+            }
+            // Only preload next video once crossfade has finished
+            preloadNextVideo();
         }
     } else if (item.type === 'bridge') {
         if (gainNode1 && gainNode2) {
@@ -640,14 +668,30 @@ function syncVideoPlayback() {
             inactiveGainNode.gain.setValueAtTime(0.0, audioCtx.currentTime);
         }
         
-        inactiveVideoPlayer.pause();
+        if (!inactiveVideoPlayer.paused) {
+            inactiveVideoPlayer.pause();
+        }
         
         if (isPlaying) {
-            activeVideoPlayer.play().catch(() => {});
+            if (activeVideoPlayer.paused) {
+                activeVideoPlayer.play().catch(() => {});
+            }
         } else {
-            activeVideoPlayer.pause();
+            if (!activeVideoPlayer.paused) {
+                activeVideoPlayer.pause();
+            }
         }
     }
+}
+
+function calculateClipDuration(clip) {
+    let total = 0;
+    if (clip && clip.segments) {
+        clip.segments.forEach(seg => {
+            total += parseFloat(seg.duration) || 0;
+        });
+    }
+    return total;
 }
 
 function getGainNodeForPlayer(videoEl) {
