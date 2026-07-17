@@ -69,7 +69,15 @@ function buildTimeline() {
     timeline = [];
     let runningTime = 0;
 
-    plan.forEach((clip, index) => {
+    // Filter plan based on active mode
+    const filteredPlan = plan.filter(clip => {
+        if (currentMode === 'video' && clip.hidden) {
+            return false;
+        }
+        return true;
+    });
+
+    filteredPlan.forEach((clip, index) => {
         // 1. Add Bridge Card if it is not the first clip
         if (index > 0 && clip.bridge_text && clip.bridge_text.length > 0) {
             timeline.push({
@@ -227,19 +235,23 @@ function initUI() {
     const videoModeBtn = document.getElementById('videoModeBtn');
     const audioModeBtn = document.getElementById('audioModeBtn');
     
-    videoModeBtn.addEventListener('click', () => {
+    videoModeBtn.addEventListener('click', async () => {
+        if (currentMode === 'video') return;
         currentMode = 'video';
         videoModeBtn.classList.add('active');
         audioModeBtn.classList.remove('active');
-        drawFrame();
+        buildTimeline();
+        await loadVideoDurations();
     });
     
-    audioModeBtn.addEventListener('click', () => {
+    audioModeBtn.addEventListener('click', async () => {
+        if (currentMode === 'audio') return;
         currentMode = 'audio';
         audioModeBtn.classList.add('active');
         videoModeBtn.classList.remove('active');
         initAudio(); // Initialize audio context immediately
-        drawFrame();
+        buildTimeline();
+        await loadVideoDurations();
     });
 
     // Resize viewport to keep square aspect ratio crisp
