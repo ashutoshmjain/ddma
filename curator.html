@@ -1475,7 +1475,9 @@
                     <!-- Group 1: Core Operations -->
                     <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
                         <button class="btn btn-secondary btn-mini" id="newClipBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;">➕ New Clip</button>
-                        <button class="btn btn-primary btn-mini" id="combineVideoBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Open real-time Editor's Preview player to review compiled clips">🎬 Editor's Preview</button>
+                        <a href="/docs/index.html" target="_blank" style="text-decoration: none;">
+                            <button class="btn btn-primary btn-mini" id="combineVideoBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600; pointer-events: none;" title="Open real-time Editor's Preview player to review compiled clips">🎬 Editor's Preview</button>
+                        </a>
                         <button class="btn btn-secondary btn-mini" id="openExportModalBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Download combined MP3 or view plan JSON">📥 Export Plan</button>
                     </div>
                     <!-- Group 2: History & Preview -->
@@ -4943,17 +4945,7 @@
             });
         });
 
-        // Combine Video (Editor's Preview Redirect)
-        combineVideoBtn.addEventListener('click', function() {
-            const lockedClips = clips.filter(c => c.locked);
-            if (lockedClips.length === 0) {
-                alert("Please lock at least one clip card first. Only locked clips will be previewed.");
-                return;
-            }
-            
-            // Open the static Editor's Preview in a new window/tab
-            window.open('/docs/index.html', '_blank');
-        });
+
 
         // Open Export Plan Modal
         openExportModalBtn.addEventListener('click', function() {
