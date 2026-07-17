@@ -100,7 +100,7 @@ function buildTimeline() {
         const isAudioOnly = clip.audio_only === true;
         const clipSrc = isAudioOnly 
             ? `/previews/preview_episode_244_${clip.num}.mp3`
-            : `assets/clips/244-${clip.num}.mp4`;
+            : `/docs/assets/clips/244-${clip.num}.mp4`;
 
         timeline.push({
             type: 'video',
@@ -173,6 +173,8 @@ function getVideoDuration(src) {
         tempVideo.onerror = () => {
             reject(new Error(`Failed to load metadata for ${src}`));
         };
+        
+        tempVideo.load(); // Force loading of metadata to resolve promise
     });
 }
 
