@@ -239,6 +239,8 @@ function initAudio() {
     mainGainNode.connect(audioCtx.destination);
     
     // Connect our video tags to the audio context
+    videoPlayer1.muted = false;
+    videoPlayer2.muted = false;
     setupVideoAudioNode(videoPlayer1);
     setupVideoAudioNode(videoPlayer2);
 }
