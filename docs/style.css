@@ -420,3 +420,40 @@ body {
     font-size: 1.8rem;
     color: var(--primary-color);
 }
+
+/* Mode Toggle Container & Buttons */
+.mode-toggle-card {
+    display: flex;
+    padding: 12px 16px;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.mode-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-glass);
+    color: var(--text-secondary);
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all var(--transition-speed);
+}
+
+.mode-btn:hover {
+    color: var(--text-primary);
+    background: var(--hover-bg);
+}
+
+.mode-btn.active {
+    background: var(--active-bg);
+    border-color: rgba(108, 92, 231, 0.3);
+    color: var(--text-primary);
+    box-shadow: 0 0 10px rgba(108, 92, 231, 0.15);
+}

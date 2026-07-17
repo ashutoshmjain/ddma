@@ -6,12 +6,16 @@ let totalDuration = 0;
 let isPlaying = false;
 let animationFrameId = null;
 let activeTimelineIndex = -1;
+let currentMode = 'video'; // 'video' or 'audio'
 
 // Audio Graph
 let audioCtx = null;
 let videoSources = []; // MediaElementAudioSourceNode mappings
 let mainGainNode = null;
 let currentVolume = 0.8;
+let analyser = null;
+let dataArray = null;
+let bufferLength = 0;
 
 // UI Elements
 const viewport = document.getElementById('viewport');
@@ -219,6 +223,25 @@ function initUI() {
         isDragging = false;
     });
 
+    // Mode Toggles
+    const videoModeBtn = document.getElementById('videoModeBtn');
+    const audioModeBtn = document.getElementById('audioModeBtn');
+    
+    videoModeBtn.addEventListener('click', () => {
+        currentMode = 'video';
+        videoModeBtn.classList.add('active');
+        audioModeBtn.classList.remove('active');
+        drawFrame();
+    });
+    
+    audioModeBtn.addEventListener('click', () => {
+        currentMode = 'audio';
+        audioModeBtn.classList.add('active');
+        videoModeBtn.classList.remove('active');
+        initAudio(); // Initialize audio context immediately
+        drawFrame();
+    });
+
     // Resize viewport to keep square aspect ratio crisp
     window.addEventListener('resize', drawFrame);
     
@@ -242,7 +265,15 @@ function initAudio() {
     
     mainGainNode = audioCtx.createGain();
     mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
-    mainGainNode.connect(audioCtx.destination);
+    
+    // Wire up AnalyserNode for audio mode visualizer
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+    
+    mainGainNode.connect(analyser);
+    analyser.connect(audioCtx.destination);
     
     // Connect our video tags to the audio context
     activeVideoPlayer.muted = false;
@@ -578,11 +609,15 @@ function drawFrame() {
     
     const item = timeline[activeTimelineIndex];
     
-    if (item.type === 'video') {
-        // Paint active video frame onto Canvas
-        ctx.drawImage(activeVideoPlayer, 0, 0, viewport.width, viewport.height);
-    } else if (item.type === 'bridge') {
-        drawBridgeSlide(item.text);
+    if (currentMode === 'audio' && item.type === 'video') {
+        drawAudioVisualizerScreen(item);
+    } else {
+        if (item.type === 'video') {
+            // Paint active video frame onto Canvas
+            ctx.drawImage(activeVideoPlayer, 0, 0, viewport.width, viewport.height);
+        } else if (item.type === 'bridge') {
+            drawBridgeSlide(item.text);
+        }
     }
 }
 
@@ -621,6 +656,82 @@ function drawBridgeSlide(text) {
     lines.forEach((line, index) => {
         ctx.fillText(line, x, startY + (index * lineHeight));
     });
+}
+
+function drawAudioVisualizerScreen(item) {
+    // Draw dark radial gradient background
+    const gradient = ctx.createRadialGradient(viewport.width/2, viewport.height/2, 50, viewport.width/2, viewport.height/2, viewport.width/2);
+    gradient.addColorStop(0, '#111424');
+    gradient.addColorStop(1, '#07090e');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, viewport.width, viewport.height);
+    
+    // Draw text info: active clip details
+    ctx.fillStyle = '#f1f3f9';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    ctx.font = '800 24px Outfit';
+    ctx.fillText('🎧 AUDIO PREVIEW MODE', viewport.width / 2, 80);
+    
+    ctx.font = '600 28px Outfit';
+    ctx.fillStyle = '#a29bfe';
+    ctx.fillText(`Clip ${item.clipNum}: ${item.title}`, viewport.width / 2, viewport.height / 2 - 120);
+    
+    // Draw live waveform wave using Web Audio Analyser data
+    if (analyser && isPlaying) {
+        analyser.getByteTimeDomainData(dataArray);
+        
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = 'rgba(162, 155, 254, 0.85)'; // glowing lavender
+        ctx.shadowColor = '#6c5ce7';
+        ctx.shadowBlur = 20;
+        
+        ctx.beginPath();
+        const sliceWidth = viewport.width / bufferLength;
+        let x = 0;
+        
+        for (let i = 0; i < bufferLength; i++) {
+            const v = dataArray[i] / 128.0;
+            // Draw a smooth wave in the center region
+            const y = (v * viewport.height / 2) + 20;
+            
+            if (i === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+            x += sliceWidth;
+        }
+        
+        ctx.lineTo(viewport.width, viewport.height / 2 + 20);
+        ctx.stroke();
+        ctx.shadowBlur = 0; // reset shadow
+        
+        // Mirroring frequency bars at the bottom
+        analyser.getByteFrequencyData(dataArray);
+        const barWidth = (viewport.width / bufferLength) * 1.5;
+        let barX = 0;
+        ctx.fillStyle = 'rgba(108, 92, 231, 0.12)';
+        
+        for (let i = 0; i < bufferLength; i++) {
+            const barHeight = (dataArray[i] / 255.0) * 100;
+            ctx.fillRect(barX, viewport.height - barHeight - 40, barWidth - 2, barHeight);
+            barX += barWidth;
+        }
+    } else {
+        // Fallback static wave line if audio context is not active/paused
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(162, 155, 254, 0.3)';
+        ctx.beginPath();
+        ctx.moveTo(0, viewport.height / 2 + 20);
+        ctx.lineTo(viewport.width, viewport.height / 2 + 20);
+        ctx.stroke();
+        
+        ctx.font = '300 16px Outfit';
+        ctx.fillStyle = '#8c9bb0';
+        ctx.fillText(isPlaying ? 'Initializing visualizer...' : 'Press Play to start visualizer', viewport.width / 2, viewport.height / 2 + 80);
+    }
 }
 
 // Canvas Text Wrapping Utility
