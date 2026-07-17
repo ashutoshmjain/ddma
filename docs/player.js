@@ -674,6 +674,20 @@ function syncVideoPlayback() {
             inactiveVideoPlayer.pause();
         }
         
+        // Seek preceding video player to its last 5.0 seconds tail
+        try {
+            const elapsed = currentGlobalTime - item.startGlobal;
+            const prevVideoItem = activeTimelineIndex > 0 ? timeline[activeTimelineIndex - 1] : null;
+            const baseDur = (prevVideoItem && prevVideoItem.duration) ? prevVideoItem.duration : activeVideoPlayer.duration;
+            const targetSeek = Math.max(0, baseDur - 5.0) + elapsed;
+            
+            if (Math.abs(activeVideoPlayer.currentTime - targetSeek) > 0.3) {
+                activeVideoPlayer.currentTime = targetSeek;
+            }
+        } catch (e) {
+            console.warn("Failed to seek preceding video tail:", e);
+        }
+        
         if (isPlaying) {
             activeVideoPlayer.muted = false; // Bypass browser-level mute resets on load()
             if (activeVideoPlayer.paused) {
