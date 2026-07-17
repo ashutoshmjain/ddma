@@ -379,6 +379,30 @@ function updateTimelineState() {
     }
 }
 
+function safeSetTimeAndPlay(videoEl, time) {
+    const playVideo = () => {
+        try {
+            videoEl.currentTime = time;
+        } catch (e) {
+            console.warn("Failed to set currentTime:", e);
+        }
+        
+        if (isPlaying) {
+            videoEl.play().catch(err => console.log('Playback deferred:', err));
+        } else {
+            videoEl.pause();
+        }
+    };
+    
+    videoEl.onloadedmetadata = null;
+    
+    if (videoEl.readyState >= 1) {
+        playVideo();
+    } else {
+        videoEl.onloadedmetadata = playVideo;
+    }
+}
+
 function onTimelineItemChanged() {
     const item = timeline[activeTimelineIndex];
     if (!item) return;
@@ -395,14 +419,19 @@ function onTimelineItemChanged() {
     if (item.type === 'video') {
         const localTime = currentGlobalTime - item.startGlobal;
         
-        // Check if source matches active player
-        if (activeVideoPlayer.getAttribute('data-src') !== item.src) {
+        // Check if source matches inactive player (which has preloaded it)
+        if (inactiveVideoPlayer.getAttribute('data-src') === item.src) {
+            // Swap players!
+            const temp = activeVideoPlayer;
+            activeVideoPlayer = inactiveVideoPlayer;
+            inactiveVideoPlayer = temp;
+        } else if (activeVideoPlayer.getAttribute('data-src') !== item.src) {
             activeVideoPlayer.setAttribute('data-src', item.src);
             activeVideoPlayer.src = item.src;
             activeVideoPlayer.load();
         }
         
-        activeVideoPlayer.currentTime = localTime;
+        safeSetTimeAndPlay(activeVideoPlayer, localTime);
         
         // Pre-buffer next video clip into inactive player
         preloadNextVideo();
@@ -423,7 +452,14 @@ function onTimelineItemChanged() {
             if (activeVideoPlayer.getAttribute('data-src') === prevVideoItem.src) {
                 // Keep playing past its end for bridge audio overlay
                 const elapsedSinceVideoEnd = currentGlobalTime - prevVideoItem.endGlobal;
-                activeVideoPlayer.currentTime = prevVideoItem.duration + elapsedSinceVideoEnd;
+                
+                try {
+                    activeVideoPlayer.currentTime = prevVideoItem.duration + elapsedSinceVideoEnd;
+                } catch (e) {}
+                
+                if (isPlaying) {
+                    activeVideoPlayer.play().catch(() => {});
+                }
                 
                 // Volume fade out effect in code
                 if (mainGainNode) {
@@ -459,18 +495,13 @@ function syncVideoPlayback() {
     
     if (item.type === 'video') {
         const localTime = currentGlobalTime - item.startGlobal;
-        activeVideoPlayer.currentTime = localTime;
         
         // Restore volume node
         if (mainGainNode && audioCtx) {
             mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
         }
         
-        if (isPlaying) {
-            activeVideoPlayer.play().catch(err => console.log('Autoplay deferred:', err));
-        } else {
-            activeVideoPlayer.pause();
-        }
+        safeSetTimeAndPlay(activeVideoPlayer, localTime);
         inactiveVideoPlayer.pause();
     } else if (item.type === 'bridge') {
         // Bridge slide: Inactive player pauses
