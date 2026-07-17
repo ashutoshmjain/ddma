@@ -103,32 +103,38 @@ function updateTotalDuration() {
 // Load Video Durations Dynamically
 async function loadVideoDurations() {
     let runningTime = 0;
+    const validatedTimeline = [];
 
     for (let i = 0; i < timeline.length; i++) {
         const item = timeline[i];
         if (item.type === 'video') {
-            item.startGlobal = runningTime;
-            
             // Query duration by pre-loading video metadata
             try {
                 const duration = await getVideoDuration(item.src);
                 item.duration = duration;
+                item.startGlobal = runningTime;
+                item.endGlobal = runningTime + item.duration;
+                runningTime += item.duration;
+                validatedTimeline.push(item);
             } catch (err) {
-                console.warn(`Could not load duration for ${item.src}, using default 10s.`, err);
-                item.duration = 15.0; // standard clip fallback
+                console.warn(`Excluding ${item.src} from player because video asset does not exist.`, err);
+                
+                // If the previous item was a bridge slide for this excluded clip, remove it too
+                if (validatedTimeline.length > 0 && validatedTimeline[validatedTimeline.length - 1].type === 'bridge' && validatedTimeline[validatedTimeline.length - 1].clipNum === item.clipNum) {
+                    validatedTimeline.pop();
+                }
             }
-            
-            item.endGlobal = runningTime + item.duration;
-            runningTime += item.duration;
         } else if (item.type === 'bridge') {
             item.startGlobal = runningTime;
             item.endGlobal = runningTime + item.duration;
             runningTime += item.duration;
+            validatedTimeline.push(item);
         }
     }
 
+    timeline = validatedTimeline;
     updateTotalDuration();
-    renderSidebar(); // Re-render with correct times
+    renderSidebar(); // Re-render with verified clips only
     seekTo(0); // Reset seeker
 }
 
@@ -155,7 +161,9 @@ function renderSidebar() {
     plan.forEach(clip => {
         // Find corresponding video item in timeline to show its actual duration
         const videoItem = timeline.find(item => item.type === 'video' && item.clipNum === clip.num);
-        const durationStr = videoItem ? formatTime(videoItem.duration) : '--:--';
+        if (!videoItem) return; // Skip clips that have no compiled video asset
+        
+        const durationStr = formatTime(videoItem.duration);
         
         const card = document.createElement('div');
         card.className = `clip-item`;
@@ -169,9 +177,7 @@ function renderSidebar() {
         `;
         
         card.onclick = () => {
-            if (videoItem) {
-                seekTo(videoItem.startGlobal);
-            }
+            seekTo(videoItem.startGlobal);
         };
         
         clipsList.appendChild(card);
