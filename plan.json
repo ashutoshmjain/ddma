@@ -477,9 +477,9 @@
             {
                 "type": "audio",
                 "start": 2170.4,
-                "end": 2338.38,
-                "duration": 167.98,
-                "text": "he  looked  at  what  happens  in  an  electrical  capacitor  placed  in  a  circuit  with  alternating  current.  I  want  to  build  this  physically  in  the  listener's  mind  so  we  don't  get  lost  in  jargon.  Let's  visualize  the  physical  setup.  Okay,  visualize  a  standard  electrical  circuit,  a  loop  of  wire,  but  in  the  middle  of  it,  you  break  the  wire  and  attach  each  end  to  a  flat  metal  plate.  These  two  plates  are  separated  by  a  small  physical  gap,  which  is  either  a  vacuum  or  an  insulating  material.  This  is  a  capacitor.  Right.  When  you  run  an  alternating  current  through  this  circuit,  electrical  charge  flows  down  the  wire  and  builds  up  on  one  plate  and  then  reverses  and  builds  up  on  the  other.  The  charge  is  constantly  varying,  accumulating  on  the  surfaces.  But  here's  the  critical  physical  fact.  Absolutely  no  actual  physical  electrical  charge  flows  across  the  empty  gap  between  the  two  plates.  The  circuit  is  physically  broken.  Right.  And  here  is  where  Maxwell  points  out  a  fatal  logical  flaw  in  Ampere's  law  using  strict  geometry.  Now,  in  advanced  physics,  they  use  vector  calculus  to  describe  this,  specifically  an  operation  called  divergence  and  curl.  But  we  don't  need  the  equations.  We  just  need  the  geometry.  Ampere's  law  relates  the  magnetic  field  around  a  wire  to  the  current  flowing  through  it.  Geometric  rules  dictate  that  if  a  mathematical  field  is  perfectly  curling  back  on  itself  like  water  swirling  in  a  perfect  closed  whirlpool,  it  cannot  simultaneously  be  exploding  outward  from  a  central  point.  Meaning  the  flow  of  current  into  a  junction  must  equal  the  flow  out.  You  can't  just  have  current  vanishing  or  appearing  from  nowhere.  The  net  outward  flow,  the  divergence,  must  be  exactly  zero.  Precisely.  For  a  steady,  continuous  current  flowing  smoothly  through  a  closed  loop  of  wire,  that  geometric  rule  holds  perfectly  true.  The  math  balances  perfectly.  Ampere's  law  works.  But  Maxwell  looks  at  the  capacitor  and  identifies  the  crisis.  The  fundamental,  unbreakable  law  of  the  conservation  of  charge  dictates  that  charge  cannot  be  destroyed.  When  current  flows  down  the  wire  and  hits  the  capacitor  plate,  it  stops.  It  accumulates.  The  charge  is  building  up  on  the  plate  over  time.  It  is  not  flowing  out  the  other  side.  Therefore,  geometrically,  the  net  flow  at  that  specific  junction  is  not  zero.  It  is  accumulating.  Exactly.  So,  Max  will  prove  that  if  you  apply  Ampere's  law  to  a  charging  capacitor,  the  equation  violently  contradicts  the  conservation  of  charge.  Wow,  that's  a  massive  problem.  Ampere's  law  demanded  that  the  flow  be  continuous  and  zero  sum.  But  physical  reality  showed  charge  accumulating  on  a  dead  end  plate.  Maxwell  proved  that  Ampere's  law  was  strictly  geometrically  inconsistent,  unless  the  universe  was  completely  static. Maxwell's attack vector was not based on finding a new experimental anomaly in a lab. He didn't run an experiment that yielded weird data. It was a purely logical geometric contradiction within the existing laws of physics that had been sitting there all along.",
+                "end": 2324.02,
+                "duration": 153.62,
+                "text": "he  looked  at  what  happens  in  an  electrical  capacitor  placed  in  a  circuit  with  alternating  current.  I  want  to  build  this  physically  in  the  listener's  mind  so  we  don't  get  lost  in  jargon.  Let's  visualize  the  physical  setup.  Okay,  visualize  a  standard  electrical  circuit,  a  loop  of  wire,  but  in  the  middle  of  it,  you  break  the  wire  and  attach  each  end  to  a  flat  metal  plate.  These  two  plates  are  separated  by  a  small  physical  gap,  which  is  either  a  vacuum  or  an  insulating  material.  This  is  a  capacitor.  Right.  When  you  run  an  alternating  current  through  this  circuit,  electrical  charge  flows  down  the  wire  and  builds  up  on  one  plate  and  then  reverses  and  builds  up  on  the  other.  The  charge  is  constantly  varying,  accumulating  on  the  surfaces.  But  here's  the  critical  physical  fact.  Absolutely  no  actual  physical  electrical  charge  flows  across  the  empty  gap  between  the  two  plates.  The  circuit  is  physically  broken.  Right.  And  here  is  where  Maxwell  points  out  a  fatal  logical  flaw  in  Ampere's  law  using  strict  geometry.  Now,  in  advanced  physics,  they  use  vector  calculus  to  describe  this,  specifically  an  operation  called  divergence  and  curl.  But  we  don't  need  the  equations.  We  just  need  the  geometry.  Ampere's  law  relates  the  magnetic  field  around  a  wire  to  the  current  flowing  through  it.  Geometric  rules  dictate  that  if  a  mathematical  field  is  perfectly  curling  back  on  itself  like  water  swirling  in  a  perfect  closed  whirlpool,  it  cannot  simultaneously  be  exploding  outward  from  a  central  point.  Meaning  the  flow  of  current  into  a  junction  must  equal  the  flow  out.  You  can't  just  have  current  vanishing  or  appearing  from  nowhere.  The  net  outward  flow,  the  divergence,  must  be  exactly  zero.  Precisely.  For  a  steady,  continuous  current  flowing  smoothly  through  a  closed  loop  of  wire,  that  geometric  rule  holds  perfectly  true.  The  math  balances  perfectly.  Ampere's  law  works.  But  Maxwell  looks  at  the  capacitor  and  identifies  the  crisis.  The  fundamental,  unbreakable  law of the conservation of charge dictates that charge cannot be destroyed. When current flows down the wire and hits the capacitor plate, it stops. It accumulates. The charge is building up on the plate over time. It is not flowing out the other side. Therefore, geometrically, the net flow at that specific junction is not zero. It is accumulating. Exactly. So, Max will prove that if you apply Ampere's law to a charging capacitor, the equation violently contradicts the conservation of charge. Wow, that's a massive problem. Ampere's law demanded that the flow be continuous and zero sum. But physical reality showed charge accumulating on a dead end plate. Maxwell proved that Ampere's law was strictly geometrically inconsistent, unless the universe was completely static.",
                 "crossfade": 1
             },
             {
@@ -501,10 +501,10 @@
         "segments": [
             {
                 "type": "audio",
-                "start": 2339.32,
+                "start": 2324.28,
                 "end": 2429.82,
-                "duration": 90.5,
-                "text": "To resolve this glaring hole, Maxwell challenged the community with a mathematical fix. He introduced a brand new theoretical term to the equations called the displacement current. The displacement current wasn't a physical flow of electrons. It was a mathematical term that accounted for the changing electric field across that physical gap in the capacitor. It represented the rate of change of the electric flux. It fixed the geometry. It made the math balance again, so it didn't violate the conservation of charge. But this conceptual solution did something far more profound. Restoring symmetry in mathematical consistency to Ampere's law led directly to one of the greatest leaps in human history. How so? By adding this displacement current term, Maxwell's newly balanced equation suddenly predicted that changing electric fields and changing magnetic fields would continuously generate each other, propagating forward through empty space as a self-sustaining wave. And when he calculated the speed of this theoretical electromagnetic wave, it perfectly matched the known speed of light. He found a geometric contradiction in a wire, fixed the math to say the conservation of charge, and accidentally proved what light itself is. It's an incredible testament to the power of exposing conceptual problems, which brings us to the turn of the century and the absolute maestro of this rhetorical strategy, Albert Einstein. The transition from classical 19th century physics to modern 20th century physics was driven almost entirely by the strategic exploitation of conceptual asymmetries.",
+                "duration": 105.54,
+                "text": "Maxwell's attack vector was not based on finding a new experimental anomaly in a lab. He didn't run an experiment that yielded weird data. It was a purely logical geometric contradiction within the existing laws of physics that had been sitting there all along. To resolve this glaring hole, Maxwell challenged the community with a mathematical fix. He introduced a brand new theoretical term to the equations called the displacement current. The displacement current wasn't a physical flow of electrons. It was a mathematical term that accounted for the changing electric field across that physical gap in the capacitor. It represented the rate of change of the electric flux. It fixed the geometry. It made the math balance again, so it didn't violate the conservation of charge. But this conceptual solution did something far more profound. Restoring symmetry in mathematical consistency to Ampere's law led directly to one of the greatest leaps in human history. How so? By adding this displacement current term, Maxwell's newly balanced equation suddenly predicted that changing electric fields and changing magnetic fields would continuously generate each other, propagating forward through empty space as a self-sustaining wave. And when he calculated the speed of this theoretical electromagnetic wave, it perfectly matched the known speed of light. He found a geometric contradiction in a wire, fixed the math to say the conservation of charge, and accidentally proved what light itself is. It's an incredible testament to the power of exposing conceptual problems, which brings us to the turn of the century and the absolute maestro of this rhetorical strategy, Albert Einstein. The transition from classical 19th century physics to modern 20th century physics was driven almost entirely by the strategic exploitation of conceptual asymmetries.",
                 "crossfade": 0.5
             },
             {
@@ -554,28 +554,43 @@
                 "volume": 0.8
             }
         ],
-        "locked": true,
-        "mosaic_run_id": "79799a6c-9578-4c94-986a-218747d98405"
+        "locked": true
     },
     {
         "num": 16,
-        "title": "Observer Patch Holography",
+        "title": "The Shell Game of Quantum Infinities",
         "bridge_text": [
-            "Why must a physical law break down at the edge of a black hole to preserve cosmic consistency?"
+            "**How are today's theoretical physicists using this same ruthless strategy to resolve the ultimate clash between Einstein and quantum mechanics?**"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 2890.92,
-                "end": 3004.14,
-                "duration": 113.2199999999998,
-                "text": "(Speech Segment)"
+                "start": 2860.14,
+                "end": 2872.16,
+                "duration": 12.02,
+                "text": "Infinities. Right, infinities. When physicists ran the early QED equations to try and calculate the interaction between a single electron and its own electromagnetic field, the results literally blew up on the chalkboard."
             },
             {
                 "type": "music",
-                "music_file": "Livin' Up (Sting) - Otis McDonald.mp3",
+                "music_file": "Double Helix (Sting) - Ethan Meixsell.mp3",
                 "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1.0
+            },
+            {
+                "type": "audio",
+                "start": 2872.82,
+                "end": 3012.1,
+                "duration": 139.28,
+                "text": "The equations produced infinite values for the mass and the charge of the electron. The mathematical models were predicting completely useless, non-physical results due to what they called self-energy. And how did the physics community react? Most established physicists of the time tried to carefully tiptoe around these infinities. They assumed the core underlying theory of QED was perfectly correct, and they just needed to slowly refine the math, or invent new math to cancel out the infinities. But a young Richard Feynman decided that the underlying assumptions of the theory itself were deeply conceptually flawed. Feynman attacked the philosophical absurdity of an electron acting upon its own field. Let's break this down. Classical and early quantum theories assumed that an electron generates an electromagnetic field in space, and that this field acts back on all charges in the universe. Therefore, logically, the equations demanded that an electron must constantly interact with and act upon itself. Feynman pointed out that this fundamental concept was, in his words, a sort of silly one. Feynman also challenged the necessity of having an infinite number of degrees of freedom in a field. If you model a quantum field in a box, you treat the points in space like tiny harmonic oscillators essentially, tiny springs vibrating at different frequencies. But if you have an infinite number of infinitely small points, you have an infinite number of high frequency modes. This leads inevitably to infinite ground state energy. It was a conceptual problem directly mirroring the ultraviolet catastrophe that Einstein had attacked. Wait, I am actually a bit confused here. How can a math equation just casually spit out infinity for the mass of an electron when we know exactly how much an electron weighs? How did physicists justify working with equations that were so obviously broken? They justified it through immense mathematical complexity. They developed techniques to essentially subtract infinity from infinity to leave behind a finite number that matched experiments. Subtracting infinity from infinity, that sounds like cheating. Feynman thought so, too. He famously called these accepted mathematical gymnastics a shell game in Hocus Pocus. He ruthlessly exposed the absurdity of accepting infinite mathematical terms and foundational physics equations. He demanded physical intuition over mathematical obfuscation. His initial diagnostic attack on the absurdity of infinite self-indirection was the key.",
                 "crossfade": 0.3
+            },
+            {
+                "type": "music",
+                "music_file": "Operator Error (Sting) - Gunnar Olsen.mp3",
+                "duration": 5.0,
+                "crossfade": 0.5,
+                "volume": 0.8
             }
         ],
         "locked": false
