@@ -717,6 +717,13 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 with open('plan.json', 'w', encoding='utf-8') as f:
                     json.dump(json_data, f, indent=4)
                     
+                # Sync to docs/plan.json if it exists
+                if os.path.exists("docs"):
+                    try:
+                        shutil.copy2('plan.json', os.path.join('docs', 'plan.json'))
+                    except Exception as sync_err:
+                        print(f"Error syncing to docs/plan.json: {sync_err}")
+                    
                 # Auto-compile changed clips in the background
                 for num in changed_clips:
                     job_key = (project_id, int(num))
@@ -1002,6 +1009,13 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                 # Sync to root plan.json
                 with open('plan.json', 'w', encoding='utf-8') as f:
                     json.dump(plan_data, f, indent=4)
+                    
+                # Sync to docs/plan.json if it exists
+                if os.path.exists("docs"):
+                    try:
+                        shutil.copy2('plan.json', os.path.join('docs', 'plan.json'))
+                    except Exception as sync_err:
+                        print(f"Error syncing to docs/plan.json: {sync_err}")
                 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
@@ -1061,6 +1075,11 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                     
                 shutil.copy2(snapshot_path, plan_path)
                 shutil.copy2(snapshot_path, "plan.json")
+                if os.path.exists("docs"):
+                    try:
+                        shutil.copy2("plan.json", os.path.join("docs", "plan.json"))
+                    except Exception as sync_err:
+                        print(f"Error syncing snapshot to docs/plan.json: {sync_err}")
                 
                 # Load the restored plan
                 with open(plan_path, "r", encoding="utf-8") as f:
@@ -2453,8 +2472,10 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                         plan_data = json.load(f)
                     try:
                         shutil.copy2(plan_path, "plan.json")
+                        if os.path.exists("docs"):
+                            shutil.copy2("plan.json", os.path.join("docs", "plan.json"))
                     except Exception as copy_err:
-                        print(f"Error syncing project plan to root: {copy_err}")
+                        print(f"Error syncing project plan to root/docs: {copy_err}")
                         
                 trans_data = None
                 if os.path.exists(trans_path):

@@ -48,8 +48,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
 // Load plan.json
 async function loadPlan() {
-    // plan.json is in the parent directory of the docs/ folder
-    const res = await fetch('../plan.json');
+    const res = await fetch('plan.json');
     if (!res.ok) throw new Error('Could not fetch plan.json');
     plan = await res.json();
     
