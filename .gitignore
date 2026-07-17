@@ -46,3 +46,7 @@ projects/*
 gemini-creds.json
 *-creds.json
 *credentials*.json
+
+# Public Web Assets
+!docs/assets/**
+

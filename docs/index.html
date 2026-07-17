@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDMA Timeline Web Player</title>
+    <!-- Google Fonts: Outfit for clean, modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for control icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background visual decorations for rich premium aesthetic -->
+    <div class="bg-glow bg-glow-left"></div>
+    <div class="bg-glow bg-glow-right"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation: Clips List -->
+        <aside class="sidebar glass">
+            <div class="sidebar-header">
+                <h2><i class="fa-solid fa-wand-magic-sparkles"></i> DDMA Player</h2>
+                <p>Episode 244 Timeline</p>
+            </div>
+            <div class="clips-list" id="clipsList">
+                <div class="loading-placeholder">
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                    <span>Parsing plan.json...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="workspace">
+            <!-- Viewport Screen for Video Rendering -->
+            <div class="viewport-card glass">
+                <div class="canvas-wrapper">
+                    <canvas id="viewport" width="740" height="740"></canvas>
+                </div>
+                <div id="viewportStatus" class="viewport-status">
+                    Ready to Play
+                </div>
+            </div>
+
+            <!-- Player Timeline & Controls Panel -->
+            <div class="controls-card glass">
+                <!-- Seeker Bar slider -->
+                <div class="seeker-container">
+                    <span class="time-label" id="currentTimeLabel">0:00</span>
+                    <div class="seek-track" id="seekTrack">
+                        <div class="seek-progress" id="seekProgress"></div>
+                        <div class="seek-handle" id="seekHandle"></div>
+                    </div>
+                    <span class="time-label" id="totalTimeLabel">0:00</span>
+                </div>
+
+                <!-- Controls Layout -->
+                <div class="controls-layout">
+                    <!-- Left: secondary buttons -->
+                    <div class="controls-left">
+                        <button class="control-btn" id="prevBtn" title="Previous Clip">
+                            <i class="fa-solid fa-backward-step"></i>
+                        </button>
+                    </div>
+
+                    <!-- Middle: Main Play/Pause (Neon styled) -->
+                    <div class="controls-middle">
+                        <button class="play-btn" id="playBtn" title="Play / Pause">
+                            <i class="fa-solid fa-play"></i>
+                        </button>
+                    </div>
+
+                    <!-- Right: Volume & Fullscreen -->
+                    <div class="controls-right">
+                        <button class="control-btn" id="nextBtn" title="Next Clip">
+                            <i class="fa-solid fa-forward-step"></i>
+                        </button>
+                        <div class="volume-container">
+                            <button class="control-btn" id="muteBtn" title="Mute/Unmute">
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="0.8">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Hidden elements container for video loading/buffering -->
+    <div style="display: none;">
+        <video id="videoPlayer1" preload="auto" playsinline muted></video>
+        <video id="videoPlayer2" preload="auto" playsinline muted></video>
+    </div>
+
+    <!-- Scripts -->
+    <script src="player.js"></script>
+</body>
+</html>
