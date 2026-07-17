@@ -97,6 +97,11 @@ function buildTimeline() {
         }
 
         // 2. Add Video Clip
+        const isAudioOnly = clip.audio_only === true;
+        const clipSrc = isAudioOnly 
+            ? `/previews/preview_episode_244_${clip.num}.mp3`
+            : `assets/clips/244-${clip.num}.mp4`;
+
         timeline.push({
             type: 'video',
             clipNum: clip.num,
@@ -104,7 +109,7 @@ function buildTimeline() {
             duration: 10.0, // Default fallback, updated later
             startGlobal: runningTime,
             endGlobal: runningTime + 10.0,
-            src: `assets/clips/244-${clip.num}.mp4`
+            src: clipSrc
         });
         runningTime += 10.0;
     });
