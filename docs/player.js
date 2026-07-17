@@ -239,8 +239,8 @@ function initAudio() {
     mainGainNode.connect(audioCtx.destination);
     
     // Connect our video tags to the audio context
-    videoPlayer1.muted = false;
-    videoPlayer2.muted = false;
+    activeVideoPlayer.muted = false;
+    inactiveVideoPlayer.muted = true;
     setupVideoAudioNode(videoPlayer1);
     setupVideoAudioNode(videoPlayer2);
 }
@@ -431,6 +431,10 @@ function onTimelineItemChanged() {
             activeVideoPlayer.load();
         }
         
+        // Mute state management
+        activeVideoPlayer.muted = false;
+        inactiveVideoPlayer.muted = true;
+        
         safeSetTimeAndPlay(activeVideoPlayer, localTime);
         
         // Pre-buffer next video clip into inactive player
@@ -501,10 +505,15 @@ function syncVideoPlayback() {
             mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
         }
         
+        activeVideoPlayer.muted = false;
+        inactiveVideoPlayer.muted = true;
+        
         safeSetTimeAndPlay(activeVideoPlayer, localTime);
         inactiveVideoPlayer.pause();
     } else if (item.type === 'bridge') {
-        // Bridge slide: Inactive player pauses
+        activeVideoPlayer.muted = false;
+        inactiveVideoPlayer.muted = true;
+        
         inactiveVideoPlayer.pause();
         
         // Keep playing preceding video elements tail if applicable
