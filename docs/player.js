@@ -484,6 +484,7 @@ function safeSetTimeAndPlay(videoEl, time) {
         }
         
         if (isPlaying) {
+            videoEl.muted = false; // Bypass browser-level mute resets on load()
             if (videoEl.paused) {
                 videoEl.play().catch(err => console.log('Playback deferred:', err));
             }
@@ -643,6 +644,7 @@ function syncVideoPlayback() {
         
         // Control playback of inactive player during crossfade
         if (inactiveFade > 0 && isPlaying) {
+            inactiveVideoPlayer.muted = false; // Bypass browser-level mute resets on load()
             if (inactiveVideoPlayer.paused) {
                 inactiveVideoPlayer.play().catch(() => {});
             }
@@ -673,6 +675,7 @@ function syncVideoPlayback() {
         }
         
         if (isPlaying) {
+            activeVideoPlayer.muted = false; // Bypass browser-level mute resets on load()
             if (activeVideoPlayer.paused) {
                 activeVideoPlayer.play().catch(() => {});
             }
