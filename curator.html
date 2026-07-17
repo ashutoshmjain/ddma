@@ -1451,7 +1451,7 @@
                     <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
                         <button class="btn btn-secondary btn-mini" id="newClipBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;">➕ New Clip</button>
                         <button class="btn btn-primary btn-mini" id="exportBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;">🔗 Combine Audio</button>
-                        <button class="btn btn-primary btn-mini" id="combineVideoBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Combine all locked video clips into a single video episode">🎬 Combine Video</button>
+                        <button class="btn btn-primary btn-mini" id="combineVideoBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Open real-time Editor's Preview player to review compiled clips">🎬 Editor's Preview</button>
                         <button class="btn btn-secondary btn-mini" id="openExportModalBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Download combined MP3 or view plan JSON">📥 Export Plan</button>
                     </div>
                     <!-- Group 2: History & Preview -->
@@ -4907,60 +4907,16 @@
             });
         });
 
-        // Combine Video
+        // Combine Video (Editor's Preview Redirect)
         combineVideoBtn.addEventListener('click', function() {
             const lockedClips = clips.filter(c => c.locked);
             if (lockedClips.length === 0) {
-                alert("Please lock at least one clip card first. Only locked clips will be combined.");
+                alert("Please lock at least one clip card first. Only locked clips will be previewed.");
                 return;
             }
             
-            combineVideoBtn.innerHTML = '⏳ Combining...';
-            combineVideoBtn.disabled = true;
-            updateStateBar("Compiling and combining locked video clips (this may take a minute)...");
-            
-            // Call the combine-project-video endpoint
-            fetch(`/combine-project-video?id=${activeProjectId}`, {
-                method: 'POST'
-            })
-            .then(res => {
-                if (!res.ok) {
-                    return res.text().then(text => { throw new Error(text); });
-                }
-                return res.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Pause any active audio playing
-                    audioElement.pause();
-                    playBtn.textContent = '▶';
-                    
-                    // Stop any active locked sequences
-                    if (activeLockedSequence !== null) {
-                        stopLockedSequence();
-                    }
-                    
-                    // Setup and show video modal with the combined video
-                    previewVideoPlayer.src = data.combined_url;
-                    videoModalTitle.textContent = `COMBINED VIDEO - ${activeProjectId.toUpperCase()}`;
-                    videoModalSubtitle.textContent = `previews/combined_${activeProjectId}.mp4`;
-                    downloadVideoBtn.href = data.combined_url;
-                    videoModalOverlay.classList.add('active');
-                    previewVideoPlayer.play();
-                    
-                    updateStateBar(`Playing combined video preview (${lockedClips.length} clips locked)`);
-                } else {
-                    throw new Error("Invalid response.");
-                }
-            })
-            .catch(err => {
-                showDebug("Error combining video: " + err.message, true);
-                updateStateBar("Ready");
-            })
-            .finally(() => {
-                combineVideoBtn.innerHTML = '🎬 Combine Video';
-                combineVideoBtn.disabled = false;
-            });
+            // Open the static Editor's Preview in a new window/tab
+            window.open('/docs/index.html', '_blank');
         });
 
         // Open Export Plan Modal

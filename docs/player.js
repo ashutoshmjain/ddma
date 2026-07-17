@@ -592,11 +592,11 @@ function drawIntroScreen() {
     ctx.textBaseline = 'middle';
     
     ctx.font = '800 32px Outfit';
-    ctx.fillText('DDMA Dynamic Web Player', viewport.width / 2, viewport.height / 2 - 20);
+    ctx.fillText("Editor's Preview", viewport.width / 2, viewport.height / 2 - 20);
     
     ctx.font = '400 18px Outfit';
     ctx.fillStyle = '#8c9bb0';
-    ctx.fillText('Click play to compile and run episode 244', viewport.width / 2, viewport.height / 2 + 20);
+    ctx.fillText('Click play to preview compiled timeline segments', viewport.width / 2, viewport.height / 2 + 20);
 }
 
 function drawBridgeSlide(text) {
