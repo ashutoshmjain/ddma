@@ -16,7 +16,7 @@ let analyser = null;
 let dataArray = null;
 let bufferLength = 0;
 let audioSource = null;
-let useWebAudio = true; // Fallback flag for native control if context fails
+let useWebAudio = false; // Start with native playback for Video Mode to bypass browser constraints
 
 // UI Elements
 const viewport = document.getElementById('viewport');
@@ -102,8 +102,8 @@ function buildTimeline() {
         // 2. Add Video Clip segment
         const isAudioOnly = clip.audio_only === true;
         const clipSrc = isAudioOnly 
-            ? `/previews/preview_episode_244_${clip.num}.mp3`
-            : `/docs/assets/clips/244-${clip.num}.mp4`;
+            ? `/previews/preview_episode_244_${clip.num}.mp3?v=3`
+            : `/docs/assets/clips/244-${clip.num}.mp4?v=3`;
 
         timeline.push({
             type: 'video',
@@ -324,6 +324,7 @@ function initUI() {
         currentMode = 'audio';
         audioModeBtn.classList.add('active');
         videoModeBtn.classList.remove('active');
+        useWebAudio = true; // Enable Web Audio for visualizer
         initAudio(); // Initialize audio context immediately
         buildTimeline();
         await loadVideoDurations();
