@@ -3943,11 +3943,11 @@
                             window.previouslyProcessingClips[num] = true;
                         } else if (wasProcessing && state !== 'processing') {
                             delete window.previouslyProcessingClips[num];
-                            if (state === 'compiled' || state === 'draft') {
+                            if (state === 'compiled') {
                                 playNotificationSound();
                                 showDebug(`Clip ${num} processing completed successfully!`, false);
                             } else {
-                                showDebug(`Clip ${num} processing completed with state: ${state}`, true);
+                                showDebug(`Clip ${num} processing failed or returned to draft state.`, true);
                             }
                         }
                     });
