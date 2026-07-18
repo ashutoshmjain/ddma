@@ -1737,7 +1737,7 @@
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
                 <button class="btn btn-secondary" id="cancelMosaicPromptBtn">Cancel</button>
-                <button class="btn btn-primary" id="submitMosaicPromptBtn" style="background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); border: none;">Start Render</button>
+                <button class="btn btn-primary" id="submitMosaicPromptBtn" style="background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); border: none;">Start Render</button>
             </div>
         </div>
     </div>
@@ -3797,7 +3797,7 @@
                 .catch(err => {
                     btnEl.disabled = false;
                     btnEl.innerHTML = '🌌 Mosaic';
-                    btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
+                    btnEl.style.backgroundImage = 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)';
                     showDebug("Mosaic failed: " + err.message, true);
                     updateStateBar("Ready (Mosaic start failed)");
                 });
@@ -3817,7 +3817,7 @@
                 .then(data => {
                     btnEl.disabled = false;
                     btnEl.innerHTML = '🌌 Mosaic';
-                    btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
+                    btnEl.style.backgroundImage = 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)';
                     updateStateBar("Ready");
                     
                     if (data.success && data.prompt) {
@@ -3841,7 +3841,7 @@
                 .catch(err => {
                     btnEl.disabled = false;
                     btnEl.innerHTML = '🌌 Mosaic';
-                    btnEl.style.backgroundImage = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
+                    btnEl.style.backgroundImage = 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)';
                     updateStateBar("Ready");
                     alert("Error fetching prompt: " + err.message);
                 });
