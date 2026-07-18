@@ -16,6 +16,7 @@ let analyser = null;
 let dataArray = null;
 let bufferLength = 0;
 let audioSource = null;
+let useWebAudio = true; // Fallback flag for native control if context fails
 
 // UI Elements
 const viewport = document.getElementById('viewport');
@@ -337,29 +338,38 @@ function handleSeekEvent(e) {
     seekTo(pos * totalDuration);
 }
 
-// Web Audio API Setup (Consolidated Single Channel)
+// Web Audio API Setup (Consolidated Single Channel with Native Fallback)
 function initAudio() {
-    if (audioCtx) return;
+    if (audioCtx || !useWebAudio) return;
     
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    audioCtx = new AudioContextClass();
-    
-    mainGainNode = audioCtx.createGain();
-    mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
-    
-    // Wire up AnalyserNode for audio mode visualizer
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 256;
-    bufferLength = analyser.frequencyBinCount;
-    dataArray = new Uint8Array(bufferLength);
-    
-    mainGainNode.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    
-    // Route video element audio into AudioContext
-    videoPlayer.muted = false;
-    audioSource = audioCtx.createMediaElementSource(videoPlayer);
-    audioSource.connect(mainGainNode);
+    try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+        
+        mainGainNode = audioCtx.createGain();
+        mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
+        
+        // Wire up AnalyserNode for audio mode visualizer
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+        
+        mainGainNode.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        
+        // Route video element audio into AudioContext
+        videoPlayer.muted = false;
+        audioSource = audioCtx.createMediaElementSource(videoPlayer);
+        audioSource.connect(mainGainNode);
+    } catch (err) {
+        console.warn("Failed to initialize Web Audio API, falling back to native media volume controls:", err);
+        useWebAudio = false;
+        audioCtx = null;
+        mainGainNode = null;
+        analyser = null;
+        audioSource = null;
+    }
 }
 
 // Toggle Play / Pause
@@ -472,11 +482,17 @@ function syncVideoPlayback() {
     const item = timeline[activeTimelineIndex];
     if (!item) return;
     
+    if (useWebAudio && mainGainNode && audioCtx) {
+        mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
+    } else {
+        videoPlayer.volume = currentVolume;
+    }
+    
     if (item.type === 'video') {
         const localTime = currentGlobalTime - item.startGlobal;
         
         // Restore volume node
-        if (mainGainNode && audioCtx) {
+        if (useWebAudio && mainGainNode && audioCtx) {
             mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
         }
         
@@ -498,8 +514,10 @@ function syncVideoPlayback() {
         }
         
         fade = Math.max(0, Math.min(1, fade));
-        if (mainGainNode && audioCtx) {
+        if (useWebAudio && mainGainNode && audioCtx) {
             mainGainNode.gain.setValueAtTime(currentVolume * fade, audioCtx.currentTime);
+        } else {
+            videoPlayer.volume = currentVolume * fade;
         }
         
         const isAudioOnly = clipInfo && clipInfo.audio_only === true;
@@ -511,8 +529,10 @@ function syncVideoPlayback() {
         
         // Fade out preceding clip's tail over the 5-second slide duration
         const fade = Math.max(0, Math.min(1, 1.0 - (elapsed / 5.0)));
-        if (mainGainNode && audioCtx) {
+        if (useWebAudio && mainGainNode && audioCtx) {
             mainGainNode.gain.setValueAtTime(currentVolume * fade, audioCtx.currentTime);
+        } else {
+            videoPlayer.volume = currentVolume * fade;
         }
         
         // Seek preceding clip's tail
@@ -629,7 +649,11 @@ function toggleMute() {
     } else {
         muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
         videoPlayer.muted = false;
-        setVolume(currentVolume);
+        if (useWebAudio) {
+            setVolume(currentVolume);
+        } else {
+            videoPlayer.volume = currentVolume;
+        }
     }
 }
 
@@ -638,8 +662,10 @@ function setVolume(val) {
     currentVolume = Math.max(0, Math.min(1, val));
     volumeSlider.value = currentVolume;
     
-    if (!isMuted && mainGainNode && audioCtx) {
+    if (useWebAudio && !isMuted && mainGainNode && audioCtx) {
         mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
+    } else {
+        videoPlayer.volume = currentVolume;
     }
 }
 
