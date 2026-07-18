@@ -1,23 +1,21 @@
-// Player State
+// Editor's Preview Player Core Logic (Single-Player Consolidated Model)
 let plan = [];
 let timeline = [];
-let currentGlobalTime = 0; // seconds
+let currentGlobalTime = 0;
 let totalDuration = 0;
-let isPlaying = false;
-let animationFrameId = null;
 let activeTimelineIndex = -1;
-let currentMode = 'video'; // 'video' or 'audio'
+let isPlaying = false;
+let lastTime = 0;
+let animationFrameId = null;
 
-// Audio Graph
+// Audio Graph (Single video source channel)
 let audioCtx = null;
-let videoSources = []; // MediaElementAudioSourceNode mappings
 let mainGainNode = null;
 let currentVolume = 0.8;
 let analyser = null;
 let dataArray = null;
 let bufferLength = 0;
-let gainNode1 = null;
-let gainNode2 = null;
+let audioSource = null;
 
 // UI Elements
 const viewport = document.getElementById('viewport');
@@ -25,44 +23,47 @@ const ctx = viewport.getContext('2d');
 const playBtn = document.getElementById('playBtn');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
-const muteBtn = document.getElementById('muteBtn');
 const volumeSlider = document.getElementById('volumeSlider');
+const muteBtn = document.getElementById('muteBtn');
 const seekTrack = document.getElementById('seekTrack');
 const seekProgress = document.getElementById('seekProgress');
 const seekHandle = document.getElementById('seekHandle');
 const currentTimeLabel = document.getElementById('currentTimeLabel');
 const totalTimeLabel = document.getElementById('totalTimeLabel');
-const clipsList = document.getElementById('clipsList');
 const viewportStatus = document.getElementById('viewportStatus');
+const clipsList = document.getElementById('clipsList');
+const videoPlayer = document.getElementById('videoPlayer');
 
-// Double buffer video players
-const videoPlayer1 = document.getElementById('videoPlayer1');
-const videoPlayer2 = document.getElementById('videoPlayer2');
-let activeVideoPlayer = videoPlayer1;
-let inactiveVideoPlayer = videoPlayer2;
+// Setup page resize constraints to preserve square aspect ratio
+function resizeViewport() {
+    const parent = viewport.parentElement;
+    const size = Math.min(parent.clientWidth, parent.clientHeight, 740);
+    viewport.width = size;
+    viewport.height = size;
+    drawFrame();
+}
 
-// Initialize
 window.addEventListener('DOMContentLoaded', async () => {
-    try {
-        await loadPlan();
-        initUI();
-    } catch (err) {
-        console.error('Initialization failed:', err);
-        clipsList.innerHTML = `<div class="loading-placeholder"><i class="fa-solid fa-triangle-exclamation" style="color: #ff7675;"></i><span>Failed to load plan.json</span></div>`;
-    }
+    resizeViewport();
+    window.addEventListener('resize', resizeViewport);
+    await init();
+    initUI();
 });
 
-// Load plan.json
-async function loadPlan() {
-    const res = await fetch('plan.json');
-    if (!res.ok) throw new Error('Could not fetch plan.json');
-    plan = await res.json();
+// Load Plan and Setup Timeline
+async function init() {
+    try {
+        const res = await fetch('plan.json');
+        plan = await res.json();
+    } catch (err) {
+        console.error("Failed to load plan.json", err);
+        return;
+    }
     
-    // Build initial timeline of items (We assume default video durations of 10s until metadata loads)
     buildTimeline();
     renderSidebar();
     
-    // Bootstrap video player metadata load
+    // Proactive load of actual video durations
     await loadVideoDurations();
 }
 
@@ -71,13 +72,12 @@ function buildTimeline() {
     timeline = [];
     let runningTime = 0;
 
-    // Filter plan based on active mode
+    // Filter plan based on active mode (locked, unhidden)
     const filteredPlan = plan.filter(clip => {
-        // Both modes only play locked and unhidden clips
         if (!clip.locked || clip.hidden) {
             return false;
         }
-        // Video Mode also filters out audio-only clips
+        // Video Mode excludes audio-only clips
         if (currentMode === 'video' && clip.audio_only) {
             return false;
         }
@@ -85,7 +85,7 @@ function buildTimeline() {
     });
 
     filteredPlan.forEach((clip, index) => {
-        // 1. Add Bridge Card if it is not the first clip (skip in audio mode)
+        // 1. Add Bridge Card slide between clips (Video Mode Only)
         if (currentMode !== 'audio' && index > 0 && clip.bridge_text && clip.bridge_text.length > 0) {
             timeline.push({
                 type: 'bridge',
@@ -98,7 +98,7 @@ function buildTimeline() {
             runningTime += 5.0;
         }
 
-        // 2. Add Video Clip
+        // 2. Add Video Clip segment
         const isAudioOnly = clip.audio_only === true;
         const clipSrc = isAudioOnly 
             ? `/previews/preview_episode_244_${clip.num}.mp3`
@@ -108,7 +108,7 @@ function buildTimeline() {
             type: 'video',
             clipNum: clip.num,
             title: clip.title,
-            duration: 10.0, // Default fallback, updated later
+            duration: 10.0, // Temporary fallback, overwritten later
             startGlobal: runningTime,
             endGlobal: runningTime + 10.0,
             src: clipSrc
@@ -124,7 +124,7 @@ function updateTotalDuration() {
     totalTimeLabel.textContent = formatTime(totalDuration);
 }
 
-// Load Video Durations Dynamically
+// Probes metadata of video clips asynchronously
 async function loadVideoDurations() {
     let runningTime = 0;
     const validatedTimeline = [];
@@ -136,12 +136,12 @@ async function loadVideoDurations() {
                 let duration = await getVideoDuration(item.src);
                 const clipInfo = plan.find(c => c.num === item.clipNum);
                 
-                // Fallback if NaN or invalid duration probed
+                // Use calculated segments fallback if metadata returns invalid duration
                 if (isNaN(duration) || duration <= 0) {
                     const baseDur = calculateClipDuration(clipInfo);
                     duration = baseDur + (currentMode === 'audio' ? 0.0 : 2.0);
                 } else {
-                    // Subtract 2.0s title card intro from video clips in audio preview mode
+                    // Subtract 2.0s title card intro in audio preview mode
                     const isAudioOnly = clipInfo && clipInfo.audio_only === true;
                     if (currentMode === 'audio' && !isAudioOnly) {
                         duration = Math.max(0, duration - 2.0);
@@ -154,17 +154,14 @@ async function loadVideoDurations() {
                 runningTime += item.duration;
                 validatedTimeline.push(item);
             } catch (err) {
-                console.warn(`Could not probe duration for ${item.src}, trying fallback...`, err);
+                console.warn(`Could not probe duration for ${item.src}, using fallback:`, err);
                 const clipInfo = plan.find(c => c.num === item.clipNum);
                 
                 if (currentMode === 'video') {
-                    // In Video Mode, exclude if the asset file is missing
-                    console.warn(`Excluding missing video asset: ${item.src}`);
-                    if (validatedTimeline.length > 0 && validatedTimeline[validatedTimeline.length - 1].type === 'bridge' && validatedTimeline[validatedTimeline.length - 1].clipNum === item.clipNum) {
-                        validatedTimeline.pop();
-                    }
+                    // Exclude clip if the video file does not exist in video mode
+                    console.warn(`Excluding missing video file: ${item.src}`);
                 } else {
-                    // In Audio Mode, fall back to calculated duration from plan segments
+                    // Fall back to segment math in Audio Mode
                     const baseDur = calculateClipDuration(clipInfo);
                     item.duration = baseDur;
                     item.startGlobal = runningTime;
@@ -183,8 +180,8 @@ async function loadVideoDurations() {
 
     timeline = validatedTimeline;
     updateTotalDuration();
-    renderSidebar(); // Re-render with verified clips only
-    seekTo(0); // Reset seeker
+    renderSidebar();
+    seekTo(0);
 }
 
 function getVideoDuration(src) {
@@ -201,30 +198,48 @@ function getVideoDuration(src) {
             reject(new Error(`Failed to load metadata for ${src}`));
         };
         
-        tempVideo.load(); // Force loading of metadata to resolve promise
+        tempVideo.load();
     });
 }
 
-// Render Clips in Sidebar
+function calculateClipDuration(clip) {
+    let total = 0;
+    if (clip && clip.segments) {
+        clip.segments.forEach(seg => {
+            total += parseFloat(seg.duration) || 0;
+        });
+    }
+    return total;
+}
+
+// Render Left Sidebar Selection Grid
 function renderSidebar() {
     clipsList.innerHTML = '';
     
-    plan.forEach(clip => {
-        // Find corresponding video item in timeline to show its actual duration
+    // Map list of plan clips that are active in timeline
+    const activeClips = plan.filter(clip => {
+        return timeline.some(item => item.type === 'video' && item.clipNum === clip.num);
+    });
+
+    if (activeClips.length === 0) {
+        clipsList.innerHTML = '<div style="padding: 1rem; color: var(--text-muted); font-size: 0.85rem;">No active clips found. Lock clip cards in the dashboard.</div>';
+        return;
+    }
+
+    activeClips.forEach(clip => {
         const videoItem = timeline.find(item => item.type === 'video' && item.clipNum === clip.num);
-        if (!videoItem) return; // Skip clips that have no compiled video asset
-        
-        const durationStr = formatTime(videoItem.duration);
+        if (!videoItem) return;
         
         const card = document.createElement('div');
-        card.className = `clip-item`;
+        card.className = 'clip-item';
         card.id = `sidebar-clip-${clip.num}`;
+        
         card.innerHTML = `
-            <div class="clip-item-row1">
-                <span>CLIP ${clip.num}</span>
-                <span class="clip-duration">${durationStr}</span>
+            <div class="clip-item-header">
+                <span class="clip-item-title">CLIP ${clip.num}</span>
+                <span class="clip-item-dur">${formatTime(videoItem.duration)}</span>
             </div>
-            <div class="clip-meta-title">${clip.title}</div>
+            <div class="clip-item-desc">${clip.title || 'Untitled Segment'}</div>
         `;
         
         card.onclick = () => {
@@ -243,6 +258,7 @@ function formatTime(sec) {
 }
 
 // Initialize UI Control bindings
+let currentMode = 'video'; // 'video' | 'audio'
 function initUI() {
     playBtn.addEventListener('click', togglePlay);
     prevBtn.addEventListener('click', playPrevious);
@@ -254,7 +270,7 @@ function initUI() {
     
     muteBtn.addEventListener('click', toggleMute);
     
-    // Seek tracking controls
+    // Seek tracking controls (Scrubbing)
     let isDragging = false;
     
     seekTrack.addEventListener('mousedown', (e) => {
@@ -268,6 +284,23 @@ function initUI() {
     
     window.addEventListener('mouseup', () => {
         isDragging = false;
+    });
+
+    // YouTube-style seek tooltip tracking
+    const seekTooltip = document.getElementById('seekTooltip');
+    seekTrack.addEventListener('mousemove', (e) => {
+        const rect = seekTrack.getBoundingClientRect();
+        let pos = (e.clientX - rect.left) / rect.width;
+        pos = Math.max(0, Math.min(1, pos));
+        
+        const hoverTime = pos * totalDuration;
+        seekTooltip.textContent = formatTime(hoverTime);
+        seekTooltip.style.opacity = '1';
+        seekTooltip.style.left = `${pos * 100}%`;
+    });
+    
+    seekTrack.addEventListener('mouseleave', () => {
+        seekTooltip.style.opacity = '0';
     });
 
     // Mode Toggles
@@ -293,9 +326,6 @@ function initUI() {
         await loadVideoDurations();
     });
 
-    // Resize viewport to keep square aspect ratio crisp
-    window.addEventListener('resize', drawFrame);
-    
     // Initial paint
     drawFrame();
 }
@@ -307,7 +337,7 @@ function handleSeekEvent(e) {
     seekTo(pos * totalDuration);
 }
 
-// Web Audio API Setup
+// Web Audio API Setup (Consolidated Single Channel)
 function initAudio() {
     if (audioCtx) return;
     
@@ -326,29 +356,16 @@ function initAudio() {
     mainGainNode.connect(analyser);
     analyser.connect(audioCtx.destination);
     
-    // Create individual gain nodes for crossfading
-    gainNode1 = audioCtx.createGain();
-    gainNode2 = audioCtx.createGain();
-    gainNode1.connect(mainGainNode);
-    gainNode2.connect(mainGainNode);
-    
-    // Connect our video tags to the audio context
-    videoPlayer1.muted = false;
-    videoPlayer2.muted = false;
-    setupVideoAudioNode(videoPlayer1, gainNode1);
-    setupVideoAudioNode(videoPlayer2, gainNode2);
-}
-
-function setupVideoAudioNode(videoEl, gainNode) {
-    const source = audioCtx.createMediaElementSource(videoEl);
-    source.connect(gainNode);
-    videoSources.push(source);
+    // Route video element audio into AudioContext
+    videoPlayer.muted = false;
+    audioSource = audioCtx.createMediaElementSource(videoPlayer);
+    audioSource.connect(mainGainNode);
 }
 
 // Toggle Play / Pause
 function togglePlay() {
     initAudio();
-    if (audioCtx.state === 'suspended') {
+    if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume();
     }
     
@@ -356,91 +373,6 @@ function togglePlay() {
         pause();
     } else {
         play();
-    }
-}
-
-function play() {
-    isPlaying = true;
-    playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-    viewportStatus.textContent = 'Playing Episode';
-    
-    // Start playback loop
-    let lastTime = performance.now();
-    
-    function loop(now) {
-        if (!isPlaying) return;
-        
-        const delta = (now - lastTime) / 1000;
-        lastTime = now;
-        
-        currentGlobalTime += delta;
-        if (currentGlobalTime >= totalDuration) {
-            currentGlobalTime = totalDuration;
-            pause();
-            seekTo(0);
-            return;
-        }
-        
-        updateTimelineState();
-        updateSeekUI();
-        drawFrame();
-        
-        animationFrameId = requestAnimationFrame(loop);
-    }
-    
-    // Trigger video playback if active element matches
-    syncVideoPlayback();
-    animationFrameId = requestAnimationFrame(loop);
-}
-
-function pause() {
-    isPlaying = false;
-    playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-    viewportStatus.textContent = 'Paused';
-    if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    
-    videoPlayer1.pause();
-    videoPlayer2.pause();
-}
-
-function playPrevious() {
-    // Go to start of current item, or if close to start, the previous item
-    const threshold = 2.0; // seconds
-    let activeItem = timeline[activeTimelineIndex];
-    
-    if (!activeItem) return;
-    
-    if (currentGlobalTime - activeItem.startGlobal > threshold) {
-        seekTo(activeItem.startGlobal);
-    } else {
-        // Find previous video item
-        let prevVideoIndex = -1;
-        for (let i = activeTimelineIndex - 1; i >= 0; i--) {
-            if (timeline[i].type === 'video') {
-                prevVideoIndex = i;
-                break;
-            }
-        }
-        
-        if (prevVideoIndex !== -1) {
-            seekTo(timeline[prevVideoIndex].startGlobal);
-        } else {
-            seekTo(0);
-        }
-    }
-}
-
-function playNext() {
-    let nextVideoIndex = -1;
-    for (let i = activeTimelineIndex + 1; i < timeline.length; i++) {
-        if (timeline[i].type === 'video') {
-            nextVideoIndex = i;
-            break;
-        }
-    }
-    
-    if (nextVideoIndex !== -1) {
-        seekTo(timeline[nextVideoIndex].startGlobal);
     }
 }
 
@@ -453,7 +385,7 @@ function seekTo(globalTime) {
     drawFrame();
 }
 
-// Track active item and schedule buffering
+// Track active timeline segment and handle source loading
 function updateTimelineState() {
     let newIndex = -1;
     for (let i = 0; i < timeline.length; i++) {
@@ -476,6 +408,7 @@ function updateTimelineState() {
 function safeSetTimeAndPlay(videoEl, time) {
     const playVideo = () => {
         try {
+            // Seek playhead only if difference is significant to avoid player stuttering
             if (Math.abs(videoEl.currentTime - time) > 0.3) {
                 videoEl.currentTime = time;
             }
@@ -484,7 +417,7 @@ function safeSetTimeAndPlay(videoEl, time) {
         }
         
         if (isPlaying) {
-            videoEl.muted = false; // Bypass browser-level mute resets on load()
+            videoEl.muted = false;
             if (videoEl.paused) {
                 videoEl.play().catch(err => console.log('Playback deferred:', err));
             }
@@ -516,85 +449,25 @@ function onTimelineItemChanged() {
         activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     
-    // Load Video Source in buffer
     if (item.type === 'video') {
-        const localTime = currentGlobalTime - item.startGlobal;
-        
-        // Check if source matches inactive player (which has preloaded it)        // Swap players!
-        if (inactiveVideoPlayer.getAttribute('data-src') === item.src) {
-            const temp = activeVideoPlayer;
-            activeVideoPlayer = inactiveVideoPlayer;
-            inactiveVideoPlayer = temp;
-        } else if (activeVideoPlayer.getAttribute('data-src') !== item.src) {
-            activeVideoPlayer.onloadedmetadata = null; // Clear old event listener to prevent leaks
-            activeVideoPlayer.setAttribute('data-src', item.src);
-            activeVideoPlayer.src = item.src;
-            activeVideoPlayer.load();
+        // Change source of the single player if it's different
+        if (videoPlayer.getAttribute('data-src') !== item.src) {
+            videoPlayer.onloadedmetadata = null; // Clear callbacks to prevent event leaks
+            videoPlayer.setAttribute('data-src', item.src);
+            videoPlayer.src = item.src;
+            videoPlayer.load();
         }
         
+        const localTime = currentGlobalTime - item.startGlobal;
         const clipInfo = plan.find(c => c.num === item.clipNum);
         const isAudioOnly = clipInfo && clipInfo.audio_only === true;
         const playOffset = (currentMode === 'audio' && !isAudioOnly) ? 2.0 : 0.0;
         
-        safeSetTimeAndPlay(activeVideoPlayer, localTime + playOffset);
-        
-        // Pre-buffer next video clip into inactive player
-        preloadNextVideo();
-    } else if (item.type === 'bridge') {
-        // For bridge transition slides, we draw text.
-        // We let the previous clip continue its audio tail (fade-out)
-        // Find previous video item
-        let prevVideoItem = null;
-        for (let i = activeTimelineIndex - 1; i >= 0; i--) {
-            if (timeline[i].type === 'video') {
-                prevVideoItem = timeline[i];
-                break;
-            }
-        }
-        
-        if (prevVideoItem) {
-            // Keep playing the tail of preceding video, but mute it or fade it out
-            if (activeVideoPlayer.getAttribute('data-src') === prevVideoItem.src) {
-                // Keep playing past its end for bridge audio overlay
-                const elapsedSinceVideoEnd = currentGlobalTime - prevVideoItem.endGlobal;
-                
-                try {
-                    activeVideoPlayer.currentTime = Math.max(0, prevVideoItem.duration - 5.0) + elapsedSinceVideoEnd;
-                } catch (e) {}
-                
-                if (isPlaying) {
-                    activeVideoPlayer.play().catch(() => {});
-                }
-                
-                // Volume fade out effect in code
-                if (mainGainNode) {
-                    const fadeRatio = Math.max(0, 1 - (elapsedSinceVideoEnd / 5.0)); // 5s linear fade
-                    mainGainNode.gain.setValueAtTime(currentVolume * fadeRatio, audioCtx.currentTime);
-                }
-            }
-        }
+        safeSetTimeAndPlay(videoPlayer, localTime + playOffset);
     }
 }
 
-function preloadNextVideo() {
-    let nextVideoItem = null;
-    for (let i = activeTimelineIndex + 1; i < timeline.length; i++) {
-        if (timeline[i].type === 'video') {
-            nextVideoItem = timeline[i];
-            break;
-        }
-    }
-    
-    if (nextVideoItem && inactiveVideoPlayer.getAttribute('data-src') !== nextVideoItem.src) {
-        inactiveVideoPlayer.onloadedmetadata = null; // Clear old event listener to prevent leaks
-        inactiveVideoPlayer.setAttribute('data-src', nextVideoItem.src);
-        inactiveVideoPlayer.src = nextVideoItem.src;
-        inactiveVideoPlayer.preload = 'auto';
-        inactiveVideoPlayer.load();
-    }
-}
-
-// Keep physical HTML5 video nodes synchronized and handle crossfades
+// Keep physical HTML5 video nodes synchronized and handle crossfades/bridge overlays
 function syncVideoPlayback() {
     const item = timeline[activeTimelineIndex];
     if (!item) return;
@@ -611,110 +484,130 @@ function syncVideoPlayback() {
         const clipInfo = plan.find(c => c.num === item.clipNum);
         const crossfadeDuration = (clipInfo && clipInfo.crossfade !== undefined) ? clipInfo.crossfade : 0.0;
         
-        let activeFade = 1.0;
-        let inactiveFade = 0.0;
+        let fade = 1.0;
         
+        // Gapless transitions fade calculation
         if (crossfadeDuration > 0) {
             if (localTime < crossfadeDuration) {
-                // Fade-in region for active player
-                activeFade = localTime / crossfadeDuration;
-                // Fade-out region for inactive player (fading out preceding clip)
-                inactiveFade = 1.0 - (localTime / crossfadeDuration);
+                // Fade-in region
+                fade = localTime / crossfadeDuration;
             } else if (localTime > item.duration - crossfadeDuration) {
-                // Fade-out region at the end of the active player
-                inactiveFade = 0.0;
-                activeFade = (item.duration - localTime) / crossfadeDuration;
+                // Fade-out region
+                fade = (item.duration - localTime) / crossfadeDuration;
             }
         }
         
-        activeFade = Math.max(0, Math.min(1, activeFade));
-        inactiveFade = Math.max(0, Math.min(1, inactiveFade));
-        
-        // Apply gains to the respective player's GainNode
-        if (gainNode1 && gainNode2) {
-            const activeGainNode = getGainNodeForPlayer(activeVideoPlayer);
-            const inactiveGainNode = getGainNodeForPlayer(inactiveVideoPlayer);
-            
-            activeGainNode.gain.setValueAtTime(activeFade, audioCtx.currentTime);
-            inactiveGainNode.gain.setValueAtTime(inactiveFade, audioCtx.currentTime);
+        fade = Math.max(0, Math.min(1, fade));
+        if (mainGainNode && audioCtx) {
+            mainGainNode.gain.setValueAtTime(currentVolume * fade, audioCtx.currentTime);
         }
         
         const isAudioOnly = clipInfo && clipInfo.audio_only === true;
         const playOffset = (currentMode === 'audio' && !isAudioOnly) ? 2.0 : 0.0;
         
-        safeSetTimeAndPlay(activeVideoPlayer, localTime + playOffset);
-        
-        // Control playback of inactive player during crossfade
-        if (inactiveFade > 0 && isPlaying) {
-            inactiveVideoPlayer.muted = false; // Bypass browser-level mute resets on load()
-            if (inactiveVideoPlayer.paused) {
-                inactiveVideoPlayer.play().catch(() => {});
-            }
-        } else {
-            if (!inactiveVideoPlayer.paused) {
-                inactiveVideoPlayer.pause();
-            }
-            // Only preload next video once crossfade has finished
-            preloadNextVideo();
-        }
+        safeSetTimeAndPlay(videoPlayer, localTime + playOffset);
     } else if (item.type === 'bridge') {
-        if (gainNode1 && gainNode2) {
-            // Bridge card: active player fades out (preceding clip tail)
-            const activeGainNode = getGainNodeForPlayer(activeVideoPlayer);
-            
-            // Bridge fade: linearly fade preceding clip out over the 5-second bridge card
-            const elapsed = currentGlobalTime - item.startGlobal;
-            const fade = Math.max(0, Math.min(1, 1.0 - (elapsed / 5.0)));
-            
-            activeGainNode.gain.setValueAtTime(fade, audioCtx.currentTime);
-            
-            const inactiveGainNode = getGainNodeForPlayer(inactiveVideoPlayer);
-            inactiveGainNode.gain.setValueAtTime(0.0, audioCtx.currentTime);
+        const elapsed = currentGlobalTime - item.startGlobal;
+        
+        // Fade out preceding clip's tail over the 5-second slide duration
+        const fade = Math.max(0, Math.min(1, 1.0 - (elapsed / 5.0)));
+        if (mainGainNode && audioCtx) {
+            mainGainNode.gain.setValueAtTime(currentVolume * fade, audioCtx.currentTime);
         }
         
-        if (!inactiveVideoPlayer.paused) {
-            inactiveVideoPlayer.pause();
-        }
-        
-        // Seek preceding video player to its last 5.0 seconds tail
-        try {
-            const elapsed = currentGlobalTime - item.startGlobal;
-            const prevVideoItem = activeTimelineIndex > 0 ? timeline[activeTimelineIndex - 1] : null;
-            const baseDur = (prevVideoItem && prevVideoItem.duration) ? prevVideoItem.duration : activeVideoPlayer.duration;
+        // Seek preceding clip's tail
+        const prevVideoItem = activeTimelineIndex > 0 ? timeline[activeTimelineIndex - 1] : null;
+        if (prevVideoItem) {
+            const baseDur = prevVideoItem.duration;
             const targetSeek = Math.max(0, baseDur - 5.0) + elapsed;
             
-            if (Math.abs(activeVideoPlayer.currentTime - targetSeek) > 0.3) {
-                activeVideoPlayer.currentTime = targetSeek;
-            }
-        } catch (e) {
-            console.warn("Failed to seek preceding video tail:", e);
+            try {
+                if (Math.abs(videoPlayer.currentTime - targetSeek) > 0.3) {
+                    videoPlayer.currentTime = targetSeek;
+                }
+            } catch (e) {}
         }
         
         if (isPlaying) {
-            activeVideoPlayer.muted = false; // Bypass browser-level mute resets on load()
-            if (activeVideoPlayer.paused) {
-                activeVideoPlayer.play().catch(() => {});
+            videoPlayer.muted = false;
+            if (videoPlayer.paused) {
+                videoPlayer.play().catch(() => {});
             }
         } else {
-            if (!activeVideoPlayer.paused) {
-                activeVideoPlayer.pause();
+            if (!videoPlayer.paused) {
+                videoPlayer.pause();
             }
         }
     }
 }
 
-function calculateClipDuration(clip) {
-    let total = 0;
-    if (clip && clip.segments) {
-        clip.segments.forEach(seg => {
-            total += parseFloat(seg.duration) || 0;
-        });
-    }
-    return total;
+function play() {
+    if (timeline.length === 0) return;
+    isPlaying = true;
+    playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+    viewportStatus.textContent = 'Playing';
+    
+    lastTime = Date.now();
+    animationFrameId = requestAnimationFrame(loop);
 }
 
-function getGainNodeForPlayer(videoEl) {
-    return videoEl === videoPlayer1 ? gainNode1 : gainNode2;
+function loop() {
+    if (!isPlaying) return;
+    
+    const now = Date.now();
+    const dt = (now - lastTime) / 1000;
+    lastTime = now;
+    
+    currentGlobalTime += dt;
+    if (currentGlobalTime >= totalDuration) {
+        currentGlobalTime = 0;
+        seekTo(0);
+        return;
+    }
+    
+    updateTimelineState();
+    syncVideoPlayback();
+    updateSeekUI();
+    drawFrame();
+    
+    animationFrameId = requestAnimationFrame(loop);
+}
+
+function playPrevious() {
+    const threshold = 2.0; // seconds
+    let activeItem = timeline[activeTimelineIndex];
+    if (!activeItem) return;
+    
+    if (currentGlobalTime - activeItem.startGlobal > threshold) {
+        seekTo(activeItem.startGlobal);
+    } else {
+        // Go back to previous video segment
+        let prevVideoIndex = -1;
+        for (let i = activeTimelineIndex - 1; i >= 0; i--) {
+            if (timeline[i].type === 'video') {
+                prevVideoIndex = i;
+                break;
+            }
+        }
+        if (prevVideoIndex !== -1) {
+            seekTo(timeline[prevVideoIndex].startGlobal);
+        } else {
+            seekTo(0);
+        }
+    }
+}
+
+function playNext() {
+    let nextVideoIndex = -1;
+    for (let i = activeTimelineIndex + 1; i < timeline.length; i++) {
+        if (timeline[i].type === 'video') {
+            nextVideoIndex = i;
+            break;
+        }
+    }
+    if (nextVideoIndex !== -1) {
+        seekTo(timeline[nextVideoIndex].startGlobal);
+    }
 }
 
 // Update Seeker Progress UI
@@ -725,29 +618,28 @@ function updateSeekUI() {
     currentTimeLabel.textContent = formatTime(currentGlobalTime);
 }
 
-// Volume Controls
-function setVolume(val) {
-    currentVolume = val;
-    volumeSlider.value = val;
-    
-    if (mainGainNode && audioCtx) {
-        mainGainNode.gain.setValueAtTime(val, audioCtx.currentTime);
-    }
-    
-    if (val === 0) {
+// Mute and Volume Control
+let isMuted = false;
+function toggleMute() {
+    initAudio();
+    isMuted = !isMuted;
+    if (isMuted) {
         muteBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
-    } else if (val < 0.5) {
-        muteBtn.innerHTML = '<i class="fa-solid fa-volume-low"></i>';
+        videoPlayer.muted = true;
     } else {
         muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+        videoPlayer.muted = false;
+        setVolume(currentVolume);
     }
 }
 
-function toggleMute() {
-    if (currentVolume > 0) {
-        setVolume(0);
-    } else {
-        setVolume(0.8);
+function setVolume(val) {
+    initAudio();
+    currentVolume = Math.max(0, Math.min(1, val));
+    volumeSlider.value = currentVolume;
+    
+    if (!isMuted && mainGainNode && audioCtx) {
+        mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
     }
 }
 
@@ -776,7 +668,7 @@ function drawFrame() {
                 ctx.fillRect(0, 0, viewport.width, viewport.height);
             } else {
                 // Paint active video frame onto Canvas
-                ctx.drawImage(activeVideoPlayer, 0, 0, viewport.width, viewport.height);
+                ctx.drawImage(videoPlayer, 0, 0, viewport.width, viewport.height);
             }
         } else if (item.type === 'bridge') {
             drawBridgeSlide(item.text);
@@ -802,22 +694,20 @@ function drawBridgeSlide(text) {
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, viewport.width, viewport.height);
     
-    // Draw bridge card text
+    // Wrap and center text lines on black slide
+    const bridgeTextLines = wrapText(ctx, text, viewport.width - 120);
+    const lineHeight = 46;
+    const totalHeight = bridgeTextLines.length * lineHeight;
+    let startY = (viewport.height - totalHeight) / 2 + lineHeight / 2;
+    
     ctx.fillStyle = '#FFFFFF';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.font = 'bold 32px "Segoe UI"';
     
-    // Wrap text within the Instagram safe zone (padding 60px)
-    const maxWidth = viewport.width - 120;
-    const lineHeight = 46;
-    const x = viewport.width / 2;
-    
-    const lines = wrapText(ctx, text, maxWidth);
-    const startY = (viewport.height / 2) - ((lines.length - 1) * lineHeight / 2);
-    
-    lines.forEach((line, index) => {
-        ctx.fillText(line, x, startY + (index * lineHeight));
+    bridgeTextLines.forEach((line) => {
+        ctx.fillText(line, viewport.width / 2, startY);
+        startY += lineHeight;
     });
 }
 
@@ -856,7 +746,6 @@ function drawAudioVisualizerScreen(item) {
         
         for (let i = 0; i < bufferLength; i++) {
             const v = dataArray[i] / 128.0;
-            // Draw a smooth wave in the center region
             const y = (v * viewport.height / 2) + 20;
             
             if (i === 0) {
@@ -883,16 +772,9 @@ function drawAudioVisualizerScreen(item) {
             barX += barWidth;
         }
     } else {
-        // Fallback static wave line if audio context is not active/paused
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = 'rgba(162, 155, 254, 0.3)';
-        ctx.beginPath();
-        ctx.moveTo(0, viewport.height / 2 + 20);
-        ctx.lineTo(viewport.width, viewport.height / 2 + 20);
-        ctx.stroke();
-        
-        ctx.font = '300 16px Outfit';
-        ctx.fillStyle = '#8c9bb0';
+        // Static visualizer text overlay when paused
+        ctx.font = '500 18px Outfit';
+        ctx.fillStyle = '#636e72';
         ctx.fillText(isPlaying ? 'Initializing visualizer...' : 'Press Play to start visualizer', viewport.width / 2, viewport.height / 2 + 80);
     }
 }

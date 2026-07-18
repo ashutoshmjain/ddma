@@ -56,6 +56,7 @@
                     <div class="seek-track" id="seekTrack">
                         <div class="seek-progress" id="seekProgress"></div>
                         <div class="seek-handle" id="seekHandle"></div>
+                        <div class="seek-tooltip" id="seekTooltip">0:00</div>
                     </div>
                     <span class="time-label" id="totalTimeLabel">0:00</span>
                 </div>
@@ -95,8 +96,7 @@
 
     <!-- Hidden elements container for video loading/buffering -->
     <div style="display: none;">
-        <video id="videoPlayer1" preload="auto" playsinline></video>
-        <video id="videoPlayer2" preload="auto" playsinline></video>
+        <video id="videoPlayer" preload="auto" playsinline></video>
     </div>
 
     <!-- Scripts -->
