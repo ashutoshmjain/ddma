@@ -17,6 +17,7 @@ This document defines the roles, responsibilities, and operational guidelines fo
 *   **Controlled Mode Transitions**: **CRITICAL**: Only act in "Developer" or "Tester" mode when the user explicitly requests it. Otherwise, focus on serving as the executor/orchestrator of the existing script.
 *   **Muxing Focus**: Generate video assets selectively (one clip at a time) to ensure the user can focus and review without cognitive overload.
 *   **Automatic Command Execution**: Always execute python scripts using the direct path to the executable (`C:\Users\ashut\AppData\Local\Programs\Python\Python312\python.exe`) instead of raw `python` to run them automatically without requiring manual permission approval.
+*   **Comprehensive E2E Testing**: Always execute the Puppeteer automated browser test suite (`node scratch/test-env/test_player.js`) after making any modifications to the curator application (`curator.html`, `run_curator.py`) or the preview player workspace (`index.html`, `player.js`, `style.css`). Verify that all E2E tests pass 100% before presenting the changes to the user for manual verification.
 
 ---
 
