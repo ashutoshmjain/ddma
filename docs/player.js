@@ -593,6 +593,17 @@ function loop() {
     animationFrameId = requestAnimationFrame(loop);
 }
 
+function pause() {
+    isPlaying = false;
+    playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+    viewportStatus.textContent = 'Paused';
+    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    
+    if (!videoPlayer.paused) {
+        videoPlayer.pause();
+    }
+}
+
 function playPrevious() {
     const threshold = 2.0; // seconds
     let activeItem = timeline[activeTimelineIndex];
@@ -646,11 +657,14 @@ function toggleMute() {
     if (isMuted) {
         muteBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
         videoPlayer.muted = true;
+        if (useWebAudio && mainGainNode && audioCtx) {
+            mainGainNode.gain.setValueAtTime(0.0, audioCtx.currentTime);
+        }
     } else {
         muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
         videoPlayer.muted = false;
-        if (useWebAudio) {
-            setVolume(currentVolume);
+        if (useWebAudio && mainGainNode && audioCtx) {
+            mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
         } else {
             videoPlayer.volume = currentVolume;
         }
