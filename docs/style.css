@@ -353,6 +353,7 @@ body {
     justify-content: center;
     align-items: center;
     width: 40%;
+    gap: 16px;
 }
 
 /* Button Stylings */

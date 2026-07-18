@@ -26,6 +26,8 @@ const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 const volumeSlider = document.getElementById('volumeSlider');
 const muteBtn = document.getElementById('muteBtn');
+const skipBackBtn = document.getElementById('skipBackBtn');
+const skipForwardBtn = document.getElementById('skipForwardBtn');
 const seekTrack = document.getElementById('seekTrack');
 const seekProgress = document.getElementById('seekProgress');
 const seekHandle = document.getElementById('seekHandle');
@@ -263,6 +265,8 @@ function initUI() {
     playBtn.addEventListener('click', togglePlay);
     prevBtn.addEventListener('click', playPrevious);
     nextBtn.addEventListener('click', playNext);
+    skipBackBtn.addEventListener('click', skipBackward);
+    skipForwardBtn.addEventListener('click', skipForward);
     
     volumeSlider.addEventListener('input', (e) => {
         setVolume(parseFloat(e.target.value));
@@ -476,6 +480,14 @@ function playNext() {
     if (nextVideoIndex !== -1) {
         seekTo(timeline[nextVideoIndex].startGlobal);
     }
+}
+
+function skipBackward() {
+    seekTo(currentGlobalTime - 15.0);
+}
+
+function skipForward() {
+    seekTo(currentGlobalTime + 15.0);
 }
 
 // Seek Timeline
