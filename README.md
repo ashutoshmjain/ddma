@@ -24,7 +24,11 @@ DeepDive Media Automator (DDMA) is a python CLI toolkit and an interactive web c
 * **🔄 Granular AI Remixing & In-Context Recasting**:
   * **Granular Intelligence**: Click the `🔄 Remix` button on any unlocked clip to recast it using Gemini (supporting high-performance models like `gemini-2.5-flash`).
   * **In-Context Few-Shot Templates**: Gemini automatically analyzes all preceding locked clips (incorporating their style, voice timings, music stings, and pacing) to structure the target clip's segments and curiosity questions seamlessly.
-
+* **🎬 Editor's Preview Player & E2E Testing**:
+  * **Consolidated Single-Player Engine**: A unified media element architecture plays all selected clips sequentially. Outro slide cards (bridge transitions) seek to the preceding clip's tail and overlay segues, eliminating playback race conditions.
+  * **YouTube-Style Seek Tooltip**: Hovering your cursor over the timeline track renders a floating time tooltip (`MM:SS`) to preview seek locations.
+  * **15s Quick Skip Controls**: Jump forward or backward by exactly 15 seconds to review crossfades and transition overlap segments.
+  * **Automated Puppeteer E2E Testing**: A headless browser test script (`scratch/test-env/test_player.js`) automatically navigates the player, verifies timeline loading, checks play/pause/mute state transitions, and validates playhead increments to guarantee zero regressions.
 
 ---
 
