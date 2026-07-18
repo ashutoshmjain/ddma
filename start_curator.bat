@@ -1,4 +1,5 @@
 @echo off
+cd /d "%~dp0"
 title DDMA Clip Curator Server
 echo ==================================================
 echo       DDMA Clip Curator Server Launcher
