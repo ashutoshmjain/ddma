@@ -561,6 +561,10 @@ def get_mosaic_default_prompt():
 
 
 class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        super().end_headers()
+
     def compile_segments(self, segments, output_path, audio_source_path):
         compile_segments_helper(segments, output_path, audio_source_path)
 

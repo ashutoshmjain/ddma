@@ -268,6 +268,9 @@ function initUI() {
         setVolume(parseFloat(e.target.value));
     });
     
+    // Explicitly enforce CORS flag in JavaScript
+    videoPlayer.crossOrigin = "anonymous";
+    
     muteBtn.addEventListener('click', toggleMute);
     
     // Seek tracking controls (Scrubbing)
@@ -693,12 +696,14 @@ function drawIntroScreen() {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    ctx.font = '800 32px Outfit';
-    ctx.fillText("Editor's Preview", viewport.width / 2, viewport.height / 2 - 20);
+    const titleSize = Math.max(22, Math.floor(viewport.width * 0.045));
+    ctx.font = `800 ${titleSize}px Outfit`;
+    ctx.fillText("Editor's Preview", viewport.width / 2, viewport.height / 2 - 25);
     
-    ctx.font = '400 18px Outfit';
+    const subtitleSize = Math.max(14, Math.floor(viewport.width * 0.025));
+    ctx.font = `400 ${subtitleSize}px Outfit`;
     ctx.fillStyle = '#8c9bb0';
-    ctx.fillText('Click play to preview compiled timeline segments', viewport.width / 2, viewport.height / 2 + 20);
+    ctx.fillText('Click play to preview compiled timeline segments', viewport.width / 2, viewport.height / 2 + 25);
 }
 
 function drawBridgeSlide(text) {
@@ -732,13 +737,26 @@ function drawAudioVisualizerScreen(item) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    ctx.font = '800 24px Outfit';
-    ctx.fillText('🎧 AUDIO PREVIEW MODE', viewport.width / 2, 80);
+    // Top header (relative font size and position)
+    const headerFontSize = Math.max(16, Math.floor(viewport.width * 0.035));
+    ctx.font = `800 ${headerFontSize}px Outfit`;
+    ctx.fillText('🎧 AUDIO PREVIEW MODE', viewport.width / 2, viewport.height * 0.15);
     
-    ctx.font = '600 28px Outfit';
+    // Middle title (wrapped, relative position)
+    const titleFontSize = Math.max(18, Math.floor(viewport.width * 0.04));
+    ctx.font = `600 ${titleFontSize}px Outfit`;
     ctx.fillStyle = '#a29bfe';
-    ctx.fillText(`Clip ${item.clipNum}: ${item.title}`, viewport.width / 2, viewport.height / 2 - 120);
     
+    const titleText = `Clip ${item.clipNum}: ${item.title}`;
+    const titleLines = wrapText(ctx, titleText, viewport.width - 60);
+    const titleLineHeight = titleFontSize + 8;
+    const titleStartY = (viewport.height * 0.38) - ((titleLines.length - 1) * titleLineHeight / 2);
+    
+    titleLines.forEach((line, idx) => {
+        ctx.fillText(line, viewport.width / 2, titleStartY + (idx * titleLineHeight));
+    });
+    
+    const centerY = viewport.height * 0.6;
     if (analyser && isPlaying) {
         analyser.getByteTimeDomainData(dataArray);
         
@@ -753,7 +771,7 @@ function drawAudioVisualizerScreen(item) {
         
         for (let i = 0; i < bufferLength; i++) {
             const v = dataArray[i] / 128.0;
-            const y = (v * viewport.height / 2) + 20;
+            const y = (v - 1.0) * (viewport.height * 0.2) + centerY;
             
             if (i === 0) {
                 ctx.moveTo(x, y);
@@ -763,7 +781,7 @@ function drawAudioVisualizerScreen(item) {
             x += sliceWidth;
         }
         
-        ctx.lineTo(viewport.width, viewport.height / 2 + 20);
+        ctx.lineTo(viewport.width, centerY);
         ctx.stroke();
         ctx.shadowBlur = 0;
         
@@ -772,15 +790,17 @@ function drawAudioVisualizerScreen(item) {
         let barX = 0;
         ctx.fillStyle = 'rgba(108, 92, 231, 0.12)';
         
+        const maxBarHeight = viewport.height * 0.15;
         for (let i = 0; i < bufferLength; i++) {
-            const barHeight = (dataArray[i] / 255.0) * 100;
-            ctx.fillRect(barX, viewport.height - barHeight - 40, barWidth - 2, barHeight);
+            const barHeight = (dataArray[i] / 255.0) * maxBarHeight;
+            ctx.fillRect(barX, viewport.height - barHeight - 20, barWidth - 2, barHeight);
             barX += barWidth;
         }
     } else {
-        ctx.font = '500 18px Outfit';
+        const statusFontSize = Math.max(14, Math.floor(viewport.width * 0.028));
+        ctx.font = `500 ${statusFontSize}px Outfit`;
         ctx.fillStyle = '#636e72';
-        ctx.fillText(isPlaying ? 'Initializing visualizer...' : 'Press Play to start visualizer', viewport.width / 2, viewport.height / 2 + 80);
+        ctx.fillText(isPlaying ? 'Initializing visualizer...' : 'Press Play to start visualizer', viewport.width / 2, viewport.height * 0.78);
     }
 }
 
