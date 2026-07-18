@@ -159,7 +159,6 @@ async function loadVideoDurations() {
                 const clipInfo = plan.find(c => c.num === item.clipNum);
                 
                 if (currentMode === 'video') {
-                    // Exclude clip if the video file does not exist in video mode
                     console.warn(`Excluding missing video file: ${item.src}`);
                 } else {
                     // Fall back to segment math in Audio Mode
@@ -347,7 +346,7 @@ function initAudio() {
         audioCtx = new AudioContextClass();
         
         mainGainNode = audioCtx.createGain();
-        mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
+        mainGainNode.gain.value = currentVolume;
         
         // Wire up AnalyserNode for audio mode visualizer
         analyser = audioCtx.createAnalyser();
@@ -358,7 +357,7 @@ function initAudio() {
         mainGainNode.connect(analyser);
         analyser.connect(audioCtx.destination);
         
-        // Route video element audio into AudioContext
+        // Route video element audio into AudioContext (ALWAYS unmuted natively when routing!)
         videoPlayer.muted = false;
         audioSource = audioCtx.createMediaElementSource(videoPlayer);
         audioSource.connect(mainGainNode);
@@ -386,181 +385,6 @@ function togglePlay() {
     }
 }
 
-// Seek Timeline
-function seekTo(globalTime) {
-    currentGlobalTime = Math.max(0, Math.min(totalDuration, globalTime));
-    updateTimelineState();
-    syncVideoPlayback();
-    updateSeekUI();
-    drawFrame();
-}
-
-// Track active timeline segment and handle source loading
-function updateTimelineState() {
-    let newIndex = -1;
-    for (let i = 0; i < timeline.length; i++) {
-        if (currentGlobalTime >= timeline[i].startGlobal && currentGlobalTime < timeline[i].endGlobal) {
-            newIndex = i;
-            break;
-        }
-    }
-    
-    if (newIndex === -1 && timeline.length > 0) {
-        newIndex = timeline.length - 1;
-    }
-    
-    if (newIndex !== activeTimelineIndex) {
-        activeTimelineIndex = newIndex;
-        onTimelineItemChanged();
-    }
-}
-
-function safeSetTimeAndPlay(videoEl, time) {
-    const playVideo = () => {
-        try {
-            // Seek playhead only if difference is significant to avoid player stuttering
-            if (Math.abs(videoEl.currentTime - time) > 0.3) {
-                videoEl.currentTime = time;
-            }
-        } catch (e) {
-            console.warn("Failed to set currentTime:", e);
-        }
-        
-        if (isPlaying) {
-            videoEl.muted = false;
-            if (videoEl.paused) {
-                videoEl.play().catch(err => console.log('Playback deferred:', err));
-            }
-        } else {
-            if (!videoEl.paused) {
-                videoEl.pause();
-            }
-        }
-    };
-    
-    videoEl.onloadedmetadata = null;
-    
-    if (videoEl.readyState >= 1) {
-        playVideo();
-    } else {
-        videoEl.onloadedmetadata = playVideo;
-    }
-}
-
-function onTimelineItemChanged() {
-    const item = timeline[activeTimelineIndex];
-    if (!item) return;
-    
-    // Highlight sidebar card
-    document.querySelectorAll('.clip-item').forEach(el => el.classList.remove('active'));
-    const activeCard = document.getElementById(`sidebar-clip-${item.clipNum}`);
-    if (activeCard) {
-        activeCard.classList.add('active');
-        activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-    
-    if (item.type === 'video') {
-        // Change source of the single player if it's different
-        if (videoPlayer.getAttribute('data-src') !== item.src) {
-            videoPlayer.onloadedmetadata = null; // Clear callbacks to prevent event leaks
-            videoPlayer.setAttribute('data-src', item.src);
-            videoPlayer.src = item.src;
-            videoPlayer.load();
-        }
-        
-        const localTime = currentGlobalTime - item.startGlobal;
-        const clipInfo = plan.find(c => c.num === item.clipNum);
-        const isAudioOnly = clipInfo && clipInfo.audio_only === true;
-        const playOffset = (currentMode === 'audio' && !isAudioOnly) ? 2.0 : 0.0;
-        
-        safeSetTimeAndPlay(videoPlayer, localTime + playOffset);
-    }
-}
-
-// Keep physical HTML5 video nodes synchronized and handle crossfades/bridge overlays
-function syncVideoPlayback() {
-    const item = timeline[activeTimelineIndex];
-    if (!item) return;
-    
-    if (useWebAudio && mainGainNode && audioCtx) {
-        mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
-    } else {
-        videoPlayer.volume = currentVolume;
-    }
-    
-    if (item.type === 'video') {
-        const localTime = currentGlobalTime - item.startGlobal;
-        
-        // Restore volume node
-        if (useWebAudio && mainGainNode && audioCtx) {
-            mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
-        }
-        
-        // Find crossfade duration from plan.json
-        const clipInfo = plan.find(c => c.num === item.clipNum);
-        const crossfadeDuration = (clipInfo && clipInfo.crossfade !== undefined) ? clipInfo.crossfade : 0.0;
-        
-        let fade = 1.0;
-        
-        // Gapless transitions fade calculation
-        if (crossfadeDuration > 0) {
-            if (localTime < crossfadeDuration) {
-                // Fade-in region
-                fade = localTime / crossfadeDuration;
-            } else if (localTime > item.duration - crossfadeDuration) {
-                // Fade-out region
-                fade = (item.duration - localTime) / crossfadeDuration;
-            }
-        }
-        
-        fade = Math.max(0, Math.min(1, fade));
-        if (useWebAudio && mainGainNode && audioCtx) {
-            mainGainNode.gain.setValueAtTime(currentVolume * fade, audioCtx.currentTime);
-        } else {
-            videoPlayer.volume = currentVolume * fade;
-        }
-        
-        const isAudioOnly = clipInfo && clipInfo.audio_only === true;
-        const playOffset = (currentMode === 'audio' && !isAudioOnly) ? 2.0 : 0.0;
-        
-        safeSetTimeAndPlay(videoPlayer, localTime + playOffset);
-    } else if (item.type === 'bridge') {
-        const elapsed = currentGlobalTime - item.startGlobal;
-        
-        // Fade out preceding clip's tail over the 5-second slide duration
-        const fade = Math.max(0, Math.min(1, 1.0 - (elapsed / 5.0)));
-        if (useWebAudio && mainGainNode && audioCtx) {
-            mainGainNode.gain.setValueAtTime(currentVolume * fade, audioCtx.currentTime);
-        } else {
-            videoPlayer.volume = currentVolume * fade;
-        }
-        
-        // Seek preceding clip's tail
-        const prevVideoItem = activeTimelineIndex > 0 ? timeline[activeTimelineIndex - 1] : null;
-        if (prevVideoItem) {
-            const baseDur = prevVideoItem.duration;
-            const targetSeek = Math.max(0, baseDur - 5.0) + elapsed;
-            
-            try {
-                if (Math.abs(videoPlayer.currentTime - targetSeek) > 0.3) {
-                    videoPlayer.currentTime = targetSeek;
-                }
-            } catch (e) {}
-        }
-        
-        if (isPlaying) {
-            videoPlayer.muted = false;
-            if (videoPlayer.paused) {
-                videoPlayer.play().catch(() => {});
-            }
-        } else {
-            if (!videoPlayer.paused) {
-                videoPlayer.pause();
-            }
-        }
-    }
-}
-
 function play() {
     if (timeline.length === 0) return;
     isPlaying = true;
@@ -569,6 +393,26 @@ function play() {
     
     lastTime = Date.now();
     animationFrameId = requestAnimationFrame(loop);
+    
+    // Play video element natively once on state change
+    const item = timeline[activeTimelineIndex];
+    if (item) {
+        videoPlayer.muted = (useWebAudio) ? false : isMuted;
+        if (videoPlayer.paused) {
+            videoPlayer.play().catch(err => console.log('Playback deferred:', err));
+        }
+    }
+}
+
+function pause() {
+    isPlaying = false;
+    playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+    viewportStatus.textContent = 'Paused';
+    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    
+    if (!videoPlayer.paused) {
+        videoPlayer.pause();
+    }
 }
 
 function loop() {
@@ -586,22 +430,11 @@ function loop() {
     }
     
     updateTimelineState();
-    syncVideoPlayback();
+    syncVolumeAndFade();
     updateSeekUI();
     drawFrame();
     
     animationFrameId = requestAnimationFrame(loop);
-}
-
-function pause() {
-    isPlaying = false;
-    playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-    viewportStatus.textContent = 'Paused';
-    if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    
-    if (!videoPlayer.paused) {
-        videoPlayer.pause();
-    }
 }
 
 function playPrevious() {
@@ -641,6 +474,146 @@ function playNext() {
     }
 }
 
+// Seek Timeline
+function seekTo(globalTime) {
+    currentGlobalTime = Math.max(0, Math.min(totalDuration, globalTime));
+    
+    const oldIndex = activeTimelineIndex;
+    updateTimelineState();
+    
+    // If the segment index did not change, seek the active player to new local position
+    if (oldIndex === activeTimelineIndex) {
+        const item = timeline[activeTimelineIndex];
+        if (item) {
+            if (item.type === 'video') {
+                const localTime = currentGlobalTime - item.startGlobal;
+                const clipInfo = plan.find(c => c.num === item.clipNum);
+                const isAudioOnly = clipInfo && clipInfo.audio_only === true;
+                const playOffset = (currentMode === 'audio' && !isAudioOnly) ? 2.0 : 0.0;
+                videoPlayer.currentTime = localTime + playOffset;
+            } else if (item.type === 'bridge') {
+                const elapsed = currentGlobalTime - item.startGlobal;
+                const prevVideoItem = activeTimelineIndex > 0 ? timeline[activeTimelineIndex - 1] : null;
+                if (prevVideoItem) {
+                    const baseDur = prevVideoItem.duration;
+                    videoPlayer.currentTime = Math.max(0, baseDur - 5.0) + elapsed;
+                }
+            }
+        }
+    }
+    
+    syncVolumeAndFade();
+    updateSeekUI();
+    drawFrame();
+}
+
+// Track active timeline segment and handle source loading
+function updateTimelineState() {
+    let newIndex = -1;
+    for (let i = 0; i < timeline.length; i++) {
+        if (currentGlobalTime >= timeline[i].startGlobal && currentGlobalTime < timeline[i].endGlobal) {
+            newIndex = i;
+            break;
+        }
+    }
+    
+    if (newIndex === -1 && timeline.length > 0) {
+        newIndex = timeline.length - 1;
+    }
+    
+    if (newIndex !== activeTimelineIndex) {
+        activeTimelineIndex = newIndex;
+        onTimelineItemChanged();
+    }
+}
+
+function onTimelineItemChanged() {
+    const item = timeline[activeTimelineIndex];
+    if (!item) return;
+    
+    // Highlight sidebar card
+    document.querySelectorAll('.clip-item').forEach(el => el.classList.remove('active'));
+    const activeCard = document.getElementById(`sidebar-clip-${item.clipNum}`);
+    if (activeCard) {
+        activeCard.classList.add('active');
+        activeCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    if (item.type === 'video') {
+        const localTime = currentGlobalTime - item.startGlobal;
+        const clipInfo = plan.find(c => c.num === item.clipNum);
+        const isAudioOnly = clipInfo && clipInfo.audio_only === true;
+        const playOffset = (currentMode === 'audio' && !isAudioOnly) ? 2.0 : 0.0;
+        
+        if (videoPlayer.getAttribute('data-src') !== item.src) {
+            videoPlayer.onloadedmetadata = null;
+            videoPlayer.setAttribute('data-src', item.src);
+            videoPlayer.src = item.src;
+            videoPlayer.load();
+            
+            videoPlayer.onloadedmetadata = () => {
+                videoPlayer.currentTime = localTime + playOffset;
+                if (isPlaying) {
+                    videoPlayer.muted = (useWebAudio) ? false : isMuted;
+                    videoPlayer.play().catch(() => {});
+                }
+            };
+        } else {
+            videoPlayer.currentTime = localTime + playOffset;
+            if (isPlaying && videoPlayer.paused) {
+                videoPlayer.muted = (useWebAudio) ? false : isMuted;
+                videoPlayer.play().catch(() => {});
+            }
+        }
+    } else if (item.type === 'bridge') {
+        const elapsed = currentGlobalTime - item.startGlobal;
+        const prevVideoItem = activeTimelineIndex > 0 ? timeline[activeTimelineIndex - 1] : null;
+        
+        if (prevVideoItem) {
+            const baseDur = prevVideoItem.duration;
+            videoPlayer.currentTime = Math.max(0, baseDur - 5.0) + elapsed;
+            if (isPlaying && videoPlayer.paused) {
+                videoPlayer.muted = (useWebAudio) ? false : isMuted;
+                videoPlayer.play().catch(() => {});
+            }
+        }
+    }
+}
+
+// Keep volume nodes synced and handle crossfades/fades
+function syncVolumeAndFade() {
+    const item = timeline[activeTimelineIndex];
+    if (!item) return;
+    
+    let fade = 1.0;
+    
+    if (item.type === 'video') {
+        const localTime = currentGlobalTime - item.startGlobal;
+        const clipInfo = plan.find(c => c.num === item.clipNum);
+        const crossfadeDuration = (clipInfo && clipInfo.crossfade !== undefined) ? clipInfo.crossfade : 0.0;
+        
+        if (crossfadeDuration > 0) {
+            if (localTime < crossfadeDuration) {
+                fade = localTime / crossfadeDuration;
+            } else if (localTime > item.duration - crossfadeDuration) {
+                fade = (item.duration - localTime) / crossfadeDuration;
+            }
+        }
+    } else if (item.type === 'bridge') {
+        const elapsed = currentGlobalTime - item.startGlobal;
+        fade = Math.max(0, Math.min(1, 1.0 - (elapsed / 5.0)));
+    }
+    
+    fade = Math.max(0, Math.min(1, fade));
+    const targetVolume = isMuted ? 0.0 : currentVolume * fade;
+    
+    if (useWebAudio && mainGainNode && audioCtx) {
+        mainGainNode.gain.value = targetVolume;
+    } else {
+        videoPlayer.volume = targetVolume;
+    }
+}
+
 // Update Seeker Progress UI
 function updateSeekUI() {
     const percent = totalDuration > 0 ? (currentGlobalTime / totalDuration) * 100 : 0;
@@ -656,16 +629,18 @@ function toggleMute() {
     isMuted = !isMuted;
     if (isMuted) {
         muteBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
-        videoPlayer.muted = true;
         if (useWebAudio && mainGainNode && audioCtx) {
-            mainGainNode.gain.setValueAtTime(0.0, audioCtx.currentTime);
+            mainGainNode.gain.value = 0.0;
+        } else {
+            videoPlayer.muted = true;
         }
     } else {
         muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
-        videoPlayer.muted = false;
         if (useWebAudio && mainGainNode && audioCtx) {
-            mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
+            videoPlayer.muted = false;
+            mainGainNode.gain.value = currentVolume;
         } else {
+            videoPlayer.muted = false;
             videoPlayer.volume = currentVolume;
         }
     }
@@ -677,8 +652,8 @@ function setVolume(val) {
     volumeSlider.value = currentVolume;
     
     if (useWebAudio && !isMuted && mainGainNode && audioCtx) {
-        mainGainNode.gain.setValueAtTime(currentVolume, audioCtx.currentTime);
-    } else {
+        mainGainNode.gain.value = currentVolume;
+    } else if (!useWebAudio) {
         videoPlayer.volume = currentVolume;
     }
 }
@@ -700,14 +675,11 @@ function drawFrame() {
         drawAudioVisualizerScreen(item);
     } else {
         if (item.type === 'video') {
-            // Check if the source clip is marked audio_only in the plan
             const clipInfo = plan.find(c => c.num === item.clipNum);
             if (clipInfo && clipInfo.audio_only) {
-                // Keep the canvas solid black for audio only clips
                 ctx.fillStyle = '#000000';
                 ctx.fillRect(0, 0, viewport.width, viewport.height);
             } else {
-                // Paint active video frame onto Canvas
                 ctx.drawImage(videoPlayer, 0, 0, viewport.width, viewport.height);
             }
         } else if (item.type === 'bridge') {
@@ -730,11 +702,9 @@ function drawIntroScreen() {
 }
 
 function drawBridgeSlide(text) {
-    // Black background
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, viewport.width, viewport.height);
     
-    // Wrap and center text lines on black slide
     const bridgeTextLines = wrapText(ctx, text, viewport.width - 120);
     const lineHeight = 46;
     const totalHeight = bridgeTextLines.length * lineHeight;
@@ -752,14 +722,12 @@ function drawBridgeSlide(text) {
 }
 
 function drawAudioVisualizerScreen(item) {
-    // Draw dark radial gradient background
     const gradient = ctx.createRadialGradient(viewport.width/2, viewport.height/2, 50, viewport.width/2, viewport.height/2, viewport.width/2);
     gradient.addColorStop(0, '#111424');
     gradient.addColorStop(1, '#07090e');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, viewport.width, viewport.height);
     
-    // Draw text info: active clip details
     ctx.fillStyle = '#f1f3f9';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -771,12 +739,11 @@ function drawAudioVisualizerScreen(item) {
     ctx.fillStyle = '#a29bfe';
     ctx.fillText(`Clip ${item.clipNum}: ${item.title}`, viewport.width / 2, viewport.height / 2 - 120);
     
-    // Draw live waveform wave using Web Audio Analyser data
     if (analyser && isPlaying) {
         analyser.getByteTimeDomainData(dataArray);
         
         ctx.lineWidth = 4;
-        ctx.strokeStyle = 'rgba(162, 155, 254, 0.85)'; // glowing lavender
+        ctx.strokeStyle = 'rgba(162, 155, 254, 0.85)';
         ctx.shadowColor = '#6c5ce7';
         ctx.shadowBlur = 20;
         
@@ -798,9 +765,8 @@ function drawAudioVisualizerScreen(item) {
         
         ctx.lineTo(viewport.width, viewport.height / 2 + 20);
         ctx.stroke();
-        ctx.shadowBlur = 0; // reset shadow
+        ctx.shadowBlur = 0;
         
-        // Mirroring frequency bars at the bottom
         analyser.getByteFrequencyData(dataArray);
         const barWidth = (viewport.width / bufferLength) * 1.5;
         let barX = 0;
@@ -812,7 +778,6 @@ function drawAudioVisualizerScreen(item) {
             barX += barWidth;
         }
     } else {
-        // Static visualizer text overlay when paused
         ctx.font = '500 18px Outfit';
         ctx.fillStyle = '#636e72';
         ctx.fillText(isPlaying ? 'Initializing visualizer...' : 'Press Play to start visualizer', viewport.width / 2, viewport.height / 2 + 80);
