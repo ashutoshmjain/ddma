@@ -43,11 +43,11 @@ function resizeViewport() {
     drawFrame();
 }
 
-window.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', () => {
     resizeViewport();
     window.addEventListener('resize', resizeViewport);
-    await init();
     initUI();
+    init();
 });
 
 // Load Plan and Setup Timeline
@@ -235,11 +235,11 @@ function renderSidebar() {
         card.id = `sidebar-clip-${clip.num}`;
         
         card.innerHTML = `
-            <div class="clip-item-header">
-                <span class="clip-item-title">CLIP ${clip.num}</span>
-                <span class="clip-item-dur">${formatTime(videoItem.duration)}</span>
+            <div class="clip-item-row1">
+                <span>CLIP ${clip.num}</span>
+                <span class="clip-duration">${formatTime(videoItem.duration)}</span>
             </div>
-            <div class="clip-item-desc">${clip.title || 'Untitled Segment'}</div>
+            <div class="clip-meta-title">${clip.title || 'Untitled Segment'}</div>
         `;
         
         card.onclick = () => {
