@@ -106,7 +106,8 @@
             }
         ],
         "locked": true,
-        "crossfade": 0.5
+        "crossfade": 0.5,
+        "audio_only": true
     },
     {
         "num": 4,
@@ -575,7 +576,7 @@
                 "music_file": "Double Helix (Sting) - Ethan Meixsell.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
-                "volume": 1.0
+                "volume": 1
             },
             {
                 "type": "audio",
@@ -588,12 +589,12 @@
             {
                 "type": "music",
                 "music_file": "Operator Error (Sting) - Gunnar Olsen.mp3",
-                "duration": 5.0,
+                "duration": 5,
                 "crossfade": 0.5,
                 "volume": 0.8
             }
         ],
-        "locked": false
+        "locked": true
     },
     {
         "num": 17,
