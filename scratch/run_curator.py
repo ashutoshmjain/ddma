@@ -117,30 +117,55 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                     except:
                         pass
             
-            # Step 2: Expose/Upload video publicly to trigger run via video_urls
+            # Step 2: Upload S3
+            mosaic_runs[job_key]["status"] = "requesting upload URL"
+            mosaic_runs[job_key]["progress"] = 10
+            print(f"[{project_id}][Clip {clip_num}] Requesting upload URL from Mosaic...")
+            
+            # Get upload details
+            res = requests.post(f"{base_url}/uploads/video/get_upload_url", headers=headers)
+            if res.status_code != 200:
+                raise Exception(f"Mosaic get_upload_url failed: {res.text}")
+            
+            upload_data = res.json()
+            upload_url = upload_data.get("upload_url")
+            upload_fields = upload_data.get("upload_fields", {})
+            video_id = upload_data.get("video_id")
+            
+            if not upload_url or not video_id:
+                raise Exception("Failed to retrieve upload parameters from Mosaic.")
+            
+            # Post file to S3
             mosaic_runs[job_key]["status"] = "uploading media"
-            mosaic_runs[job_key]["progress"] = 20
-            print(f"[{project_id}][Clip {clip_num}] Uploading {file_path} to temporary hosting (tmpfiles.org)...")
+            mosaic_runs[job_key]["progress"] = 30
+            print(f"[{project_id}][Clip {clip_num}] Uploading {file_path} to Mosaic S3 storage...")
             
             with open(file_path, "rb") as f:
-                res_upload = requests.post("https://tmpfiles.org/api/v1/upload", files={"file": f})
+                files = {
+                    "file": (os.path.basename(file_path), f, "video/mp4")
+                }
+                res_s3 = requests.post(upload_url, data=upload_fields, files=files)
+                
+            if res_s3.status_code not in (200, 201, 204):
+                raise Exception(f"S3 upload failed: Status code {res_s3.status_code}, response: {res_s3.text}")
             
-            if res_upload.status_code != 200:
-                raise Exception(f"Failed to upload draft to tmpfiles.org: Status {res_upload.status_code}, response: {res_upload.text}")
-                
-            upload_json = res_upload.json()
-            if upload_json.get("status") != "success":
-                raise Exception(f"tmpfiles.org returned error status: {upload_json}")
-                
-            temp_url = upload_json["data"]["url"]
-            # Convert to direct download link: replace "tmpfiles.org/" with "tmpfiles.org/dl/"
-            direct_url = temp_url.replace("tmpfiles.org/", "tmpfiles.org/dl/")
-            print(f"[{project_id}][Clip {clip_num}] Uploaded successfully. Direct download URL: {direct_url}")
+            # Finalize upload
+            mosaic_runs[job_key]["status"] = "finalizing upload"
+            mosaic_runs[job_key]["progress"] = 50
+            print(f"[{project_id}][Clip {clip_num}] Finalizing upload on Mosaic...")
+            
+            res_finalize = requests.post(
+                f"{base_url}/uploads/video/finalize_upload",
+                headers=headers,
+                json={"video_id": video_id}
+            )
+            if res_finalize.status_code != 200:
+                raise Exception(f"Mosaic finalize_upload failed: {res_finalize.text}")
             
             # Step 3: Trigger Agent Run
             mosaic_runs[job_key]["status"] = "triggering run"
-            mosaic_runs[job_key]["progress"] = 50
-            print(f"[{project_id}][Clip {clip_num}] Triggering Mosaic agent run via public URL...")
+            mosaic_runs[job_key]["progress"] = 60
+            print(f"[{project_id}][Clip {clip_num}] Triggering Mosaic agent run...")
             
             update_params = {}
             if mogr_node_id:
@@ -161,7 +186,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                 }
             
             run_body = {
-                "video_urls": [direct_url]
+                "video_ids": [video_id]
             }
             if update_params:
                 run_body["update_params"] = update_params
