@@ -3825,8 +3825,9 @@
                         mosaicPromptModalOverlay.classList.add('active');
                         
                         // Override submit click listener by replacing the element
-                        const newSubmitBtn = submitMosaicPromptBtn.cloneNode(true);
-                        submitMosaicPromptBtn.parentNode.replaceChild(newSubmitBtn, submitMosaicPromptBtn);
+                        const currentSubmitBtn = document.getElementById('submitMosaicPromptBtn');
+                        const newSubmitBtn = currentSubmitBtn.cloneNode(true);
+                        currentSubmitBtn.parentNode.replaceChild(newSubmitBtn, currentSubmitBtn);
                         
                         const activeSubmitBtn = document.getElementById('submitMosaicPromptBtn');
                         activeSubmitBtn.addEventListener('click', function() {
