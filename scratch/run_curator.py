@@ -2033,6 +2033,39 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_error(500, f"Combine video error: {e}")
                 return
 
+        elif parsed_url.path == '/review-episode-bridges':
+            project_id = params.get('id', [None])[0]
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                
+                project_dir = os.path.join("projects", project_id)
+                plan_path = os.path.join(project_dir, "plan.json")
+                if not os.path.exists(plan_path):
+                    raise Exception("plan.json not found.")
+                
+                sys.path.insert(0, ".")
+                from scratch.review_episode_bridges import review_episode_bridges
+                success = review_episode_bridges(plan_path)
+                if not success:
+                    raise Exception("Gemini episode bridge review failed.")
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "message": "Episode bridge cards successfully reviewed and updated by AI!"}).encode('utf-8'))
+                return
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
+                return
+
         elif parsed_url.path == '/export-project-clip':
             project_id = params.get('id', [None])[0]
             content_length = int(self.headers.get('Content-Length', 0))

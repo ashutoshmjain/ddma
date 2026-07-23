@@ -1518,6 +1518,7 @@
                             <button class="btn btn-primary btn-mini" id="combineVideoBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600; pointer-events: none;" title="Open real-time Editor's Preview player to review compiled clips">🎬 Editor's Preview</button>
                         </a>
                         <button class="btn btn-secondary btn-mini" id="openExportModalBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Export combined audio (MP3), combined video (MP4), or plan metadata (JSON)">📥 Export</button>
+                        <button class="btn btn-secondary btn-mini" id="reviewBridgesBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600; background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(99,102,241,0.2)); border: 1px solid rgba(168,85,247,0.4);" title="Use Gemini AI to review and align curiosity question bridge cards across the entire episode">✨ AI Review Bridges</button>
                     </div>
                     <!-- Group 2: History & Preview -->
                     <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
@@ -5243,6 +5244,33 @@
                     exportBtn.innerHTML = '🔗 Combine Audio';
                     exportBtn.disabled = false;
                 });
+            });
+        }
+
+        const reviewBridgesBtn = document.getElementById('reviewBridgesBtn');
+        if (reviewBridgesBtn) {
+            reviewBridgesBtn.addEventListener('click', async function() {
+                if (!currentProjectId) {
+                    showToast('Please select an active project first.', 'warning');
+                    return;
+                }
+                reviewBridgesBtn.innerHTML = '⏳ AI Reviewing...';
+                reviewBridgesBtn.disabled = true;
+                try {
+                    const resp = await fetch(`/review-episode-bridges?id=${currentProjectId}`, { method: 'POST' });
+                    const data = await resp.json();
+                    if (data.success) {
+                        showToast('✨ Gemini successfully reviewed and updated all episode bridge cards!', 'success');
+                        await loadProject(currentProjectId);
+                    } else {
+                        showToast(`Review failed: ${data.error}`, 'error');
+                    }
+                } catch (err) {
+                    showToast(`Error invoking AI bridge reviewer: ${err.message}`, 'error');
+                } finally {
+                    reviewBridgesBtn.innerHTML = '✨ AI Review Bridges';
+                    reviewBridgesBtn.disabled = false;
+                }
             });
         }
 
