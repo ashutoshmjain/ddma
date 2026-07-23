@@ -88,20 +88,7 @@ function buildTimeline() {
     });
 
     filteredPlan.forEach((clip, index) => {
-        // 1. Add Bridge Card slide between clips (Video Mode Only)
-        if (currentMode !== 'audio' && index > 0 && clip.bridge_text && clip.bridge_text.length > 0) {
-            timeline.push({
-                type: 'bridge',
-                text: clip.bridge_text[0],
-                duration: 5.0,
-                startGlobal: runningTime,
-                endGlobal: runningTime + 5.0,
-                clipNum: clip.num
-            });
-            runningTime += 5.0;
-        }
-
-        // 2. Add Video Clip segment
+        // Video Clip segment (compiled MP4 clips already include intro title card and outro curiosity question slide)
         const isAudioOnly = clip.audio_only === true;
         const clipSrc = isAudioOnly 
             ? `/previews/preview_episode_244_${clip.num}.mp3?v=3`
