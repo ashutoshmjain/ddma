@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DDMA Documentation & Developer Guide</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0b0c10;
+            --bg-card: #12141c;
+            --bg-sidebar: #0e1017;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-highlight: rgba(99, 102, 241, 0.3);
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.4);
+            --accent: #10b981;
+            --purple: #8b5cf6;
+            --text: #e2e8f0;
+            --text-heading: #ffffff;
+            --text-muted: #94a3b8;
+            --code-bg: #090a0f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-heading);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .sidebar-header h1 i {
+            color: var(--primary);
+        }
+
+        .sidebar-header p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .search-box {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-input-wrapper {
+            position: relative;
+        }
+
+        .search-input-wrapper i {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.5rem 0.8rem 0.5rem 2.2rem;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.8rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+
+        .nav-links {
+            padding: 1rem 0;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .nav-section-title {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            padding: 0.8rem 1.5rem 0.4rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.55rem 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text);
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(99, 102, 241, 0.08);
+            color: var(--text-heading);
+            border-left-color: var(--primary);
+        }
+
+        .nav-link i {
+            font-size: 0.85rem;
+            width: 16px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .nav-link:hover i, .nav-link.active i {
+            color: var(--primary);
+        }
+
+        /* Main Content Container */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2.5rem 3rem;
+            scroll-behavior: smooth;
+        }
+
+        .content-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .doc-header {
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .doc-header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-heading);
+            letter-spacing: -0.02em;
+        }
+
+        .doc-header p {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .doc-section {
+            margin-bottom: 3rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .doc-section h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .doc-section h2 i {
+            color: var(--primary);
+        }
+
+        .doc-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-heading);
+            margin: 1.5rem 0 0.8rem;
+        }
+
+        .doc-section p, .doc-section ul {
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+
+        .doc-section ul {
+            padding-left: 1.4rem;
+        }
+
+        .doc-section li {
+            margin-bottom: 0.4rem;
+        }
+
+        /* Card Component */
+        .info-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem 1.5rem;
+            margin: 1rem 0 1.5rem;
+        }
+
+        .info-card.accent {
+            border-left: 4px solid var(--accent);
+        }
+
+        .info-card.primary {
+            border-left: 4px solid var(--primary);
+        }
+
+        .info-card.purple {
+            border-left: 4px solid var(--purple);
+        }
+
+        .info-card h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+
+        /* Code Block Component */
+        .code-wrapper {
+            position: relative;
+            margin: 1rem 0 1.5rem;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: color 0.15s;
+        }
+
+        .copy-btn:hover {
+            color: var(--text-heading);
+        }
+
+        pre {
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            color: #f1f5f9;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            color: #a5b4fc;
+        }
+
+        /* Parameter Table */
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .param-table th, .param-table td {
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .param-table th {
+            background: rgba(255, 255, 255, 0.03);
+            font-weight: 700;
+            color: var(--text-heading);
+        }
+
+        .param-table td code {
+            font-size: 0.78rem;
+        }
+
+        /* Top Action Button */
+        .top-action-btn {
+            position: fixed;
+            top: 1.5rem;
+            right: 2rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px var(--primary-glow);
+            transition: transform 0.15s, opacity 0.15s;
+        }
+
+        .top-action-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.95;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1><i class="fa-solid fa-book-bookmark"></i> DDMA Docs</h1>
+            <p>DeepDive Media Automator v2.0</p>
+        </div>
+        <div class="search-box">
+            <div class="search-input-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search documentation...">
+            </div>
+        </div>
+        <nav class="nav-links">
+            <div class="nav-section-title">Overview</div>
+            <a href="#quickstart" class="nav-link active"><i class="fa-solid fa-bolt"></i> Quickstart & AGY</a>
+            <a href="#gui-workflow" class="nav-link"><i class="fa-solid fa-desktop"></i> Curator GUI Guide</a>
+
+            <div class="nav-section-title">CLI & Automation</div>
+            <a href="#cli-commands" class="nav-link"><i class="fa-solid fa-terminal"></i> CLI Commands Reference</a>
+            <a href="#demuxer-spec" class="nav-link"><i class="fa-solid fa-film"></i> Fast Demuxer Engine</a>
+
+            <div class="nav-section-title">AI & Backend</div>
+            <a href="#gemini-remix" class="nav-link"><i class="fa-solid fa-wand-magic-sparkles"></i> Gemini AI Remix</a>
+            <a href="#mosaic-ingest" class="nav-link"><i class="fa-solid fa-layer-group"></i> Mosaic Motion Graphics</a>
+            <a href="#rest-api" class="nav-link"><i class="fa-solid fa-network-wired"></i> REST API Endpoints</a>
+        </nav>
+    </aside>
+
+    <!-- Main Documentation Area -->
+    <main class="main-content">
+        <a href="/curator.html" class="top-action-btn"><i class="fa-solid fa-arrow-left"></i> Open Curator GUI</a>
+
+        <div class="content-container">
+            <div class="doc-header">
+                <h1>DDMA Documentation & Reference</h1>
+                <p>Complete step-by-step guide for operating the Curator Web Dashboard, running automated CLI tools, configuring Gemini AI Remixing, and publishing media assets.</p>
+            </div>
+
+            <!-- Quickstart -->
+            <section id="quickstart" class="doc-section">
+                <h2><i class="fa-solid fa-bolt"></i> Quickstart with Google Antigravity (AGY)</h2>
+                <p>DeepDive Media Automator is designed to run seamlessly with <strong>Google Antigravity</strong>. You don't need to manually configure virtual environments or run multi-step CLI commands.</p>
+
+                <div class="info-card primary">
+                    <h4><i class="fa-solid fa-robot"></i> 1-Prompt AGY Setup</h4>
+                    <p>Open Google Antigravity in your workspace and type:</p>
+                    <p style="margin-top: 0.4rem; color: #a5b4fc; font-weight: 600;">"Clone https://github.com/ashutoshmjain/ddma.git, install dependencies, start the curator server, and transcribe my audio file."</p>
+                </div>
+
+                <h3>1-Click Server Start (Manual)</h3>
+                <p>To launch the Curator Dashboard directly from your terminal:</p>
+                <div class="code-wrapper">
+                    <div class="code-header"><span>PowerShell / Bash</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                    <pre>python scratch/run_curator.py</pre>
+                </div>
+                <p>This automatically opens your dashboard at: <code>http://localhost:8000/curator.html</code></p>
+            </section>
+
+            <!-- Curator GUI Guide -->
+            <section id="gui-workflow" class="doc-section">
+                <h2><i class="fa-solid fa-desktop"></i> Curator GUI User Guide</h2>
+                <p>The Curator Dashboard provides an interactive visual workspace for podcast curation:</p>
+                
+                <ul>
+                    <li><strong>➕ New Project</strong>: Upload an audio file (`.mp3` or `.m4a`) to start a project. OpenAI Whisper generates word-level timestamps in the background.</li>
+                    <li><strong>Transcript Word Snapping</strong>: Double-click or drag-select text inside the transcript viewport to set exact sub-second start and end boundaries for clips.</li>
+                    <li><strong>Per-Segment Sting Mixer</strong>: Add background music stings between voice segments. Customize track volume multipliers (e.g., <code>0.20</code> for subtle ducking) and crossfade durations.</li>
+                    <li><strong>📥 Export Hub</strong>: Click the <strong>📥 Export</strong> button in the top action bar to choose between:
+                        <ul>
+                            <li><strong>🎧 Combined Audio (MP3)</strong>: Preview and download full episode audio tracks.</li>
+                            <li><strong>🎬 Combined Video (MP4)</strong>: Instantly demux and download full episode video compiles with 5-second question transition cards.</li>
+                            <li><strong>📋 Plan Metadata (JSON)</strong>: View, copy, or update `plan.json`.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- CLI Commands Reference -->
+            <section id="cli-commands" class="doc-section">
+                <h2><i class="fa-solid fa-terminal"></i> CLI Commands Reference</h2>
+                <p>For headless automated pipelines or terminal workflows, <code>ddma.py</code> exposes high-level CLI commands:</p>
+
+                <h3>1. Transcribe Audio (`transcribe`)</h3>
+                <div class="code-wrapper">
+                    <div class="code-header"><span>CLI Command</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                    <pre>python ddma.py transcribe --audio episode_244.mp3 --model tiny.en</pre>
+                </div>
+                <p>Generates <code>transcription.json</code> containing word-level timestamps.</p>
+
+                <h3>2. Generate Initial Clip Plan (`plan`)</h3>
+                <div class="code-wrapper">
+                    <div class="code-header"><span>CLI Command</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                    <pre>python ddma.py plan --audio episode_244.mp3 --ranges '120-240, 300-450'</pre>
+                </div>
+
+                <h3>3. Slice Audio Clips (`cut`)</h3>
+                <div class="code-wrapper">
+                    <div class="code-header"><span>CLI Command</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                    <pre>python ddma.py cut --audio episode_244.mp3 --plan-file plan.json --out-dir clips</pre>
+                </div>
+
+                <h3>4. Compile Finished Video Clip (`compile-clip`)</h3>
+                <div class="code-wrapper">
+                    <div class="code-header"><span>CLI Command</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                    <pre>python ddma.py compile-clip --num 1 --plan-file projects/episode_244/plan.json</pre>
+                </div>
+                <p>Equalizes audio/video stream durations, prepends Pillow title card intros (with Part 1 episode title exception rules), and crossfades segments.</p>
+            </section>
+
+            <!-- Demuxer Engine -->
+            <section id="demuxer-spec" class="doc-section">
+                <h2><i class="fa-solid fa-film"></i> Fast Demuxer Engine (`-c copy`)</h2>
+                <p>Full episode video concatenation is powered by <code>scratch/combine_clips_demuxer.py</code>.</p>
+                <div class="info-card accent">
+                    <h4><i class="fa-solid fa-bolt"></i> Lossless 2-Second Demuxing</h4>
+                    <p>Because all compiled clips and bridge question slides share standardized video parameters (740x740, 30fps, YUV420p, 48kHz AAC), FFmpeg uses <code>-c copy</code> stream stitching. A 40-minute episode compiles in under 4 seconds!</p>
+                </div>
+                <div class="code-wrapper">
+                    <div class="code-header"><span>Demuxer Execution</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+                    <pre>python scratch/combine_clips_demuxer.py --episode 244 --plan-file projects/episode_244/plan.json --out-file combined_244.mp4</pre>
+                </div>
+            </section>
+
+            <!-- Gemini AI Remix -->
+            <section id="gemini-remix" class="doc-section">
+                <h2><i class="fa-solid fa-wand-magic-sparkles"></i> Gemini AI Remix & In-Context Recasting</h2>
+                <p>Clicking <code>🔄 Remix</code> on any unlocked clip card recasts the target clip using Gemini AI.</p>
+                <ul>
+                    <li><strong>In-Context Primacy</strong>: Slices preceding locked clips (limited to the last 5 clips in reverse order) so Gemini prioritizes recent transitions while reducing token usage.</li>
+                    <li><strong>High-Density Timeline Format</strong>: Neighborhood transcript lines are formatted as plain-text timestamps (<code>[start - end] text</code>), reducing prompt token overhead by 50%.</li>
+                    <li><strong>Custom Prompt Guidelines</strong>: Customize Remix prompts in System Settings (saved to `settings.json`).</li>
+                </ul>
+            </section>
+
+            <!-- Mosaic Ingest -->
+            <section id="mosaic-ingest" class="doc-section">
+                <h2><i class="fa-solid fa-layer-group"></i> Mosaic AI Motion Graphics Ingest</h2>
+                <p>Clicking <code>🌌 Mosaic</code> uploads draft video clips to the Mosaic API to render AI motion graphics and visual infographics.</p>
+                <div class="info-card purple">
+                    <h4><i class="fa-solid fa-shield-halved"></i> Self-Healing Recovery</h4>
+                    <p>Generated Mosaic run IDs are stored in `plan.json`. If the server restarts or browser reloads, polling threads automatically resume and retrieve completed renders.</p>
+                </div>
+            </section>
+
+            <!-- REST API Endpoints -->
+            <section id="rest-api" class="doc-section">
+                <h2><i class="fa-solid fa-network-wired"></i> REST API Endpoints Reference</h2>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Endpoint</th>
+                            <th>Method</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>/list-projects</code></td>
+                            <td>GET</td>
+                            <td>Lists all local podcast project workspaces.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/get-project?id=&lt;id&gt;</code></td>
+                            <td>GET</td>
+                            <td>Retrieves metadata, transcript, and clip plan for a project.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/combine-project-audio?id=&lt;id&gt;</code></td>
+                            <td>POST</td>
+                            <td>Compiles all locked clips into a single MP3 audio track.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/combine-project-video?id=&lt;id&gt;</code></td>
+                            <td>POST</td>
+                            <td>Demuxes and stitches all locked clips into an MP4 video.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/remix-clip?id=&lt;id&gt;&amp;num=&lt;num&gt;</code></td>
+                            <td>POST</td>
+                            <td>Recasts clip segment boundaries using Gemini AI.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // Simple search filter for documentation navigation
+        const searchInput = document.getElementById('searchInput');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            navLinks.forEach(link => {
+                const text = link.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    link.style.display = 'flex';
+                } else {
+                    link.style.display = 'none';
+                }
+            });
+        });
+
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            navigator.clipboard.writeText(pre.textContent.trim());
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = 'Copy';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

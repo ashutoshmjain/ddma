@@ -25,50 +25,12 @@ Open Antigravity in your terminal or IDE and give it this natural language instr
 
 ---
 
-## 📋 Antigravity Agent Instruction Sheet (`AGENTS.md`)
+---
 
-When executing media automation tasks, Antigravity follows the built-in operational instructions in [`.agents/AGENTS.md`](file:///.agents/AGENTS.md):
+## 📖 Full Documentation & Interactive Guide
 
-### 🔄 The Automated Pipeline
-
-1. **Transcribe**:
-   ```bash
-   python ddma.py transcribe --audio <episode>.mp3
-   ```
-   Transcribes the long audio file using OpenAI Whisper with native word-level timestamps (`word_timestamps=True`).
-
-2. **Plan & Curate**:
-   ```bash
-   python ddma.py plan --audio <episode>.mp3 --ranges '<start>-<end>'
-   ```
-   Curates high-engagement concepts, sets snapped segment boundaries, title formatting, and curiosity question transitions (`plan.json`).
-
-3. **Audio Slice**:
-   ```bash
-   python ddma.py cut --audio <episode>.mp3 --plan-file plan.json --out-dir clips
-   ```
-   Splits long audio into sample-accurate MP3 clip slices, stripping leading disfluencies and tight trailing silence.
-
-4. **Draft Mux**:
-   ```bash
-   python ddma.py mux-clip --num <clip_number>
-   ```
-   Merges audio slices with dynamically generated black background canvas videos (`740x740`) for Mosaic draft renders.
-
-5. **Infographic Overlay (Mosaic AI)**:
-   Sends the draft video to the Mosaic API to generate motion graphics and visual infographics.
-
-6. **Add Intro Title Cards & Crossfades**:
-   ```bash
-   python ddma.py compile-clip --num <clip_number>
-   ```
-   Equalizes stream durations, generates charcoal title card intros with Part 1 exception rules, and concatenates losslessly.
-
-7. **Combine Full Episode Video / Audio**:
-   ```bash
-   python scratch/combine_clips_demuxer.py
-   ```
-   Stitches all locked clips and 5.0s curiosity question bridge transition slides into a single `combined_<episode>.mp4` published video in seconds.
+For complete step-by-step guides, advanced CLI reference (`ddma.py`), fast demuxer specifications, and REST API documentation, open the interactive documentation page:
+👉 **[DDMA Documentation & Developer Guide](docs/documentation.html)** *(also available directly inside the Curator Dashboard via the **`📖 Docs`** button)*.
 
 ---
 
