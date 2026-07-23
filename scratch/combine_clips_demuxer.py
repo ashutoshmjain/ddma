@@ -148,12 +148,37 @@ def main():
     except Exception as e:
         print(f"Warning probing clip properties: {e}. Using defaults.")
 
+    # Prepare trimmed clips for Clips 2+ (dropping Part intro title cards)
+    processed_paths = []
+    temp_files_created = []
+
+    for i, (num, path) in enumerate(clip_files):
+        if i == 0:
+            processed_paths.append(path)
+        else:
+            temp_trim = f"temp_trim_{num}.mp4"
+            print(f"Trimming Part {num} intro title card (skipping 2.0s) from {os.path.basename(path)}...")
+            cmd_trim = [
+                "ffmpeg", "-y",
+                "-ss", "2.0",
+                "-i", path,
+                "-c", "copy",
+                temp_trim
+            ]
+            trim_res = subprocess.run(cmd_trim, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if trim_res.returncode == 0:
+                processed_paths.append(os.path.abspath(temp_trim))
+                temp_files_created.append(temp_trim)
+            else:
+                print(f"Warning: Stream copy trim failed for Clip {num}, falling back to original path: {trim_res.stderr}")
+                processed_paths.append(path)
+
     # Write demuxer list file
     list_path = "concat_list.txt"
     with open(list_path, "w", encoding="utf-8") as f:
-        for i, (num, path) in enumerate(clip_files):
+        for p in processed_paths:
             # FFmpeg concat demuxer paths need forward slashes and escaped single quotes
-            safe_path = path.replace("\\", "/").replace("'", "'\\''")
+            safe_path = p.replace("\\", "/").replace("'", "'\\''")
             f.write(f"file '{safe_path}'\n")
             
     print(f"\nCreated demuxer list: {list_path}")
@@ -189,14 +214,13 @@ def main():
         ]
         res = subprocess.run(cmd_fallback, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     
-    # Clean up demuxer list file and temp gap files
+    # Clean up demuxer list file and temp trim files
     if os.path.exists(list_path):
         os.remove(list_path)
-    for num, _ in clip_files[:-1]:
-        gap_path = f"temp_gap_{num}.mp4"
-        if os.path.exists(gap_path):
+    for tf in temp_files_created:
+        if os.path.exists(tf):
             try:
-                os.remove(gap_path)
+                os.remove(tf)
             except Exception:
                 pass
         

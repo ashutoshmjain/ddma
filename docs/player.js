@@ -126,19 +126,30 @@ async function loadVideoDurations() {
                 let duration = await getVideoDuration(item.src);
                 const clipInfo = plan.find(c => c.num === item.clipNum);
                 
-                // Use calculated segments fallback if metadata returns invalid duration
                 if (isNaN(duration) || duration <= 0) {
                     const baseDur = calculateClipDuration(clipInfo);
                     duration = baseDur + (currentMode === 'audio' ? 0.0 : 2.0);
+                }
+                
+                const isAudioOnly = clipInfo && clipInfo.audio_only === true;
+                if (currentMode === 'audio') {
+                    item.playOffset = isAudioOnly ? 0.0 : 2.0;
+                    if (!isAudioOnly && !isNaN(duration) && duration > 2.0) {
+                        duration = duration - 2.0;
+                    }
                 } else {
-                    // Subtract 2.0s title card intro in audio preview mode
-                    const isAudioOnly = clipInfo && clipInfo.audio_only === true;
-                    if (currentMode === 'audio' && !isAudioOnly) {
-                        duration = Math.max(0, duration - 2.0);
+                    // Video Mode: Keep Master Title Card on Clip 1 (i == 0), skip Part intro title cards on Clips 2+ (i > 0)
+                    if (i === 0 || isAudioOnly) {
+                        item.playOffset = 0.0;
+                    } else {
+                        item.playOffset = 2.0;
+                        if (!isNaN(duration) && duration > 2.0) {
+                            duration = duration - 2.0;
+                        }
                     }
                 }
                 
-                item.duration = duration;
+                item.duration = Math.max(0.1, duration);
                 item.startGlobal = runningTime;
                 item.endGlobal = runningTime + item.duration;
                 runningTime += item.duration;
@@ -146,10 +157,17 @@ async function loadVideoDurations() {
             } catch (err) {
                 console.warn(`Could not probe duration for ${item.src}, using fallback:`, err);
                 const clipInfo = plan.find(c => c.num === item.clipNum);
+                const isAudioOnly = clipInfo && clipInfo.audio_only === true;
                 
-                // Fall back to segment math in both Video and Audio Mode
                 const baseDur = calculateClipDuration(clipInfo);
-                item.duration = baseDur + (currentMode === 'audio' ? 0.0 : 2.0);
+                if (currentMode === 'video' && i > 0 && !isAudioOnly) {
+                    item.playOffset = 2.0;
+                    item.duration = Math.max(0.1, baseDur);
+                } else {
+                    item.playOffset = 0.0;
+                    item.duration = Math.max(0.1, baseDur + (currentMode === 'audio' ? 0.0 : 2.0));
+                }
+                
                 item.startGlobal = runningTime;
                 item.endGlobal = runningTime + item.duration;
                 runningTime += item.duration;
@@ -494,9 +512,7 @@ function seekTo(globalTime) {
         if (item) {
             if (item.type === 'video') {
                 const localTime = currentGlobalTime - item.startGlobal;
-                const clipInfo = plan.find(c => c.num === item.clipNum);
-                const isAudioOnly = clipInfo && clipInfo.audio_only === true;
-                const playOffset = (currentMode === 'audio' && !isAudioOnly) ? 2.0 : 0.0;
+                const playOffset = item.playOffset || 0.0;
                 videoPlayer.currentTime = localTime + playOffset;
             } else if (item.type === 'bridge') {
                 const elapsed = currentGlobalTime - item.startGlobal;
@@ -548,9 +564,7 @@ function onTimelineItemChanged() {
     
     if (item.type === 'video') {
         const localTime = currentGlobalTime - item.startGlobal;
-        const clipInfo = plan.find(c => c.num === item.clipNum);
-        const isAudioOnly = clipInfo && clipInfo.audio_only === true;
-        const playOffset = (currentMode === 'audio' && !isAudioOnly) ? 2.0 : 0.0;
+        const playOffset = item.playOffset || 0.0;
         
         if (videoPlayer.getAttribute('data-src') !== item.src) {
             videoPlayer.onloadedmetadata = null;
