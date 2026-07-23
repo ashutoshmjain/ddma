@@ -15,13 +15,13 @@ npm install -g @google/antigravity-cli
 ```
 
 ### 2. Prompt Antigravity
-Open Antigravity in your project directory and give it a single natural language instruction:
-> **"Set up DDMA, ensure all dependencies (Whisper, FFmpeg) are installed, start the local curator server, and transcribe my episode audio file."**
+Open Antigravity in your terminal or IDE and give it this natural language instruction:
+> **"Clone `https://github.com/ashutoshmjain/ddma.git`, install all Python dependencies from `requirements.txt`, verify FFmpeg is installed, start the local curator server (`python scratch/run_curator.py`), and transcribe my audio file."**
 
-Antigravity will automatically:
-- Inspect your local environment, install missing Python packages, Whisper, and verify FFmpeg.
-- Launch the local Curator Dashboard at **`http://localhost:8000/curator.html`**.
-- Orchestrate background transcription, clip planning, Mosaic AI animation rendering, and video compilation on your behalf.
+### 🧠 How Antigravity Knows What to Do:
+- **Repository Source**: Antigravity uses the target URL (`https://github.com/ashutoshmjain/ddma.git`) to clone the codebase.
+- **Dependencies**: It inspects `requirements.txt` to install `openai-whisper`, `fastapi`, `pillow`, `typer`, and checks for `ffmpeg` (installing it via `winget`, `brew`, or `apt` if missing).
+- **Execution Blueprint**: Once inside the codebase, Antigravity automatically reads [`.agents/AGENTS.md`](file:///.agents/AGENTS.md) and [README.md](file:///README.md) to discover exact server commands, API specs, and execution workflows.
 
 ---
 
