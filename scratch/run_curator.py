@@ -1524,7 +1524,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 if not has_clip_crossfade:
                     filter_complex = "".join(f"[{i}:a]" for i in range(len(temp_clip_files)))
-                    filter_complex += f"concat=n={len(temp_clip_files)}:v=0:a=1[out]"
+                    filter_complex += f"concat=n={len(temp_clip_files)}:v=0:a=1,loudnorm=I=-16:TP=-1.5:LRA=11[out]"
                 else:
                     # Construct chained acrossfade filters
                     filter_parts = []
@@ -1536,10 +1536,11 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         else:
                             fade_opts = "ns=1"
                         
-                        next_dest = f"[a{i+1}]" if i < len(temp_clip_files) - 2 else "[out]"
+                        next_dest = f"[a{i+1}]" if i < len(temp_clip_files) - 2 else "[out_raw]"
                         filter_parts.append(f"{current_src}[{i+1}:a]acrossfade={fade_opts}:c1=tri:c2=tri{next_dest}")
                         current_src = f"[a{i+1}]"
                     
+                    filter_parts.append("[out_raw]loudnorm=I=-16:TP=-1.5:LRA=11[out]")
                     filter_complex = ";".join(filter_parts)
                 
                 cmd += [
@@ -2903,7 +2904,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             super().copyfile(source, outputfile)
             return
 
-        size = os.path.getsize(self.translate_path(self.path))
+        clean_path = self.path.split('?')[0]
+        size = os.path.getsize(self.translate_path(clean_path))
         start = int(match.group(1))
         end = match.group(2)
         end = int(end) if end else size - 1

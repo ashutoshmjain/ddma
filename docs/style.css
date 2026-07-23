@@ -235,6 +235,84 @@ body {
     text-transform: uppercase;
 }
 
+.viewport-overlay-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.25s ease, transform 0.2s ease, background 0.2s ease;
+    z-index: 10;
+}
+
+.canvas-wrapper:hover .viewport-overlay-btn {
+    opacity: 0.85;
+}
+
+.viewport-overlay-btn:hover {
+    opacity: 1 !important;
+    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.75);
+    border-color: var(--accent-glow);
+}
+
+/* Fullscreen Mode Styling */
+.viewport-card:fullscreen {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    background: #000 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.viewport-card:fullscreen .canvas-wrapper {
+    width: 100vw;
+    height: 100vh;
+}
+
+.viewport-card:fullscreen #viewport {
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.viewport-card:fullscreen .viewport-status {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    padding: 6px 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(6px);
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.viewport-card:fullscreen:hover .viewport-status {
+    opacity: 1;
+}
+
 /* Controls Card */
 .controls-card {
     padding: 24px;
@@ -340,8 +418,8 @@ body {
 .controls-left, .controls-right {
     display: flex;
     align-items: center;
-    gap: 16px;
-    width: 30%;
+    gap: 12px;
+    flex: 1;
 }
 
 .controls-right {
@@ -352,7 +430,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 40%;
+    flex: 0 0 auto;
     gap: 16px;
 }
 

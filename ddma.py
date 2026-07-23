@@ -315,6 +315,7 @@ def cut(
             "-i", audio,
             "-ss", start_str,
             "-to", end_str,
+            "-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
             "-c:a", "libmp3lame",
             "-q:a", "2",
             out_path

@@ -428,6 +428,11 @@ function pause() {
     }
 }
 
+let isUserSeeking = false;
+
+videoPlayer.addEventListener('seeking', () => { isUserSeeking = true; });
+videoPlayer.addEventListener('seeked', () => { isUserSeeking = false; });
+
 function loop() {
     if (!isPlaying) return;
     
@@ -501,6 +506,7 @@ function skipForward() {
 
 // Seek Timeline
 function seekTo(globalTime) {
+    isUserSeeking = true;
     currentGlobalTime = Math.max(0, Math.min(totalDuration, globalTime));
     
     const oldIndex = activeTimelineIndex;
@@ -524,6 +530,9 @@ function seekTo(globalTime) {
             }
         }
     }
+    
+    // Reset seek flag after short grace period
+    setTimeout(() => { isUserSeeking = false; }, 400);
     
     syncVolumeAndFade();
     updateSeekUI();
@@ -841,3 +850,55 @@ function wrapText(context, text, maxWidth) {
     lines.push(currentLine.trim());
     return lines;
 }
+
+// Fullscreen Handling
+function toggleFullscreen() {
+    const target = document.querySelector('.viewport-card');
+    if (!target) return;
+    
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (target.requestFullscreen) {
+            target.requestFullscreen();
+        } else if (target.webkitRequestFullscreen) {
+            target.webkitRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
+}
+
+document.addEventListener('fullscreenchange', updateFullscreenUI);
+document.addEventListener('webkitfullscreenchange', updateFullscreenUI);
+
+function updateFullscreenUI() {
+    const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    const iconClass = isFS ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const viewportFullscreenBtn = document.getElementById('viewportFullscreenBtn');
+    if (fullscreenBtn && fullscreenBtn.querySelector('i')) fullscreenBtn.querySelector('i').className = iconClass;
+    if (viewportFullscreenBtn && viewportFullscreenBtn.querySelector('i')) viewportFullscreenBtn.querySelector('i').className = iconClass;
+}
+
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+if (fullscreenBtn) fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+const viewportFullscreenBtn = document.getElementById('viewportFullscreenBtn');
+if (viewportFullscreenBtn) viewportFullscreenBtn.addEventListener('click', toggleFullscreen);
+
+if (viewport) {
+    viewport.addEventListener('dblclick', toggleFullscreen);
+}
+
+// Keyboard Shortcut: 'F' key for Fullscreen
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'f' || e.key === 'F') {
+        if (!['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+            e.preventDefault();
+            toggleFullscreen();
+        }
+    }
+});
