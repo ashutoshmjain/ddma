@@ -192,6 +192,24 @@ def review_episode_bridges(plan_path):
         json.dump(plan_data, f, indent=4)
 
     print(f"\nSuccessfully reviewed and updated bridge cards for {updated_count} clips in {plan_path}!")
+
+    # Auto re-compile updated clips so video files and editor preview player are 100% in sync
+    import subprocess
+    print("Auto re-compiling updated video clips...")
+    for c_num in result_dict.keys():
+        try:
+            print(f"Re-compiling Clip {c_num}...")
+            cmd_compile = [
+                sys.executable,
+                "ddma.py",
+                "compile-clip",
+                "--num", str(c_num),
+                "--plan-file", plan_path
+            ]
+            subprocess.run(cmd_compile, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except Exception as ce:
+            print(f"Warning re-compiling Clip {c_num}: {ce}")
+
     return True
 
 if __name__ == "__main__":
