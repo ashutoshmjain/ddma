@@ -67,7 +67,7 @@ Below is the step-by-step operational workflow for processing podcast episodes, 
 
 ### 4. Audio Slice
 *   **Command**: `powershell -Command "python ddma.py cut --audio <episode>.mp3 --plan-file plan.json --out-dir clips"`
-*   **Action**: Splits the long audio into sample-accurate MP3 clip slices. Start times are adjusted to strip leading silence and conversational disfluencies in the first 2 seconds. End times are trimmed tightly right after the last spoken word.
+*   **Action**: Splits the long audio into sample-accurate MP3 clip slices using exact Whisper word timestamps (without artificial leading silence trimming). Applies EBU R128 loudness normalization (`-16 LUFS / -1.5 dB Peak`) across all output audio.
 *   **Output**: Saves clips to `clips/` named with their title (e.g., `clips/243-1-Memory vs Healing Trade-off.mp3`).
 
 ### 5. Draft Mux

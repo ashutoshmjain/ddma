@@ -49,38 +49,7 @@ def parse_time(time_str: str) -> float:
             return float(parts[0]) * 3600 + float(parts[1]) * 60 + float(parts[2])
     return float(time_str)
 
-def adjust_clip_start(start: float, end: float, segments: list) -> float:
-    # Gather all words across all segments
-    all_words = []
-    for seg in segments:
-        for w in seg.get("words", []):
-            all_words.append(w)
-    
-    # Filter words starting after or very close to start
-    words_after = [w for w in all_words if w["start"] >= start]
-    if not words_after:
-        return start
-        
-    filler_words = {"so", "yeah", "um", "uh", "well", "like", "but", "and", "now", "right"}
-    
-    curr_idx = 0
-    skipped_count = 0
-    while curr_idx < len(words_after) and skipped_count < 3:
-        w = words_after[curr_idx]
-        w_text = w["word"].strip().lower().translate(str.maketrans("", "", '.,?!-;"\''))
-        if w_text in filler_words:
-            if curr_idx + 1 < len(words_after):
-                next_w = words_after[curr_idx + 1]
-                if next_w["start"] - start < 2.0:
-                    curr_idx += 1
-                    skipped_count += 1
-                    continue
-        break
-        
-    if curr_idx < len(words_after):
-        adjusted = words_after[curr_idx]["start"]
-        return max(start, adjusted - 0.05)
-    return start
+
 
 @app.command()
 def plan(
@@ -170,16 +139,14 @@ def plan(
             if abs(end_aligned - total_duration) < 5.0 or r_end >= total_duration:
                 end_aligned = total_duration
 
-            # Adjust the start of the clip to strip leading filler/silence
-            adjusted_start = adjust_clip_start(start_aligned, end_aligned, segments)
-            duration = end_aligned - adjusted_start
+            duration = end_aligned - start_aligned
             if duration > max_duration:
                 typer.echo(f"Warning: Aligned clip {idx + 1} duration ({duration:.2f}s) exceeds max_duration ({max_duration}s).")
             
             clips_plan.append({
                 "num": idx + 1,
                 "title": "",
-                "start": adjusted_start,
+                "start": start_aligned,
                 "end": end_aligned,
                 "duration": duration
             })
@@ -239,13 +206,12 @@ def plan(
             if total_duration - target_b < 15.0:
                 target_b = total_duration
 
-            adjusted_start = adjust_clip_start(t_curr, target_b, segments)
-            clip_duration = target_b - adjusted_start
+            clip_duration = target_b - t_curr
 
             clips_plan.append({
                 "num": clip_num,
                 "title": "",
-                "start": adjusted_start,
+                "start": t_curr,
                 "end": target_b,
                 "duration": clip_duration
             })
