@@ -1,84 +1,94 @@
 # DeepDive Media Automator (DDMA)
 
-DeepDive Media Automator (DDMA) is a python CLI toolkit and an interactive web curator dashboard designed to transcribe long podcast episodes, curate high-engagement clips with sample-accurate word boundaries, mix sound/music stings, and compile ready-to-publish video assets for TikTok, Instagram Reels, and YouTube Shorts.
+DeepDive Media Automator (DDMA) is an automated podcast clip curation toolkit and web dashboard powered by **Google Antigravity**. It transcribes long podcast episodes, curates high-engagement clips with sample-accurate word boundaries, mixes sound/music stings, and compiles ready-to-publish video assets for TikTok, Instagram Reels, and YouTube Shorts.
 
 ---
 
-## 🌌 Key Features
+## 🤖 Recommended Quickstart with Google Antigravity (AGY)
 
-* **Multi-Project Management**: Curate multiple episodes side-by-side. The dashboard manages local audio files, word-level Whisper transcripts, and clip plans in project-specific workspaces.
-* **Collapsible & Resizable IDE-style Layout**: Drag dividers to adjust transcription/clips real estate. Collapse the sidebar to maximize focus.
-* **Word-Level Curation & Timeline Snapping**: Left-click or right-click transcript words to set precise sub-second boundaries. Highlights used ranges to prevent overlapping selections.
-* **Per-Segment Music Volume Mixer**: Mix background music stings. Set individual duration, crossfade transition, and custom volume level multipliers (e.g. `0.20` for subtle background ducking).
-* **Global Sting Manager**: Upload new music stings directly through the settings panel to make them globally available. Delete or clean up custom tracks on the fly.
-* **Theme Customization**: Switch between **Nordic Breeze (Light)**, **Cyberpunk (Neon Cyan/Purple)**, and **Midnight (Dark default)**. Preferences persist across reloads.
-* **Dynamic Media Exporters**:
-  * **Audio (`.mp3`)**: Compiles mixed segments directly.
-  * **Muxed Video (`.mp4`)**: Automatically overlays the mixed audio with a solid color canvas at custom resolutions (`740x740` square, `1080x1920` vertical reels, `1920x1080` landscape) and colors (presets or custom hex code).
-* **Automatic Title Card Intro Prepending**: Pillow generates clean title cards with multi-line wrapping and joins them to the master clip using FFmpeg timescale normalization.
-* **🌌 Mosaic AI Ingest & Recovery Integration**:
-  * **Automated Upload & Execution**: Export your local draft video compiles directly to the Mosaic API to generate premium AI infographic and motion graphics overlays (with a 30-minute timeout limit). Note: Cinematic captions have been disabled to focus purely on high-fidelity motion graphics.
-  * **Persistent Run ID Storage**: Persists generated run IDs inside the project's `plan.json` database.
-  * **Self-Healing Recovery & Cache**: If the server restarts or the browser page is refreshed, the backend automatically queries the Mosaic API to check status and resumes the background polling/download thread.
-  * **One-Click Recovery & Force Rerun**: Prompt-guided download recovery allows you to retrieve completed renders instantly without wasting credits, while also supporting fresh reruns.
-* **🔄 Granular AI Remixing & In-Context Recasting**:
-  * **Granular Intelligence**: Click the `🔄 Remix` button on any unlocked clip to recast it using Gemini (supporting high-performance models like `gemini-2.5-flash`).
-  * **In-Context Few-Shot Templates**: Gemini automatically analyzes all preceding locked clips (incorporating their style, voice timings, music stings, and pacing) to structure the target clip's segments and curiosity questions seamlessly.
-* **🎬 Editor's Preview Player & E2E Testing**:
-  * **Consolidated Single-Player Engine**: A unified media element architecture plays all selected clips sequentially. Outro slide cards (bridge transitions) seek to the preceding clip's tail and overlay segues, eliminating playback race conditions.
-  * **YouTube-Style Seek Tooltip**: Hovering your cursor over the timeline track renders a floating time tooltip (`MM:SS`) to preview seek locations.
-  * **15s Quick Skip Controls**: Jump forward or backward by exactly 15 seconds to review crossfades and transition overlap segments.
-  * **Automated Puppeteer E2E Testing**: A headless browser test script (`scratch/test-env/test_player.js`) automatically navigates the player, verifies timeline loading, checks play/pause/mute state transitions, and validates playhead increments to guarantee zero regressions.
+Skip manual repository setup, virtual environments, and manual FFmpeg/Whisper installations! You can let **Google Antigravity** handle the entire setup, environment provisioning, transcription, and clip rendering automatically.
 
----
-
-## 🛠️ Requirements
-
-1. **Python 3.8+**
-2. **OpenAI Whisper (`openai-whisper==20250625`)**
-3. **FFmpeg**: Must be installed and added to your system's `PATH`.
-
-### 🖥️ Recommended Hardware Configuration
-Running AI transcription models (like OpenAI Whisper) is resource-intensive. For a smooth experience:
-* **GPU (Highly Recommended)**: Dedicated NVIDIA GPU (GTX 1060 / RTX 2060 or better) with at least **4 GB VRAM** and CUDA support. Running Whisper on a CUDA-enabled GPU speeds up transcription by 10x–20x compared to CPU.
-* **CPU**: Modern multi-core processor (Intel Core i5 / AMD Ryzen 5 or better).
-* **RAM**: **16 GB RAM** or more is recommended.
-* **Storage**: SSD (Solid State Drive) is highly recommended for faster reads/writes of large audio and video assets.
-
----
-
-## 📥 Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/deepdive-media-automator.git
-   cd deepdive-media-automator
-   ```
-
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
----
-
-## 🚀 How to Run the Curator GUI
-
-Start the local server:
+### 1. Install Google Antigravity
+Install the Antigravity CLI globally (or open the Antigravity IDE / Desktop Assistant):
 ```bash
-python scratch/run_curator.py
+npm install -g @google/antigravity-cli
 ```
-This automatically opens the dashboard in your default browser:
-👉 **[http://localhost:8000/curator.html](http://localhost:8000/curator.html)**
 
-### Workflow:
-1. Put your raw podcast audio file in the repository root (e.g. `episode_244.m4a`).
-2. Click **`➕ New Project`** in the Projects sidebar, give it a name, and select the source audio file.
-3. Click **`Create & Transcribe`**. OpenAI Whisper will transcribe the file in the background (showing a live status spinner).
-4. Once ready, select the project to load the word-level transcript and begin curating clips!
-5. Add audio/music segments, customize volumes, preview compiles, and click **`Export Clip`** to output production-ready audio/video assets!
-6. **🌌 Optional (Send to Mosaic)**: 
-   * Open the **System Settings** modal (footer shortcut) and configure your **Mosaic API Key** (`mk_...`) and **Agent ID**.
-   * Lock the card to compile its video draft. Once the **`📹 Video`** preview button appears, you'll see a gradient **`🌌 Mosaic`** button.
-   * Click **`🌌 Mosaic`** to upload the clip to Mosaic, trigger the run with auto-generated contextual prompts (highlighting key stats/metaphors), and track status updates inside the dashboard.
-   * **Cache & Recovery**: If your server restarts, simply open the page and the dashboard will automatically pick up where the render left off. Clicking `🌌 Mosaic` on an already-submitted clip allows you to immediately retrieve/redownload the finished render or start a fresh rerun. Once completed, the local draft preview file is automatically replaced with the finalized infographic render!
+### 2. Prompt Antigravity
+Open Antigravity in your project directory and give it a single natural language instruction:
+> **"Set up DDMA, ensure all dependencies (Whisper, FFmpeg) are installed, start the local curator server, and transcribe my episode audio file."**
+
+Antigravity will automatically:
+- Inspect your local environment, install missing Python packages, Whisper, and verify FFmpeg.
+- Launch the local Curator Dashboard at **`http://localhost:8000/curator.html`**.
+- Orchestrate background transcription, clip planning, Mosaic AI animation rendering, and video compilation on your behalf.
+
+---
+
+## 📋 Antigravity Agent Instruction Sheet (`AGENTS.md`)
+
+When executing media automation tasks, Antigravity follows the built-in operational instructions in [`.agents/AGENTS.md`](file:///.agents/AGENTS.md):
+
+### 🔄 The Automated Pipeline
+
+1. **Transcribe**:
+   ```bash
+   python ddma.py transcribe --audio <episode>.mp3
+   ```
+   Transcribes the long audio file using OpenAI Whisper with native word-level timestamps (`word_timestamps=True`).
+
+2. **Plan & Curate**:
+   ```bash
+   python ddma.py plan --audio <episode>.mp3 --ranges '<start>-<end>'
+   ```
+   Curates high-engagement concepts, sets snapped segment boundaries, title formatting, and curiosity question transitions (`plan.json`).
+
+3. **Audio Slice**:
+   ```bash
+   python ddma.py cut --audio <episode>.mp3 --plan-file plan.json --out-dir clips
+   ```
+   Splits long audio into sample-accurate MP3 clip slices, stripping leading disfluencies and tight trailing silence.
+
+4. **Draft Mux**:
+   ```bash
+   python ddma.py mux-clip --num <clip_number>
+   ```
+   Merges audio slices with dynamically generated black background canvas videos (`740x740`) for Mosaic draft renders.
+
+5. **Infographic Overlay (Mosaic AI)**:
+   Sends the draft video to the Mosaic API to generate motion graphics and visual infographics.
+
+6. **Add Intro Title Cards & Crossfades**:
+   ```bash
+   python ddma.py compile-clip --num <clip_number>
+   ```
+   Equalizes stream durations, generates charcoal title card intros with Part 1 exception rules, and concatenates losslessly.
+
+7. **Combine Full Episode Video / Audio**:
+   ```bash
+   python scratch/combine_clips_demuxer.py
+   ```
+   Stitches all locked clips and 5.0s curiosity question bridge transition slides into a single `combined_<episode>.mp4` published video in seconds.
+
+---
+
+## 🌌 Key Features & Capabilities
+
+* **Multi-Project Management**: Curate multiple episodes side-by-side with local audio files, word-level Whisper transcripts, and clip plans in project-specific workspaces.
+* **Collapsible & Resizable IDE-style Layout**: Drag dividers to adjust transcription/clips real estate. Collapse the sidebar to maximize focus.
+* **Word-Level Curation & Timeline Snapping**: Double-click or select transcript words to set precise sub-second boundaries. Highlights used ranges to prevent overlapping selections.
+* **Per-Segment Music Volume Mixer**: Mix background music stings. Set individual duration, crossfade transition, and custom volume level multipliers (e.g. `0.20` for subtle background ducking).
+* **Global Sting Manager**: Upload new music stings directly through the settings panel to make them globally available.
+* **Theme Customization**: Switch between **Nordic Breeze (Light)**, **Cyberpunk (Neon Cyan/Purple)**, and **Midnight (Dark default)**.
+* **Dynamic Exporters & Instant Demuxing**:
+  * **Audio (`.mp3`)**: Compiles mixed segments directly.
+  * **Fast Video Demuxer (`.mp4`)**: Lossless `-c copy` stream stitching concatenates 40-minute episode files in 2–4 seconds!
+* **Automatic Title Card Intro Prepending**: Pillow generates clean title cards with multi-line wrapping and joins them to the master clip using FFmpeg timescale normalization.
+* **Mosaic AI Ingest & Recovery Integration**:
+  * **Automated Upload & Execution**: Export local draft video compiles directly to the Mosaic API for AI motion graphics overlays.
+  * **Self-Healing Recovery & Cache**: Automatically resumes background polling/download threads across server restarts and browser reloads.
+* **🔄 Granular AI Remixing & In-Context Recasting**:
+  * Click `🔄 Remix` on any clip to recast it using Gemini (analyzing preceding locked clips for style, pacing, and curiosity questions).
+* **🎬 Editor's Preview Player & E2E Testing**:
+  * **Consolidated Single-Player Engine**: Plays all selected clips sequentially with WebAudio/HTML5 volume synchronization.
+  * **Automated E2E Test Suite**: Headless Puppeteer test scripts (`scratch/test-env/test_curator.js` & `scratch/test-env/test_player.js`) ensure 100% regression-free updates.
