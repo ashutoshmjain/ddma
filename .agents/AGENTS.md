@@ -2,6 +2,14 @@
 
 This document defines the roles, responsibilities, and operational guidelines for the **DeepDive Media Automator (DDMA)** project workflow.
 
+## 🎯 Project Paradigm: Progressive Media Production
+DDMA is NOT a clip cutter. It is a progressive workflow engine that transforms raw audio recordings into fully-produced baseline podcast episodes and social promotional videos:
+1. **Raw Audio Input**: Ingests multi-hour raw, unedited recordings.
+2. **Storyboarding & Music stings**: Segments high-engagement topics, applies targeted music ducking/crossfading, and handles sample-accurate cutting.
+3. **The Baseline Audio Podcast**: Combines the curated clips chronologically to create a high-value, condensed podcast episode. E.g., [Episode 244 on Spotify](https://open.spotify.com/episode/1KKvm3TbYgxgsffHMj5MwJ?si=NeKNaPJ9QQG11-zcNB92Nw) was progressively compiled from a 63-minute raw track into a 40-minute published master.
+4. **The Baseline Video Episode**: Joins all clips with 5-second curiosity question slide transitions, producing the final long-form video baseline for YouTube publishing.
+5. **Micro-Promotional Clips**: Individual segments serve as vertical video assets (TikTok, Instagram Reels, YouTube Shorts) to build anticipation and promote the main episode launch.
+
 ---
 
 ## 👥 Roles & Responsibilities
