@@ -12,6 +12,13 @@ import subprocess
 import requests
 from urllib.parse import urlparse, parse_qs
 
+if hasattr(sys.stdout, 'reconfigure'):
+    try:
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 try:
     import google.generativeai as genai
     HAS_GENAI = True
@@ -560,6 +567,149 @@ def get_mosaic_default_prompt():
     )
 
 
+def get_gemini_default_prompt():
+    settings_path = "settings.json"
+    if os.path.exists(settings_path):
+        try:
+            with open(settings_path, "r", encoding="utf-8") as sf:
+                s_data = json.load(sf)
+                prompt = s_data.get("gemini_remix_prompt_template")
+                if prompt:
+                    return prompt
+        except Exception as se:
+            print(f"Warning: Failed to load settings.json for gemini prompt: {se}")
+            
+    return (
+        "You are the Creative Remix Agent for the DeepDive Media Automator (DDMA).\n"
+        "Your task is to recast the segments, title, and bridge transition text of Clip {clip_num} in the plan.\n\n"
+        "### Creative & Structural Rules:\n"
+        "1. **Total Duration**: The total duration of the clip MUST be strictly under 2 minutes and 55 seconds (175 seconds).\n"
+        "   Calculated as: `Total = Sum(segment_durations) - Sum(segment_crossfades)`.\n"
+        "2. **Storyboard Structure**:\n"
+        "   - Begin with a short welcome hook / high-power speech segment (10-15 seconds) from the transcript.\n"
+        "   - Followed by a quick music sting (typically 4.0 - 5.0 seconds long, 0.3s crossfade, 1.0 volume).\n"
+        "   - Followed by the main audio segment (content/discussion).\n"
+        "   - Followed by ending music (music segment at the end that leads into the outro).\n"
+        "3. **Bridge Text**: Provide a single bold curiosity-provoking transition question in \"bridge_text\" (a list of string(s)). This question must act as a forward-looking narrative bridge that introduces the topic/theme of the *next* clip in the storyboard (to transition the viewer's interest), rather than summarizing this current clip.\n"
+        "4. **Tone & Continuity**: Reference the narrative arc from the preceding locked clips to ensure this clip continues the story logically and maintains engaging hook titles.\n"
+        "5. **Standalone Thought Integrity**: Every clip MUST stand on its own as a complete, coherent, and interesting statement. Avoid creating 'part 2' or dependent continuation clips. If the preceding locked clips have already fully covered or resolved a topic, do not repeat or continue discussing it; skip ahead in the neighborhood transcript to a new high-engagement standalone concept.\n"
+        "6. **Deep Dive Welcome Music Restrictions**: The welcome music stings (`deepDive-soft-ok.mp3` and `deepDive-strong.mp3`) represent introductory/welcome sounds for the podcast. They can ONLY be used in the first or second clip of the entire episode storyboard (Clip 1 or Clip 2). Under no circumstances may they be used in Clip 3 or any subsequent clips. For subsequent clips, select from the other available music stings."
+    )
+
+
+def build_gemini_prompt(project_id, clip_num, directive=None):
+    project_dir = os.path.join("projects", project_id)
+    plan_path = os.path.join(project_dir, "plan.json")
+    if not os.path.exists(plan_path):
+        raise Exception(f"plan.json not found for project {project_id}.")
+    
+    with open(plan_path, "r", encoding="utf-8") as f:
+        plan_data = json.load(f)
+    
+    target_clip = None
+    preceding_locked_clips = []
+    for c in plan_data:
+        c_num = int(c.get("num", -1))
+        if c_num == int(clip_num):
+            target_clip = c
+        elif c_num < int(clip_num) and c.get("locked"):
+            preceding_locked_clips.append(c)
+            
+    # Limit context to the last 5 preceding locked clips and reverse their order
+    # (so the penultimate/most recent clip appears first in the prompt)
+    preceding_locked_clips = preceding_locked_clips[-5:]
+    preceding_locked_clips.reverse()
+    
+    if not target_clip:
+        raise Exception(f"Clip {clip_num} not found in project plan.")
+    
+    trans_path = os.path.join(project_dir, "transcription.json")
+    if not os.path.exists(trans_path):
+        raise Exception("transcription.json not found in project directory.")
+    
+    with open(trans_path, "r", encoding="utf-8") as f:
+        trans_data = json.load(f)
+    
+    orig_start = None
+    orig_end = None
+    for seg in target_clip.get("segments", []):
+        if seg.get("type") == "audio":
+            s = float(seg.get("start", 0))
+            e = float(seg.get("end", 0))
+            if orig_start is None or s < orig_start:
+                orig_start = s
+            if orig_end is None or e > orig_end:
+                orig_end = e
+    
+    if orig_start is None:
+        orig_start = 0.0
+        orig_end = 120.0
+    
+    neigh_start = max(0.0, orig_start - 10.0)
+    neigh_end = orig_start + 600.0
+    
+    all_segments = trans_data.get("segments", [])
+    neigh_lines = []
+    for s in all_segments:
+        s_start = float(s.get("start", 0))
+        s_end = float(s.get("end", 0))
+        if s_start >= neigh_start and s_end <= neigh_end:
+            text = s.get("text", "").strip()
+            neigh_lines.append(f"[{s_start:.2f} - {s_end:.2f}] {text}")
+    neigh_text = "\n".join(neigh_lines)
+    
+    music_dir = "music"
+    music_files = []
+    if os.path.exists(music_dir):
+        music_files = [f for f in os.listdir(music_dir) if f.lower().endswith(('.mp3', '.wav'))]
+    
+    base_instructions = get_gemini_default_prompt()
+    if "{clip_num}" in base_instructions:
+        base_instructions = base_instructions.replace("{clip_num}", str(clip_num))
+        
+    prompt = f"{base_instructions}\n"
+    if directive:
+        prompt += f"\n### IMPORTANT - USER REMIX DIRECTIVE (Follow this instruction strictly!):\n- {directive}\n\n"
+
+    prompt += f"""### Preceding Locked Clips (Context):
+{json.dumps(preceding_locked_clips, indent=2)}
+
+### Transcript Segments in the Neighborhood:
+# Formatted as: [start_time_seconds - end_time_seconds] Text
+{neigh_text}
+
+### Available Music Stings:
+{json.dumps(music_files, indent=2)}
+
+You MUST respond with a single JSON object for Clip {clip_num} matching the schema below. Do not include markdown code block formatting or explanations outside the JSON object:
+{{
+  "num": {clip_num},
+  "title": "Recasted Clip Title",
+  "bridge_text": [
+    "Curiosity question?"
+  ],
+  "segments": [
+    {{
+      "type": "audio",
+      "start": 0.0,
+      "end": 45.5,
+      "duration": 45.5,
+      "text": "Exact text matching transcription segments"
+    }},
+    {{
+      "type": "music",
+      "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+      "duration": 4.5,
+      "crossfade": 0.3,
+      "volume": 1.0
+    }}
+  ],
+  "locked": false
+}}
+"""
+    return prompt
+
+
 class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
@@ -582,7 +732,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             
             try:
                 if not HAS_GENAI:
-                    reply = "Co-Pilot Error: The 'google-generativeai' library is not installed in the python environment. Run 'pip install google-generativeai' to enable the chatbot."
+                    reply = "Help Error: The 'google-generativeai' library is not installed in the python environment. Run 'pip install google-generativeai' to enable the help panel."
                 else:
                     settings_api_key = None
                     if os.path.exists("settings.json"):
@@ -595,7 +745,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     
                     api_key = settings_api_key or os.environ.get("GEMINI_API_KEY")
                     if not configure_gemini(api_key):
-                        reply = "Co-Pilot Error: Neither 'gemini-creds.json' credentials nor 'GEMINI_API_KEY' in settings are configured. Please set them up in DDMA first!"
+                        reply = "Help Error: Neither 'gemini-creds.json' credentials nor 'GEMINI_API_KEY' in settings are configured. Please set them up in DDMA first!"
                     else:
                         
                         # Load request body
@@ -605,7 +755,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         
                         # Load context files (cache/read on the fly)
                         context = ""
-                        for doc_file in ["README.md", "CREATIVE_PROCESS.md", os.path.join(".agents", "AGENTS.md")]:
+                        for doc_file in ["README.md", "CREATIVE_PROCESS.md", os.path.join(".agents", "AGENTS.md"), "settings.json"]:
                             if os.path.exists(doc_file):
                                 try:
                                     with open(doc_file, "r", encoding="utf-8") as df:
@@ -614,12 +764,16 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                     print(f"Warning: Failed to read {doc_file} for help bot: {fe}")
                         
                         system_instruction = (
-                            "You are the DDMA Co-Pilot, an expert AI tutor designed to assist user in curating, compiling, "
-                            "and automating their media pipeline using DeepDive Media Automator (DDMA).\n\n"
+                            "You are the DDMA Help Assistant, an expert AI chatbot designed to assist users in understanding "
+                            "and using the DeepDive Media Automator (DDMA).\n\n"
+                            "### IMPORTANT SYSTEM RULE:\n"
+                            "- To change or customize default Mosaic prompts (Motion Design Instructions) or Gemini Remix instructions, "
+                            "users DO NOT need to edit Python code files. They can simply click the ⚙️ Settings button in the bottom left "
+                            "of the Curator UI and customize the prompts directly inside the textareas. These are saved in settings.json.\n\n"
                             "Your goal is to answer UI workflow, architectural, installation, Whisper, and creative curation questions "
-                            "accurately and concisely using the project documentation provided below. Keep your responses user-friendly "
-                            "and formatted in clean, concise markdown (using bold, lists, and code snippets as appropriate).\n\n"
-                            f"=== DOCUMENTATION CONTEXT ==={context}"
+                            "accurately and concisely using the documentation and settings structure provided below. Keep your responses "
+                            "user-friendly and formatted in clean, concise markdown.\n\n"
+                            f"=== DOCUMENTATION CONTEXT ===\n{context}"
                         )
                         
                         # Convert history format
@@ -634,8 +788,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             "parts": [user_message]
                         })
                         
-                        # Generate content with fallback list of models
-                        model_names = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-pro-latest"]
+                        # Generate content with fallback list of valid models
+                        model_names = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-flash-latest", "gemini-pro-latest"]
                         reply = None
                         last_err = None
                         for model_name in model_names:
@@ -651,7 +805,11 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                 print(f"Co-Pilot model {model_name} failed: {e}")
                                 last_err = e
                         if not reply:
-                            reply = f"Co-Pilot Error: Failed to generate content. Last error: {last_err}"
+                            err_str = str(last_err)
+                            if "429" in err_str or "quota" in err_str.lower():
+                                reply = "⚠️ Gemini API Quota Exceeded (429). Please set your personal Gemini API Key in ⚙️ Settings -> Co-Pilot Integration, or wait a minute for your quota to reset."
+                            else:
+                                reply = f"Co-Pilot Error: Failed to generate content. Last error: {last_err}"
                         
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
@@ -785,12 +943,14 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             clip_num = int(params.get('num', [-1])[0])
             
             directive = ""
+            custom_prompt = ""
             try:
                 content_length = int(self.headers.get('Content-Length', 0))
                 if content_length > 0:
                     post_data = self.rfile.read(content_length)
                     body_json = json.loads(post_data.decode('utf-8'))
                     directive = body_json.get("directive", "").strip()
+                    custom_prompt = body_json.get("prompt", "").strip()
             except Exception as body_ex:
                 print(f"Warning: Failed to parse remix body: {body_ex}")
                 
@@ -819,125 +979,12 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not os.path.exists(plan_path):
                     raise Exception(f"plan.json not found for project {project_id}.")
                 
-                with open(plan_path, "r", encoding="utf-8") as f:
-                    plan_data = json.load(f)
-                
-                # Find current clip and preceding locked clips
-                target_clip = None
-                preceding_locked_clips = []
-                for c in plan_data:
-                    c_num = int(c.get("num", -1))
-                    if c_num == clip_num:
-                        target_clip = c
-                    elif c_num < clip_num and c.get("locked"):
-                        preceding_locked_clips.append(c)
-                
-                if not target_clip:
-                    raise Exception(f"Clip {clip_num} not found in project plan.")
-                
-                # Load transcription.json
-                trans_path = os.path.join(project_dir, "transcription.json")
-                if not os.path.exists(trans_path):
-                    raise Exception("transcription.json not found in project directory.")
-                
-                with open(trans_path, "r", encoding="utf-8") as f:
-                    trans_data = json.load(f)
-                
-                # Collect neighborhood of current clip from transcription
-                orig_start = None
-                orig_end = None
-                for seg in target_clip.get("segments", []):
-                    if seg.get("type") == "audio":
-                        s = float(seg.get("start", 0))
-                        e = float(seg.get("end", 0))
-                        if orig_start is None or s < orig_start:
-                            orig_start = s
-                        if orig_end is None or e > orig_end:
-                            orig_end = e
-                
-                if orig_start is None:
-                    orig_start = 0.0
-                    orig_end = 120.0
-                
-                # Expand neighborhood by ± 120 seconds
-                neigh_start = max(0.0, orig_start - 120.0)
-                neigh_end = orig_end + 120.0
-                
-                # Filter segments from transcript
-                all_segments = trans_data.get("segments", [])
-                neigh_segments = []
-                for s in all_segments:
-                    s_start = float(s.get("start", 0))
-                    s_end = float(s.get("end", 0))
-                    if s_start >= neigh_start and s_end <= neigh_end:
-                        neigh_segments.append({
-                            "start": round(s_start, 2),
-                            "end": round(s_end, 2),
-                            "text": s.get("text", "").strip()
-                        })
-                
-                # Load available music stings
-                music_dir = "music"
-                music_files = []
-                if os.path.exists(music_dir):
-                    music_files = [f for f in os.listdir(music_dir) if f.lower().endswith(('.mp3', '.wav'))]
-                
-                # Formulate prompt for Gemini
-                prompt = f"""You are the Creative Remix Agent for the DeepDive Media Automator (DDMA).
-Your task is to recast the segments, title, and bridge transition text of Clip {clip_num} in the plan.
-"""
-                if directive:
-                    prompt += f"\n### IMPORTANT - USER REMIX DIRECTIVE (Follow this instruction strictly!):\n- {directive}\n\n"
+                if custom_prompt:
+                    prompt = custom_prompt
+                else:
+                    prompt = build_gemini_prompt(project_id, clip_num, directive=directive)
 
-                prompt += f"""### Preceding Locked Clips (Context):
-{json.dumps(preceding_locked_clips, indent=2)}
-
-### Transcript Segments in the Neighborhood:
-{json.dumps(neigh_segments, indent=2)}
-
-### Available Music Stings:
-{json.dumps(music_files, indent=2)}
-
-### Creative & Structural Rules:
-1. **Total Duration**: The total duration of the clip MUST be strictly under 2 minutes and 55 seconds (175 seconds).
-   Calculated as: `Total = Sum(segment_durations) - Sum(segment_crossfades)`.
-2. **Storyboard Structure**:
-   - Begin with a short welcome hook / high-power speech segment (10-15 seconds) from the transcript.
-   - Followed by a quick music sting (typically 4.0 - 5.0 seconds long, 0.3s crossfade, 1.0 volume).
-   - Followed by the main audio segment (content/discussion).
-   - Followed by ending music (music segment at the end that leads into the outro).
-3. **Bridge Text**: Provide a single bold curiosity-provoking transition question in "bridge_text" (a list of string(s)). This question must act as a forward-looking narrative bridge that introduces the topic/theme of the *next* clip in the storyboard (to transition the viewer's interest), rather than summarizing this current clip.
-4. **Tone & Continuity**: Reference the narrative arc from the preceding locked clips to ensure this clip continues the story logically and maintains engaging hook titles.
-5. **Standalone Thought Integrity**: Every clip MUST stand on its own as a complete, coherent, and interesting statement. Avoid creating 'part 2' or dependent continuation clips. If the preceding locked clips (see context) have already fully covered or resolved a topic, do not repeat or continue discussing it; skip ahead in the neighborhood transcript to a new high-engagement standalone concept.
-6. **Deep Dive Welcome Music Restrictions**: The welcome music stings (`deepDive-soft-ok.mp3` and `deepDive-strong.mp3`) represent introductory/welcome sounds for the podcast. They can ONLY be used in the first or second clip of the entire episode storyboard (Clip 1 or Clip 2). Under no circumstances may they be used in Clip 3 or any subsequent clips. For subsequent clips, select from the other available music stings.
-
-You MUST respond with a single JSON object for Clip {clip_num} matching the schema below. Do not include markdown code block formatting or explanations outside the JSON object:
-{{
-  "num": {clip_num},
-  "title": "Recasted Clip Title",
-  "bridge_text": [
-    "Curiosity question?"
-  ],
-  "segments": [
-    {{
-      "type": "audio",
-      "start": 0.0,
-      "end": 45.5,
-      "duration": 45.5,
-      "text": "Exact text matching transcription segments"
-    }},
-    {{
-      "type": "music",
-      "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
-      "duration": 4.5,
-      "crossfade": 0.3,
-      "volume": 1.0
-    }}
-  ],
-  "locked": false
-}}
-"""
-                # Call Gemini with fallback chain
+                # Call Gemini with fallback chain of valid models
                 configure_gemini(api_key)
                 model_names = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-flash-latest", "gemini-pro-latest"]
                 response = None
@@ -959,6 +1006,9 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                         last_err = me
                 
                 if not response or not response.text:
+                    err_str = str(last_err)
+                    if "429" in err_str or "quota" in err_str.lower():
+                        raise Exception("Gemini API Quota Exceeded (429). Please set your personal Gemini API Key in ⚙️ Settings -> Co-Pilot Integration, or wait a minute for your quota to reset.")
                     raise last_err or Exception("All Gemini models failed to generate content.")
                 
                 def clean_and_parse_json(text):
@@ -1004,6 +1054,9 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                 recasted_clip["locked"] = False
                 
                 # Update plan_data
+                with open(plan_path, 'r', encoding='utf-8') as f:
+                    plan_data = json.load(f)
+                    
                 for idx, c in enumerate(plan_data):
                     if int(c.get("num", -1)) == clip_num:
                         plan_data[idx] = recasted_clip
@@ -1033,7 +1086,10 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
             except Exception as e:
                 import traceback
                 tb_str = traceback.format_exc()
-                print(f"Error in remixing clip {clip_num}: {e}\n{tb_str}")
+                try:
+                    print(f"Error in remixing clip {clip_num}: {e}\n{tb_str}")
+                except Exception:
+                    pass
                 self.send_response(500)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
@@ -2441,6 +2497,29 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
                 prompt_content = f"{mogr_base_rules}\n\n--------------------------------------------------\nDYNAMIC CLIP CONTEXT\n--------------------------------------------------\n- Animate visuals to explain this Clip Title: {title}"
                 if transcript:
                     prompt_content += f"\n- Spoken Transcript Text: {transcript}"
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "prompt": prompt_content}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
+                return
+            
+        elif parsed_url.path == '/get-gemini-prompt':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            try:
+                if not project_id or not clip_num:
+                    raise Exception("Missing project id or clip number.")
+                
+                prompt_content = build_gemini_prompt(project_id, int(clip_num))
                 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')

@@ -1247,52 +1247,72 @@
         }
 
         /* Help Chatbot panel styles */
+        /* Help Chatbot panel top horizontal split layout */
         .help-chat-panel {
             display: flex;
             flex-direction: column;
-            border-top: 1px solid var(--border-color);
-            background-color: rgba(0, 0, 0, 0.12);
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--panel-bg-darker);
             transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
             flex-shrink: 0;
-            margin-top: auto;
+            position: relative; /* required for resizer positioning */
+            width: 100%;
         }
         .help-chat-panel.collapsed {
-            height: 35px;
+            height: 0px !important;
+            border-bottom-width: 0px !important;
         }
         .help-chat-panel:not(.collapsed) {
-            height: 280px;
+            height: 250px;
         }
-        .help-chat-header {
-            height: 35px;
-            padding: 0 1.4rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            font-family: var(--font-mono);
-            cursor: pointer;
-            user-select: none;
-            background-color: var(--panel-bg-darker);
-            border-bottom: 1px solid transparent;
+        .help-chat-resizer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            cursor: ns-resize;
+            background-color: transparent;
+            z-index: 100;
+            transition: background-color 0.2s;
         }
-        .help-chat-panel:not(.collapsed) .help-chat-header {
-            border-bottom-color: var(--border-color);
-            color: var(--text-main);
-        }
-        .help-chat-header:hover {
-            color: var(--text-main);
+        .help-chat-resizer:hover, .help-chat-resizer.dragging {
+            background-color: var(--primary);
         }
         .help-chat-body {
             flex: 1;
             display: flex;
-            flex-direction: column;
-            padding: 0.6rem;
+            padding: 0.8rem 1.5rem;
+            box-sizing: border-box;
+            gap: 1.5rem;
             overflow: hidden;
+            height: 100%;
+        }
+        .help-chat-sidebar {
+            width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            border-right: 1px solid var(--border-color);
+            padding-right: 1.5rem;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            height: 100%;
+            overflow-y: auto;
+        }
+        .help-chat-welcome {
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: var(--text-muted);
+        }
+        .help-chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             gap: 0.5rem;
+            min-width: 0;
+            height: 100%;
         }
         .help-chat-messages {
             flex: 1;
@@ -1363,8 +1383,9 @@
         }
         .help-chat-input-row {
             display: flex;
-            gap: 0.4rem;
+            gap: 0.5rem;
             align-items: center;
+            flex-shrink: 0;
             margin-top: auto;
         }
         .help-chat-input-row input {
@@ -1373,13 +1394,12 @@
             border: 1px solid var(--border-color);
             color: var(--text-main);
             font-size: 0.7rem;
-            padding: 0.25rem 0.4rem;
+            padding: 0.3rem 0.5rem;
             border-radius: 4px;
             outline: none;
             transition: border-color 0.2s;
         }
         .help-chat-input-row input:focus {
-            border-color: var(--primary);
         }
     </style>
 </head>
@@ -1387,8 +1407,50 @@
 
     <header>
         <h1>DDMA CLIP PLANNER</h1>
-        <div id="activeProjectBadge" class="header-project-badge">No active project</div>
+        <div style="display: flex; gap: 0.8rem; align-items: center;">
+            <div id="activeProjectBadge" class="header-project-badge">No active project</div>
+            <button id="toggleHelpChatHeaderBtn" class="btn btn-primary" style="background-image: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%); font-weight: 600; padding: 0.4rem 0.8rem; display: flex; align-items: center; gap: 0.4rem;" title="Toggle Help Split Screen">
+                <span>💡</span> Help
+            </button>
+        </div>
     </header>
+
+    <!-- Panel 4: Embedded Help Chatbot as Top Horizontal Split -->
+    <div class="help-chat-panel collapsed" id="helpChatPanel">
+        <div class="help-chat-body" id="helpChatBody" style="display: none;">
+            <!-- Column 1: Welcome message & suggestion chips -->
+            <div class="help-chat-sidebar">
+                <div style="display: flex; align-items: center; gap: 0.4rem; color: var(--text-main); font-weight: 700; font-size: 0.8rem;">
+                    <svg class="sidebar-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41M12 7a5 5 0 0 1 5 5c0 2.5-1.5 3.5-2.5 4.5h-5C8.5 15.5 7 14.5 7 12a5 5 0 0 1 5-5z"></path>
+                        <path d="M9 20h6"></path>
+                    </svg>
+                    <span>HELP PANEL</span>
+                </div>
+                <div class="help-chat-welcome">
+                    Ask me anything about Whisper transcription, crossfades, music stings, video resolutions, or settings!
+                </div>
+                <div class="help-chat-chips">
+                    <button class="chat-chip" data-text="Explain segment vs clip crossfades.">🎛️ Crossfades</button>
+                    <button class="chat-chip" data-text="How does sting volume mapping work?">🔊 Music Vol</button>
+                    <button class="chat-chip" data-text="How does Whisper transcription work?">🎙️ Whisper</button>
+                </div>
+            </div>
+            
+            <!-- Column 2: Chat messages and input bar -->
+            <div class="help-chat-main">
+                <div class="help-chat-messages" id="helpChatMessages">
+                    <div class="msg msg-model">Hi! I am your DDMA Help chatbot. How can I help you refine your episode storyboard today?</div>
+                </div>
+                <div class="help-chat-input-row">
+                    <input type="text" id="helpChatInput" placeholder="Ask Help...">
+                    <button class="btn btn-primary btn-mini" id="sendHelpChatBtn" style="padding: 0.35rem 0.8rem; font-size: 0.7rem;">Send Question</button>
+                </div>
+            </div>
+        </div>
+        <!-- Vim-style drag resize handle -->
+        <div class="help-chat-resizer" id="helpChatResizer" title="Drag to resize Help panel height"></div>
+    </div>
 
     <div class="main-container">
         <!-- Left Collapsed Tab Indicator (Projects Switcher) -->
@@ -1408,34 +1470,6 @@
                 <button class="btn btn-primary btn-mini" id="newProjectBtn" style="width: 100%; justify-content: center; margin-bottom: 0.8rem; font-weight: 600;">➕ New Project</button>
                 <div id="projectList" style="display: flex; flex-direction: column; gap: 0.4rem;">
                     <!-- Dynamically populated projects -->
-                </div>
-            </div>
-
-            <!-- Panel 4: Embedded Help Chatbot (Co-Pilot) -->
-            <div class="help-chat-panel collapsed" id="helpChatPanel">
-                <div class="help-chat-header" id="toggleHelpChatBtn">
-                    <div style="display: flex; align-items: center;">
-                        <svg class="sidebar-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.4rem;">
-                            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41M12 7a5 5 0 0 1 5 5c0 2.5-1.5 3.5-2.5 4.5h-5C8.5 15.5 7 14.5 7 12a5 5 0 0 1 5-5z"></path>
-                            <path d="M9 20h6"></path>
-                        </svg>
-                        <span>CO-PILOT</span>
-                    </div>
-                    <span id="helpChatToggleArrow">▲</span>
-                </div>
-                <div class="help-chat-body" id="helpChatBody" style="display: none;">
-                    <div class="help-chat-messages" id="helpChatMessages">
-                        <div class="msg msg-model">Hi! I am your DDMA Co-Pilot. Ask me anything about Whisper transcription, crossfades, music stings, video resolutions, or settings!</div>
-                    </div>
-                    <div class="help-chat-chips">
-                        <button class="chat-chip" data-text="Explain segment vs clip crossfades.">🎛️ Crossfades</button>
-                        <button class="chat-chip" data-text="How does sting volume mapping work?">🔊 Music Vol</button>
-                        <button class="chat-chip" data-text="How does Whisper transcription work?">🎙️ Whisper</button>
-                    </div>
-                    <div class="help-chat-input-row">
-                        <input type="text" id="helpChatInput" placeholder="Ask Co-Pilot...">
-                        <button class="btn btn-primary btn-mini" id="sendHelpChatBtn" style="padding: 0.2rem 0.5rem; font-size: 0.65rem;">Send</button>
-                    </div>
                 </div>
             </div>
             
@@ -1478,7 +1512,7 @@
                         <a href="/docs/index.html" target="_blank" style="text-decoration: none;">
                             <button class="btn btn-primary btn-mini" id="combineVideoBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600; pointer-events: none;" title="Open real-time Editor's Preview player to review compiled clips">🎬 Editor's Preview</button>
                         </a>
-                        <button class="btn btn-secondary btn-mini" id="openExportModalBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Download combined MP3 or view plan JSON">📥 Export Plan</button>
+                        <button class="btn btn-secondary btn-mini" id="openExportModalBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Export combined audio (MP3), combined video (MP4), or plan metadata (JSON)">📥 Export</button>
                     </div>
                     <!-- Group 2: History & Preview -->
                     <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
@@ -1671,11 +1705,15 @@
                     </div>
                     
                     <!-- Co-Pilot Integration -->
-                    <div style="border-top: 1px solid var(--border-color); padding-top: 1.2rem;">
-                        <label style="font-size: 0.8rem; font-weight: 700; margin-bottom: 0.8rem; display: block; color: var(--text-main);">CO-PILOT INTEGRATION</label>
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 1.2rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                        <label style="font-size: 0.8rem; font-weight: 700; display: block; color: var(--text-main);">CO-PILOT INTEGRATION</label>
                         <div class="music-editor-field" style="width: 100%;">
                             <label style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Gemini API Key:</label>
                             <input type="password" id="settingsGeminiApiKey" placeholder="Enter Gemini API Key (Optional)" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                        </div>
+                        <div class="music-editor-field" style="width: 100%;">
+                            <label style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Default Gemini Remix Instructions / Rules:</label>
+                            <textarea id="settingsGeminiDefaultPrompt" placeholder="Enter default Gemini Remix instructions..." style="width: 100%; height: 130px; padding: 0.6rem; font-size: 0.75rem; font-family: var(--font-mono); line-height: 1.4; border-radius: 6px; background-color: var(--panel-bg-darker); border: 1px solid var(--border-color); color: var(--text-main); outline: none; resize: vertical; box-sizing: border-box;"></textarea>
                         </div>
                     </div>
                 </div>
@@ -1742,33 +1780,69 @@
         </div>
     </div>
 
-    <!-- Combine Audio Modal -->
-    <div class="export-modal-overlay" id="exportModalOverlay">
-        <div class="export-modal">
+    <!-- Gemini Remix Custom Prompt Modal -->
+    <div class="export-modal-overlay" id="geminiPromptModalOverlay">
+        <div class="export-modal" style="max-width: 700px; width: 90%;">
             <div class="export-modal-header">
-                <h3 id="combineModalHeaderTitle">COMBINED AUDIO PREVIEW</h3>
+                <h3 style="color: #a855f7; display: flex; align-items: center; gap: 0.5rem;">✨ GEMINI REMIX PROMPT EDITOR</h3>
+                <button class="icon-btn" id="closeGeminiPromptModalBtn" style="font-size: 1.2rem;">✖</button>
+            </div>
+            <div style="margin-top: 1rem;">
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
+                    Review and modify the full prompt being sent to Gemini AI for this clip. You can add specific steering directives, recast rules, or audio constraints:
+                </p>
+                <textarea id="geminiPromptTextarea" style="width: 100%; height: 380px; background: #1f2937; color: #f3f4f6; border: 1px solid #374151; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.8rem; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+                <button class="btn btn-secondary" id="cancelGeminiPromptBtn">Cancel</button>
+                <button class="btn btn-primary" id="submitGeminiPromptBtn" style="background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); border: none;">Run Remix</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Assets Modal -->
+    <div class="export-modal-overlay" id="exportModalOverlay">
+        <div class="export-modal" style="max-width: 520px;">
+            <div class="export-modal-header">
+                <h3 id="combineModalHeaderTitle">EXPORT PROJECT ASSETS</h3>
                 <div style="display: flex; gap: 0.6rem; align-items: center;">
                     <button class="icon-btn" id="minimizeModalBtn" style="font-size: 1.1rem; padding: 0.2rem;" title="Minimize player to bottom-right">🗕</button>
                     <button class="icon-btn" id="closeModalBtn" style="font-size: 1.2rem;" title="Close and stop playback">✖</button>
                 </div>
             </div>
             <div id="combineLoadingState" style="text-align: center; padding: 2rem 0;">
-                <div style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--text); font-weight: 600;">Compiling and combining audio...</div>
-                <div style="color: var(--text-muted); font-size: 0.8rem;">Please wait while FFmpeg processes all segment files.</div>
+                <div style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--text); font-weight: 600;">Compiling project assets...</div>
+                <div id="combineLoadingSubtext" style="color: var(--text-muted); font-size: 0.8rem;">Please wait while FFmpeg processes your locked clips.</div>
             </div>
             <div id="combinePlayerState" style="display: none; flex-direction: column; gap: 1rem;">
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Play or download the compiled combined audio of all active clips in this project.</p>
-                <audio id="combinedAudioPlayer" controls style="width: 100%; border-radius: 8px; margin-top: 0.5rem;"></audio>
-                <div class="export-actions" style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
-                    <a id="downloadCombinedAudioBtn" class="btn btn-accent" style="flex: 1; justify-content: center; text-decoration: none; font-size: 0.85rem;" download>⬇ Download MP3</a>
-                    <button class="btn btn-secondary" id="showPlanJsonBtn" style="font-size: 0.85rem;">📋 View Plan JSON</button>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Select an asset format to export from your locked clips:</p>
+                
+                <!-- Combined Audio Section -->
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.8rem; display: flex; flex-direction: column; gap: 0.6rem;">
+                    <div style="font-weight: 600; font-size: 0.85rem; color: var(--text-heading);">
+                        🎧 Combined Audio Track (MP3)
+                    </div>
+                    <audio id="combinedAudioPlayer" controls style="width: 100%; border-radius: 6px;"></audio>
+                    <a id="downloadCombinedAudioBtn" class="btn btn-accent" style="justify-content: center; text-decoration: none; font-size: 0.85rem;" download>⬇ Download Audio (MP3)</a>
                 </div>
-                <div id="planJsonSection" style="display: none; flex-direction: column; gap: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 0.5rem;">
-                    <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">Metadata plan.json configuration:</p>
-                    <textarea class="export-textarea" id="exportTextarea" readonly style="height: 120px; font-family: monospace; font-size: 0.75rem;"></textarea>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="btn btn-secondary btn-mini" id="copyJsonBtn" style="flex: 1; justify-content: center;">Copy JSON</button>
-                        <button class="btn btn-accent btn-mini" id="downloadPlanBtn" style="flex: 1; justify-content: center;">Save directly to plan.json</button>
+
+                <!-- Combined Video Section -->
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.8rem; display: flex; flex-direction: column; gap: 0.6rem;">
+                    <div style="font-weight: 600; font-size: 0.85rem; color: var(--text-heading);">
+                        🎬 Combined Video (MP4)
+                    </div>
+                    <button class="btn btn-purple" id="downloadCombinedVideoBtn" style="justify-content: center; font-size: 0.85rem;">🎬 Generate & Download Video (MP4)</button>
+                </div>
+
+                <!-- Plan JSON Section -->
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <button class="btn btn-secondary" id="showPlanJsonBtn" style="font-size: 0.85rem; justify-content: center;">📋 View Plan Metadata (JSON)</button>
+                    <div id="planJsonSection" style="display: none; flex-direction: column; gap: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem; margin-top: 0.3rem;">
+                        <textarea class="export-textarea" id="exportTextarea" readonly style="height: 120px; font-family: monospace; font-size: 0.75rem;"></textarea>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary btn-mini" id="copyJsonBtn" style="flex: 1; justify-content: center;">Copy JSON</button>
+                            <button class="btn btn-accent btn-mini" id="downloadPlanBtn" style="flex: 1; justify-content: center;">Save directly to plan.json</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2026,7 +2100,8 @@
                 mosaic_mogr_node_id: localStorage.getItem('ddma-mosaic-mogr-node-id') || '',
                 mosaic_captions_node_id: localStorage.getItem('ddma-mosaic-captions-node-id') || '',
                 gemini_api_key: localStorage.getItem('ddma-gemini-api-key') || '',
-                mosaic_default_prompt: localStorage.getItem('ddma-mosaic-default-prompt') || ''
+                mosaic_default_prompt: localStorage.getItem('ddma-mosaic-default-prompt') || '',
+                gemini_remix_prompt_template: localStorage.getItem('ddma-gemini-default-prompt') || ''
             };
             
             fetch('/save-settings', {
@@ -2115,6 +2190,7 @@
                         localStorage.setItem('ddma-mosaic-captions-node-id', data.mosaic_captions_node_id || '');
                         localStorage.setItem('ddma-gemini-api-key', data.gemini_api_key || '');
                         localStorage.setItem('ddma-mosaic-default-prompt', data.mosaic_default_prompt || '');
+                        localStorage.setItem('ddma-gemini-default-prompt', data.gemini_remix_prompt_template || '');
                     })
                     .catch(err => {
                         console.warn("Could not load settings from server, using local fallback:", err);
@@ -2170,6 +2246,7 @@
                 document.getElementById('settingsMosaicCaptionsNodeId').value = localStorage.getItem('ddma-mosaic-captions-node-id') || '';
                 document.getElementById('settingsGeminiApiKey').value = localStorage.getItem('ddma-gemini-api-key') || '';
                 document.getElementById('settingsMosaicDefaultPrompt').value = localStorage.getItem('ddma-mosaic-default-prompt') || '';
+                document.getElementById('settingsGeminiDefaultPrompt').value = localStorage.getItem('ddma-gemini-default-prompt') || '';
 
                 renderSettingsMusicList();
                 settingsModalOverlay.classList.add('active');
@@ -2220,6 +2297,7 @@
                 localStorage.setItem('ddma-mosaic-captions-node-id', document.getElementById('settingsMosaicCaptionsNodeId').value.trim());
                 localStorage.setItem('ddma-gemini-api-key', document.getElementById('settingsGeminiApiKey').value.trim());
                 localStorage.setItem('ddma-mosaic-default-prompt', document.getElementById('settingsMosaicDefaultPrompt').value);
+                localStorage.setItem('ddma-gemini-default-prompt', document.getElementById('settingsGeminiDefaultPrompt').value);
                 
                 saveSettingsToServer();
 
@@ -2414,29 +2492,97 @@
         // Help Chatbot logic (Co-Pilot)
         let helpChatHistory = [];
         function setupHelpChat() {
-            // Toggle collapse state
-            toggleHelpChatBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const isCollapsed = helpChatPanel.classList.contains('collapsed');
-                if (isCollapsed) {
-                    helpChatPanel.classList.remove('collapsed');
-                    helpChatBody.style.display = 'flex';
-                    helpChatToggleArrow.textContent = '▼';
-                    setTimeout(() => {
-                        helpChatMessages.scrollTop = helpChatMessages.scrollHeight;
-                    }, 50);
-                } else {
-                    helpChatPanel.classList.add('collapsed');
-                    helpChatBody.style.display = 'none';
-                    helpChatToggleArrow.textContent = '▲';
-                }
-            });
+            const helpChatPanel = document.getElementById('helpChatPanel');
+            const helpChatBody = document.getElementById('helpChatBody');
+            const helpChatMessages = document.getElementById('helpChatMessages');
+            const helpChatInput = document.getElementById('helpChatInput');
+            const sendHelpChatBtn = document.getElementById('sendHelpChatBtn');
+            const toggleHelpChatHeaderBtn = document.getElementById('toggleHelpChatHeaderBtn');
+            const helpChatResizer = document.getElementById('helpChatResizer');
+
+            // Load saved custom height
+            let customHeight = parseInt(localStorage.getItem('ddma-copilot-height')) || 250;
+
+            // Toggle collapse state via header button
+            if (toggleHelpChatHeaderBtn) {
+                toggleHelpChatHeaderBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const isCollapsed = helpChatPanel.classList.contains('collapsed');
+                    if (isCollapsed) {
+                        helpChatPanel.classList.remove('collapsed');
+                        helpChatPanel.style.height = `${customHeight}px`;
+                        helpChatBody.style.display = 'flex';
+                        toggleHelpChatHeaderBtn.style.backgroundImage = 'linear-gradient(135deg, #a855f7 0%, var(--primary) 100%)';
+                        setTimeout(() => {
+                            helpChatMessages.scrollTop = helpChatMessages.scrollHeight;
+                        }, 50);
+                    } else {
+                        helpChatPanel.classList.add('collapsed');
+                        helpChatPanel.style.height = '0px';
+                        helpChatBody.style.display = 'none';
+                        toggleHelpChatHeaderBtn.style.backgroundImage = 'linear-gradient(135deg, var(--primary) 0%, #a855f7 100%)';
+                    }
+                });
+            }
+
+            // Resizer drag logic
+            if (helpChatResizer) {
+                helpChatResizer.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    helpChatResizer.classList.add('dragging');
+                    document.body.style.cursor = 'ns-resize';
+                    document.body.style.userSelect = 'none';
+
+                    const startY = e.clientY;
+                    const startHeight = helpChatPanel.offsetHeight;
+
+                    function onMouseMove(moveEvent) {
+                        const deltaY = moveEvent.clientY - startY;
+                        let newHeight = startHeight + deltaY;
+
+                        // Constraints: min 150px, max 70% of viewport height
+                        const minHeight = 150;
+                        const maxHeight = window.innerHeight * 0.7;
+                        if (newHeight < minHeight) newHeight = minHeight;
+                        if (newHeight > maxHeight) newHeight = maxHeight;
+
+                        customHeight = newHeight;
+                        helpChatPanel.style.height = `${newHeight}px`;
+                    }
+
+                    function onMouseUp() {
+                        helpChatResizer.classList.remove('dragging');
+                        document.body.style.cursor = '';
+                        document.body.style.userSelect = '';
+                        localStorage.setItem('ddma-copilot-height', customHeight);
+
+                        window.removeEventListener('mousemove', onMouseMove);
+                        window.removeEventListener('mouseup', onMouseUp);
+                    }
+
+                    window.addEventListener('mousemove', onMouseMove);
+                    window.addEventListener('mouseup', onMouseUp);
+                });
+            }
             
-            // Suggestion chips
+            // Suggestion chips: remove on click to free up screen real estate
             document.querySelectorAll('.chat-chip').forEach(chip => {
                 chip.addEventListener('click', function(e) {
                     e.stopPropagation();
                     const text = this.getAttribute('data-text');
+                    
+                    // Animate and remove clicked chip
+                    this.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+                    this.style.opacity = '0';
+                    this.style.transform = 'scale(0.8)';
+                    setTimeout(() => {
+                        const parent = this.parentElement;
+                        this.remove();
+                        if (parent && parent.children.length === 0) {
+                            parent.style.display = 'none';
+                        }
+                    }, 200);
+
                     if (text) {
                         helpChatInput.value = text;
                         sendHelpChatMessage();
@@ -2445,18 +2591,22 @@
             });
             
             // Send button
-            sendHelpChatBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                sendHelpChatMessage();
-            });
+            if (sendHelpChatBtn) {
+                sendHelpChatBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sendHelpChatMessage();
+                });
+            }
             
             // Enter key
-            helpChatInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    sendHelpChatMessage();
-                }
-            });
+            if (helpChatInput) {
+                helpChatInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        sendHelpChatMessage();
+                    }
+                });
+            }
         }
         
         function sendHelpChatMessage() {
@@ -2714,6 +2864,7 @@
             stopLockedSequence();
             
             activeProjectId = projectId;
+            lastCombinedUrl = "";
             
             loadProjectsListOnly();
             
@@ -3299,23 +3450,94 @@
                 }
 
                 // Play preview on audio element
-                audioElement.currentTime = startVal;
-                audioElement.play();
-                playBtn.textContent = '⏸';
-                
-                if (window.activeAudioCheck) clearInterval(window.activeAudioCheck);
-                window.activeAudioCheck = setInterval(() => {
-                    if (audioElement.currentTime >= endVal || audioElement.paused) {
-                        audioElement.pause();
-                        playBtn.textContent = '▶';
-                        clearInterval(window.activeAudioCheck);
-                    }
-                }, 100);
+                playAudioRange(startVal, endVal);
             } else {
                 selStart.textContent = '--';
                 selEnd.textContent = '--';
                 selDuration.textContent = '0.00';
             }
+        }
+
+        // Global helpers for segment playback and panel visibility
+        function ensureTranscriptPanelExpanded() {
+            const rightPanel = document.querySelector('.right-panel');
+            const leftPanel = document.querySelector('.left-panel');
+            const resizer = document.getElementById('panelResizer');
+            const rightCollapsedTab = document.getElementById('rightCollapsedTab');
+            
+            if (rightPanel.classList.contains('collapsed')) {
+                leftPanel.style.flex = 'none';
+                leftPanel.style.width = `${lastLeftPanelWidth}px`;
+                rightPanel.classList.remove('collapsed');
+                if (resizer) resizer.style.display = 'block';
+                if (rightCollapsedTab) rightCollapsedTab.style.display = 'none';
+            }
+        }
+
+        function playAudioRange(startVal, endVal) {
+            // Stop any active music sting previews first
+            if (window.musicPreviewAudio) {
+                window.musicPreviewAudio.pause();
+                window.musicPreviewAudio = null;
+            }
+            if (window.musicPreviewTimeout) {
+                clearTimeout(window.musicPreviewTimeout);
+                window.musicPreviewTimeout = null;
+            }
+
+            audioElement.currentTime = startVal;
+            audioElement.play().then(() => {
+                playBtn.textContent = '⏸';
+            }).catch(err => {
+                console.log("Audio play error:", err);
+            });
+            
+            if (window.activeAudioCheck) clearInterval(window.activeAudioCheck);
+            window.activeAudioCheck = setInterval(() => {
+                if (audioElement.currentTime >= endVal || audioElement.paused) {
+                    audioElement.pause();
+                    playBtn.textContent = '▶';
+                    clearInterval(window.activeAudioCheck);
+                }
+            }, 100);
+        }
+
+        function playMusicSegment(musicFile, duration, volume) {
+            // Stop any previous music sting previews
+            if (window.musicPreviewAudio) {
+                window.musicPreviewAudio.pause();
+                window.musicPreviewAudio = null;
+            }
+            if (window.musicPreviewTimeout) {
+                clearTimeout(window.musicPreviewTimeout);
+                window.musicPreviewTimeout = null;
+            }
+
+            if (musicFile === 'none' || !musicFile) return;
+
+            // Pause main project audio if playing
+            if (!audioElement.paused) {
+                audioElement.pause();
+                playBtn.textContent = '▶';
+            }
+
+            const audioUrl = `/music/${encodeURIComponent(musicFile)}`;
+            const preview = new Audio(audioUrl);
+            preview.volume = volume !== undefined ? volume : 1.0;
+            
+            window.musicPreviewAudio = preview;
+            
+            preview.play().then(() => {
+                updateStateBar(`Playing Music Sting Preview: "${musicFile}" (${duration}s)`);
+                window.musicPreviewTimeout = setTimeout(() => {
+                    preview.pause();
+                    updateStateBar("Ready");
+                    window.musicPreviewAudio = null;
+                }, duration * 1000);
+            }).catch(err => {
+                console.error("Error playing music sting preview:", err);
+                updateStateBar(`Error playing music: ${err.message}`);
+            });
         }
 
         // Helper to find closest word index by time
@@ -3856,24 +4078,67 @@
             const clip = clips[clipIdx];
             if (!activeProjectId) return;
             
-            const directive = prompt(
-                `Are you sure you want to remix Clip ${clip.num}?\n\nThis will use Creative AI to autonomously recast the clip's segments, title, and bridge text based on preceding locked clips.\n\nOptionally enter steering instructions for Gemini (e.g. 'skip Newton, focus on the next topic'):`,
-                ""
-            );
-            if (directive === null) return; // User cancelled
-            
             btnEl.disabled = true;
-            btnEl.innerHTML = '⏳ Remixing...';
+            btnEl.innerHTML = '⏳ Loading...';
             btnEl.classList.remove('btn-status-purple');
             btnEl.classList.add('btn-status-warning');
-            updateStateBar(`Remixing: Recasting Clip ${clip.num}...`);
+            updateStateBar(`Fetching Gemini Prompt for Clip ${clip.num}...`);
             
-            fetch(`/remix-clip?id=${activeProjectId}&num=${clip.num}`, {
+            fetch(`/get-gemini-prompt?id=${activeProjectId}&num=${clip.num}`)
+                .then(res => res.json())
+                .then(data => {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = '🔄 Remix';
+                    btnEl.classList.remove('btn-status-warning');
+                    btnEl.classList.add('btn-status-purple');
+                    updateStateBar("Ready");
+                    
+                    if (data.success && data.prompt) {
+                        const geminiPromptModalOverlay = document.getElementById('geminiPromptModalOverlay');
+                        const geminiPromptTextarea = document.getElementById('geminiPromptTextarea');
+                        
+                        geminiPromptTextarea.value = data.prompt;
+                        geminiPromptModalOverlay.classList.add('active');
+                        
+                        const currentSubmitBtn = document.getElementById('submitGeminiPromptBtn');
+                        const newSubmitBtn = currentSubmitBtn.cloneNode(true);
+                        currentSubmitBtn.parentNode.replaceChild(newSubmitBtn, currentSubmitBtn);
+                        
+                        const activeSubmitBtn = document.getElementById('submitGeminiPromptBtn');
+                        activeSubmitBtn.addEventListener('click', function() {
+                            const customPromptText = geminiPromptTextarea.value.trim();
+                            geminiPromptModalOverlay.classList.remove('active');
+                            executeRemix(clip.num, customPromptText, btnEl);
+                        });
+                    } else {
+                        alert("Could not load Gemini prompt: " + (data.error || "unknown error"));
+                    }
+                })
+                .catch(err => {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = '🔄 Remix';
+                    btnEl.classList.remove('btn-status-warning');
+                    btnEl.classList.add('btn-status-purple');
+                    updateStateBar("Ready");
+                    alert("Error fetching Gemini prompt: " + err.message);
+                });
+        }
+
+        function executeRemix(clipNum, promptContent, btnEl) {
+            if (btnEl) {
+                btnEl.disabled = true;
+                btnEl.innerHTML = '⏳ Remixing...';
+                btnEl.classList.remove('btn-status-purple');
+                btnEl.classList.add('btn-status-warning');
+            }
+            updateStateBar(`Remixing: Recasting Clip ${clipNum}...`);
+            
+            fetch(`/remix-clip?id=${activeProjectId}&num=${clipNum}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ directive: directive.trim() })
+                body: JSON.stringify({ prompt: promptContent })
             })
             .then(res => {
                 if (!res.ok) {
@@ -3884,22 +4149,26 @@
                 return res.json();
             })
             .then(data => {
-                if (data.success) {
-                    showDebug(`Clip ${clip.num} successfully remixed!`);
-                    updateStateBar(`Clip ${clip.num} successfully remixed.`);
+                if (data.success && data.clip) {
+                    showDebug(`Clip ${clipNum} successfully remixed!`, false);
+                    updateStateBar(`Clip ${clipNum} successfully remixed.`);
                     selectProject(activeProjectId);
                 } else {
                     throw new Error(data.error || "Unknown remix error.");
                 }
             })
             .catch(err => {
-                console.error("Remix failed:", err);
-                showDebug("Remix failed: " + err.message);
+                showDebug(`Remix error: ${err.message}`, true);
                 updateStateBar("Ready (remix failed)");
-                btnEl.disabled = false;
-                btnEl.innerHTML = '🔄 Remix';
-                btnEl.classList.remove('btn-status-warning');
-                btnEl.classList.add('btn-status-purple');
+                alert("Remix failed: " + err.message);
+            })
+            .finally(() => {
+                if (btnEl) {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = '🔄 Remix';
+                    btnEl.classList.remove('btn-status-warning');
+                    btnEl.classList.add('btn-status-purple');
+                }
             });
         }
         
@@ -4322,7 +4591,7 @@
                             });
                             
                             segmentsHtml += `
-                                <div class="segment-row" data-clip="${index}" data-seg="${segIdx}">
+                                <div class="segment-row music-seg" data-clip="${index}" data-seg="${segIdx}">
                                     <div class="segment-info">
                                         <span class="segment-meta music-meta">🎵 Music Segment (${seg.duration}s)</span>
                                         <div class="music-editor-row" onclick="event.stopPropagation();">
@@ -4681,10 +4950,34 @@
 
                 card.querySelectorAll('.segment-row.audio-seg').forEach(el => {
                     el.addEventListener('click', function(e) {
-                        if (e.target.tagName === 'BUTTON') return;
+                        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
                         const clipIdx = parseInt(this.dataset.clip);
                         const segIdx = parseInt(this.dataset.seg);
                         selectSegmentForEditing(clipIdx, segIdx);
+                    });
+                    el.addEventListener('dblclick', function(e) {
+                        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+                        const clipIdx = parseInt(this.dataset.clip);
+                        const segIdx = parseInt(this.dataset.seg);
+                        
+                        // play range preview regardless of lock state
+                        const seg = clips[clipIdx].segments[segIdx];
+                        playAudioRange(seg.start, seg.end);
+
+                        if (!clips[clipIdx].locked) {
+                            ensureTranscriptPanelExpanded();
+                            selectSegmentForEditing(clipIdx, segIdx);
+                        }
+                    });
+                });
+
+                card.querySelectorAll('.segment-row.music-seg').forEach(el => {
+                    el.addEventListener('dblclick', function(e) {
+                        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+                        const clipIdx = parseInt(this.dataset.clip);
+                        const segIdx = parseInt(this.dataset.seg);
+                        const seg = clips[clipIdx].segments[segIdx];
+                        playMusicSegment(seg.music_file, seg.duration, seg.volume);
                     });
                 });
 
@@ -4950,36 +5243,124 @@
 
 
 
-        // Open Export Plan Modal
+        // Open Export Assets Modal
         openExportModalBtn.addEventListener('click', function() {
             if (clips.length === 0) {
                 alert("Please add some clips to the plan first.");
                 return;
             }
+            const lockedClips = clips.filter(c => c.locked);
+            if (lockedClips.length === 0) {
+                alert("Please lock at least one clip card first. Only locked clips will be combined into the final assets.");
+                return;
+            }
             
             exportModalOverlay.classList.remove('minimized');
             exportModalOverlay.classList.add('active');
-            combineModalHeaderTitle.textContent = "COMBINED AUDIO PREVIEW";
+            combineModalHeaderTitle.textContent = "EXPORT PROJECT ASSETS";
             minimizeModalBtn.textContent = "🗕";
-            combineLoadingState.style.display = 'none';
-            combinePlayerState.style.display = 'flex';
             planJsonSection.style.display = 'none';
-            showPlanJsonBtn.textContent = "📋 View Plan JSON";
-            
-            combinedAudioPlayer.src = lastCombinedUrl || "";
-            downloadCombinedAudioBtn.href = lastCombinedUrl || "#";
+            showPlanJsonBtn.textContent = "📋 View Plan Metadata (JSON)";
             exportTextarea.value = JSON.stringify(clips, null, 4);
+
+            if (lastCombinedUrl) {
+                combineLoadingState.style.display = 'none';
+                combinePlayerState.style.display = 'flex';
+                combinedAudioPlayer.src = lastCombinedUrl;
+                downloadCombinedAudioBtn.href = lastCombinedUrl;
+                downloadCombinedAudioBtn.setAttribute('download', `combined_${activeProjectId || 'project'}.mp3`);
+            } else {
+                combineLoadingState.style.display = 'block';
+                combinePlayerState.style.display = 'none';
+                const subtext = document.getElementById('combineLoadingSubtext');
+                if (subtext) subtext.textContent = "Please wait while FFmpeg processes your locked clips.";
+                
+                fetch(`/combine-project-audio?id=${activeProjectId}`, {
+                    method: 'POST'
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        return res.text().then(text => { throw new Error(text); });
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success && data.combined_url) {
+                        lastCombinedUrl = data.combined_url;
+                        combinedAudioPlayer.src = data.combined_url;
+                        downloadCombinedAudioBtn.href = data.combined_url;
+                        downloadCombinedAudioBtn.setAttribute('download', `combined_${activeProjectId || 'project'}.mp3`);
+                        combineLoadingState.style.display = 'none';
+                        combinePlayerState.style.display = 'flex';
+                    } else {
+                        throw new Error(data.error || "Failed to generate combined audio.");
+                    }
+                })
+                .catch(err => {
+                    alert("Error compiling combined audio: " + err.message);
+                    combineLoadingState.style.display = 'none';
+                    combinePlayerState.style.display = 'flex';
+                });
+            }
         });
+
+        // Combined Video Export Listener
+        const downloadCombinedVideoBtn = document.getElementById('downloadCombinedVideoBtn');
+        if (downloadCombinedVideoBtn) {
+            downloadCombinedVideoBtn.addEventListener('click', function() {
+                const lockedClips = clips.filter(c => c.locked);
+                if (lockedClips.length === 0) {
+                    alert("Please lock at least one clip card first. Only locked clips will be combined.");
+                    return;
+                }
+                
+                combineLoadingState.style.display = 'block';
+                combinePlayerState.style.display = 'none';
+                const subtext = document.getElementById('combineLoadingSubtext');
+                if (subtext) subtext.textContent = "Compiling combined MP4 video with 5s question transition cards...";
+                
+                fetch(`/combine-project-video?id=${activeProjectId}`, {
+                    method: 'POST'
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        return res.text().then(text => { throw new Error(text); });
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success && data.combined_url) {
+                        const a = document.createElement('a');
+                        a.href = data.combined_url;
+                        a.download = `combined_${activeProjectId || 'project'}.mp4`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        
+                        updateStateBar("Combined MP4 video generated and download started!");
+                    } else {
+                        throw new Error(data.error || "Failed to generate combined video.");
+                    }
+                })
+                .catch(err => {
+                    alert("Error compiling combined video: " + err.message);
+                })
+                .finally(() => {
+                    combineLoadingState.style.display = 'none';
+                    combinePlayerState.style.display = 'flex';
+                });
+            });
+        }
 
         minimizeModalBtn.addEventListener('click', function() {
             if (exportModalOverlay.classList.contains('minimized')) {
                 exportModalOverlay.classList.remove('minimized');
-                combineModalHeaderTitle.textContent = "COMBINED AUDIO PREVIEW";
+                combineModalHeaderTitle.textContent = "EXPORT PROJECT ASSETS";
                 minimizeModalBtn.textContent = "🗕";
                 minimizeModalBtn.title = "Minimize player to bottom-right";
             } else {
                 exportModalOverlay.classList.add('minimized');
-                combineModalHeaderTitle.textContent = "🎧 Combined Preview";
+                combineModalHeaderTitle.textContent = "🎧 Export Assets";
                 minimizeModalBtn.textContent = "⛶";
                 minimizeModalBtn.title = "Restore player to center";
             }
@@ -5009,6 +5390,27 @@
                 mosaicPromptModalOverlay.classList.remove('active');
             }
         });
+
+        const closeGeminiPromptModalBtn = document.getElementById('closeGeminiPromptModalBtn');
+        const cancelGeminiPromptBtn = document.getElementById('cancelGeminiPromptBtn');
+        const geminiPromptModalOverlay = document.getElementById('geminiPromptModalOverlay');
+        if (closeGeminiPromptModalBtn) {
+            closeGeminiPromptModalBtn.addEventListener('click', function() {
+                geminiPromptModalOverlay.classList.remove('active');
+            });
+        }
+        if (cancelGeminiPromptBtn) {
+            cancelGeminiPromptBtn.addEventListener('click', function() {
+                geminiPromptModalOverlay.classList.remove('active');
+            });
+        }
+        if (geminiPromptModalOverlay) {
+            geminiPromptModalOverlay.addEventListener('click', function(e) {
+                if (e.target === geminiPromptModalOverlay) {
+                    geminiPromptModalOverlay.classList.remove('active');
+                }
+            });
+        }
 
         videoModalOverlay.addEventListener('click', function(e) {
             if (e.target === videoModalOverlay) {

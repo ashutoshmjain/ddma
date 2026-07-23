@@ -42,10 +42,15 @@ projects/*
 .idea/
 .DS_Store
 
-# Credentials
-gemini-creds.json
-*-creds.json
-*credentials*.json
+# Credentials & Backups
+gemini-creds*
+*-creds*
+*credentials*
+*.bak
+
+# Node dependencies
+node_modules/
+**/node_modules/
 
 # Public Web Assets
 !docs/assets/**

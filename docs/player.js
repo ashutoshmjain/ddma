@@ -160,17 +160,13 @@ async function loadVideoDurations() {
                 console.warn(`Could not probe duration for ${item.src}, using fallback:`, err);
                 const clipInfo = plan.find(c => c.num === item.clipNum);
                 
-                if (currentMode === 'video') {
-                    console.warn(`Excluding missing video file: ${item.src}`);
-                } else {
-                    // Fall back to segment math in Audio Mode
-                    const baseDur = calculateClipDuration(clipInfo);
-                    item.duration = baseDur;
-                    item.startGlobal = runningTime;
-                    item.endGlobal = runningTime + item.duration;
-                    runningTime += item.duration;
-                    validatedTimeline.push(item);
-                }
+                // Fall back to segment math in both Video and Audio Mode
+                const baseDur = calculateClipDuration(clipInfo);
+                item.duration = baseDur + (currentMode === 'audio' ? 0.0 : 2.0);
+                item.startGlobal = runningTime;
+                item.endGlobal = runningTime + item.duration;
+                runningTime += item.duration;
+                validatedTimeline.push(item);
             }
         } else if (item.type === 'bridge') {
             item.startGlobal = runningTime;
@@ -399,6 +395,10 @@ function play() {
     playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
     viewportStatus.textContent = 'Playing';
     
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    
     lastTime = Date.now();
     animationFrameId = requestAnimationFrame(loop);
     
@@ -425,6 +425,10 @@ function pause() {
 
 function loop() {
     if (!isPlaying) return;
+    
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
     
     const now = Date.now();
     const dt = (now - lastTime) / 1000;
@@ -625,9 +629,8 @@ function syncVolumeAndFade() {
     
     if (useWebAudio && mainGainNode && audioCtx) {
         mainGainNode.gain.value = targetVolume;
-    } else {
-        videoPlayer.volume = targetVolume;
     }
+    videoPlayer.volume = targetVolume;
 }
 
 // Update Seeker Progress UI

@@ -295,18 +295,28 @@ def main():
         "-f", "concat",
         "-safe", "0",
         "-i", list_path,
-        "-c:v", "libx264",
-        "-r", "30",
-        "-pix_fmt", "yuv420p",
-        "-crf", "18",
-        "-preset", "fast",
-        "-c:a", "aac",
-        "-ar", "48000",
-        "-ac", "2",
+        "-c", "copy",
         out_path
     ]
     
     res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    if res.returncode != 0:
+        print("Stream copy failed. Falling back to fast re-encode...", file=sys.stderr)
+        cmd_fallback = [
+            "ffmpeg", "-y",
+            "-f", "concat",
+            "-safe", "0",
+            "-i", list_path,
+            "-c:v", "libx264",
+            "-r", "30",
+            "-pix_fmt", "yuv420p",
+            "-preset", "ultrafast",
+            "-c:a", "aac",
+            "-ar", "48000",
+            "-ac", "2",
+            out_path
+        ]
+        res = subprocess.run(cmd_fallback, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     
     # Clean up demuxer list file and temp gap files
     if os.path.exists(list_path):

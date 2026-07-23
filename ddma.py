@@ -594,9 +594,24 @@ def compile_clip(
             font_sub = ImageFont.load_default()
             font_title = ImageFont.load_default()
 
+        # Dynamic episode title resolution
+        ep_title = episode_title
+        proj_dir = os.path.dirname(plan_file) if plan_file and os.path.dirname(plan_file) else os.path.join("projects", f"episode_{episode}")
+        proj_info_path = os.path.join(proj_dir, "project_info.json")
+        if os.path.exists(proj_info_path):
+            try:
+                with open(proj_info_path, "r", encoding="utf-8") as pif:
+                    pinfo = json.load(pif)
+                    if pinfo.get("title"):
+                        ep_title = pinfo.get("title")
+                    elif pinfo.get("name") and episode_title == "Life, Death and the Lysosome":
+                        ep_title = pinfo.get("name")
+            except Exception:
+                pass
+
         if num == 1:
             sub_text = f"EPISODE {episode}"
-            title_text = episode_title
+            title_text = ep_title
         else:
             sub_text = f"EPISODE {episode} • PART {num}"
             title_text = title if title else f"Part {num}"
@@ -934,6 +949,15 @@ def compile_clip(
 
         if res_concat.returncode == 0:
             typer.echo(f"Successfully compiled clip: {out_path}")
+            
+            # Sync compiled clip to docs/assets/clips/ for preview player UI
+            docs_clips_dir = os.path.join("docs", "assets", "clips")
+            os.makedirs(docs_clips_dir, exist_ok=True)
+            try:
+                shutil.copy2(out_path, os.path.join(docs_clips_dir, out_filename))
+                typer.echo(f"Synced compiled clip to {os.path.join(docs_clips_dir, out_filename)}")
+            except Exception as e:
+                typer.echo(f"Warning: Could not sync to docs/assets/clips: {e}")
             
             # Check final duration warning against the 2m 55s limit (175s)
             try:
