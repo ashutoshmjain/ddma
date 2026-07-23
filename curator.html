@@ -1806,6 +1806,26 @@
         </div>
     </div>
 
+    <!-- Gemini Episode Bridge Review Prompt Modal -->
+    <div class="export-modal-overlay" id="bridgeReviewModalOverlay">
+        <div class="export-modal" style="max-width: 760px; width: 90%;">
+            <div class="export-modal-header">
+                <h3 style="color: #a855f7; display: flex; align-items: center; gap: 0.5rem;">✨ AI EPISODE BRIDGE CARD REVIEWER</h3>
+                <button class="icon-btn" id="closeBridgeReviewModalBtn" style="font-size: 1.2rem;">✖</button>
+            </div>
+            <div style="margin-top: 1rem;">
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
+                    Inspect or customize the prompt sent to Gemini AI to review and align transition curiosity question cards across all clips in the episode:
+                </p>
+                <textarea id="bridgeReviewPromptTextarea" style="width: 100%; height: 420px; background: #1f2937; color: #f3f4f6; border: 1px solid #374151; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.8rem; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+                <button class="btn btn-secondary" id="cancelBridgeReviewModalBtn">Cancel</button>
+                <button class="btn btn-primary" id="submitBridgeReviewModalBtn" style="background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); border: none;">✨ Run AI Review</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Export Assets Modal -->
     <div class="export-modal-overlay" id="exportModalOverlay">
         <div class="export-modal" style="max-width: 520px;">
@@ -5248,28 +5268,89 @@
         }
 
         const reviewBridgesBtn = document.getElementById('reviewBridgesBtn');
+        const bridgeReviewModalOverlay = document.getElementById('bridgeReviewModalOverlay');
+        const bridgeReviewPromptTextarea = document.getElementById('bridgeReviewPromptTextarea');
+        const closeBridgeReviewModalBtn = document.getElementById('closeBridgeReviewModalBtn');
+        const cancelBridgeReviewModalBtn = document.getElementById('cancelBridgeReviewModalBtn');
+        const submitBridgeReviewModalBtn = document.getElementById('submitBridgeReviewModalBtn');
+
         if (reviewBridgesBtn) {
             reviewBridgesBtn.addEventListener('click', async function() {
-                if (!currentProjectId) {
+                if (!activeProjectId) {
                     showToast('Please select an active project first.', 'warning');
                     return;
                 }
-                reviewBridgesBtn.innerHTML = '⏳ AI Reviewing...';
+                reviewBridgesBtn.innerHTML = '⏳ Loading Prompt...';
                 reviewBridgesBtn.disabled = true;
+                
                 try {
-                    const resp = await fetch(`/review-episode-bridges?id=${currentProjectId}`, { method: 'POST' });
+                    const resp = await fetch(`/get-bridge-review-prompt?id=${activeProjectId}`);
+                    const data = await resp.json();
+                    if (data.success && data.prompt) {
+                        bridgeReviewPromptTextarea.value = data.prompt;
+                        bridgeReviewModalOverlay.classList.add('active');
+                    } else {
+                        showToast(`Could not load prompt: ${data.error || 'unknown error'}`, 'error');
+                    }
+                } catch (err) {
+                    showToast(`Error fetching prompt: ${err.message}`, 'error');
+                } finally {
+                    reviewBridgesBtn.innerHTML = '✨ AI Review Bridges';
+                    reviewBridgesBtn.disabled = false;
+                }
+            });
+        }
+
+        if (closeBridgeReviewModalBtn) {
+            closeBridgeReviewModalBtn.addEventListener('click', function() {
+                bridgeReviewModalOverlay.classList.remove('active');
+            });
+        }
+        if (cancelBridgeReviewModalBtn) {
+            cancelBridgeReviewModalBtn.addEventListener('click', function() {
+                bridgeReviewModalOverlay.classList.remove('active');
+            });
+        }
+        if (bridgeReviewModalOverlay) {
+            bridgeReviewModalOverlay.addEventListener('click', function(e) {
+                if (e.target === bridgeReviewModalOverlay) {
+                    bridgeReviewModalOverlay.classList.remove('active');
+                }
+            });
+        }
+
+        if (submitBridgeReviewModalBtn) {
+            submitBridgeReviewModalBtn.addEventListener('click', async function() {
+                const customPromptText = bridgeReviewPromptTextarea.value.trim();
+                bridgeReviewModalOverlay.classList.remove('active');
+                
+                if (reviewBridgesBtn) {
+                    reviewBridgesBtn.innerHTML = '⏳ AI Reviewing & Compiling...';
+                    reviewBridgesBtn.disabled = true;
+                }
+                updateStateBar('Gemini AI Reviewing episode bridge cards...');
+                
+                try {
+                    const resp = await fetch(`/review-episode-bridges?id=${activeProjectId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ custom_prompt: customPromptText })
+                    });
                     const data = await resp.json();
                     if (data.success) {
                         showToast('✨ Gemini successfully reviewed and updated all episode bridge cards!', 'success');
-                        await loadProject(currentProjectId);
+                        await loadProject(activeProjectId);
                     } else {
                         showToast(`Review failed: ${data.error}`, 'error');
                     }
                 } catch (err) {
                     showToast(`Error invoking AI bridge reviewer: ${err.message}`, 'error');
                 } finally {
-                    reviewBridgesBtn.innerHTML = '✨ AI Review Bridges';
-                    reviewBridgesBtn.disabled = false;
+                    if (reviewBridgesBtn) {
+                        reviewBridgesBtn.innerHTML = '✨ AI Review Bridges';
+                        reviewBridgesBtn.disabled = false;
+                    }
+                    updateStateBar('Ready');
                 }
             });
         }

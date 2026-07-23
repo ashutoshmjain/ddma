@@ -71,6 +71,44 @@ async function runTest() {
             throw new Error("FAIL: Video element source was not cleared on close!");
         }
 
+        // 3. Test AI Bridge Card Reviewer Modal
+        console.log("\n🧪 Running AI Bridge Reviewer Prompt Modal Verification Test...");
+        await page.click('#reviewBridgesBtn');
+        await new Promise(r => setTimeout(r, 2000));
+
+        const bridgeModalState = await page.evaluate(() => {
+            const overlay = document.getElementById('bridgeReviewModalOverlay');
+            const textarea = document.getElementById('bridgeReviewPromptTextarea');
+            return {
+                active: overlay ? overlay.classList.contains('active') : false,
+                hasPromptText: textarea ? textarea.value.length > 50 : false
+            };
+        });
+
+        console.log(`- AI Bridge Reviewer Modal Active after click: ${bridgeModalState.active}`);
+        console.log(`- Prompt Textarea populated with context prompt: ${bridgeModalState.hasPromptText}`);
+
+        if (!bridgeModalState.active) {
+            throw new Error("FAIL: AI Bridge Reviewer modal did not open!");
+        }
+        if (!bridgeModalState.hasPromptText) {
+            throw new Error("FAIL: AI Bridge Reviewer prompt textarea was empty!");
+        }
+
+        // Close AI Bridge Reviewer Modal
+        await page.click('#closeBridgeReviewModalBtn');
+        await new Promise(r => setTimeout(r, 500));
+
+        const bridgeModalClosed = await page.evaluate(() => {
+            const overlay = document.getElementById('bridgeReviewModalOverlay');
+            return overlay ? !overlay.classList.contains('active') : true;
+        });
+
+        console.log(`- AI Bridge Reviewer Modal Active after close click: ${!bridgeModalClosed}`);
+        if (!bridgeModalClosed) {
+            throw new Error("FAIL: AI Bridge Reviewer modal failed to close!");
+        }
+
         console.log("\n✅ ALL CURATOR MODAL TESTS PASSED SUCCESSFULLY!");
 
     } catch (err) {

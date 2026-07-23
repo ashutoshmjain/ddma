@@ -101,10 +101,9 @@ def call_gemini(prompt, api_key):
             
     return None
 
-def review_episode_bridges(plan_path):
+def build_bridge_review_prompt(plan_path):
     if not os.path.exists(plan_path):
-        print(f"Error: {plan_path} not found.", file=sys.stderr)
-        return False
+        return None
 
     with open(plan_path, "r", encoding="utf-8") as f:
         plan_data = json.load(f)
@@ -114,12 +113,7 @@ def review_episode_bridges(plan_path):
     locked_clips.sort(key=lambda x: x["num"])
 
     if len(locked_clips) < 2:
-        print("Not enough locked clips to review bridge transitions.", file=sys.stderr)
-        return False
-
-    # Extract Gemini API Key
-    settings = load_settings()
-    api_key = settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
+        return None
 
     # Build context prompt listing all clips in sequence
     prompt_lines = [
@@ -165,7 +159,27 @@ def review_episode_bridges(plan_path):
         "Note: The last clip of the episode should have an empty or closing bridge_text list, e.g. []."
     ])
 
-    prompt = "\n".join(prompt_lines)
+    return "\n".join(prompt_lines)
+
+def review_episode_bridges(plan_path, custom_prompt=None):
+    if not os.path.exists(plan_path):
+        print(f"Error: {plan_path} not found.", file=sys.stderr)
+        return False
+
+    with open(plan_path, "r", encoding="utf-8") as f:
+        plan_data = json.load(f)
+
+    # Extract Gemini API Key
+    settings = load_settings()
+    api_key = settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
+
+    if custom_prompt:
+        prompt = custom_prompt
+    else:
+        prompt = build_bridge_review_prompt(plan_path)
+        if not prompt:
+            print("Error: Could not build bridge review prompt.", file=sys.stderr)
+            return False
 
     result = call_gemini(prompt, api_key)
     if not result or not isinstance(result, list):

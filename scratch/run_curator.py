@@ -2036,6 +2036,15 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
         elif parsed_url.path == '/review-episode-bridges':
             project_id = params.get('id', [None])[0]
+            content_length = int(self.headers.get('Content-Length', 0))
+            custom_prompt = None
+            if content_length > 0:
+                try:
+                    post_data = json.loads(self.rfile.read(content_length).decode('utf-8'))
+                    custom_prompt = post_data.get('custom_prompt')
+                except Exception:
+                    pass
+
             try:
                 if not project_id:
                     raise Exception("Missing project id.")
@@ -2047,7 +2056,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 sys.path.insert(0, ".")
                 from scratch.review_episode_bridges import review_episode_bridges
-                success = review_episode_bridges(plan_path)
+                success = review_episode_bridges(plan_path, custom_prompt=custom_prompt)
                 if not success:
                     raise Exception("Gemini episode bridge review failed.")
                 
@@ -2531,6 +2540,36 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 prompt_content = f"{mogr_base_rules}\n\n--------------------------------------------------\nDYNAMIC CLIP CONTEXT\n--------------------------------------------------\n- Animate visuals to explain this Clip Title: {title}"
                 if transcript:
                     prompt_content += f"\n- Spoken Transcript Text: {transcript}"
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "prompt": prompt_content}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
+                return
+
+        elif parsed_url.path == '/get-bridge-review-prompt':
+            project_id = params.get('id', [None])[0]
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                project_dir = os.path.join("projects", project_id)
+                plan_path = os.path.join(project_dir, "plan.json")
+                if not os.path.exists(plan_path):
+                    raise Exception("plan.json not found.")
+                
+                sys.path.insert(0, ".")
+                from scratch.review_episode_bridges import build_bridge_review_prompt
+                prompt_content = build_bridge_review_prompt(plan_path)
+                if not prompt_content:
+                    raise Exception("Could not build episode bridge review prompt.")
                 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
