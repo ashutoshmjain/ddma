@@ -867,7 +867,7 @@ def compile_clip(
             subprocess.run(cmd_outro, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         if not is_last_clip and os.path.exists(temp_outro_video_path):
-            typer.echo(f"Compiling with cross-fade (Intro -> Body -> Outro) into {out_path}...")
+            typer.echo(f"Compiling (Intro -> Body -> Outro) into {out_path}...")
             cmd_concat = [
                 "ffmpeg", "-y",
                 "-i", intro_video_path,
@@ -877,9 +877,10 @@ def compile_clip(
                 "[0:v]settb=1/90000[v0];"
                 "[1:v]settb=1/90000[v1];"
                 "[2:v]settb=1/90000[v2];"
-                "[v0][v1]xfade=transition=fade:duration=1.0:offset=1.0[v01];"
-                f"[v01][v2]xfade=transition=fade:duration=1.0:offset={body_duration + 1.0 - 1.0:.3f}[v];"
-                "[0:a][1:a]acrossfade=d=1.0:c1=tri:c2=tri[a0];"
+                "[v0][v1]concat=n=2:v=1:a=0[v01];"
+                "[v01]settb=1/90000[v01tb];"
+                f"[v01tb][v2]xfade=transition=fade:duration=1.0:offset={2.0 + body_duration - 1.0:.3f}[v];"
+                "[0:a][1:a]concat=n=2:v=0:a=1[a0];"
                 "[a0][2:a]acrossfade=d=1.0:c1=tri:c2=tri[a]",
                 "-map", "[v]",
                 "-map", "[a]",
@@ -892,7 +893,7 @@ def compile_clip(
                 out_path
             ]
         else:
-            typer.echo(f"Compiling with cross-fade (Intro -> Body) into {out_path}...")
+            typer.echo(f"Compiling (Intro -> Body) into {out_path}...")
             cmd_concat = [
                 "ffmpeg", "-y",
                 "-i", intro_video_path,
@@ -900,8 +901,8 @@ def compile_clip(
                 "-filter_complex",
                 "[0:v]settb=1/90000[v0];"
                 "[1:v]settb=1/90000[v1];"
-                "[v0][v1]xfade=transition=fade:duration=1.0:offset=1.0[v];"
-                "[0:a][1:a]acrossfade=d=1.0:c1=tri:c2=tri[a]",
+                "[v0][v1]concat=n=2:v=1:a=0[v];"
+                "[0:a][1:a]concat=n=2:v=0:a=1[a]",
                 "-map", "[v]",
                 "-map", "[a]",
                 "-c:v", "libx264",
