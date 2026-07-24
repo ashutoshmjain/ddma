@@ -3,7 +3,7 @@
 DeepDive Media Automator (DDMA) is a progressive media automation engine powered by **Google Antigravity**. Rather than a simple clip editor, DDMA is an end-to-end production workflow designed to ingest **raw, unedited multi-hour audio recordings**, segment high-engagement topics, overlay background music stings, and compile them into finished, publication-ready media products:
 
 1. **The Long-Form Audio Podcast (Spotify, Apple Podcasts, YouTube Music)**: Compiles all locked segments chronologically, automatically ducking and crossfading background music stings, transitioning raw audio into a fully-produced, high-density podcast episode. For example, [Episode 244 on Spotify](https://open.spotify.com/episode/1KKvm3TbYgxgsffHMj5MwJ?si=NeKNaPJ9QQG11-zcNB92Nw) was progressively curated from a 63-minute raw audio track into a polished, high-value 40-minute master podcast.
-2. **The Long-Form Podcast Video (YouTube)**: Automatically joins the segmented video tracks with 5-second curiosity question slide transitions, producing a cohesive, narrative-driven baseline episode video.
+2. **The Long-Form Podcast Video (YouTube)**: Automatically joins the segmented video tracks with 5-second curiosity question slide transitions, producing a cohesive, narrative-driven baseline episode video. For example, watch [Episode 244: Architecture of Intellectual Demolition on YouTube](https://youtu.be/9vuNg8t42m8?si=GcVZrzUJ2pN3YZBo) produced entirely using DDMA.
 3. **Micro-Promotions (Instagram, TikTok, YouTube Shorts)**: Exports each segment as an individual, high-fidelity vertical video with dynamic title cards and custom Mosaic motion-graphic designs to drive audience acquisition before the main episode launch.
 
 ---
