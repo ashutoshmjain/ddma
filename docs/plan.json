@@ -3,22 +3,22 @@
         "num": 1,
         "title": "Einstein's Magnet-Conductor Paradox",
         "bridge_text": [
-            "Why is merely proposing a correct scientific theory never enough to change the world?"
+            "How did Galileo use a simple thought experiment about two tied stones to crush 2,000 years of physics?"
         ],
         "segments": [
             {
                 "type": "music",
                 "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
-                "crossfade": 0.3,
+                "crossfade": 0,
                 "volume": 1
             },
             {
                 "type": "audio",
-                "start": 2448.88,
+                "start": 2451.16,
                 "end": 2499.84,
-                "duration": 50.96,
-                "text": "At  the  time,  physicists  were  terrified  by  the  Michelson -Morley  experiment.  This  experiment  had  attempted  and  completely  failed  to  detect  the  Earth  moving  through  the  invisible  ether,  the  theoretical  medium  that  supposedly  carried  light  waves  through  space.  Everyone  in  physics  was  scrambling,  trying  to  invent  new  insanely  complex  mechanical  rules  for  how  the  ether  behaved  to  explain  why  the  experiment  failed  to  see  it.  They  were  applying  massive  amounts  of  intellectual  duct  tape,  but  Einstein  didn't  try  to  fix  the  ether.  He  completely  ignored  the  empirical  problem  of  the  Michelson -Morley  experiment.  Instead,  he  opened  his  paper  by  pointing  out  a  massive  conceptual  hole  in  Maxwell's  electro  dynamics  regarding  symmetry.  His  attack  vector  targeted  a  glaring  illogical  asymmetry  in  how  classical  physicists  describe  the  interaction  between  a  simple  magnet  and  a  simple  wire  conductor."
+                "duration": 48.68,
+                "text": "the  Michelson -Morley  experiment.  This  experiment  had  attempted  and  completely  failed  to  detect  the  Earth  moving  through  the  invisible  ether,  the  theoretical  medium  that  supposedly  carried  light  waves  through  space.  Everyone  in  physics  was  scrambling,  trying  to  invent  new  insanely  complex  mechanical  rules  for  how  the  ether  behaved  to  explain  why  the  experiment  failed  to  see  it.  They  were  applying  massive  amounts  of  intellectual  duct  tape,  but  Einstein  didn't  try  to  fix  the  ether.  He  completely  ignored  the  empirical  problem  of  the  Michelson -Morley  experiment.  Instead,  he  opened  his  paper  by  pointing  out  a  massive  conceptual  hole  in  Maxwell's  electro  dynamics  regarding  symmetry.  His  attack  vector  targeted  a  glaring  illogical  asymmetry  in  how  classical  physicists  describe  the  interaction  between  a  simple  magnet  and  a  simple  wire  conductor."
             },
             {
                 "type": "music",
@@ -41,13 +41,14 @@
             }
         ],
         "locked": true,
-        "crossfade": 1.5
+        "crossfade": 0,
+        "mosaic_run_id": "7b76a69f-64e7-410c-ac92-cc007fb78f25"
     },
     {
         "num": 2,
         "title": "Tied Stones",
         "bridge_text": [
-            "What happens to a scientist who dares to ask a question outside the accepted rules?"
+            "Why is a single internal logical contradiction far more lethal to a theory than mountains of bad data?"
         ],
         "segments": [
             {
@@ -74,13 +75,13 @@
             }
         ],
         "locked": true,
-        "crossfade": 0.5
+        "crossfade": 0
     },
     {
         "num": 3,
         "title": "The Demolition Myth",
         "bridge_text": [
-            "Why is a logical contradiction far more deadly to a theory than bad experimental data?"
+            "What happens when scientists use 'intellectual duct tape' to desperately rescue dying theories from uncomfortable facts?"
         ],
         "segments": [
             {
@@ -99,14 +100,14 @@
             }
         ],
         "locked": true,
-        "crossfade": 0.5,
+        "crossfade": 0,
         "audio_only": true
     },
     {
         "num": 4,
         "title": "Ad-hoc Hypothesis",
         "bridge_text": [
-            "Does science progress through logical persuasion, or must the old guard die out first?"
+            "Why can't centuries of past empirical success save a theory once its core mathematical logic breaks down?"
         ],
         "segments": [
             {
@@ -125,13 +126,13 @@
             }
         ],
         "locked": true,
-        "crossfade": 0.5
+        "crossfade": 0
     },
     {
         "num": 5,
         "title": "Laudan's Problems",
         "bridge_text": [
-            "How did Copernicus overthrow 1,400 years of astronomy without better data or a telescope?"
+            "Why do scientists almost never abandon theories their careers are built on until the old guard dies out?"
         ],
         "segments": [
             {
@@ -164,21 +165,21 @@
             }
         ],
         "locked": true,
-        "crossfade": 0.5
+        "crossfade": 0
     },
     {
         "num": 6,
         "title": "Planck's Principle",
         "bridge_text": [
-            "What was the secret geometric cheat code that kept the ancient earth-centered universe alive?"
+            "How did Copernicus launch a cosmic revolution without better data, by targeting a hidden flaw in ancient astronomy?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 485.02,
+                "start": 479,
                 "end": 601.52,
-                "duration": 116.5,
-                "text": "John  Swales'  CARS  model,  which  stands  for  create  a  research  space.  CARS.  Right.  Swales  analyze  the  rhetoric  of  decades  of  scientific  literature  and  found  that  successful  scientific  introductions  invariably  follow  three  distinct  moves.  Okay.  What  are  the  moves?  Move  one  is  establishing  a  territory.  This  just  means  summarizing  the  current  consensus,  outlining  what  everyone  already  agrees  on.  Setting  the  stage.   Move  three  is  occupying  the  niche,  which  is  the  part  where  you  finally  introduce  your  own  novel  work  and  your  new  equations.  But  there's  a  move,  too.  Yes.  And  it  is  the  pivotal  critical  step.  Move,  too.  Establishing  a  niche.  Establishing  a  niche.  In  plain  terms,  that's  pointing  out  the  gap  or  the  fundamental  flaw  in  the  consensus  you  just  summarized  and  move  one.  Precisely.  Now,  an  average  everyday  researcher  doing  normal  science  uses  move,  too,  just  to  point  out  a  minor  lack  of  data.  They  might  write,  you  know,  previous  studies  have  tested  the  tensile  strength  of  this  alloy  at  room  temperature,  but  not  at  freezing  temperature.  Just  a  small  gap.  Right.  That  is  a  minor  empirical  gap.  They  are  asking  for  permission  to  fill  a  tiny  pothole  in  the  existing  road,  but  a  revolutionary  scientist  weaponizes  move,  too.  They  don't  just  point  out  a  pothole.  They  point  out  that  the  road  is  leading  off  a  cliff.  I  love  that  analogy,  yes.  They  expose  a  fatal  foundational  contradiction.  They  force  the  community  to  stare  directly  into  the  abyss  of  a  conceptual  failure.  They  use  move,  too,  to  argue  that  the  territory  itself  is  structurally  unsound  and  mathematically  illegitimate.  They  basically  demand  a  total  tear  down  before  they  even  unroll  the  blueprints  for  the  new  building.  Exactly.  And  the  research  highlights  why  this  incredibly  aggressive,  almost  hostile  posture  is  absolutely  necessary,  bringing  up  what  is  known  as  Planck's  principle.  Max  Planck  was  the  brilliant  physicist  who  originated  quantum  theory,  and  he  made  a  rather  grim,  cynical  observation  about  the  sociology  of  science  after  dealing  with  decades  of  pushback."
+                "duration": 122.52,
+                "text": "And  the  research  highlights  that  there  is  actually  a  formal  rhetorical  model  for  this  behavior  in  scientific  literature,  right?  Yes.  John  Swales'  CARS  model,  which  stands  for  create  a  research  space.  CARS.  Right.  Swales  analyze  the  rhetoric  of  decades  of  scientific  literature  and  found  that  successful  scientific  introductions  invariably  follow  three  distinct  moves.  Okay.  What  are  the  moves?  Move  one  is  establishing  a  territory.  This  just  means  summarizing  the  current  consensus,  outlining  what  everyone  already  agrees  on.  Setting  the  stage.   Move  three  is  occupying  the  niche,  which  is  the  part  where  you  finally  introduce  your  own  novel  work  and  your  new  equations.  But  there's  a  move,  too.  Yes.  And  it  is  the  pivotal  critical  step.  Move,  too.  Establishing  a  niche.  Establishing  a  niche.  In  plain  terms,  that's  pointing  out  the  gap  or  the  fundamental  flaw  in  the  consensus  you  just  summarized  and  move  one.  Precisely.  Now,  an  average  everyday  researcher  doing  normal  science  uses  move,  too,  just  to  point  out  a  minor  lack  of  data.  They  might  write,  you  know,  previous  studies  have  tested  the  tensile  strength  of  this  alloy  at  room  temperature,  but  not  at  freezing  temperature.  Just  a  small  gap.  Right.  That  is  a  minor  empirical  gap.  They  are  asking  for  permission  to  fill  a  tiny  pothole  in  the  existing  road,  but  a  revolutionary  scientist  weaponizes  move,  too.  They  don't  just  point  out  a  pothole.  They  point  out  that  the  road  is  leading  off  a  cliff.  I  love  that  analogy,  yes.  They  expose  a  fatal  foundational  contradiction.  They  force  the  community  to  stare  directly  into  the  abyss  of  a  conceptual  failure.  They  use  move,  too,  to  argue  that  the  territory  itself  is  structurally  unsound  and  mathematically  illegitimate.  They  basically  demand  a  total  tear  down  before  they  even  unroll  the  blueprints  for  the  new  building.  Exactly.  And  the  research  highlights  why  this  incredibly  aggressive,  almost  hostile  posture  is  absolutely  necessary,  bringing  up  what  is  known  as  Planck's  principle.  Max  Planck  was  the  brilliant  physicist  who  originated  quantum  theory,  and  he  made  a  rather  grim,  cynical  observation  about  the  sociology  of  science  after  dealing  with  decades  of  pushback."
             },
             {
                 "type": "music",
@@ -202,14 +203,14 @@
             }
         ],
         "locked": true,
-        "crossfade": 0.5,
+        "crossfade": 0,
         "mosaic_run_id": "bdf153ac-112d-4588-8b7b-d1c0f038b3b8"
     },
     {
         "num": 7,
         "title": "The Copernican Myth",
         "bridge_text": [
-            "Why did the early scientific pioneers have to destroy the idea of cosmic whirlpools?"
+            "What was the 'Equant'\u2014the bizarre geometric cheat code that kept the earth-centered universe alive for centuries?"
         ],
         "segments": [
             {
@@ -241,13 +242,13 @@
         ],
         "locked": true,
         "mosaic_run_id": "099cac0d-0c9d-43b8-9e1d-2197784209b9",
-        "crossfade": 0.5
+        "crossfade": 0
     },
     {
         "num": 8,
         "title": "The Geometric Cheat Code",
         "bridge_text": [
-            "How did  Newton  destroy the elegant idea of cosmic whirlpools?"
+            "How did Isaac Newton use cold geometric proofs to mathematically destroy Descartes' popular theory of cosmic whirlpools?"
         ],
         "segments": [
             {
@@ -286,7 +287,7 @@
         "num": 9,
         "title": "The Cosmic Whirlpool",
         "bridge_text": [
-            "How did Isaac Newton use Kepler's laws of planetary motion to mathematically destroy the elegant idea of cosmic whirlpools?"
+            "Why were 18th-century chemists forced to claim that phlogiston possessed negative weight just to explain fire?"
         ],
         "segments": [
             {
@@ -325,7 +326,7 @@
         "num": 10,
         "title": "Negative Weight Theory",
         "bridge_text": [
-            "**How did a newly discovered invisible gas completely turn the chemistry of fire on its head?**"
+            "How did Charles Darwin turn nature's awkward biological flaws into a devastating logical trap against creationism?"
         ],
         "segments": [
             {
@@ -410,7 +411,7 @@
         "num": 12,
         "title": "The Imperfection of Design",
         "bridge_text": [
-            "**How does the same ruthless architecture of demolition apply when there are no physical objects to study, but only abstract mathematics?**"
+            "How did a hidden mathematical flaw in a simple electrical capacitor force Maxwell to redefine light itself?"
         ],
         "segments": [
             {
@@ -450,7 +451,7 @@
         "num": 13,
         "title": "Maxwell's Broken Circuit",
         "bridge_text": [
-            "**How did a purely mathematical placeholder in a broken circuit lead to the discovery of light itself?**"
+            "How did a purely conceptual asymmetry in 19th-century electromagnetism pave the way for Einstein's special relativity?"
         ],
         "segments": [
             {
@@ -490,7 +491,7 @@
         "num": 14,
         "title": "Accidental Light",
         "bridge_text": [
-            "**How did Albert Einstein use these same hidden structural asymmetries to unleash the revolution of special relativity?**"
+            "Why did classical physics predict that a warm kitchen stove should unleash an infinite torrent of deadly radiation?"
         ],
         "segments": [
             {
@@ -516,7 +517,7 @@
         "num": 15,
         "title": "The Photonic Bullet",
         "bridge_text": [
-            "How did the marriage of quantum mechanics and relativity threaten to blow up physics with a plague of literal infinities?"
+            "Why did Richard Feynman condemn the accepted mathematical tricks of quantum mechanics as a 'hocus pocus' shell game?"
         ],
         "segments": [
             {
@@ -555,7 +556,7 @@
         "num": 16,
         "title": "The Mathematical Shell Game",
         "bridge_text": [
-            "**How did Richard Feynman's radical visual diagrams bypass this mathematical 'hocus pocus' to completely rewrite the rules of the quantum universe?**"
+            "What happens when quantum mechanics and general relativity fundamentally collide over the mysterious nature of time?"
         ],
         "segments": [
             {
@@ -594,7 +595,7 @@
         "num": 17,
         "title": "The Patchwork Universe",
         "bridge_text": [
-            "**If there is no master clock ticking outside the universe, how does time itself actually emerge?**"
+            "If scientific progress requires destroying our models of reality, what happens when artificial intelligence starts rewriting them?"
         ],
         "segments": [
             {
@@ -633,9 +634,7 @@
     {
         "num": 18,
         "title": "The Demolition of Truth",
-        "bridge_text": [
-            "**If we must destroy our most cherished models of reality to progress, what happens when artificial intelligence begins rewriting those models for us?**"
-        ],
+        "bridge_text": [],
         "segments": [
             {
                 "type": "audio",
