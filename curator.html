@@ -2869,7 +2869,7 @@
                     } else if (activeProjectId) {
                         const currProj = projects.find(p => p.id === activeProjectId);
                         if (currProj) {
-                            if (currProj.status === 'ready' && (!transcriptionData || transcriptionData.segments.length === 0)) {
+                            if (currProj.status === 'ready' && (!transcriptionData || !Array.isArray(transcriptionData.segments) || transcriptionData.segments.length === 0)) {
                                 selectProject(activeProjectId);
                             }
                         }
@@ -2903,7 +2903,10 @@
                 })
                 .then(data => {
                     projectInfo = data.info;
-                    clips = data.plan || [];
+                    clips = (data.plan || []).map(c => ({
+                        ...c,
+                        segments: c.segments || (c.start !== undefined && c.end !== undefined ? [{ start: c.start, end: c.end, duration: c.end - c.start, text: c.title || '' }] : [])
+                    }));
                     transcriptionData = data.transcription;
                     compiledVideos = data.compiled_videos || [];
                     clipStatuses = data.clip_statuses || {};
@@ -4554,7 +4557,7 @@
                 `;
 
                 let segmentsHtml = introCardHtml;
-                if (clip.segments.length === 0) {
+                if (!clip.segments || clip.segments.length === 0) {
                     segmentsHtml = `<div style="font-size: 0.8rem; color: var(--text-muted); font-style: italic; padding: 0.4rem 0;">No segments added yet. Select text on right and click "+ Add Audio" below.</div>`;
                 } else {
                     clip.segments.forEach((seg, segIdx) => {
