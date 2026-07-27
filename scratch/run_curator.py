@@ -1424,7 +1424,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 with open(info_path, "r", encoding="utf-8") as f:
                     info = json.load(f)
                 
-                audio_path = os.path.join(project_dir, info["audio_filename"])
+                audio_file_name = info.get("audio_filename") or info.get("audio_file") or "245.m4a"
+                audio_path = os.path.join(project_dir, audio_file_name)
                 
                 json_data = json.loads(post_data.decode('utf-8'))
                 segments = json_data.get("segments", [])
@@ -1464,7 +1465,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 with open(info_path, "r", encoding="utf-8") as f:
                     info = json.load(f)
                 
-                audio_path = os.path.join(project_dir, info["audio_filename"])
+                audio_file_name = info.get("audio_filename") or info.get("audio_file") or "245.m4a"
+                audio_path = os.path.join(project_dir, audio_file_name)
                 
                 plan_path = os.path.join(project_dir, "plan.json")
                 if not os.path.exists(plan_path):
