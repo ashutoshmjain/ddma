@@ -368,9 +368,24 @@ def mux_clip(
         raise typer.Exit(code=1)
 
     import glob
-    search_pattern1 = os.path.join(audio_dir, f"*-{num}.mp3")
-    search_pattern2 = os.path.join(audio_dir, f"*-{num}-*.mp3")
-    audio_files = glob.glob(search_pattern1) + glob.glob(search_pattern2)
+    # Derive episode prefix from plan_file path or plan contents if available
+    ep_prefix = None
+    if "episode_" in plan_file:
+        parts = plan_file.split("episode_")
+        if len(parts) > 1:
+            ep_prefix = parts[1].split("/")[0].split("\\")[0]
+
+    if ep_prefix:
+        search_pattern1 = os.path.join(audio_dir, f"{ep_prefix}-{num}.mp3")
+        search_pattern2 = os.path.join(audio_dir, f"{ep_prefix}-{num}-*.mp3")
+        audio_files = glob.glob(search_pattern1) + glob.glob(search_pattern2)
+    else:
+        audio_files = []
+
+    if not audio_files:
+        search_pattern1 = os.path.join(audio_dir, f"*-{num}.mp3")
+        search_pattern2 = os.path.join(audio_dir, f"*-{num}-*.mp3")
+        audio_files = glob.glob(search_pattern1) + glob.glob(search_pattern2)
 
     if not audio_files:
         typer.echo(f"Error: No audio file found in {audio_dir} for clip {num}.", err=True)
@@ -378,7 +393,7 @@ def mux_clip(
     
     audio_path = audio_files[0]
     base_name = os.path.splitext(os.path.basename(audio_path))[0]
-    episode = base_name.split("-")[0]
+    episode = ep_prefix if ep_prefix else base_name.split("-")[0]
 
     os.makedirs(out_dir, exist_ok=True)
     out_filename = f"{episode}-{num}.mp4"
@@ -445,9 +460,22 @@ def compile_clip(
         typer.echo(f"Error: Clip {num} not found in plan.", err=True)
         raise typer.Exit(code=1)
 
-    # 1. Locate the master clip (e.g. clips/242-4.mp4)
-    search_pattern = os.path.join(master_dir, f"*-{num}.mp4")
-    master_files = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
+    # 1. Locate the master clip (e.g. clips/245-4.mp4)
+    ep_prefix = None
+    if "episode_" in plan_file:
+        parts = plan_file.split("episode_")
+        if len(parts) > 1:
+            ep_prefix = parts[1].split("/")[0].split("\\")[0]
+
+    if ep_prefix:
+        search_pattern = os.path.join(master_dir, f"{ep_prefix}-{num}.mp4")
+        master_files = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
+    else:
+        master_files = []
+
+    if not master_files:
+        search_pattern = os.path.join(master_dir, f"*-{num}.mp4")
+        master_files = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
 
     if not master_files:
         typer.echo(f"Error: No finished video found in {master_dir} for clip {num}.", err=True)
@@ -455,7 +483,7 @@ def compile_clip(
 
     master_path = master_files[0]
     base_name = os.path.splitext(os.path.basename(master_path))[0]
-    episode = base_name.split("-")[0]
+    episode = ep_prefix if ep_prefix else base_name.split("-")[0]
 
     backup_path = os.path.join(master_dir, f"{base_name}-original.mp4")
 
@@ -919,13 +947,13 @@ def compile_clip(
             typer.echo(f"Successfully compiled clip: {out_path}")
             
             # Sync compiled clip to docs/assets/clips/ for preview player UI
-            docs_clips_dir = os.path.join("docs", "assets", "clips")
+            docs_clips_dir = os.path.join("docs", "episodes", episode, "clips") if episode else os.path.join("docs", "assets", "clips")
             os.makedirs(docs_clips_dir, exist_ok=True)
             try:
                 shutil.copy2(out_path, os.path.join(docs_clips_dir, out_filename))
                 typer.echo(f"Synced compiled clip to {os.path.join(docs_clips_dir, out_filename)}")
             except Exception as e:
-                typer.echo(f"Warning: Could not sync to docs/assets/clips: {e}")
+                typer.echo(f"Warning: Could not sync to docs: {e}")
             
             # Check final duration warning against the 2m 55s limit (175s)
             try:
