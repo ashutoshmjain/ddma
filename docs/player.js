@@ -46,6 +46,9 @@ function resizeViewport() {
     drawFrame();
 }
 
+let episodesManifest = [];
+let currentEpisodeId = "244";
+
 window.addEventListener('DOMContentLoaded', () => {
     resizeViewport();
     window.addEventListener('resize', resizeViewport);
@@ -53,21 +56,95 @@ window.addEventListener('DOMContentLoaded', () => {
     init();
 });
 
-// Load Plan and Setup Timeline
+// Load Episode Manifest and Setup Timeline
 async function init() {
+    await loadEpisodesManifest();
+    await initEpisodeData();
+}
+
+async function loadEpisodesManifest() {
+    const episodeSelect = document.getElementById('episodeSelect');
     try {
-        const res = await fetch('plan.json');
+        const res = await fetch('episodes.json');
+        episodesManifest = await res.json();
+    } catch (err) {
+        console.warn("Could not load episodes.json, using default Episode 244 fallback", err);
+        episodesManifest = [
+            {
+                id: "244",
+                number: 244,
+                title: "Architecture of Intellectual Demolition",
+                fullTitle: "Episode 244: Architecture of Intellectual Demolition",
+                planPath: "episodes/244/plan.json",
+                clipsDir: "episodes/244/clips",
+                isDefault: true
+            }
+        ];
+    }
+
+    // Parse URL parameter ?ep=244 or ?episode=244
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramEp = urlParams.get('ep') || urlParams.get('episode');
+    if (paramEp && episodesManifest.some(e => e.id === paramEp || String(e.number) === paramEp)) {
+        const found = episodesManifest.find(e => e.id === paramEp || String(e.number) === paramEp);
+        currentEpisodeId = found.id;
+    } else {
+        const def = episodesManifest.find(e => e.isDefault) || episodesManifest[0];
+        currentEpisodeId = def ? def.id : "244";
+    }
+
+    // Populate dropdown
+    if (episodeSelect) {
+        episodeSelect.innerHTML = episodesManifest.map(ep => `
+            <option value="${ep.id}" ${ep.id === currentEpisodeId ? 'selected' : ''}>
+                ${ep.fullTitle || `Episode ${ep.number}`}
+            </option>
+        `).join('');
+
+        episodeSelect.addEventListener('change', (e) => {
+            switchEpisode(e.target.value);
+        });
+    }
+}
+
+async function switchEpisode(epId) {
+    if (currentEpisodeId === epId) return;
+    currentEpisodeId = epId;
+
+    // Update URL query string without reloading page
+    const url = new URL(window.location);
+    url.searchParams.set('ep', epId);
+    window.history.replaceState({}, '', url);
+
+    // Pause playback before switching
+    if (isPlaying) {
+        pause();
+    }
+    currentGlobalTime = 0;
+    activeTimelineIndex = -1;
+
+    await initEpisodeData();
+}
+
+async function initEpisodeData() {
+    const activeEp = episodesManifest.find(e => e.id === currentEpisodeId) || episodesManifest[0];
+    const planPath = activeEp ? activeEp.planPath : 'plan.json';
+
+    try {
+        let res = await fetch(planPath);
+        if (!res.ok && planPath !== 'plan.json') {
+            res = await fetch('plan.json');
+        }
         plan = await res.json();
     } catch (err) {
-        console.error("Failed to load plan.json", err);
+        console.error(`Failed to load plan for Episode ${currentEpisodeId}`, err);
         return;
     }
-    
+
     buildTimeline();
     renderSidebar();
-    
-    // Proactive load of actual video durations
     await loadVideoDurations();
+    seekTo(0);
 }
 
 // Build timeline structure: Video Clip -> Bridge Slide -> Video Clip
@@ -87,12 +164,15 @@ function buildTimeline() {
         return true;
     });
 
+    const activeEp = episodesManifest.find(e => e.id === currentEpisodeId);
+    const clipsDir = activeEp ? activeEp.clipsDir : 'assets/clips';
+
     filteredPlan.forEach((clip, index) => {
         // Video Clip segment (compiled MP4 clips already include intro title card and outro curiosity question slide)
         const isAudioOnly = clip.audio_only === true;
         const clipSrc = isAudioOnly 
-            ? `/previews/preview_episode_244_${clip.num}.mp3?v=3`
-            : `/docs/assets/clips/244-${clip.num}.mp4?v=3`;
+            ? `/previews/preview_episode_${currentEpisodeId}_${clip.num}.mp3?v=3`
+            : `${clipsDir}/${currentEpisodeId}-${clip.num}.mp4?v=3`;
 
         timeline.push({
             type: 'video',

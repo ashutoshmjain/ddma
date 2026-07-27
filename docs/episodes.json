@@ -1,0 +1,32 @@
+[
+  {
+    "id": "244",
+    "number": 244,
+    "title": "Architecture of Intellectual Demolition",
+    "fullTitle": "Episode 244: Architecture of Intellectual Demolition",
+    "planPath": "episodes/244/plan.json",
+    "clipsDir": "episodes/244/clips",
+    "links": {
+      "spotify": "https://open.spotify.com/episode/1KKvm3TbYgxgsffHMj5MwJ?si=NeKNaPJ9QQG11-zcNB92Nw",
+      "youtube": "https://youtu.be/9vuNg8t42m8?si=GcVZrzUJ2pN3YZBo",
+      "apple": "https://podcasts.apple.com",
+      "fountain": "https://fountain.fm",
+      "instagram": "https://www.instagram.com/deepdivegemini",
+      "tiktok": "https://www.tiktok.com/@deepdivegemini"
+    },
+    "isDefault": true
+  },
+  {
+    "id": "245",
+    "number": 245,
+    "title": "Episode 245 (In Production)",
+    "fullTitle": "Episode 245",
+    "planPath": "episodes/245/plan.json",
+    "clipsDir": "episodes/245/clips",
+    "links": {
+      "instagram": "https://www.instagram.com/deepdivegemini",
+      "tiktok": "https://www.tiktok.com/@deepdivegemini"
+    },
+    "isDefault": false
+  }
+]

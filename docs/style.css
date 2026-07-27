@@ -107,6 +107,31 @@ body {
     letter-spacing: 1px;
 }
 
+.episode-select {
+    width: 100%;
+    background: rgba(13, 16, 27, 0.85);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: inherit;
+    outline: none;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+.episode-select:hover, .episode-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.episode-select option {
+    background: #0d101b;
+    color: #f3f4f6;
+}
+
 .clips-list {
     flex: 1;
     overflow-y: auto;
