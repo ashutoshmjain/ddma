@@ -986,5 +986,141 @@ def compile_clip(
                     pass
 
 
+@app.command()
+def ingest_episode(
+    audio: str = typer.Option(..., help="Path to input audio file"),
+    episode: int = typer.Option(..., help="Episode number (e.g. 246)"),
+    title: str = typer.Option(..., help="Episode title"),
+    num_clips: int = typer.Option(18, help="Number of structural clips to divide into (default 18)")
+):
+    """
+    Automated end-to-end ingestion pipeline: project setup, transcription, plan generation,
+    sample-accurate slicing with EBU R128 normalization, draft muxing, clip compilation, and docs sync.
+    """
+    proj_id = f"episode_{episode}"
+    proj_dir = os.path.join("projects", proj_id)
+    os.makedirs(proj_dir, exist_ok=True)
+
+    ext = os.path.splitext(audio)[1]
+    audio_dest_name = f"{episode}{ext}"
+    audio_dest_path = os.path.join(proj_dir, audio_dest_name)
+    if not os.path.exists(audio_dest_path) and os.path.exists(audio):
+        shutil.copy2(audio, audio_dest_path)
+
+    # 1. Save project_info.json
+    info_data = {
+        "id": proj_id,
+        "name": f"Episode {episode}",
+        "title": title,
+        "audio_filename": audio_dest_name,
+        "audio_file": audio_dest_name,
+        "status": "ready"
+    }
+    with open(os.path.join(proj_dir, "project_info.json"), "w", encoding="utf-8") as f:
+        json.dump(info_data, f, indent=2)
+
+    # 2. Transcribe
+    trans_path = os.path.join(proj_dir, "transcription.json")
+    if not os.path.exists(trans_path):
+        typer.echo(f"Transcribing {audio_dest_path} with Whisper...")
+        transcribe(audio=audio_dest_path, model="tiny.en")
+        if os.path.exists("transcription.json"):
+            shutil.copy2("transcription.json", trans_path)
+
+    # 3. Generate Plan
+    plan_path = os.path.join(proj_dir, "plan.json")
+    clips_list = []
+    if os.path.exists(trans_path):
+        typer.echo(f"Generating structural plan with {num_clips} clips...")
+        with open(trans_path, "r", encoding="utf-8") as tf:
+            t_data = json.load(tf)
+        words = []
+        for seg in t_data.get("segments", []):
+            words.extend(seg.get("words", []))
+        total_dur = words[-1]["end"] if words else 0
+        target_dur = total_dur / max(1, num_clips)
+
+        curr_start = 0
+        for i in range(num_clips):
+            target_end = (i + 1) * target_dur
+            if i == num_clips - 1:
+                end_idx = len(words) - 1
+            else:
+                best_idx = curr_start
+                min_diff = 999999
+                for idx in range(curr_start + 15, len(words) - 10):
+                    w = words[idx]
+                    diff = abs(w["end"] - target_end)
+                    text = w.get("word", "").strip()
+                    if text.endswith(".") or text.endswith("?") or text.endswith("!"):
+                        diff -= 10.0
+                    if diff < min_diff:
+                        min_diff = diff
+                        best_idx = idx
+                end_idx = best_idx
+            
+            s_time = round(words[curr_start]["start"], 3)
+            e_time = round(words[end_idx]["end"], 3)
+            c_num = i + 1
+            clips_list.append({
+                "num": c_num,
+                "title": f"{title} Part {c_num}" if c_num > 1 else title,
+                "start": s_time,
+                "end": e_time,
+                "locked": True,
+                "music": "deepDive-soft-ok.mp3" if c_num <= 2 else "deepDive-main.mp3",
+                "music_volume": 0.18,
+                "bridge_text": [f"What happens in Part {c_num + 1}?"] if c_num < num_clips else []
+            })
+            curr_start = end_idx + 1
+            if curr_start >= len(words):
+                break
+
+        with open(plan_path, "w", encoding="utf-8") as pf:
+            json.dump(clips_list, pf, indent=2)
+
+    # 4. Sync plan.json to root and docs
+    shutil.copy2(plan_path, "plan.json")
+    docs_ep_dir = os.path.join("docs", "episodes", str(episode))
+    os.makedirs(docs_ep_dir, exist_ok=True)
+    shutil.copy2(plan_path, os.path.join(docs_ep_dir, "plan.json"))
+
+    # 5. Audio Cut
+    typer.echo(f"Cutting sample-accurate audio clips with EBU R128 normalization...")
+    cut(audio=audio_dest_path, plan_file=plan_path, out_dir="clips")
+
+    # 6. Mux & Compile Clips
+    typer.echo(f"Draft-muxing and compiling {len(clips_list)} clips...")
+    for c in clips_list:
+        n = c["num"]
+        mux_clip(num=n, plan_file=plan_path, audio_dir="clips", out_dir="clips")
+        compile_clip(num=n, plan_file=plan_path, master_dir="clips", out_dir="clips", backup=True)
+
+    # 7. Register in docs/episodes.json
+    ep_manifest_path = os.path.join("docs", "episodes.json")
+    if os.path.exists(ep_manifest_path):
+        try:
+            with open(ep_manifest_path, "r", encoding="utf-8") as mf:
+                manifest = json.load(mf)
+            for m in manifest:
+                m["isDefault"] = False
+            manifest.append({
+                "id": str(episode),
+                "number": episode,
+                "title": title,
+                "fullTitle": f"Episode {episode}: {title}",
+                "planPath": f"episodes/{episode}/plan.json",
+                "clipsDir": f"episodes/{episode}/clips",
+                "links": {},
+                "isDefault": True
+            })
+            with open(ep_manifest_path, "w", encoding="utf-8") as mf:
+                json.dump(manifest, mf, indent=2)
+        except Exception as me:
+            typer.echo(f"Warning updating episodes.json: {me}")
+
+    typer.echo(f"🎉 Episode {episode} ingestion pipeline complete! Project ready in Curator & Preview Player.")
+
+
 if __name__ == "__main__":
     app()

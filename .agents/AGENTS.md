@@ -95,3 +95,20 @@ Below is the step-by-step operational workflow for processing podcast episodes, 
 *   **Action**: Reads `plan.json` to generate 5.0-second text-based question cards (overlaying a fade-out of the preceding music) for transitions, and concatenates all clips and bridge cards in order. Applies re-encoding to force constant 30 fps and uniform 48 kHz stereo audio.
 *   **Output**: Generates a unified `combined_<episode>.mp4` video with perfectly aligned audio and video streams.
 
+---
+
+## ⚡ 1-Click Automated Episode Ingestion Pipeline
+
+To ingest a new raw audio episode with full automated rigor:
+```powershell
+powershell -Command "python ddma.py ingest-episode --audio <episode_file.m4a> --episode <number> --title '<Title text>'"
+```
+This automated command runs the full end-to-end pipeline:
+1. **Workspace Setup**: Creates `projects/episode_<num>/` directory and populates `project_info.json` with both `audio_filename` and `audio_file` metadata.
+2. **Transcription**: Executes OpenAI Whisper with word-level timestamps (`word_timestamps=True`).
+3. **Plan Generation**: Divides audio into 18 structural ~2-minute clips with `deepDive-soft-ok.mp3` stings for Clips 1-2 and `deepDive-main.mp3` stings for Clips 3+.
+4. **Audio Cutting**: Slices clips with EBU R128 loudness normalization (`-16 LUFS / -1.5 dB Peak`).
+5. **Draft Muxing & Compilation**: Muxes black canvas videos and renders 2-second Title Card Intros and 5-second Curiosity Question Outros.
+6. **Preview Manifest Registration**: Appends episode entry into `docs/episodes.json` for multi-episode GitHub Pages switching.
+
+
