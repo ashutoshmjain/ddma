@@ -2904,10 +2904,36 @@
                 })
                 .then(data => {
                     projectInfo = data.info;
-                    clips = (data.plan || []).map(c => ({
-                        ...c,
-                        segments: c.segments || (c.start !== undefined && c.end !== undefined ? [{ start: c.start, end: c.end, duration: c.end - c.start, text: c.title || '' }] : [])
-                    }));
+                    clips = (data.plan || []).map(c => {
+                        if (c.segments && Array.isArray(c.segments) && c.segments.length > 0) {
+                            return c;
+                        }
+                        const derivedSegments = [];
+                        if (c.music) {
+                            derivedSegments.push({
+                                type: "music",
+                                music_file: c.music,
+                                duration: 5.0,
+                                volume: c.music_volume !== undefined ? c.music_volume : 0.18,
+                                crossfade: 1.0
+                            });
+                        }
+                        if (c.start !== undefined && c.end !== undefined) {
+                            derivedSegments.push({
+                                type: "audio",
+                                start: c.start,
+                                end: c.end,
+                                duration: parseFloat((c.end - c.start).toFixed(2)),
+                                volume: c.volume !== undefined ? c.volume : 1.0,
+                                crossfade: c.crossfade !== undefined ? c.crossfade : 0.0,
+                                text: c.title || `Clip #${c.num || 1}`
+                            });
+                        }
+                        return {
+                            ...c,
+                            segments: derivedSegments
+                        };
+                    });
                     transcriptionData = data.transcription;
                     compiledVideos = data.compiled_videos || [];
                     clipStatuses = data.clip_statuses || {};
