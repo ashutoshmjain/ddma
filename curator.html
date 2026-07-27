@@ -2917,9 +2917,11 @@
                     clipsToolbar.style.display = 'flex';
                     restoreSnapshotBtn.disabled = !data.has_snapshot;
                     
-                    activeProjectBadge.textContent = projectInfo.name;
-                    activeProjectTitleHeader.textContent = `${projectInfo.name.toUpperCase()} CLIP PLAN`;
-                    nowPlayingTitle.textContent = `${projectInfo.name} (${projectInfo.audio_filename})`;
+                    const projName = projectInfo.name || projectInfo.title || projectInfo.id || 'Project';
+                    const audioName = projectInfo.audio_filename || projectInfo.audio_file || 'audio';
+                    activeProjectBadge.textContent = projName;
+                    activeProjectTitleHeader.textContent = `${projName.toUpperCase()} CLIP PLAN`;
+                    nowPlayingTitle.textContent = `${projName} (${audioName})`;
                     
                     if (projectInfo.status === 'transcribing') {
                         renderTranscribingSpinner();
