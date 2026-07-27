@@ -50,6 +50,25 @@ PORT = 8000
 # Keys: (project_id, clip_num), Values: {"status": ..., "progress": ..., "error": ..., "run_id": ...}
 mosaic_runs = {}
 
+def auto_recompile_clip(project_id, clip_num):
+    try:
+        ep_num_match = re.search(r'\d+', str(project_id))
+        ep_num = ep_num_match.group(0) if ep_num_match else "244"
+        master_clip_path = os.path.join("clips", f"{ep_num}-{clip_num}.mp4")
+        orig_clip_path = os.path.join("clips", f"{ep_num}-{clip_num}-original.mp4")
+        if os.path.exists(master_clip_path) or os.path.exists(orig_clip_path):
+            import sys
+            plan_path = os.path.join("projects", project_id, "plan.json")
+            print(f"[{project_id}][Clip {clip_num}] Auto re-compiling clip after title/bridge update...")
+            subprocess.run([
+                sys.executable, "ddma.py", "compile-clip",
+                "--num", str(clip_num),
+                "--plan-file", plan_path
+            ], check=True)
+            print(f"[{project_id}][Clip {clip_num}] Auto re-compilation complete!")
+    except Exception as e:
+        print(f"[{project_id}][Clip {clip_num}] Warning: Auto compile-clip failed: {e}")
+
 # Background thread helper for executing the Mosaic API pipeline (upload, run, poll, download)
 def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments, audio_path, run_id=None):
     job_key = (project_id, int(clip_num))
@@ -471,11 +490,36 @@ def run_transcribe(project_id, audio_path, out_json_path, info_path):
         res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         if res.returncode == 0:
             print(f"[{project_id}] Background Whisper transcription completed successfully.")
-            # Update status to ready
+            
+            # Extract episode number if available
+            ep_num_match = re.search(r'\d+', project_id)
+            ep_num = int(ep_num_match.group(0)) if ep_num_match else 246
+            
+            # Read project info
+            info = {}
+            if os.path.exists(info_path):
+                with open(info_path, "r", encoding="utf-8") as f:
+                    info = json.load(f)
+            title = info.get("name", f"Episode {ep_num}")
+            
+            print(f"[{project_id}] Kicking off automated clip ingestion pipeline...")
+            ingest_cmd = [
+                python_exe,
+                "ddma.py",
+                "ingest-episode",
+                "--audio", audio_path,
+                "--episode", str(ep_num),
+                "--title", title
+            ]
+            subprocess.run(ingest_cmd, check=True)
+            print(f"[{project_id}] Background project creation pipeline completed successfully!")
+
             if os.path.exists(info_path):
                 with open(info_path, "r", encoding="utf-8") as f:
                     info = json.load(f)
                 info["status"] = "ready"
+                info["audio_filename"] = info.get("audio_filename") or info.get("audio_file") or os.path.basename(audio_path)
+                info["audio_file"] = info["audio_filename"]
                 with open(info_path, "w", encoding="utf-8") as f:
                     json.dump(info, f, indent=4)
         else:
@@ -1076,6 +1120,9 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         shutil.copy2('plan.json', os.path.join('docs', 'plan.json'))
                     except Exception as sync_err:
                         print(f"Error syncing to docs/plan.json: {sync_err}")
+                
+                # Auto re-compile title card intro & curiosity question outro for this clip if compiled/draft video exists
+                auto_recompile_clip(project_id, clip_num)
                 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
