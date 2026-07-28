@@ -1131,7 +1131,9 @@ def ingest_episode(
 
     update_ingestion_progress(proj_dir, 3, 40, f"Generated plan.json with {len(clips_list)} clips. Starting audio cuts...", f"Created storyboard plan with {len(clips_list)} clips.")
 
-    # 4. Sync plan.json to root and docs
+    # 4. Sync plan.json to snapshot, root, and docs
+    snapshot_path = os.path.join(proj_dir, "plan_snapshot.json")
+    shutil.copy2(plan_path, snapshot_path)
     shutil.copy2(plan_path, "plan.json")
     docs_ep_dir = os.path.join("docs", "episodes", str(episode))
     os.makedirs(docs_ep_dir, exist_ok=True)
