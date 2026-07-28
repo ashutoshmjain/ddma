@@ -1384,11 +1384,29 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 with open(os.path.join(project_dir, "plan.json"), "w", encoding="utf-8") as f:
                     json.dump([], f, indent=4)
                 
-                # Kick off transcription thread
-                out_json_path = os.path.join(project_dir, "transcription.json")
-                t = threading.Thread(target=run_transcribe, args=(project_id, dest_audio_path, out_json_path, info_path), daemon=True)
-                t.start()
-                
+                # Register new episode in docs/episodes.json manifest
+                try:
+                    ep_manifest_path = os.path.join("docs", "episodes.json")
+                    if os.path.exists(ep_manifest_path):
+                        with open(ep_manifest_path, "r", encoding="utf-8") as mf:
+                            mdata = json.load(mf)
+                        
+                        title_val = json_data.get("title", project_name)
+                        new_entry = {
+                            "id": str(ep_num),
+                            "title": f"Episode {ep_num}: {title_val}",
+                            "planPath": f"episodes/{ep_num}/plan.json",
+                            "clipsDir": f"episodes/{ep_num}/clips"
+                        }
+                        
+                        mdata = [item for item in mdata if str(item.get("id")) != str(ep_num)]
+                        mdata.append(new_entry)
+                        
+                        with open(ep_manifest_path, "w", encoding="utf-8") as mf:
+                            json.dump(mdata, mf, indent=4)
+                except Exception as me:
+                    print(f"Warning updating episodes.json manifest during create: {me}")
+
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
@@ -1400,7 +1418,16 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
         elif parsed_url.path == '/delete-project':
-            project_id = params.get('id', [None])[0]
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length) if content_length > 0 else b""
+            json_data = {}
+            if post_data:
+                try:
+                    json_data = json.loads(post_data.decode('utf-8'))
+                except Exception:
+                    pass
+            
+            project_id = params.get('id', [None])[0] or json_data.get('id') or json_data.get('project_id')
             try:
                 if not project_id:
                     raise Exception("Missing project id.")
