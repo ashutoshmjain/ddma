@@ -2757,8 +2757,8 @@
                     if (data.success) {
                         if (projectInfo) projectInfo.title = data.title;
                         updateStateBar("Episode title updated! Re-rendering Part 1 title card...");
-                        loadProjectDataOnly(activeProjectId);
-                        setTimeout(() => { if (activeProjectId) loadProjectDataOnly(activeProjectId); }, 3000);
+                        selectProject(activeProjectId);
+                        setTimeout(() => { if (activeProjectId) selectProject(activeProjectId); }, 3000);
                     } else {
                         throw new Error("Failed to update title");
                     }
@@ -4590,8 +4590,8 @@
             .then(res => {
                 if (!res.ok) console.error("Auto-save failed");
                 updateStateBar("Plan saved. Updating title card intros...");
-                setTimeout(() => { if (activeProjectId) loadProjectDataOnly(activeProjectId); }, 2500);
-                setTimeout(() => { if (activeProjectId) loadProjectDataOnly(activeProjectId); }, 5500);
+                setTimeout(() => { if (activeProjectId) selectProject(activeProjectId); }, 2500);
+                setTimeout(() => { if (activeProjectId) selectProject(activeProjectId); }, 5500);
             })
             .catch(err => {
                 console.warn("Auto-save failed: ", err.message);
