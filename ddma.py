@@ -605,6 +605,40 @@ def compile_clip(
     else:
         backup_path = master_path
 
+    # Check for freshly cut audio clip (e.g. clips/245-1-*.mp3) and remux audio track
+    audio_pattern1 = os.path.join(master_dir, f"{episode}-{num}-*.mp3")
+    audio_pattern2 = os.path.join(master_dir, f"{episode}-{num}.mp3")
+    audio_matches = glob.glob(audio_pattern1) + glob.glob(audio_pattern2)
+    if not audio_matches:
+        audio_matches = glob.glob(os.path.join(master_dir, f"*-{num}-*.mp3")) + glob.glob(os.path.join(master_dir, f"*-{num}.mp3"))
+    
+    if audio_matches and os.path.exists(backup_path):
+        fresh_audio_path = audio_matches[0]
+        typer.echo(f"Updating master body audio from fresh audio clip: {fresh_audio_path}...")
+        temp_remux_path = f"temp_remux_{num}.mp4"
+        cmd_remux = [
+            "ffmpeg", "-y",
+            "-i", backup_path,
+            "-i", fresh_audio_path,
+            "-map", "0:v",
+            "-map", "1:a",
+            "-c:v", "copy",
+            "-c:a", "aac",
+            "-b:a", "192k",
+            "-shortest",
+            temp_remux_path
+        ]
+        res_remux = subprocess.run(cmd_remux, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if res_remux.returncode == 0:
+            shutil.move(temp_remux_path, backup_path)
+            typer.echo(f"Successfully updated master body audio track: {backup_path}")
+        else:
+            if os.path.exists(temp_remux_path):
+                try:
+                    os.remove(temp_remux_path)
+                except Exception:
+                    pass
+
     # 3. Get title
     title = clip.get("title", "")
     if not title:
