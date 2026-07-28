@@ -2777,7 +2777,7 @@
         }
  
         function deleteProjectConfirm(projectId, name) {
-            const confirmed = confirm(`Are you sure you want to permanently delete the project "${name}"?\n\nThis will delete all its metadata, segment plans, transcripts, and copied audio files. This action CANNOT be undone.`);
+            const confirmed = confirm(`Are you sure you want to permanently delete the project "${name}"?\n\nThis will permanently delete all metadata, segment plans, transcripts, audio cuts, draft videos, compiled intros/outros, and published preview assets for this project. This action CANNOT be undone.`);
             if (!confirmed) return;
             
             updateStateBar("Deleting project...");

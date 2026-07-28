@@ -1291,37 +1291,97 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 if not project_id:
                     raise Exception("Missing project id.")
+                
+                # 1. Resolve numeric episode ID (e.g. "episode_245" -> "245")
+                ep_num_match = re.search(r'\d+', str(project_id))
+                ep_num = ep_num_match.group(0) if ep_num_match else None
+                
+                print(f"[{project_id}] Starting isolated project deletion policy (ep_num={ep_num})...")
+
+                # 2. Delete projects/<id> directory tree
                 project_dir = os.path.join("projects", project_id)
                 if os.path.exists(project_dir):
-                    # Delete project_info.json first to immediately hide it from selection lists
                     info_path = os.path.join(project_dir, "project_info.json")
                     if os.path.exists(info_path):
                         try:
                             os.remove(info_path)
-                        except:
+                        except Exception:
                             pass
-                    
-                    # Try to remove the directory tree
                     try:
                         shutil.rmtree(project_dir)
                     except Exception as rmtree_err:
-                        print(f"shutil.rmtree failed on {project_dir} (possibly locked file): {rmtree_err}. Attempting fallback...")
-                        # Fallback: Delete all individual files we can, rename directory to hide it
+                        print(f"shutil.rmtree failed on {project_dir}: {rmtree_err}. Cleaning files individually...")
                         for root, dirs, files in os.walk(project_dir, topdown=False):
                             for name in files:
-                                file_path = os.path.join(root, name)
                                 try:
-                                    os.remove(file_path)
-                                except:
+                                    os.remove(os.path.join(root, name))
+                                except Exception:
                                     pass
-                        
-                        # Rename parent folder to a hidden .trash folder so it's ignored and can be cleaned up later
-                        trash_dir = os.path.join("projects", f".trash_{project_id}_{int(time.time())}")
                         try:
+                            trash_dir = os.path.join("projects", f".trash_{project_id}_{int(time.time())}")
                             os.rename(project_dir, trash_dir)
-                        except Exception as rename_err:
-                            print(f"Failed to rename trash folder: {rename_err}")
-                
+                        except Exception:
+                            pass
+
+                if ep_num:
+                    # 3. Clean clips matching pattern "ep_num-*" from clips/
+                    clips_dir = "clips"
+                    if os.path.exists(clips_dir):
+                        for fname in os.listdir(clips_dir):
+                            if fname.startswith(f"{ep_num}-"):
+                                try:
+                                    os.remove(os.path.join(clips_dir, fname))
+                                except Exception as e:
+                                    print(f"Warning deleting clip {fname}: {e}")
+
+                    # 4. Clean combined long-form videos
+                    for comb_name in [f"combined_{ep_num}.mp4", f"combined_episode_{ep_num}.mp4", f"combined_{project_id}.mp4"]:
+                        if os.path.exists(comb_name):
+                            try:
+                                os.remove(comb_name)
+                            except Exception as e:
+                                print(f"Warning deleting combined video {comb_name}: {e}")
+
+                    # 5. Clean previews matching preview_project_id_* or preview_episode_ep_num_*
+                    previews_dir = "previews"
+                    if os.path.exists(previews_dir):
+                        for pfname in os.listdir(previews_dir):
+                            if pfname.startswith(f"preview_{project_id}_") or pfname.startswith(f"preview_episode_{ep_num}_"):
+                                try:
+                                    os.remove(os.path.join(previews_dir, pfname))
+                                except Exception:
+                                    pass
+
+                    # 6. Clean web docs assets: docs/episodes/ep_num/
+                    docs_ep_dir = os.path.join("docs", "episodes", ep_num)
+                    if os.path.exists(docs_ep_dir):
+                        try:
+                            shutil.rmtree(docs_ep_dir)
+                        except Exception as e:
+                            print(f"Warning deleting docs episode folder {docs_ep_dir}: {e}")
+
+                    # 7. Update docs/episodes.json manifest
+                    ep_manifest_path = os.path.join("docs", "episodes.json")
+                    if os.path.exists(ep_manifest_path):
+                        try:
+                            with open(ep_manifest_path, "r", encoding="utf-8") as mf:
+                                manifest = json.load(mf)
+                            
+                            # Filter out deleted episode
+                            updated_manifest = [m for m in manifest if str(m.get("id")) != ep_num and str(m.get("number")) != ep_num]
+                            
+                            # Ensure at least one default episode remains if manifest is not empty
+                            if updated_manifest:
+                                has_default = any(m.get("isDefault") for m in updated_manifest)
+                                if not has_default:
+                                    updated_manifest[0]["isDefault"] = True
+                            
+                            with open(ep_manifest_path, "w", encoding="utf-8") as mf:
+                                json.dump(updated_manifest, mf, indent=2)
+                        except Exception as me:
+                            print(f"Warning updating episodes.json manifest during delete: {me}")
+
+                print(f"[{project_id}] Isolated project deletion complete.")
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
