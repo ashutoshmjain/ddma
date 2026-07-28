@@ -1925,15 +1925,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 draw.rounded_rectangle([(x0, y0), (x1, y1)], radius=15, fill=(18, 18, 18, 200))
                 
                 sub_text = f"EPISODE {ep_num}" if clip_num == 1 else f"EPISODE {ep_num} • PART {clip_num}"
-                if clip_num == 1:
-                    info_path = os.path.join(project_dir, "project_info.json")
-                    ep_title = "Life, Death and the Lysosome"
-                    if os.path.exists(info_path):
-                        with open(info_path, "r", encoding="utf-8") as inf_f:
-                            inf_data = json.load(inf_f)
-                            if inf_data.get("title"):
-                                ep_title = inf_data["title"]
-                    title_text = ep_title
+                title_text = title if title else f"Part {clip_num}"
                 
                 bbox_sub = draw.textbbox((0, 0), sub_text, font=font_sub)
                 w_sub = bbox_sub[2] - bbox_sub[0]

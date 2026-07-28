@@ -643,12 +643,8 @@ def compile_clip(
             except Exception:
                 pass
 
-        if num == 1:
-            sub_text = f"EPISODE {episode}"
-            title_text = ep_title
-        else:
-            sub_text = f"EPISODE {episode} • PART {num}"
-            title_text = title if title else f"Part {num}"
+        sub_text = f"EPISODE {episode}" if num == 1 else f"EPISODE {episode} • PART {num}"
+        title_text = title if title else f"Part {num}"
 
         # Create overlay layer for semi-transparent charcoal banner
         overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
