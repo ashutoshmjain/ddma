@@ -615,19 +615,57 @@ def compile_clip(
     if audio_matches and os.path.exists(backup_path):
         fresh_audio_path = audio_matches[0]
         typer.echo(f"Updating master body audio from fresh audio clip: {fresh_audio_path}...")
+        
+        # Probe fresh audio duration and master video duration
+        a_dur_fresh = None
+        v_dur_master = None
+        try:
+            p_a = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", fresh_audio_path], capture_output=True, text=True)
+            if p_a.returncode == 0:
+                a_dur_fresh = float(p_a.stdout.strip())
+            p_v = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", backup_path], capture_output=True, text=True)
+            if p_v.returncode == 0:
+                v_dur_master = float(p_v.stdout.strip())
+        except Exception as ex_probe:
+            typer.echo(f"Warning probing durations: {ex_probe}")
+
         temp_remux_path = f"temp_remux_{num}.mp4"
-        cmd_remux = [
-            "ffmpeg", "-y",
-            "-i", backup_path,
-            "-i", fresh_audio_path,
-            "-map", "0:v",
-            "-map", "1:a",
-            "-c:v", "copy",
-            "-c:a", "aac",
-            "-b:a", "192k",
-            "-shortest",
-            temp_remux_path
-        ]
+        if a_dur_fresh and v_dur_master and a_dur_fresh > v_dur_master + 0.1:
+            typer.echo(f"Audio duration ({a_dur_fresh:.2f}s) exceeds video duration ({v_dur_master:.2f}s). Extending black canvas video to {a_dur_fresh:.2f}s...")
+            cmd_remux = [
+                "ffmpeg", "-y",
+                "-f", "lavfi", "-i", f"color=c=black:s=740x740:r=25:d={a_dur_fresh:.3f}",
+                "-i", fresh_audio_path,
+                "-c:v", "libx264", "-tune", "stillimage", "-pix_fmt", "yuv420p",
+                "-c:a", "aac", "-b:a", "192k",
+                "-t", f"{a_dur_fresh:.3f}",
+                temp_remux_path
+            ]
+        else:
+            cmd_remux = [
+                "ffmpeg", "-y",
+                "-i", backup_path,
+                "-i", fresh_audio_path,
+                "-map", "0:v",
+                "-map", "1:a",
+                "-c:v", "copy",
+                "-c:a", "aac",
+                "-b:a", "192k",
+                "-t", f"{a_dur_fresh:.3f}" if a_dur_fresh else "0",
+                temp_remux_path
+            ] if a_dur_fresh else [
+                "ffmpeg", "-y",
+                "-i", backup_path,
+                "-i", fresh_audio_path,
+                "-map", "0:v",
+                "-map", "1:a",
+                "-c:v", "copy",
+                "-c:a", "aac",
+                "-b:a", "192k",
+                "-shortest",
+                temp_remux_path
+            ]
+        
         res_remux = subprocess.run(cmd_remux, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         if res_remux.returncode == 0:
             shutil.move(temp_remux_path, backup_path)

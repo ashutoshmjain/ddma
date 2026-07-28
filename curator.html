@@ -4548,7 +4548,11 @@
                         if (window.fetchCompiledVideosTimeout) {
                             clearTimeout(window.fetchCompiledVideosTimeout);
                         }
-                        window.fetchCompiledVideosTimeout = setTimeout(fetchCompiledVideos, 3000);
+                        window.fetchCompiledVideosTimeout = setTimeout(() => {
+                            if (activeProjectId) {
+                                fetchProjectPlan(activeProjectId, true);
+                            }
+                        }, 2000);
                     }
                 })
                 .catch(err => {

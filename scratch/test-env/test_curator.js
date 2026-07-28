@@ -212,14 +212,20 @@ async function runTest() {
             const videoStream = probeData.streams.find(s => s.codec_type === 'video');
             const audioStream = probeData.streams.find(s => s.codec_type === 'audio');
 
-            console.log(`- Video Stream Present: ${!!videoStream} (${videoStream ? videoStream.codec_name : 'none'})`);
-            console.log(`- Audio Stream Present: ${!!audioStream} (${audioStream ? audioStream.codec_name + ' @ ' + audioStream.sample_rate + 'Hz' : 'none'})`);
+            const vDur = parseFloat(videoStream.duration || 0);
+            const aDur = parseFloat(audioStream.duration || 0);
+
+            console.log(`- Video Stream Present: ${!!videoStream} (${videoStream ? videoStream.codec_name : 'none'}, duration: ${vDur.toFixed(2)}s)`);
+            console.log(`- Audio Stream Present: ${!!audioStream} (${audioStream ? audioStream.codec_name + ' @ ' + audioStream.sample_rate + 'Hz' : 'none'}, duration: ${aDur.toFixed(2)}s)`);
 
             if (!videoStream || !audioStream) {
                 throw new Error("FAIL: Compiled video is missing required video or audio stream!");
             }
             if (audioStream.sample_rate !== '48000') {
                 throw new Error(`FAIL: Audio sample rate ${audioStream.sample_rate}Hz does not match required 48000Hz!`);
+            }
+            if (Math.abs(vDur - aDur) > 0.25) {
+                throw new Error(`FAIL: Video stream duration (${vDur.toFixed(2)}s) and audio stream duration (${aDur.toFixed(2)}s) are desynced by > 0.25s!`);
             }
         } else {
             console.log(`- Note: ${clip1Video} not found on disk, skipping media stream probe.`);
