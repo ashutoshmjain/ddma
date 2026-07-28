@@ -4546,6 +4546,7 @@
                 lastSavedStateString = currentPlanStr;
             }
 
+            updateStateBar("Saving plan & updating clip intros...");
             fetch(`/save-project-plan?id=${activeProjectId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -4553,6 +4554,9 @@
             })
             .then(res => {
                 if (!res.ok) console.error("Auto-save failed");
+                updateStateBar("Plan saved. Updating title card intros...");
+                setTimeout(() => { if (activeProjectId) loadProjectDataOnly(activeProjectId); }, 2500);
+                setTimeout(() => { if (activeProjectId) loadProjectDataOnly(activeProjectId); }, 5500);
             })
             .catch(err => {
                 console.warn("Auto-save failed: ", err.message);
@@ -5190,10 +5194,11 @@
                         playBtn.textContent = '▶';
                         
                         // Setup and show video modal
-                        previewVideoPlayer.src = matchingVideo.url;
+                        const freshVideoUrl = matchingVideo.url + (matchingVideo.url.includes('?') ? '&' : '?') + 't=' + Date.now();
+                        previewVideoPlayer.src = freshVideoUrl;
                         videoModalTitle.textContent = `VIDEO PREVIEW - Part ${clip.num}: ${clip.title}`;
                         videoModalSubtitle.textContent = `clips/${matchingVideo.filename}`;
-                        downloadVideoBtn.href = matchingVideo.url;
+                        downloadVideoBtn.href = freshVideoUrl;
                         videoModalOverlay.classList.add('active');
                         previewVideoPlayer.play();
                     });
