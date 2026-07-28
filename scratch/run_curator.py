@@ -993,16 +993,11 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             if proc.returncode != 0:
                                 raise Exception(f"Auto-compile failed: {proc.stderr}")
                             print(f"[Auto-Compile][{proj_id}][Clip {n}] Background compilation completed successfully!")
-                            if job_key in mosaic_runs:
-                                del mosaic_runs[job_key]
                         except Exception as ex:
                             print(f"[Auto-Compile][{proj_id}][Clip {n}] Background compilation failed: {ex}")
-                            mosaic_runs[job_key] = {
-                                "status": "failed",
-                                "progress": 0,
-                                "error": str(ex),
-                                "run_id": "auto_compile"
-                            }
+                        finally:
+                            if job_key in mosaic_runs and mosaic_runs[job_key].get("run_id") == "auto_compile":
+                                del mosaic_runs[job_key]
                     
                     t = threading.Thread(
                         target=run_auto_compile,

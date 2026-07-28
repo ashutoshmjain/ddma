@@ -85,6 +85,31 @@ async function runTest() {
             console.log("- Note: Clip 1 has no .music-volume input directly visible, skipping slider input step.");
         }
 
+        // 🧪 TEST 2b: Mosaic & Video Button Enablement Check
+        console.log("\n🧪 TEST 2b: Verifying Mosaic & Video Buttons are Enabled & Clickable...");
+        const buttonStates = await page.evaluate(() => {
+            const card1 = document.querySelector('.clip-card[data-index="0"]');
+            if (!card1) return { videoDisabled: true, mosaicDisabled: true, videoText: '', mosaicText: '' };
+            const videoBtn = card1.querySelector('.btn-card-video');
+            const mosaicBtn = card1.querySelector('.btn-card-mosaic');
+            return {
+                videoDisabled: videoBtn ? videoBtn.disabled : true,
+                mosaicDisabled: mosaicBtn ? mosaicBtn.disabled : true,
+                videoText: videoBtn ? videoBtn.textContent.trim() : '',
+                mosaicText: mosaicBtn ? mosaicBtn.textContent.trim() : ''
+            };
+        });
+
+        console.log(`- Video Button Text: "${buttonStates.videoText}" | Disabled: ${buttonStates.videoDisabled}`);
+        console.log(`- Mosaic Button Text: "${buttonStates.mosaicText}" | Disabled: ${buttonStates.mosaicDisabled}`);
+
+        if (buttonStates.videoDisabled) {
+            throw new Error("FAIL: Video button is grayed out / disabled on Clip 1!");
+        }
+        if (buttonStates.mosaicDisabled) {
+            throw new Error("FAIL: Mosaic button is grayed out / disabled on Clip 1!");
+        }
+
         // Check for any captured JS page errors during interactions
         if (capturedErrors.length > 0) {
             throw new Error(`FAIL: Captured ${capturedErrors.length} unhandled browser error(s):\n` + capturedErrors.join('\n'));

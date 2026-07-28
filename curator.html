@@ -5058,23 +5058,19 @@
                 
                 let videoBtnHtml = "";
                 if (statusInfo.video_state === 'processing') {
-                    videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-gray" style="font-weight:600; opacity: 0.5; cursor: not-allowed;" disabled title="Video is currently compiling/processing...">⏳ Processing</button>`;
-                } else if (statusInfo.video_state !== 'none') {
+                    videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-warning" style="font-weight:600; opacity: 0.8; cursor: not-allowed;" disabled title="Video is currently compiling/processing...">⏳ Processing</button>`;
+                } else if (matchingVideo || statusInfo.video_state !== 'none') {
                     videoBtnHtml = `<button class="btn btn-mini btn-card-video ${videoStatusClass}" id="playVideoBtn_${index}" style="font-weight:600;" title="Play compiled MP4 video">📹 Video</button>`;
                 } else {
                     videoBtnHtml = `<button class="btn btn-mini btn-card-video ${videoStatusClass}" style="font-weight:600; opacity: 0.4; cursor: not-allowed;" disabled title="Video not generated yet">📹 Video</button>`;
                 }
                 
                 let mosaicBtnHtml = "";
-                if (isLocked) {
-                    if (statusInfo.video_state === 'processing') {
-                        const pct = statusInfo.progress !== undefined ? statusInfo.progress : 0;
-                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-warning" id="mosaicCardBtn_${index}" style="font-weight: 600; opacity: 0.8; cursor: not-allowed;" disabled title="Mosaic generation in progress...">⏳ ${pct}%</button>`;
-                    } else {
-                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic ${mosaicStatusClass}" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Send draft video to Mosaic API for overlaying infographics and visual graphics">🌌 Mosaic</button>`;
-                    }
+                if (statusInfo.video_state === 'processing') {
+                    const pct = statusInfo.progress !== undefined ? statusInfo.progress : 0;
+                    mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-warning" id="mosaicCardBtn_${index}" style="font-weight: 600; opacity: 0.8; cursor: not-allowed;" disabled title="Mosaic generation in progress...">⏳ ${pct}%</button>`;
                 } else {
-                    mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-gray" style="font-weight: 600; opacity: 0.4; cursor: not-allowed;" disabled title="Lock clip first to enable Mosaic">🌌 Mosaic</button>`;
+                    mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic ${mosaicStatusClass}" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Send draft video to Mosaic API for overlaying infographics and visual graphics">🌌 Mosaic</button>`;
                 }
                 
                 card.innerHTML = `
