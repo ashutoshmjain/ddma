@@ -5126,7 +5126,6 @@
                 if (titleInput) {
                     titleInput.addEventListener('input', function(e) {
                         clips[index].title = e.target.value;
-                        savePlanToServerDebounced(600);
                     });
                     titleInput.addEventListener('change', function(e) {
                         clips[index].title = e.target.value.trim();
