@@ -2860,12 +2860,22 @@
                         projectList.appendChild(item);
                     });
                     
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const urlProj = urlParams.get('project') || urlParams.get('id');
+                    const savedProj = localStorage.getItem('ddma-active-project');
+                    const initialTarget = urlProj || savedProj;
+
                     if (!activeProjectId && projects.length > 0) {
-                        const firstReady = projects.find(p => p.status === 'ready');
-                        if (firstReady) {
-                            selectProject(firstReady.id);
+                        const targetMatch = initialTarget ? projects.find(p => p.id === initialTarget) : null;
+                        if (targetMatch) {
+                            selectProject(targetMatch.id);
                         } else {
-                            selectProject(projects[0].id);
+                            const firstReady = projects.find(p => p.status === 'ready');
+                            if (firstReady) {
+                                selectProject(firstReady.id);
+                            } else {
+                                selectProject(projects[0].id);
+                            }
                         }
                     } else if (activeProjectId) {
                         const currProj = projects.find(p => p.id === activeProjectId);
@@ -2891,6 +2901,13 @@
             stopLockedSequence();
             
             activeProjectId = projectId;
+            localStorage.setItem('ddma-active-project', projectId);
+            try {
+                const url = new URL(window.location);
+                url.searchParams.set('project', projectId);
+                window.history.replaceState({}, '', url);
+            } catch (e) {}
+            
             lastCombinedUrl = "";
             
             loadProjectsListOnly();
@@ -2953,17 +2970,17 @@
                     activeProjectTitleHeader.textContent = `${projName.toUpperCase()} CLIP PLAN`;
                     nowPlayingTitle.textContent = `${projName} (${audioName})`;
                     
-                    if (projectInfo.status === 'transcribing') {
-                        renderTranscribingSpinner();
+                    if (projectInfo.status === 'transcribing' || projectInfo.status === 'ingesting') {
+                        renderIngestionDashboard(data.ingestion_progress || null);
                         clips = [];
                         renderClips();
                         audioElement.src = '';
                         
                         pollingInterval = setInterval(() => {
                             pollProjectStatus(projectId);
-                        }, 4000);
+                        }, 1500);
                         
-                        updateStateBar("Transcribing in background...");
+                        updateStateBar("Automated ingestion pipeline running...");
                     } else if (projectInfo.status === 'error') {
                         renderErrorState(projectInfo.error_message || "Unknown Whisper transcription error.");
                         clips = [];
@@ -3037,16 +3054,19 @@
             fetch(`/get-project?id=${projectId}`)
                 .then(r => r.json())
                 .then(data => {
+                    if (data.ingestion_progress) {
+                        renderIngestionDashboard(data.ingestion_progress);
+                    }
                     if (data.info.status === 'ready') {
                         clearInterval(pollingInterval);
                         pollingInterval = null;
                         selectProject(projectId);
-                        showDebug(`Whisper transcription completed for ${data.info.name}!`, false);
+                        showDebug(`Ingestion completed for ${data.info.name}!`, false);
                     } else if (data.info.status === 'error') {
                         clearInterval(pollingInterval);
                         pollingInterval = null;
                         selectProject(projectId);
-                        showDebug(`Transcription failed for ${data.info.name}.`, true);
+                        showDebug(`Ingestion failed for ${data.info.name}.`, true);
                     }
                 })
                 .catch(err => {
@@ -3054,17 +3074,90 @@
                 });
         }
 
-        function renderTranscribingSpinner() {
+        function renderIngestionDashboard(progressData) {
+            const data = progressData || { current_stage: 1, percent: 5, action_text: "Initializing project ingestion...", stages: [], logs: [] };
+            
+            const stages = data.stages && data.stages.length > 0 ? data.stages : [
+                {"index": 1, "name": "Transcription", "icon": "🎙️", "label": "Transcribing Raw Audio"},
+                {"index": 2, "name": "Storyboarding", "icon": "🧠", "label": "Structuring Clip Boundaries"},
+                {"index": 3, "name": "Audio Cutting", "icon": "✂️", "label": "Normalizing Audio Clips"},
+                {"index": 4, "name": "Draft Muxing", "icon": "🎥", "label": "Muxing Black Canvas Videos"},
+                {"index": 5, "name": "Rendering Intros", "icon": "🎬", "label": "Compiling Intros & Outros"},
+                {"index": 6, "name": "Manifest Sync", "icon": "🚀", "label": "Registering Episode Manifest"}
+            ];
+
+            let stagesHtml = stages.map(s => {
+                const isComplete = s.index < data.current_stage || data.percent >= 100;
+                const isActive = s.index === data.current_stage && data.percent < 100;
+                
+                let stateClass = 'pending';
+                let stateBadge = `<span style="opacity:0.5;">${s.index}</span>`;
+                if (isComplete) {
+                    stateClass = 'completed';
+                    stateBadge = `<span style="color:#10b981; font-weight:bold;">✓</span>`;
+                } else if (isActive) {
+                    stateClass = 'active';
+                    stateBadge = `<span style="color:#6366f1; animation: pulse 1s infinite alternate;">⚡</span>`;
+                }
+
+                const styleAttr = isActive 
+                    ? 'border: 1px solid var(--primary); background: rgba(99, 102, 241, 0.12); box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);'
+                    : (isComplete ? 'border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05);' : 'border: 1px solid var(--border-color); opacity: 0.5;');
+
+                return `
+                    <div class="pipeline-stage-card ${stateClass}" style="flex: 1; min-width: 110px; padding: 0.6rem 0.5rem; border-radius: 8px; text-align: center; transition: all 0.3s ease; ${styleAttr}">
+                        <div style="font-size: 1.2rem; margin-bottom: 0.2rem;">${s.icon}</div>
+                        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-main); white-space: nowrap;">${s.name}</div>
+                        <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.2rem;">${stateBadge} Stage ${s.index}</div>
+                    </div>
+                `;
+            }).join('');
+
+            const logs = data.logs || [];
+            const logsText = logs.length > 0 ? logs.join('\n') : '[System] Waiting for execution log stream...';
+
             transcriptContainer.innerHTML = `
-                <div class="empty-state">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="animation: pulse-opacity 1.2s infinite ease-in-out;">
-                        <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <h3 style="margin-top: 1rem; color: var(--text-main);">Transcribing Media...</h3>
-                    <p style="margin-top: 0.5rem; max-width: 320px;">OpenAI Whisper is currently transcribing the audio file in the background. The transcript will load automatically once complete.</p>
+                <div class="ingestion-dashboard-container" style="padding: 2rem 1.5rem; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box;">
+                    <div style="text-align: center; margin-bottom: 1.5rem;">
+                        <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+                            <span style="display:inline-block; animation: spin 2s linear infinite;">⚙️</span> Automated Ingestion Pipeline
+                        </h2>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Executing end-to-end media automation: Transcription, Audio Slicing, Draft Muxing, Title Cards, and Outro slides.</p>
+                    </div>
+
+                    <!-- Pipeline Stages Grid -->
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; justify-content: center;">
+                        ${stagesHtml}
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div style="background: var(--border-color); height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 0.8rem; position: relative;">
+                        <div id="ingestionProgressBar" style="width: ${data.percent}%; height: 100%; background: linear-gradient(90deg, #6366f1, #10b981); transition: width 0.5s ease; border-radius: 6px;"></div>
+                    </div>
+
+                    <!-- Live Action Subtitle & Percentage -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <div id="ingestionActionText" style="font-size: 0.85rem; font-weight: 600; color: var(--text-main); font-family: var(--font-mono); display: flex; align-items: center; gap: 0.4rem;">
+                            <span style="color: var(--primary);">➔</span> ${data.action_text || 'Processing...'}
+                        </div>
+                        <div id="ingestionPercentText" style="font-size: 1.1rem; font-weight: 800; color: var(--primary); font-family: var(--font-mono);">${data.percent}%</div>
+                    </div>
+
+                    <!-- Technical Logs Console Drawer -->
+                    <details style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;" open>
+                        <summary style="padding: 0.5rem 0.8rem; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); cursor: pointer; user-select: none; font-family: var(--font-mono); display: flex; justify-content: space-between; align-items: center;">
+                            <span>💻 Execution Logs (<span id="ingestionLogCount">${logs.length}</span> entries)</span>
+                            <span style="font-size: 0.7rem; opacity: 0.6;">Click to toggle</span>
+                        </summary>
+                        <pre id="ingestionLogPre" style="padding: 0.8rem; margin: 0; font-family: var(--font-mono); font-size: 0.7rem; color: #10b981; background: #0d1117; max-height: 200px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; border-top: 1px solid var(--border-color);">${logsText}</pre>
+                    </details>
                 </div>
             `;
-            segmentCount.textContent = '0 words loaded';
+            segmentCount.textContent = `${data.percent}% Ingesting`;
+        }
+
+        function renderTranscribingSpinner() {
+            renderIngestionDashboard(null);
         }
 
         function renderErrorState(errText) {

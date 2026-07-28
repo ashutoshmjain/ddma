@@ -2763,13 +2763,23 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                 clip_statuses[job_clip_num]["progress"] = job.get("progress", 0)
                                 clip_statuses[job_clip_num]["status"] = job_status
                                 
+                ingestion_progress = None
+                progress_file = os.path.join(project_dir, "ingestion_progress.json")
+                if os.path.exists(progress_file):
+                    try:
+                        with open(progress_file, "r", encoding="utf-8") as pf:
+                            ingestion_progress = json.load(pf)
+                    except Exception:
+                        pass
+
                 payload = {
                     "info": info,
                     "plan": plan_data,
                     "transcription": trans_data,
                     "has_snapshot": has_snapshot,
                     "compiled_videos": compiled_videos,
-                    "clip_statuses": clip_statuses
+                    "clip_statuses": clip_statuses,
+                    "ingestion_progress": ingestion_progress
                 }
                 
                 self.send_response(200)
@@ -2777,6 +2787,28 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(json.dumps(payload).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_error(500, str(e))
+                return
+
+        elif parsed_url.path == '/get-ingestion-progress':
+            project_id = params.get('id', [None])[0]
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                project_dir = os.path.join("projects", project_id)
+                progress_file = os.path.join(project_dir, "ingestion_progress.json")
+                data = {"status": "none", "percent": 0}
+                if os.path.exists(progress_file):
+                    with open(progress_file, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps(data).encode('utf-8'))
                 return
             except Exception as e:
                 self.send_error(500, str(e))

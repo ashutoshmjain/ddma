@@ -986,6 +986,50 @@ def compile_clip(
                     pass
 
 
+def update_ingestion_progress(proj_dir, stage_index, percent, action_text, log_line=None):
+    progress_file = os.path.join(proj_dir, "ingestion_progress.json")
+    
+    stages = [
+        {"index": 1, "name": "Transcription", "icon": "🎙️", "label": "Transcribing Raw Audio"},
+        {"index": 2, "name": "Storyboarding", "icon": "🧠", "label": "Structuring Clip Boundaries"},
+        {"index": 3, "name": "Audio Cutting", "icon": "✂️", "label": "Normalizing Audio Clips"},
+        {"index": 4, "name": "Draft Muxing", "icon": "🎥", "label": "Muxing Black Canvas Videos"},
+        {"index": 5, "name": "Rendering Intros", "icon": "🎬", "label": "Compiling Intros & Outros"},
+        {"index": 6, "name": "Manifest Sync", "icon": "🚀", "label": "Registering Episode Manifest"}
+    ]
+    
+    existing_logs = []
+    if os.path.exists(progress_file):
+        try:
+            with open(progress_file, "r", encoding="utf-8") as f:
+                prev_data = json.load(f)
+                existing_logs = prev_data.get("logs", [])
+        except Exception:
+            pass
+            
+    if log_line:
+        import datetime
+        timestamp = datetime.datetime.now().strftime("%H:%M:%S")
+        existing_logs.append(f"[{timestamp}] {log_line}")
+        if len(existing_logs) > 100:
+            existing_logs = existing_logs[-100:]
+
+    data = {
+        "status": "ingesting" if percent < 100 else "ready",
+        "current_stage": stage_index,
+        "percent": min(100, max(0, int(percent))),
+        "action_text": action_text,
+        "stages": stages,
+        "logs": existing_logs
+    }
+    
+    try:
+        with open(progress_file, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+    except Exception:
+        pass
+
+
 @app.command()
 def ingest_episode(
     audio: str = typer.Option(..., help="Path to input audio file"),
@@ -1001,6 +1045,8 @@ def ingest_episode(
     proj_dir = os.path.join("projects", proj_id)
     os.makedirs(proj_dir, exist_ok=True)
 
+    update_ingestion_progress(proj_dir, 1, 5, "Initializing workspace and copying source audio...", f"Started ingestion pipeline for Episode {episode}: {title}")
+
     ext = os.path.splitext(audio)[1]
     audio_dest_name = f"{episode}{ext}"
     audio_dest_path = os.path.join(proj_dir, audio_dest_name)
@@ -1014,7 +1060,7 @@ def ingest_episode(
         "title": title,
         "audio_filename": audio_dest_name,
         "audio_file": audio_dest_name,
-        "status": "ready"
+        "status": "ingesting"
     }
     with open(os.path.join(proj_dir, "project_info.json"), "w", encoding="utf-8") as f:
         json.dump(info_data, f, indent=2)
@@ -1022,15 +1068,19 @@ def ingest_episode(
     # 2. Transcribe
     trans_path = os.path.join(proj_dir, "transcription.json")
     if not os.path.exists(trans_path):
+        update_ingestion_progress(proj_dir, 1, 15, f"Transcribing {audio_dest_name} via OpenAI Whisper...", "Running Whisper transcription with word timestamps (tiny.en)...")
         typer.echo(f"Transcribing {audio_dest_path} with Whisper...")
         transcribe(audio=audio_dest_path, model="tiny.en")
         if os.path.exists("transcription.json"):
             shutil.copy2("transcription.json", trans_path)
 
+    update_ingestion_progress(proj_dir, 2, 30, "Whisper transcription ready. Analyzing structural timestamps...", "Transcription complete with word-level timestamps.")
+
     # 3. Generate Plan
     plan_path = os.path.join(proj_dir, "plan.json")
     clips_list = []
     if os.path.exists(trans_path):
+        update_ingestion_progress(proj_dir, 2, 35, f"Structuring audio into {num_clips} ~2-minute topic clips...", f"Dividing timeline into {num_clips} structural segments.")
         typer.echo(f"Generating structural plan with {num_clips} clips...")
         with open(trans_path, "r", encoding="utf-8") as tf:
             t_data = json.load(tf)
@@ -1079,6 +1129,8 @@ def ingest_episode(
         with open(plan_path, "w", encoding="utf-8") as pf:
             json.dump(clips_list, pf, indent=2)
 
+    update_ingestion_progress(proj_dir, 3, 40, f"Generated plan.json with {len(clips_list)} clips. Starting audio cuts...", f"Created storyboard plan with {len(clips_list)} clips.")
+
     # 4. Sync plan.json to root and docs
     shutil.copy2(plan_path, "plan.json")
     docs_ep_dir = os.path.join("docs", "episodes", str(episode))
@@ -1086,17 +1138,26 @@ def ingest_episode(
     shutil.copy2(plan_path, os.path.join(docs_ep_dir, "plan.json"))
 
     # 5. Audio Cut
+    update_ingestion_progress(proj_dir, 3, 45, "Slicing audio clips with EBU R128 loudness normalization...", "Re-encoding audio slices to -16 LUFS / -1.5 dB Peak...")
     typer.echo(f"Cutting sample-accurate audio clips with EBU R128 normalization...")
     cut(audio=audio_dest_path, plan_file=plan_path, out_dir="clips")
 
+    update_ingestion_progress(proj_dir, 4, 55, "Audio slicing complete. Starting black canvas draft video muxing...", "All audio clips normalized and saved.")
+
     # 6. Mux & Compile Clips
-    typer.echo(f"Draft-muxing and compiling {len(clips_list)} clips...")
-    for c in clips_list:
+    total_clips = max(1, len(clips_list))
+    for idx, c in enumerate(clips_list):
         n = c["num"]
+        mux_pct = 55 + int((idx / total_clips) * 15)
+        update_ingestion_progress(proj_dir, 4, mux_pct, f"Draft-muxing Clip {n} of {total_clips}...", f"Generating 740x740 black video canvas for Clip {n}")
         mux_clip(num=n, plan_file=plan_path, audio_dir="clips", out_dir="clips")
+
+        comp_pct = 70 + int((idx / total_clips) * 25)
+        update_ingestion_progress(proj_dir, 5, comp_pct, f"Compiling Title Intro & Outro for Clip {n} of {total_clips}...", f"Rendering 2s Title Card Intro & 5s Curiosity Question Outro for Clip {n}")
         compile_clip(num=n, plan_file=plan_path, master_dir="clips", out_dir="clips", backup=True)
 
     # 7. Register in docs/episodes.json
+    update_ingestion_progress(proj_dir, 6, 95, "Syncing episode manifest and preview player assets...", "Updating docs/episodes.json for GitHub Pages routing.")
     ep_manifest_path = os.path.join("docs", "episodes.json")
     if os.path.exists(ep_manifest_path):
         try:
@@ -1119,6 +1180,12 @@ def ingest_episode(
         except Exception as me:
             typer.echo(f"Warning updating episodes.json: {me}")
 
+    # Mark ready
+    info_data["status"] = "ready"
+    with open(os.path.join(proj_dir, "project_info.json"), "w", encoding="utf-8") as f:
+        json.dump(info_data, f, indent=2)
+
+    update_ingestion_progress(proj_dir, 6, 100, "🎉 Episode ingestion complete! Project ready in Curator.", f"Episode {episode} ingestion pipeline completed successfully.")
     typer.echo(f"🎉 Episode {episode} ingestion pipeline complete! Project ready in Curator & Preview Player.")
 
 
