@@ -1490,6 +1490,49 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_error(500, f"Error deleting project: {e}")
                 return
 
+        elif parsed_url.path == '/update-episode-title':
+            project_id = params.get('id', [None])[0]
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length)
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                json_data = json.loads(post_data.decode('utf-8'))
+                new_title = json_data.get("title", "").strip()
+                if not new_title:
+                    raise Exception("New episode title is required.")
+                
+                project_dir = os.path.join("projects", project_id)
+                info_path = os.path.join(project_dir, "project_info.json")
+                if os.path.exists(info_path):
+                    with open(info_path, "r", encoding="utf-8") as f:
+                        info = json.load(f)
+                    info["title"] = new_title
+                    with open(info_path, "w", encoding="utf-8") as f:
+                        json.dump(info, f, indent=4)
+                
+                # Auto-recompile Clip 1 intro card in background
+                def run_recompile_clip1(proj_id, p_dir):
+                    try:
+                        p_file = os.path.join(p_dir, "plan.json")
+                        cmd = [sys.executable, "ddma.py", "compile-clip", "--num", "1", "--plan-file", p_file]
+                        print(f"[Update-Title][{proj_id}] Recompiling Clip 1 with new episode title: '{new_title}'")
+                        subprocess.run(cmd, capture_output=True, text=True, cwd=".")
+                    except Exception as ex:
+                        print(f"Error recompiling clip 1: {ex}")
+                
+                threading.Thread(target=run_recompile_clip1, args=(project_id, project_dir), daemon=True).start()
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "title": new_title}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_error(500, f"Error updating episode title: {e}")
+                return
+
         elif parsed_url.path == '/rename-project':
             project_id = params.get('id', [None])[0]
             content_length = int(self.headers.get('Content-Length', 0))

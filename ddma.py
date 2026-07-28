@@ -514,7 +514,19 @@ def compile_clip(
 
     backup_path = os.path.join(master_dir, f"{base_name}-original.mp4")
 
-    # 2. Back up original master clip if needed
+    # 2. Resolve episode title from project_info.json if available
+    proj_dir_from_plan = os.path.dirname(plan_file)
+    info_p = os.path.join(proj_dir_from_plan, "project_info.json") if proj_dir_from_plan else ""
+    if info_p and os.path.exists(info_p):
+        try:
+            with open(info_p, "r", encoding="utf-8") as ipf:
+                info_d = json.load(ipf)
+                if info_d.get("title"):
+                    episode_title = info_d["title"]
+        except Exception:
+            pass
+
+    # 3. Back up original master clip if needed
     if backup:
         if not os.path.exists(backup_path):
             typer.echo(f"Creating backup of original clip to {backup_path}...")

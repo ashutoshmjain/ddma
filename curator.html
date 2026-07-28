@@ -1507,6 +1507,7 @@
                 <div style="display: flex; align-items: center; gap: 0.4rem; overflow: hidden; flex: 1;">
                     <button id="expandSidebarBtn" class="btn btn-secondary btn-mini" style="display: none; font-weight: 600; flex-shrink: 0; padding: 0.2rem 0.5rem; gap: 0.25rem;">▶ Projects</button>
                     <h2 id="activeProjectTitleHeader" style="margin: 0; font-size: 0.85rem;">CLIP PLAN</h2>
+                    <button class="btn btn-secondary btn-mini" id="editGrandTitleBtn" style="padding: 0.15rem 0.45rem; font-size: 0.65rem; font-weight: 600; border-radius: 4px; display: none;" title="Edit Episode Grand Title (shows on Part 1 Intro Card)">✏️ Edit Episode Title</button>
                 </div>
             </div>
             <!-- Utility Toolbar for All Actions -->
@@ -2730,10 +2731,40 @@
             audioElement.src = "";
             document.getElementById('nowPlayingTitle').textContent = "No project loaded";
             
+            document.getElementById('editGrandTitleBtn').style.display = "none";
             renderClips();
             renderTranscription();
             updateUsedHighlights();
             loadProjectsListOnly();
+        }
+
+        const editGrandTitleBtn = document.getElementById('editGrandTitleBtn');
+        if (editGrandTitleBtn) {
+            editGrandTitleBtn.addEventListener('click', () => {
+                if (!activeProjectId) return;
+                const currentTitle = projectInfo ? (projectInfo.title || projectInfo.name) : "";
+                const newTitle = prompt("Enter Episode Grand Title (displayed on Part 1 Title Card Intro):", currentTitle);
+                if (!newTitle || newTitle.trim() === "" || newTitle.trim() === currentTitle) return;
+
+                updateStateBar("Updating Episode Grand Title...");
+                fetch(`/update-episode-title?id=${activeProjectId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: newTitle.trim() })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        if (projectInfo) projectInfo.title = data.title;
+                        updateStateBar("Episode title updated! Re-rendering Part 1 title card...");
+                        loadProjectDataOnly(activeProjectId);
+                        setTimeout(() => { if (activeProjectId) loadProjectDataOnly(activeProjectId); }, 3000);
+                    } else {
+                        throw new Error("Failed to update title");
+                    }
+                })
+                .catch(err => alert("Failed to update episode title: " + err.message));
+            });
         }
 
         function renameProjectPrompt(projectId, currentName) {
@@ -2987,10 +3018,14 @@
                     clipsToolbar.style.display = 'flex';
                     restoreSnapshotBtn.disabled = !data.has_snapshot;
                     
-                    const projName = projectInfo.name || projectInfo.title || projectInfo.id || 'Project';
+                    const projName = projectInfo.name || projectInfo.id || 'Project';
+                    const epTitle = projectInfo.title || projName;
                     const audioName = projectInfo.audio_filename || projectInfo.audio_file || 'audio';
                     activeProjectBadge.textContent = projName;
-                    activeProjectTitleHeader.textContent = `${projName.toUpperCase()} CLIP PLAN`;
+                    const headerLabel = (projectInfo.title && projectInfo.title !== projName) ? `${projName}: "${epTitle}"` : projName;
+                    activeProjectTitleHeader.textContent = `${headerLabel.toUpperCase()} CLIP PLAN`;
+                    const editGrandTitleBtn = document.getElementById('editGrandTitleBtn');
+                    if (editGrandTitleBtn) editGrandTitleBtn.style.display = 'inline-flex';
                     nowPlayingTitle.textContent = `${projName} (${audioName})`;
                     
                     if (projectInfo.status === 'transcribing' || projectInfo.status === 'ingesting') {
