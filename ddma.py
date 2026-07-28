@@ -286,24 +286,93 @@ def cut(
         start_str = to_time_str(c["start"])
         end_str = to_time_str(c["end"])
 
-        cmd = [
-            "ffmpeg", "-y",
-            "-i", audio,
-            "-ss", start_str,
-            "-to", end_str,
-            "-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
-            "-c:a", "libmp3lame",
-            "-q:a", "2",
-            out_path
-        ]
+        segments = c.get("segments", [])
+        has_music_seg = any(s.get("type") == "music" for s in segments)
 
-        typer.echo(f"Cutting Clip {c['num']}: {start_str} to {end_str}...")
-        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-        if result.returncode == 0:
-            typer.echo(f"Created {out_filename}")
+        if has_music_seg and len(segments) > 0:
+            typer.echo(f"Processing Clip {c['num']} with {len(segments)} segments (including music stings)...")
+            temp_seg_files = []
+            for s_idx, seg in enumerate(segments):
+                t_seg = os.path.join(out_dir, f"temp_seg_{c['num']}_{s_idx}.wav")
+                temp_seg_files.append(t_seg)
+                if seg.get("type") == "music":
+                    m_file = seg.get("music_file", "deepDive-soft-ok.mp3")
+                    m_dur = seg.get("duration", 5.0)
+                    m_vol = seg.get("volume", 1.0)
+                    m_path = os.path.join("music", m_file)
+                    if not os.path.exists(m_path):
+                        m_path = os.path.join("music", "deepDive-soft-ok.mp3")
+                    
+                    cmd_m = [
+                        "ffmpeg", "-y",
+                        "-i", m_path,
+                        "-t", str(m_dur),
+                        "-ar", "48000", "-ac", "2",
+                        "-af", f"volume={m_vol}",
+                        t_seg
+                    ]
+                    subprocess.run(cmd_m, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                else:
+                    s_start = to_time_str(seg.get("start", c["start"]))
+                    s_end = to_time_str(seg.get("end", c["end"]))
+                    s_vol = seg.get("volume", 1.0)
+                    cmd_a = [
+                        "ffmpeg", "-y",
+                        "-ss", s_start,
+                        "-to", s_end,
+                        "-i", audio,
+                        "-ar", "48000", "-ac", "2",
+                        "-af", f"volume={s_vol}",
+                        t_seg
+                    ]
+                    subprocess.run(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            
+            # Combine segment files
+            temp_concat_wav = os.path.join(out_dir, f"temp_concat_{c['num']}.wav")
+            cmd_cat = ["ffmpeg", "-y"]
+            for tf in temp_seg_files:
+                cmd_cat += ["-i", tf]
+            filter_complex = "".join(f"[{i}:a]" for i in range(len(temp_seg_files)))
+            filter_complex += f"concat=n={len(temp_seg_files)}:v=0:a=1[out]"
+            cmd_cat += ["-filter_complex", filter_complex, "-map", "[out]", temp_concat_wav]
+            subprocess.run(cmd_cat, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            
+            # EBU R128 Loudness Normalization to final MP3
+            cmd_norm = [
+                "ffmpeg", "-y",
+                "-i", temp_concat_wav,
+                "-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
+                "-c:a", "libmp3lame", "-q:a", "2",
+                out_path
+            ]
+            subprocess.run(cmd_norm, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            
+            # Clean temp segment files
+            for tf in temp_seg_files + [temp_concat_wav]:
+                if os.path.exists(tf):
+                    try:
+                        os.remove(tf)
+                    except Exception:
+                        pass
         else:
-            typer.echo(f"Error cutting clip {c['num']}: {result.stderr}", err=True)
+            cmd = [
+                "ffmpeg", "-y",
+                "-i", audio,
+                "-ss", start_str,
+                "-to", end_str,
+                "-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
+                "-c:a", "libmp3lame",
+                "-q:a", "2",
+                out_path
+            ]
+
+            typer.echo(f"Cutting Clip {c['num']}: {start_str} to {end_str}...")
+            result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+            if result.returncode == 0:
+                typer.echo(f"Created {out_filename}")
+            else:
+                typer.echo(f"Error cutting clip {c['num']}: {result.stderr}", err=True)
 
     typer.echo("Slicing complete!")
 
