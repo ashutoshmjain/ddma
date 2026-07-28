@@ -3476,7 +3476,7 @@
                 return;
             }
 
-            transcriptContainer.innerHTML = '';
+            const fragment = document.createDocumentFragment();
             
             segments.forEach((seg, segIdx) => {
                 const para = document.createElement('p');
@@ -3497,6 +3497,7 @@
                     });
                 }
                 
+                let pWordsHtml = '';
                 wordsList.forEach((wordObj) => {
                     const wordIdx = allWords.length;
                     allWords.push({
@@ -3506,23 +3507,26 @@
                         idx: wordIdx
                     });
                     
-                    const wordSpan = document.createElement('span');
-                    wordSpan.className = 'word';
-                    wordSpan.textContent = wordObj.word + " ";
-                    wordSpan.dataset.wordIdx = wordIdx;
-                    
-                    wordSpan.addEventListener('click', function(e) {
-                        handleWordClick(wordIdx);
-                    });
-                    
-                    para.appendChild(wordSpan);
+                    const safeWord = wordObj.word.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    pWordsHtml += `<span class="word" data-word-idx="${wordIdx}">${safeWord} </span>`;
                 });
                 
-                transcriptContainer.appendChild(para);
+                para.innerHTML = pWordsHtml;
+                fragment.appendChild(para);
             });
             
+            transcriptContainer.innerHTML = '';
+            transcriptContainer.appendChild(fragment);
             segmentCount.textContent = `${allWords.length} words loaded`;
         }
+
+        // Single Event Delegation listener for word clicks
+        transcriptContainer.addEventListener('click', function(e) {
+            const wordEl = e.target.closest('.word');
+            if (wordEl && wordEl.dataset.wordIdx !== undefined) {
+                handleWordClick(parseInt(wordEl.dataset.wordIdx));
+            }
+        });
 
         // Right-Click Context Menu Trigger on word elements
         transcriptContainer.addEventListener('contextmenu', function(e) {
@@ -4564,6 +4568,14 @@
         }
 
         // Save plan.json
+        let savePlanTimer = null;
+        function savePlanToServerDebounced(delayMs = 400) {
+            if (savePlanTimer) clearTimeout(savePlanTimer);
+            savePlanTimer = setTimeout(() => {
+                savePlanToServer();
+            }, delayMs);
+        }
+
         function savePlanToServer(isUndoable = true) {
             if (!activeProjectId) return;
             
@@ -4768,6 +4780,23 @@
             }
 
             planEmptyState.style.display = 'none';
+
+            // Preserve active focused element state across renders
+            const activeEl = document.activeElement;
+            const isTyping = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA') && activeEl.closest('.clip-card');
+            let focusedClipIndex = null;
+            let focusedFieldClass = null;
+            let caretStart = null;
+            let caretEnd = null;
+
+            if (isTyping) {
+                const parentCard = activeEl.closest('.clip-card');
+                focusedClipIndex = parentCard ? parentCard.dataset.index : null;
+                focusedFieldClass = activeEl.className;
+                caretStart = activeEl.selectionStart;
+                caretEnd = activeEl.selectionEnd;
+            }
+
             const cards = clipListContainer.querySelectorAll('.clip-card');
             cards.forEach(c => c.remove());
 
@@ -5093,10 +5122,17 @@
                     </div>
                 `;
 
-                card.querySelector('.clip-card-title').addEventListener('change', function(e) {
-                    clips[index].title = e.target.value.trim();
-                    savePlanToServer();
-                });
+                const titleInput = card.querySelector('.clip-card-title');
+                if (titleInput) {
+                    titleInput.addEventListener('input', function(e) {
+                        clips[index].title = e.target.value;
+                        savePlanToServerDebounced(600);
+                    });
+                    titleInput.addEventListener('change', function(e) {
+                        clips[index].title = e.target.value.trim();
+                        savePlanToServer();
+                    });
+                }
 
                 card.querySelector('.clip-collapse-caret').addEventListener('click', function(e) {
                     e.stopPropagation();
@@ -5500,6 +5536,20 @@
             
             // Restore scroll position to prevent jumping
             clipListContainer.scrollTop = savedScrollTop;
+
+            if (focusedClipIndex !== null && focusedFieldClass) {
+                const targetCard = clipListContainer.querySelector(`.clip-card[data-index="${focusedClipIndex}"]`);
+                if (targetCard) {
+                    const selector = '.' + focusedFieldClass.trim().split(/\s+/).join('.');
+                    const targetInput = targetCard.querySelector(selector);
+                    if (targetInput) {
+                        targetInput.focus();
+                        if (caretStart !== null && caretEnd !== null && targetInput.setSelectionRange) {
+                            try { targetInput.setSelectionRange(caretStart, caretEnd); } catch(e){}
+                        }
+                    }
+                }
+            }
 
         }
 

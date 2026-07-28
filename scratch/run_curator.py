@@ -3244,7 +3244,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         end = int(end) if end else size - 1
 
         length = end - start + 1
-        buffer_size = 64 * 1024
+        buffer_size = 256 * 1024
         while length > 0:
             chunk = source.read(min(buffer_size, length))
             if not chunk:
