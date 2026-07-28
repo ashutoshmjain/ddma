@@ -4757,14 +4757,26 @@
         // Render planned clips list
         function renderClips() {
             const savedScrollTop = clipListContainer.scrollTop;
+            function clearExistingCards() {
+                const cards = clipListContainer.querySelectorAll('.clip-card');
+                cards.forEach(c => {
+                    try {
+                        if (c && c.parentNode === clipListContainer) {
+                            clipListContainer.removeChild(c);
+                        } else if (c && c.remove) {
+                            c.remove();
+                        }
+                    } catch (e) {}
+                });
+            }
+
             if (!activeProjectId) {
                 planEmptyState.style.display = 'flex';
                 planEmptyState.innerHTML = `
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     <p>Select or create a project on the left, then click "New Clip" to build segments.</p>
                 `;
-                const cards = clipListContainer.querySelectorAll('.clip-card');
-                cards.forEach(c => c.remove());
+                clearExistingCards();
                 return;
             }
             
@@ -4774,8 +4786,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     <p>No clips planned yet. Click "New Clip" at the top to create a card.</p>
                 `;
-                const cards = clipListContainer.querySelectorAll('.clip-card');
-                cards.forEach(c => c.remove());
+                clearExistingCards();
                 return;
             }
 
@@ -4797,8 +4808,7 @@
                 caretEnd = activeEl.selectionEnd;
             }
 
-            const cards = clipListContainer.querySelectorAll('.clip-card');
-            cards.forEach(c => c.remove());
+            clearExistingCards();
 
             const episodeNum = (projectInfo && projectInfo.name) ? (projectInfo.name.match(/\d+/)?.[0] || projectInfo.name) : "244";
 
