@@ -41,6 +41,9 @@ def transcribe(
     typer.echo(f"Transcription finished in {time.time() - transcribe_start:.2f} seconds.")
 
     # Save raw transcription results
+    out_dir_path = os.path.dirname(out)
+    if out_dir_path:
+        os.makedirs(out_dir_path, exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=4)
     typer.echo(f"Saved transcription JSON to {out}")
