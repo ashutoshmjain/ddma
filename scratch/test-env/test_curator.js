@@ -85,29 +85,61 @@ async function runTest() {
             console.log("- Note: Clip 1 has no .music-volume input directly visible, skipping slider input step.");
         }
 
-        // 🧪 TEST 2b: Mosaic & Video Button Enablement Check
-        console.log("\n🧪 TEST 2b: Verifying Mosaic & Video Buttons are Enabled & Clickable...");
-        const buttonStates = await page.evaluate(() => {
+        // 🧪 TEST 2b: Mosaic & Video Button Lock Protection Rules
+        console.log("\n🧪 TEST 2b: Verifying Video Button Availability (Unlocked) & Mosaic Lock Protection...");
+        
+        // Ensure clip 1 is unlocked for testing
+        await page.evaluate(() => {
+            if (clips[0]) {
+                clips[0].locked = false;
+                renderClips();
+            }
+        });
+        await new Promise(r => setTimeout(r, 500));
+
+        const unlockedStates = await page.evaluate(() => {
             const card1 = document.querySelector('.clip-card[data-index="0"]');
-            if (!card1) return { videoDisabled: true, mosaicDisabled: true, videoText: '', mosaicText: '' };
+            if (!card1) return { videoDisabled: true, mosaicDisabled: false, videoText: '', mosaicText: '' };
             const videoBtn = card1.querySelector('.btn-card-video');
             const mosaicBtn = card1.querySelector('.btn-card-mosaic');
             return {
                 videoDisabled: videoBtn ? videoBtn.disabled : true,
-                mosaicDisabled: mosaicBtn ? mosaicBtn.disabled : true,
+                mosaicDisabled: mosaicBtn ? mosaicBtn.disabled : false,
                 videoText: videoBtn ? videoBtn.textContent.trim() : '',
                 mosaicText: mosaicBtn ? mosaicBtn.textContent.trim() : ''
             };
         });
 
-        console.log(`- Video Button Text: "${buttonStates.videoText}" | Disabled: ${buttonStates.videoDisabled}`);
-        console.log(`- Mosaic Button Text: "${buttonStates.mosaicText}" | Disabled: ${buttonStates.mosaicDisabled}`);
+        console.log(`- Unlocked Clip 1 -> Video Button: "${unlockedStates.videoText}" | Disabled: ${unlockedStates.videoDisabled} (Expected: false)`);
+        console.log(`- Unlocked Clip 1 -> Mosaic Button: "${unlockedStates.mosaicText}" | Disabled: ${unlockedStates.mosaicDisabled} (Expected: true)`);
 
-        if (buttonStates.videoDisabled) {
-            throw new Error("FAIL: Video button is grayed out / disabled on Clip 1!");
+        if (unlockedStates.videoDisabled) {
+            throw new Error("FAIL: Video button is grayed out / disabled on unlocked Clip 1!");
         }
-        if (buttonStates.mosaicDisabled) {
-            throw new Error("FAIL: Mosaic button is grayed out / disabled on Clip 1!");
+        if (!unlockedStates.mosaicDisabled) {
+            throw new Error("FAIL: Mosaic button should be disabled when clip is unlocked to protect against premature Mosaic renders!");
+        }
+
+        // Lock clip 1 and verify Mosaic becomes enabled
+        await page.evaluate(() => {
+            if (clips[0]) {
+                clips[0].locked = true;
+                renderClips();
+            }
+        });
+        await new Promise(r => setTimeout(r, 500));
+
+        const lockedStates = await page.evaluate(() => {
+            const card1 = document.querySelector('.clip-card[data-index="0"]');
+            const mosaicBtn = card1 ? card1.querySelector('.btn-card-mosaic') : null;
+            return {
+                mosaicDisabled: mosaicBtn ? mosaicBtn.disabled : true
+            };
+        });
+
+        console.log(`- Locked Clip 1 -> Mosaic Button Disabled: ${lockedStates.mosaicDisabled} (Expected: false)`);
+        if (lockedStates.mosaicDisabled) {
+            throw new Error("FAIL: Mosaic button did not enable after locking clip 1!");
         }
 
         // Check for any captured JS page errors during interactions
