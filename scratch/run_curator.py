@@ -1236,6 +1236,64 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_error(500, f"Error saving settings: {e}")
                 return
                 
+        elif parsed_url.path == '/upload-project-audio':
+            try:
+                project_name = params.get('name', [None])[0]
+                original_filename = params.get('filename', ['audio.mp3'])[0]
+                
+                if not project_name:
+                    raise Exception("Missing project name.")
+                
+                content_length = int(self.headers.get('Content-Length', 0))
+                if content_length <= 0:
+                    raise Exception("Empty file payload.")
+                    
+                file_bytes = self.rfile.read(content_length)
+                
+                # Sanitize project id
+                project_id = re.sub(r'[^a-zA-Z0-9_-]', '_', project_name.lower().replace(" ", "_"))
+                project_dir = os.path.join("projects", project_id)
+                if os.path.exists(project_dir):
+                    raise Exception("Project with this name already exists.")
+                
+                os.makedirs(project_dir, exist_ok=True)
+                
+                # Save binary audio file
+                ep_match = re.search(r'\d+', project_name)
+                ep_str = ep_match.group(0) if ep_match else "audio"
+                ext = os.path.splitext(original_filename)[1] or ".m4a"
+                dest_audio_name = f"{ep_str}{ext}"
+                dest_audio_path = os.path.join(project_dir, dest_audio_name)
+                
+                with open(dest_audio_path, "wb") as f:
+                    f.write(file_bytes)
+                    
+                info_path = os.path.join(project_dir, "project_info.json")
+                info = {
+                    "id": project_id,
+                    "name": project_name,
+                    "title": project_name,
+                    "audio_filename": dest_audio_name,
+                    "audio_file": dest_audio_name,
+                    "status": "ingesting"
+                }
+                with open(info_path, "w", encoding="utf-8") as f:
+                    json.dump(info, f, indent=4)
+                    
+                out_json_path = os.path.join(project_dir, "transcription.json")
+                t = threading.Thread(target=run_transcribe, args=(project_id, dest_audio_path, out_json_path, info_path), daemon=True)
+                t.start()
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "project_id": project_id}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_error(500, f"Upload project audio error: {e}")
+                return
+
         elif parsed_url.path == '/create-project':
             content_length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(content_length)

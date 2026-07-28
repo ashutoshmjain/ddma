@@ -1611,7 +1611,7 @@
 
     <!-- Create Project Modal -->
     <div class="export-modal-overlay" id="projectModalOverlay">
-        <div class="export-modal" style="max-width: 450px;">
+        <div class="export-modal" style="max-width: 480px;">
             <div class="export-modal-header">
                 <h3>CREATE NEW PROJECT</h3>
                 <button class="icon-btn" id="closeProjectModalBtn" style="font-size: 1.2rem;">✖</button>
@@ -1619,16 +1619,39 @@
             <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 0.5rem;">
                 <div class="music-editor-field" style="width: 100%;">
                     <label style="font-size: 0.75rem; font-weight: 600; margin-bottom: 0.3rem;">Project Name:</label>
-                    <input type="text" id="newProjectNameInput" placeholder="e.g. Episode 243" style="width: 100%; padding: 0.5rem; font-size: 0.85rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                    <input type="text" id="newProjectNameInput" placeholder="e.g. Episode 245" style="width: 100%; padding: 0.5rem; font-size: 0.85rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
                 </div>
                 <div class="music-editor-field" style="width: 100%;">
-                    <label style="font-size: 0.75rem; font-weight: 600; margin-bottom: 0.3rem;">Select Source Audio File (from workspace root):</label>
-                    <select id="newProjectAudioSelect" style="width: 100%; padding: 0.5rem; font-size: 0.85rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
-                        <!-- Scanned audio options -->
-                    </select>
+                    <label style="font-size: 0.75rem; font-weight: 600; margin-bottom: 0.3rem;">Source Audio Selection:</label>
+                    <div style="display: flex; gap: 0.3rem; margin-bottom: 0.5rem;">
+                        <button id="tabUploadBtn" type="button" class="btn btn-secondary btn-mini active" style="flex: 1; font-weight: 600; font-size: 0.7rem;">📥 Upload / Downloads</button>
+                        <button id="tabSystemPathBtn" type="button" class="btn btn-secondary btn-mini" style="flex: 1; font-weight: 600; font-size: 0.7rem;">💻 System Path</button>
+                        <button id="tabWorkspaceBtn" type="button" class="btn btn-secondary btn-mini" style="flex: 1; font-weight: 600; font-size: 0.7rem;">📂 Workspace Root</button>
+                    </div>
+
+                    <!-- Mode 1: File Browser (Pick from Computer/Downloads) -->
+                    <div id="modeUploadBox" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                        <input type="file" id="newProjectFileInput" accept="audio/*,.mp3,.m4a,.wav,.aac,.flac" style="display: none;">
+                        <button class="btn btn-secondary" id="triggerBrowseFileBtn" type="button" style="width: 100%; justify-content: center; padding: 0.75rem; border: 2px dashed var(--primary); background: rgba(99,102,241,0.06); color: var(--text-main); font-weight: 600; font-size: 0.85rem;">
+                            📥 Pick Audio File from Downloads / Computer...
+                        </button>
+                        <div id="selectedFileNameSpan" style="font-size: 0.75rem; color: #10b981; font-weight: 700; font-family: var(--font-mono); display: none; text-align: center; word-break: break-all;"></div>
+                    </div>
+
+                    <!-- Mode 2: System Absolute Path Input -->
+                    <div id="modeSystemPathBox" style="display: none;">
+                        <input type="text" id="newProjectSystemPathInput" placeholder="e.g. C:\Users\ashut\Downloads\245.m4a" style="width: 100%; padding: 0.5rem; font-size: 0.85rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                    </div>
+
+                    <!-- Mode 3: Workspace Root Select Dropdown -->
+                    <div id="modeWorkspaceBox" style="display: none;">
+                        <select id="newProjectAudioSelect" style="width: 100%; padding: 0.5rem; font-size: 0.85rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                            <!-- Scanned audio options -->
+                        </select>
+                    </div>
                 </div>
             </div>
-            <div class="export-actions" style="margin-top: 0.5rem;">
+            <div class="export-actions" style="margin-top: 0.8rem;">
                 <button class="btn btn-secondary" id="cancelProjectBtn">Cancel</button>
                 <button class="btn btn-primary" id="saveProjectBtn">Create & Transcribe</button>
             </div>
@@ -3174,6 +3197,65 @@
         }
 
         // Project Creation Modal Control
+        let activeSourceMode = 'upload'; // 'upload', 'path', 'workspace'
+        let selectedUploadFile = null;
+
+        const tabUploadBtn = document.getElementById('tabUploadBtn');
+        const tabSystemPathBtn = document.getElementById('tabSystemPathBtn');
+        const tabWorkspaceBtn = document.getElementById('tabWorkspaceBtn');
+        const modeUploadBox = document.getElementById('modeUploadBox');
+        const modeSystemPathBox = document.getElementById('modeSystemPathBox');
+        const modeWorkspaceBox = document.getElementById('modeWorkspaceBox');
+        const newProjectFileInput = document.getElementById('newProjectFileInput');
+        const triggerBrowseFileBtn = document.getElementById('triggerBrowseFileBtn');
+        const selectedFileNameSpan = document.getElementById('selectedFileNameSpan');
+        const newProjectSystemPathInput = document.getElementById('newProjectSystemPathInput');
+
+        if (tabUploadBtn) {
+            tabUploadBtn.addEventListener('click', () => setAudioSourceMode('upload'));
+            tabSystemPathBtn.addEventListener('click', () => setAudioSourceMode('path'));
+            tabWorkspaceBtn.addEventListener('click', () => setAudioSourceMode('workspace'));
+        }
+
+        function setAudioSourceMode(mode) {
+            activeSourceMode = mode;
+            [tabUploadBtn, tabSystemPathBtn, tabWorkspaceBtn].forEach(b => b && b.classList.remove('active'));
+            if (modeUploadBox) modeUploadBox.style.display = 'none';
+            if (modeSystemPathBox) modeSystemPathBox.style.display = 'none';
+            if (modeWorkspaceBox) modeWorkspaceBox.style.display = 'none';
+
+            if (mode === 'upload') {
+                tabUploadBtn && tabUploadBtn.classList.add('active');
+                if (modeUploadBox) modeUploadBox.style.display = 'flex';
+            } else if (mode === 'path') {
+                tabSystemPathBtn && tabSystemPathBtn.classList.add('active');
+                if (modeSystemPathBox) modeSystemPathBox.style.display = 'block';
+            } else if (mode === 'workspace') {
+                tabWorkspaceBtn && tabWorkspaceBtn.classList.add('active');
+                if (modeWorkspaceBox) modeWorkspaceBox.style.display = 'block';
+            }
+        }
+
+        if (triggerBrowseFileBtn) {
+            triggerBrowseFileBtn.addEventListener('click', () => {
+                newProjectFileInput && newProjectFileInput.click();
+            });
+        }
+
+        if (newProjectFileInput) {
+            newProjectFileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                    selectedUploadFile = e.target.files[0];
+                    selectedFileNameSpan.textContent = `Selected: ${selectedUploadFile.name} (${(selectedUploadFile.size / (1024*1024)).toFixed(2)} MB)`;
+                    selectedFileNameSpan.style.display = 'block';
+                    if (!newProjectNameInput.value.trim()) {
+                        const baseName = selectedUploadFile.name.replace(/\.[^/.]+$/, "");
+                        newProjectNameInput.value = baseName;
+                    }
+                }
+            });
+        }
+
         newProjectBtn.addEventListener('click', () => {
             updateStateBar("Loading audio files...");
             fetch('/list-workspace-audio')
@@ -3204,47 +3286,96 @@
         function hideProjectModal() {
             projectModalOverlay.classList.remove('active');
             newProjectNameInput.value = '';
+            selectedUploadFile = null;
+            if (newProjectFileInput) newProjectFileInput.value = '';
+            if (selectedFileNameSpan) selectedFileNameSpan.style.display = 'none';
+            if (newProjectSystemPathInput) newProjectSystemPathInput.value = '';
+            setAudioSourceMode('upload');
         }
 
         saveProjectBtn.addEventListener('click', () => {
             const name = newProjectNameInput.value.trim();
-            const audioSource = newProjectAudioSelect.value;
-            
             if (!name) {
                 alert("Please enter a project name.");
                 return;
             }
-            if (!audioSource) {
-                alert("Please select a workspace audio file.");
-                return;
-            }
-            
-            updateStateBar("Creating project...");
+
             saveProjectBtn.disabled = true;
             saveProjectBtn.innerHTML = '⏳ Creating...';
-            
-            fetch('/create-project', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name, audio_source: audioSource })
-            })
-            .then(res => {
-                saveProjectBtn.disabled = false;
-                saveProjectBtn.innerHTML = 'Create & Transcribe';
-                if (!res.ok) return res.text().then(text => { throw new Error(text) });
-                return res.json();
-            })
-            .then(data => {
-                hideProjectModal();
-                activeProjectId = data.project_id;
-                loadProjectsList();
-                showDebug(`Project "${name}" successfully created! Starting Whisper...`, false);
-            })
-            .catch(err => {
-                saveProjectBtn.disabled = false;
-                saveProjectBtn.innerHTML = 'Create & Transcribe';
-                showDebug("Failed to create project: " + err.message);
-            });
+            updateStateBar("Creating project...");
+
+            if (activeSourceMode === 'upload') {
+                if (!selectedUploadFile) {
+                    alert("Please click 'Pick Audio File' to select a file from your computer or Downloads folder.");
+                    saveProjectBtn.disabled = false;
+                    saveProjectBtn.innerHTML = 'Create & Transcribe';
+                    return;
+                }
+
+                fetch(`/upload-project-audio?name=${encodeURIComponent(name)}&filename=${encodeURIComponent(selectedUploadFile.name)}`, {
+                    method: 'POST',
+                    body: selectedUploadFile
+                })
+                .then(res => {
+                    saveProjectBtn.disabled = false;
+                    saveProjectBtn.innerHTML = 'Create & Transcribe';
+                    if (!res.ok) return res.text().then(text => { throw new Error(text) });
+                    return res.json();
+                })
+                .then(data => {
+                    hideProjectModal();
+                    activeProjectId = data.project_id;
+                    loadProjectsList();
+                    showDebug(`Project "${name}" created! Starting ingestion pipeline...`, false);
+                })
+                .catch(err => {
+                    saveProjectBtn.disabled = false;
+                    saveProjectBtn.innerHTML = 'Create & Transcribe';
+                    showDebug("Failed to upload project audio: " + err.message, true);
+                });
+            } else {
+                let audioSource = "";
+                if (activeSourceMode === 'path') {
+                    audioSource = newProjectSystemPathInput.value.trim();
+                    if (!audioSource) {
+                        alert("Please enter a valid system file path.");
+                        saveProjectBtn.disabled = false;
+                        saveProjectBtn.innerHTML = 'Create & Transcribe';
+                        return;
+                    }
+                } else {
+                    audioSource = newProjectAudioSelect.value;
+                    if (!audioSource) {
+                        alert("Please select a workspace audio file.");
+                        saveProjectBtn.disabled = false;
+                        saveProjectBtn.innerHTML = 'Create & Transcribe';
+                        return;
+                    }
+                }
+
+                fetch('/create-project', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name, audio_source: audioSource })
+                })
+                .then(res => {
+                    saveProjectBtn.disabled = false;
+                    saveProjectBtn.innerHTML = 'Create & Transcribe';
+                    if (!res.ok) return res.text().then(text => { throw new Error(text) });
+                    return res.json();
+                })
+                .then(data => {
+                    hideProjectModal();
+                    activeProjectId = data.project_id;
+                    loadProjectsList();
+                    showDebug(`Project "${name}" created! Starting ingestion pipeline...`, false);
+                })
+                .catch(err => {
+                    saveProjectBtn.disabled = false;
+                    saveProjectBtn.innerHTML = 'Create & Transcribe';
+                    showDebug("Failed to create project: " + err.message, true);
+                });
+            }
         });
 
         // Audio Player Controls
