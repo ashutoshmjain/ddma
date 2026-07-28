@@ -19,14 +19,11 @@
   {
     "id": "245",
     "number": 245,
-    "title": "What exactly is the singularity?",
-    "fullTitle": "Episode 245: What exactly is the singularity?",
+    "title": "Singularity - matter intelligence equilibrium",
+    "fullTitle": "Episode 245: Singularity - matter intelligence equilibrium",
     "planPath": "episodes/245/plan.json",
     "clipsDir": "episodes/245/clips",
-    "links": {
-      "instagram": "https://www.instagram.com/deepdivegemini",
-      "tiktok": "https://www.tiktok.com/@deepdivegemini"
-    },
+    "links": {},
     "isDefault": true
   }
 ]

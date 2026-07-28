@@ -1205,13 +1205,21 @@ def ingest_episode(
         try:
             with open(ep_manifest_path, "r", encoding="utf-8") as mf:
                 manifest = json.load(mf)
+            
+            # Deduplicate manifest by episode id/number
+            manifest = [m for m in manifest if str(m.get("id")) != str(episode) and str(m.get("number")) != str(episode)]
             for m in manifest:
                 m["isDefault"] = False
+
+            ep_title = title
+            if clips_list and len(clips_list) > 0 and clips_list[0].get("title"):
+                ep_title = clips_list[0]["title"]
+
             manifest.append({
                 "id": str(episode),
                 "number": episode,
-                "title": title,
-                "fullTitle": f"Episode {episode}: {title}",
+                "title": ep_title,
+                "fullTitle": f"Episode {episode}: {ep_title}",
                 "planPath": f"episodes/{episode}/plan.json",
                 "clipsDir": f"episodes/{episode}/clips",
                 "links": {},

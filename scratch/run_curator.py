@@ -941,12 +941,32 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 with open('plan.json', 'w', encoding='utf-8') as f:
                     json.dump(json_data, f, indent=4)
                     
-                # Sync to docs/plan.json if it exists
-                if os.path.exists("docs"):
-                    try:
-                        shutil.copy2('plan.json', os.path.join('docs', 'plan.json'))
-                    except Exception as sync_err:
-                        print(f"Error syncing to docs/plan.json: {sync_err}")
+                # Sync to docs/episodes/EP_NUM/plan.json and docs/episodes.json
+                ep_match = re.search(r'\d+', project_id)
+                ep_str = ep_match.group(0) if ep_match else None
+                if ep_str:
+                    docs_ep_plan = os.path.join("docs", "episodes", ep_str, "plan.json")
+                    if os.path.exists(os.path.dirname(docs_ep_plan)):
+                        try:
+                            shutil.copy2(plan_file_path, docs_ep_plan)
+                        except Exception as e:
+                            print(f"Error syncing docs plan.json: {e}")
+                    
+                    if json_data and len(json_data) > 0 and json_data[0].get("title"):
+                        c1_title = json_data[0]["title"]
+                        ep_mf_path = os.path.join("docs", "episodes.json")
+                        if os.path.exists(ep_mf_path):
+                            try:
+                                with open(ep_mf_path, "r", encoding="utf-8") as mf:
+                                    m_data = json.load(mf)
+                                for item in m_data:
+                                    if str(item.get("id")) == ep_str or str(item.get("number")) == ep_str:
+                                        item["title"] = c1_title
+                                        item["fullTitle"] = f"Episode {ep_str}: {c1_title}"
+                                with open(ep_mf_path, "w", encoding="utf-8") as mf:
+                                    json.dump(m_data, mf, indent=2)
+                            except Exception as e:
+                                print(f"Error updating episodes.json title: {e}")
                     
                 # Auto-compile changed clips in the background
                 for num in changed_clips:

@@ -66,7 +66,14 @@ async function loadEpisodesManifest() {
     const episodeSelect = document.getElementById('episodeSelect');
     try {
         const res = await fetch('episodes.json');
-        episodesManifest = await res.json();
+        const rawManifest = await res.json();
+        const seenIds = new Set();
+        episodesManifest = (rawManifest || []).filter(ep => {
+            const idKey = String(ep.id || ep.number);
+            if (seenIds.has(idKey)) return false;
+            seenIds.add(idKey);
+            return true;
+        });
     } catch (err) {
         console.warn("Could not load episodes.json, using default Episode 244 fallback", err);
         episodesManifest = [
@@ -658,7 +665,7 @@ function onTimelineItemChanged() {
         if (videoPlayer.getAttribute('data-src') !== item.src) {
             videoPlayer.onloadedmetadata = null;
             videoPlayer.setAttribute('data-src', item.src);
-            videoPlayer.src = item.src;
+            videoPlayer.src = item.src + (item.src.includes('?') ? '&' : '?') + 't=' + Date.now();
             videoPlayer.load();
             
             videoPlayer.onloadedmetadata = () => {
