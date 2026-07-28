@@ -493,7 +493,15 @@ def run_transcribe(project_id, audio_path, out_json_path, info_path):
             
             # Extract episode number if available
             ep_num_match = re.search(r'\d+', project_id)
-            ep_num = int(ep_num_match.group(0)) if ep_num_match else 246
+            if ep_num_match:
+                ep_num = int(ep_num_match.group(0))
+            else:
+                existing_nums = [244]
+                if os.path.exists("projects"):
+                    for p in os.listdir("projects"):
+                        m = re.search(r'\d+', p)
+                        if m: existing_nums.append(int(m.group(0)))
+                ep_num = max(existing_nums) + 1
             
             # Read project info
             info = {}
@@ -1250,19 +1258,29 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     
                 file_bytes = self.rfile.read(content_length)
                 
-                # Sanitize project id
-                project_id = re.sub(r'[^a-zA-Z0-9_-]', '_', project_name.lower().replace(" ", "_"))
+                # Resolve episode number and uniform project_id (episode_N)
+                ep_match = re.search(r'\d+', project_name)
+                if ep_match:
+                    ep_num = int(ep_match.group(0))
+                else:
+                    existing_nums = [244]
+                    if os.path.exists("projects"):
+                        for p in os.listdir("projects"):
+                            m = re.search(r'\d+', p)
+                            if m: existing_nums.append(int(m.group(0)))
+                    ep_num = max(existing_nums) + 1
+                
+                project_id = f"episode_{ep_num}"
                 project_dir = os.path.join("projects", project_id)
                 if os.path.exists(project_dir):
-                    raise Exception("Project with this name already exists.")
+                    # Clean up old directory if status was not ready
+                    shutil.rmtree(project_dir, ignore_errors=True)
                 
                 os.makedirs(project_dir, exist_ok=True)
                 
                 # Save binary audio file
-                ep_match = re.search(r'\d+', project_name)
-                ep_str = ep_match.group(0) if ep_match else "audio"
                 ext = os.path.splitext(original_filename)[1] or ".m4a"
-                dest_audio_name = f"{ep_str}{ext}"
+                dest_audio_name = f"{ep_num}{ext}"
                 dest_audio_path = os.path.join(project_dir, dest_audio_name)
                 
                 with open(dest_audio_path, "wb") as f:
@@ -1271,7 +1289,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 info_path = os.path.join(project_dir, "project_info.json")
                 info = {
                     "id": project_id,
-                    "name": project_name,
+                    "name": project_name if "Episode" in project_name else f"Episode {ep_num}",
                     "title": project_name,
                     "audio_filename": dest_audio_name,
                     "audio_file": dest_audio_name,
@@ -1306,12 +1324,22 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not project_name or not audio_source:
                     raise Exception("Project name and audio source are required.")
                 
-                # Sanitize project id
-                project_id = re.sub(r'[^a-zA-Z0-9_-]', '_', project_name.lower().replace(" ", "_"))
-                project_dir = os.path.join("projects", project_id)
+                # Resolve episode number and uniform project_id (episode_N)
+                ep_match = re.search(r'\d+', project_name)
+                if ep_match:
+                    ep_num = int(ep_match.group(0))
+                else:
+                    existing_nums = [244]
+                    if os.path.exists("projects"):
+                        for p in os.listdir("projects"):
+                            m = re.search(r'\d+', p)
+                            if m: existing_nums.append(int(m.group(0)))
+                    ep_num = max(existing_nums) + 1
                 
+                project_id = f"episode_{ep_num}"
+                project_dir = os.path.join("projects", project_id)
                 if os.path.exists(project_dir):
-                    raise Exception("Project with this name already exists.")
+                    shutil.rmtree(project_dir, ignore_errors=True)
                 
                 os.makedirs(project_dir, exist_ok=True)
                 
