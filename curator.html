@@ -5114,7 +5114,7 @@
                             <div class="actions-separator"></div>
                             
                             ${mosaicBtnHtml}
-                            <button class="btn btn-mini btn-card-remix btn-status-purple" id="remixCardBtn_${index}" style="font-weight:600;" ${isLocked ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''} title="Recast this clip using Creative AI based on preceding locked clips">🔄 Remix</button>
+                            <button class="btn btn-mini btn-card-remix btn-status-purple" id="remixCardBtn_${index}" style="font-weight:600;" ${isLocked ? '' : 'disabled style="opacity: 0.4; cursor: not-allowed;" title="Lock clip first to enable Gemini Remix"'} title="Recast this clip using Creative AI based on preceding locked clips">🔄 Remix</button>
                             <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600;">${lockBtnIcon}</button>
                             ${deleteCardBtnHtml}
                         </div>
