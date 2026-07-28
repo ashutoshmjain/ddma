@@ -19,6 +19,13 @@ def transcribe(
     """
     Transcribe the audio file using Whisper and cache the JSON output.
     """
+    if hasattr(model_name, 'default'):
+        model_name = str(model_name.default)
+    if hasattr(out, 'default'):
+        out = str(out.default)
+    if hasattr(word_timestamps, 'default'):
+        word_timestamps = bool(word_timestamps.default)
+
     if not os.path.exists(audio):
         typer.echo(f"Error: Audio file {audio} not found.", err=True)
         raise typer.Exit(code=1)
@@ -442,6 +449,23 @@ def compile_clip(
     """
     import shutil
     import glob
+
+    if hasattr(num, 'default'): num = int(num.default)
+    if hasattr(plan_file, 'default'): plan_file = str(plan_file.default)
+    if hasattr(master_dir, 'default'): master_dir = str(master_dir.default)
+    if hasattr(music, 'default'): music = str(music.default)
+    if hasattr(out_dir, 'default'): out_dir = str(out_dir.default)
+    if hasattr(font_path, 'default'): font_path = font_path.default
+    if hasattr(backup, 'default'): backup = bool(backup.default)
+    if hasattr(episode_title, 'default'): episode_title = str(episode_title.default)
+
+    temp_img_path = f"temp_title_{num}.png"
+    intro_video_path = f"temp_intro_{num}.mp4"
+    concat_txt_path = f"temp_concat_{num}.txt"
+    temp_extracted_frame = f"temp_extracted_{num}.png"
+    temp_body_path = f"temp_body_{num}.mp4"
+    temp_img_outro_path = f"temp_outro_{num}.png"
+    temp_outro_video_path = f"temp_outro_{num}.mp4"
 
     if not os.path.exists(plan_file):
         typer.echo(f"Error: Plan file {plan_file} not found.", err=True)
@@ -1041,6 +1065,11 @@ def ingest_episode(
     Automated end-to-end ingestion pipeline: project setup, transcription, plan generation,
     sample-accurate slicing with EBU R128 normalization, draft muxing, clip compilation, and docs sync.
     """
+    if hasattr(audio, 'default'): audio = str(audio.default)
+    if hasattr(episode, 'default'): episode = int(episode.default)
+    if hasattr(title, 'default'): title = str(title.default)
+    if hasattr(num_clips, 'default'): num_clips = int(num_clips.default)
+
     proj_id = f"episode_{episode}"
     proj_dir = os.path.join("projects", proj_id)
     os.makedirs(proj_dir, exist_ok=True)
@@ -1070,8 +1099,8 @@ def ingest_episode(
     if not os.path.exists(trans_path):
         update_ingestion_progress(proj_dir, 1, 15, f"Transcribing {audio_dest_name} via OpenAI Whisper...", "Running Whisper transcription with word timestamps (tiny.en)...")
         typer.echo(f"Transcribing {audio_dest_path} with Whisper...")
-        transcribe(audio=audio_dest_path, model="tiny.en")
-        if os.path.exists("transcription.json"):
+        transcribe(audio=audio_dest_path, model_name="tiny.en", out=trans_path, word_timestamps=True)
+        if os.path.exists("transcription.json") and not os.path.exists(trans_path):
             shutil.copy2("transcription.json", trans_path)
 
     update_ingestion_progress(proj_dir, 2, 30, "Whisper transcription ready. Analyzing structural timestamps...", "Transcription complete with word-level timestamps.")
@@ -1187,8 +1216,8 @@ def ingest_episode(
     with open(os.path.join(proj_dir, "project_info.json"), "w", encoding="utf-8") as f:
         json.dump(info_data, f, indent=2)
 
-    update_ingestion_progress(proj_dir, 6, 100, "🎉 Episode ingestion complete! Project ready in Curator.", f"Episode {episode} ingestion pipeline completed successfully.")
-    typer.echo(f"🎉 Episode {episode} ingestion pipeline complete! Project ready in Curator & Preview Player.")
+    update_ingestion_progress(proj_dir, 6, 100, "Episode ingestion complete! Project ready in Curator.", f"Episode {episode} ingestion pipeline completed successfully.")
+    typer.echo(f"[SUCCESS] Episode {episode} ingestion pipeline complete! Project ready in Curator & Preview Player.")
 
 
 if __name__ == "__main__":
