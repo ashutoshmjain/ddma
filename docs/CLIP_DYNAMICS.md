@@ -1,5 +1,7 @@
 # 🎬 DDMA Clip Dynamics - Master Reference & Technical Specification Guide
 
+![DDMA Clip Dynamics UI](clip_dynamics_ui.png)
+
 ## 📌 1. Conceptual Paradigm: The Four Elements of a Clip
 
 In the **DeepDive Media Automator (DDMA)** architecture, a **Clip** is NOT a simple trimmed audio file. It is a fully-produced, progressive media construct composed of **four foundational elements**:
