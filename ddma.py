@@ -570,11 +570,17 @@ def compile_clip(
         master_files = []
 
     if not master_files:
-        search_pattern = os.path.join(master_dir, f"*-{num}.mp4")
-        master_files = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
+        typer.echo(f"No video file found for clip {num} in {master_dir}. Auto-muxing solid black canvas draft...")
+        mux_clip(num=num, plan_file=plan_file, master_dir=master_dir, out_dir=out_dir)
+        if ep_prefix:
+            search_pattern = os.path.join(master_dir, f"{ep_prefix}-{num}.mp4")
+            master_files = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
+        if not master_files:
+            search_pattern = os.path.join(master_dir, f"*-{num}.mp4")
+            master_files = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
 
     if not master_files:
-        typer.echo(f"Error: No finished video found in {master_dir} for clip {num}.", err=True)
+        typer.echo(f"Error: Could not generate or locate video file in {master_dir} for clip {num}.", err=True)
         raise typer.Exit(code=1)
 
     master_path = master_files[0]

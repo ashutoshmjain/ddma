@@ -5330,8 +5330,10 @@
                 let videoBtnHtml = "";
                 if (statusInfo.video_state === 'processing') {
                     videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-warning" style="font-weight:600; opacity: 0.8; cursor: not-allowed;" disabled title="Video is currently compiling/processing...">⏳ Processing</button>`;
+                } else if (statusInfo.video_state === 'compiled') {
+                    videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-success" id="playVideoBtn_${index}" style="font-weight:600;" title="Play Post-Mosaic master video with motion graphics">📹 Video</button>`;
                 } else {
-                    videoBtnHtml = `<button class="btn btn-mini btn-card-video ${videoStatusClass}" id="playVideoBtn_${index}" style="font-weight:600;" title="Play compiled MP4 video">📹 Video</button>`;
+                    videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-warning" id="playVideoBtn_${index}" style="font-weight:600;" title="Play Pre-Mosaic draft video (Title Card + Black Canvas Baseline + Outro)">📹 Draft</button>`;
                 }
                 
                 let mosaicBtnHtml = "";
@@ -5544,12 +5546,15 @@
                     videoPlayBtnEl.addEventListener('click', function(e) {
                         e.stopPropagation();
                         const btn = this;
+                        const isMasterCompiled = statusInfo.video_state === 'compiled';
+                        const originalBtnLabel = isMasterCompiled ? '📹 Video' : '📹 Draft';
+                        
                         audioElement.pause();
                         playBtn.textContent = '▶';
                         
                         btn.innerHTML = '⏳ Compiling...';
                         btn.disabled = true;
-                        updateStateBar(`Compiling video preview for Part ${clip.num}: "${clip.title}"...`);
+                        updateStateBar(`Compiling ${isMasterCompiled ? 'master' : 'draft'} video preview for Part ${clip.num}: "${clip.title}"...`);
                         
                         fetch(`/compile-clip?id=${activeProjectId}&num=${clip.num}`, {
                             method: 'POST'
@@ -5561,21 +5566,29 @@
                         .then(data => {
                             btn.classList.remove('btn-status-warning', 'btn-status-gray');
                             btn.classList.add('btn-status-success');
+                            
                             const freshVideoUrl = `/clips/${activeProjectId}-${clip.num}.mp4?t=` + Date.now();
                             previewVideoPlayer.src = freshVideoUrl;
-                            videoModalTitle.textContent = `VIDEO PREVIEW - Part ${clip.num}: ${clip.title}`;
-                            videoModalSubtitle.textContent = `clips/${activeProjectId}-${clip.num}.mp4`;
+                            
+                            if (isMasterCompiled) {
+                                videoModalTitle.textContent = `📹 FINAL MASTER VIDEO (Post-Mosaic) - Part ${clip.num}: ${clip.title}`;
+                                videoModalSubtitle.textContent = `✨ Master Video with Motion Graphics • clips/${activeProjectId}-${clip.num}.mp4`;
+                            } else {
+                                videoModalTitle.textContent = `📹 DRAFT BASELINE (Pre-Mosaic) - Part ${clip.num}: ${clip.title}`;
+                                videoModalSubtitle.textContent = `ℹ️ Pre-Mosaic Draft Baseline (2s Title Card + Black Canvas Audio + 5s Outro). Lock clip & run Mosaic for motion infographics.`;
+                            }
+                            
                             downloadVideoBtn.href = freshVideoUrl;
                             videoModalOverlay.classList.add('active');
                             previewVideoPlayer.play();
-                            updateStateBar(`Playing video preview for Part ${clip.num}`);
+                            updateStateBar(`Playing ${isMasterCompiled ? 'master' : 'draft'} video preview for Part ${clip.num}`);
                         })
                         .catch(err => {
                             alert("Error compiling video preview: " + err.message);
                             updateStateBar("Ready");
                         })
                         .finally(() => {
-                            btn.innerHTML = '📹 Video';
+                            btn.innerHTML = originalBtnLabel;
                             btn.disabled = false;
                         });
                     });
