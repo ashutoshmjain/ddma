@@ -2890,11 +2890,16 @@
             if (tb) tb.style.display = 'none';
             
             // Clear player
-            audioElement.pause();
-            audioElement.src = "";
-            document.getElementById('nowPlayingTitle').textContent = "No project loaded";
+            if (audioElement) {
+                try { audioElement.pause(); } catch (e) {}
+                audioElement.src = "";
+            }
+            const npt = document.getElementById('nowPlayingTitle');
+            if (npt) npt.textContent = "No project loaded";
             
-            document.getElementById('editGrandTitleBtn').style.display = "none";
+            const egtb = document.getElementById('editGrandTitleBtn');
+            if (egtb) egtb.style.display = "none";
+
             renderClips();
             renderTranscription();
             updateUsedHighlights();
