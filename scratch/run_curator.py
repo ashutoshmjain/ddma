@@ -72,7 +72,7 @@ def auto_recompile_clip(project_id, clip_num):
 # Background thread helper for executing the Mosaic API pipeline (upload, run, poll, download)
 def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments, audio_path, run_id=None):
     job_key = (project_id, int(clip_num))
-    mosaic_runs[job_key] = {"status": "starting", "progress": 0, "error": None, "run_id": run_id}
+    mosaic_runs[job_key] = {"status": "starting", "progress": 0, "error": None, "run_id": run_id, "start_time": time.time()}
     
     try:
         api_key = settings.get("mosaic_api_key")
@@ -945,36 +945,6 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 json_data = json.loads(post_data.decode('utf-8'))
                 
-                # Check for metadata changes that warrant auto-recompilation
-                changed_clips = []
-                for clip in json_data:
-                    num = clip.get("num")
-                    if num is None:
-                        continue
-                    
-                    old_clip = None
-                    for oc in old_plan:
-                        if oc.get("num") == num:
-                            old_clip = oc
-                            break
-                    
-                    if old_clip:
-                        title_changed = clip.get("title") != old_clip.get("title")
-                        bridge_changed = clip.get("bridge_text") != old_clip.get("bridge_text")
-                        music_changed = (clip.get("music") != old_clip.get("music")) or (clip.get("music_volume") != old_clip.get("music_volume"))
-                        segments_changed = json.dumps(clip.get("segments")) != json.dumps(old_clip.get("segments"))
-                        
-                        if title_changed or bridge_changed or music_changed or segments_changed:
-                            # Verify that a video or audio file exists on disk for this clip
-                            ep_num_match = re.search(r'\d+', project_id)
-                            ep_num = ep_num_match.group(0) if ep_num_match else "244"
-                            
-                            v1 = os.path.join("clips", f"{ep_num}-{num}.mp4")
-                            v2 = os.path.join("clips", f"{ep_num}-{num}-original.mp4")
-                            v3 = os.path.join("clips", f"{project_id}-{num}.mp4")
-                            if os.path.exists(v1) or os.path.exists(v2) or os.path.exists(v3):
-                                changed_clips.append(num)
-                
                 # Save to project's plan.json
                 with open(plan_file_path, 'w', encoding='utf-8') as f:
                     json.dump(json_data, f, indent=4)
@@ -1009,44 +979,6 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                     json.dump(m_data, mf, indent=2)
                             except Exception as e:
                                 print(f"Error updating episodes.json title: {e}")
-                    
-                # Auto-compile changed clips in the background
-                for num in changed_clips:
-                    job_key = (project_id, int(num))
-                    if job_key in mosaic_runs and mosaic_runs[job_key].get("status") in ("starting", "running", "compiling", "processing"):
-                        continue
-                    
-                    def run_auto_compile(proj_id, n, p_path):
-                        mosaic_runs[job_key] = {
-                            "status": "processing",
-                            "progress": 0,
-                            "error": None,
-                            "run_id": "auto_compile"
-                        }
-                        try:
-                            # 1. Re-cut audio if needed
-                            cut_cmd = [sys.executable, "ddma.py", "cut", "--plan-file", p_path, "--out-dir", "clips"]
-                            subprocess.run(cut_cmd, capture_output=True, text=True, cwd=".")
-
-                            # 2. Re-compile video intro and outro
-                            cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(n), "--plan-file", p_path]
-                            print(f"[Auto-Compile][{proj_id}][Clip {n}] Starting background re-compilation: {' '.join(cmd)}")
-                            proc = subprocess.run(cmd, capture_output=True, text=True, cwd=".")
-                            if proc.returncode != 0:
-                                raise Exception(f"Auto-compile failed: {proc.stderr}")
-                            print(f"[Auto-Compile][{proj_id}][Clip {n}] Background compilation completed successfully!")
-                        except Exception as ex:
-                            print(f"[Auto-Compile][{proj_id}][Clip {n}] Background compilation failed: {ex}")
-                        finally:
-                            if job_key in mosaic_runs and mosaic_runs[job_key].get("run_id") == "auto_compile":
-                                del mosaic_runs[job_key]
-                    
-                    t = threading.Thread(
-                        target=run_auto_compile,
-                        args=(project_id, int(num), plan_file_path),
-                        daemon=True
-                    )
-                    t.start()
                     
                 self.send_response(200)
                 self.send_header('Content-type', 'text/plain')
@@ -3165,6 +3097,15 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             except Exception:
                                 pass
                                 
+                    # Purge stale/auto_compile jobs from mosaic_runs
+                    now = time.time()
+                    stale_keys = [
+                        k for k, v in list(mosaic_runs.items()) 
+                        if v.get("run_id") == "auto_compile" or not v.get("start_time") or (now - v.get("start_time", 0) > 300)
+                    ]
+                    for k in stale_keys:
+                        del mosaic_runs[k]
+
                     # Scan active background jobs in mosaic_runs to override status to 'processing'
                     for job_key, job in mosaic_runs.items():
                         if job_key[0] == project_id:

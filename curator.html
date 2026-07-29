@@ -4856,7 +4856,7 @@
                 lastSavedStateString = currentPlanStr;
             }
 
-            updateStateBar("Saving plan & updating clip intros...");
+            updateStateBar("Saving plan...");
             fetch(`/save-project-plan?id=${activeProjectId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -4864,9 +4864,7 @@
             })
             .then(res => {
                 if (!res.ok) console.error("Auto-save failed");
-                updateStateBar("Plan saved. Updating title card intros...");
-                setTimeout(() => { if (activeProjectId) selectProject(activeProjectId); }, 2500);
-                setTimeout(() => { if (activeProjectId) selectProject(activeProjectId); }, 5500);
+                updateStateBar("Plan saved.");
             })
             .catch(err => {
                 console.warn("Auto-save failed: ", err.message);
@@ -5405,6 +5403,7 @@
                 if (titleInput) {
                     titleInput.addEventListener('input', function(e) {
                         clips[index].title = e.target.value;
+                        savePlanToServerDebounced(800);
                     });
                     titleInput.addEventListener('change', function(e) {
                         clips[index].title = e.target.value.trim();
