@@ -5567,12 +5567,13 @@
                             btn.classList.remove('btn-status-warning', 'btn-status-gray');
                             btn.classList.add('btn-status-success');
                             
-                            const freshVideoUrl = `/clips/${activeProjectId}-${clip.num}.mp4?t=` + Date.now();
+                            const epNum = activeProjectId.replace('episode_', '');
+                            const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
                             previewVideoPlayer.src = freshVideoUrl;
                             
                             if (isMasterCompiled) {
                                 videoModalTitle.textContent = `📹 FINAL MASTER VIDEO (Post-Mosaic) - Part ${clip.num}: ${clip.title}`;
-                                videoModalSubtitle.textContent = `✨ Master Video with Motion Graphics • clips/${activeProjectId}-${clip.num}.mp4`;
+                                videoModalSubtitle.textContent = `✨ Master Video with Motion Graphics • clips/${epNum}-${clip.num}.mp4`;
                             } else {
                                 videoModalTitle.textContent = `📹 DRAFT BASELINE (Pre-Mosaic) - Part ${clip.num}: ${clip.title}`;
                                 videoModalSubtitle.textContent = `ℹ️ Pre-Mosaic Draft Baseline (2s Title Card + Black Canvas Audio + 5s Outro). Lock clip & run Mosaic for motion infographics.`;

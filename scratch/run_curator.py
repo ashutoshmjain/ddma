@@ -3297,6 +3297,31 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
 
+    def translate_path(self, path):
+        translated = super().translate_path(path)
+        clean_path = path.split('?')[0]
+        if not os.path.exists(translated) and "/clips/" in clean_path:
+            # Fallback 1: Strip 'episode_' prefix (e.g. /clips/episode_245-1.mp4 -> /clips/245-1.mp4)
+            if "/clips/episode_" in clean_path:
+                alt_clean = clean_path.replace("/clips/episode_", "/clips/")
+                alt_trans = super().translate_path(alt_clean)
+                if os.path.exists(alt_trans):
+                    return alt_trans
+            # Fallback 2: Check for any matching file in clips directory (e.g. 245-1-Title.mp4)
+            clips_dir = "clips"
+            if os.path.exists(clips_dir):
+                base_name = os.path.basename(clean_path)
+                import re
+                ep_match = re.search(r'(\d+)-(\d+)', base_name)
+                if ep_match:
+                    ep_n = ep_match.group(1)
+                    c_n = ep_match.group(2)
+                    for f in os.listdir(clips_dir):
+                        if f.startswith(f"{ep_n}-{c_n}.") or f.startswith(f"{ep_n}-{c_n}-"):
+                            if f.endswith(".mp4") and not f.endswith("-original.mp4"):
+                                return os.path.join(os.getcwd(), clips_dir, f)
+        return translated
+
     def send_head(self):
         path = self.translate_path(self.path)
         if not os.path.exists(path) or os.path.isdir(path):
