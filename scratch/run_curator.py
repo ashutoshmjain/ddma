@@ -2801,7 +2801,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         "run_id": "local_compile"
                     }
                     try:
-                        cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(num)]
+                        plan_path = os.path.join("projects", proj_id, "plan.json")
+                        if not os.path.exists(plan_path):
+                            plan_path = "plan.json"
+                        cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(num), "--plan-file", plan_path]
                         print(f"[{proj_id}][Clip {num}] Starting background compilation: {' '.join(cmd)}")
                         proc = subprocess.run(cmd, capture_output=True, text=True, cwd=".")
                         if proc.returncode != 0:

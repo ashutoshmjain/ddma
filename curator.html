@@ -5379,6 +5379,7 @@
                             <button class="btn btn-secondary btn-mini btn-card-outro ${outroStatusClass}" id="outroCardBtn_${index}" style="font-weight:600;" ${outroBtnDisabled} title="Preview Outro Clip (Bridge Card Question + Fadeout)">🎬 Outro</button>
                             <button class="btn-card-play ${audioStatusClass}" id="playCardBtn_${index}">▶ Audio</button>
                             ${videoBtnHtml}
+                            <button class="btn btn-secondary btn-mini btn-card-compile" id="compileCardBtn_${index}" style="font-weight:600;" title="Re-compile full video clip with updated title card intro & question outro">⚡ Recompile</button>
                             
                             <div class="actions-separator"></div>
                             
@@ -5525,6 +5526,39 @@
                         btn.disabled = false;
                     });
                 });
+
+                const compileBtn = card.querySelector(`#compileCardBtn_${index}`);
+                if (compileBtn) {
+                    compileBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const btn = this;
+                        btn.innerHTML = '⏳ Compiling...';
+                        btn.disabled = true;
+                        updateStateBar(`Re-compiling Clip ${clip.num} with updated title and outro...`);
+                        
+                        fetch(`/compile-clip?id=${activeProjectId}&num=${clip.num}`, {
+                            method: 'POST'
+                        })
+                        .then(res => {
+                            if (!res.ok) return res.json().then(data => { throw new Error(data.error || "Compilation failed"); });
+                            return res.json();
+                        })
+                        .then(data => {
+                            updateStateBar(`Clip ${clip.num} compiled successfully!`);
+                            showDebug(`Clip ${clip.num} compiled successfully!`, false);
+                            if (activeProjectId) selectProject(activeProjectId);
+                        })
+                        .catch(err => {
+                            alert("Error compiling clip: " + err.message);
+                            showDebug("Error compiling clip: " + err.message, true);
+                            updateStateBar("Ready");
+                        })
+                        .finally(() => {
+                            btn.innerHTML = '⚡ Recompile';
+                            btn.disabled = false;
+                        });
+                    });
+                }
 
                 card.querySelector('.outro-bridge-text-input')?.addEventListener('change', function(e) {
                     const idx = parseInt(e.target.dataset.index);
