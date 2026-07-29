@@ -2166,14 +2166,17 @@
         function showDebug(msg, isError = true) {
             const statusText = document.getElementById('debugStatusText');
             const copyBtn = document.getElementById('copyDebugBtn');
+            const debugStatus = document.getElementById('debugStatus');
             
             if (statusText) {
                 statusText.textContent = msg;
                 statusText.style.color = isError ? '#f87171' : '#34d399';
             }
             
-            debugStatus.style.borderColor = isError ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.4)';
-            debugStatus.style.display = 'block';
+            if (debugStatus) {
+                debugStatus.style.borderColor = isError ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.4)';
+                debugStatus.style.display = 'block';
+            }
             
             if (copyBtn) {
                 copyBtn.onclick = (e) => {
@@ -2190,7 +2193,10 @@
             
             // Keep on screen for 15 seconds to allow ample time to copy
             if (window.debugHideTimeout) clearTimeout(window.debugHideTimeout);
-            window.debugHideTimeout = setTimeout(() => { debugStatus.style.display = 'none'; }, 15000);
+            window.debugHideTimeout = setTimeout(() => {
+                const ds = document.getElementById('debugStatus');
+                if (ds) ds.style.display = 'none';
+            }, 15000);
         }
 
         function updateStateBar(stateMsg) {

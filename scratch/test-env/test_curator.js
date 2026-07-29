@@ -294,6 +294,26 @@ async function runTest() {
             console.log(`- Note: ${clip1Video} not found on disk, skipping media stream probe.`);
         }
 
+        // 🧪 TEST 6: Verifying Project Deletion Logic & Error Handling
+        console.log("\n🧪 TEST 6: Verifying Project Deletion & Error Handling...");
+        const deleteTestState = await page.evaluate(() => {
+            let capturedErr = null;
+            window.confirm = () => true; // Auto-confirm deletion prompt
+            try {
+                // Call clearActiveProjectState to verify no TypeError is thrown when state is reset
+                clearActiveProjectState();
+                showDebug("Testing delete debug message...", false);
+            } catch (err) {
+                capturedErr = err.message;
+            }
+            return { capturedErr };
+        });
+
+        console.log(`- Deletion State Reset Captured Error: ${deleteTestState.capturedErr || 'none (Passed)'}`);
+        if (deleteTestState.capturedErr) {
+            throw new Error(`FAIL: clearActiveProjectState threw error on deletion: ${deleteTestState.capturedErr}`);
+        }
+
         console.log("\n✅ ALL COMPREHENSIVE CURATOR REGRESSION TESTS PASSED 100%!");
 
     } catch (err) {
