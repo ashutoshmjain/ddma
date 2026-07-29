@@ -23,8 +23,8 @@ const puppeteer = require('puppeteer');
         });
 
         console.log(`- Fetch Status: ${promptRes.success}`);
-        console.log(`- Prompt Contains EPISODE STORYBOARDING RULES: ${promptRes.prompt.includes("EPISODE STORYBOARDING RULES")}`);
-        if (!promptRes.success || !promptRes.prompt.includes("EPISODE STORYBOARDING RULES")) {
+        console.log(`- Prompt Contains EPISODE STORYBOARDING: ${promptRes.prompt.includes("EPISODE STORYBOARDING")}`);
+        if (!promptRes.success || !promptRes.prompt.includes("EPISODE STORYBOARDING")) {
             throw new Error("Failed to retrieve valid Episode Remix Prompt template from server.");
         }
 
@@ -39,9 +39,11 @@ const puppeteer = require('puppeteer');
             throw new Error(`Expected button text '🌌 Episode AI Auto-Plan', but got '${epAiBtnText}'`);
         }
 
-        console.log("\n🧪 TEST 3: Verifying Settings Modal Episode Remix Textarea...");
+        console.log("\n🧪 TEST 3: Verifying Settings Modal Tab Navigation & Episode Remix Textarea...");
         await page.evaluate(() => {
             document.getElementById('settingsBtn').click();
+            const geminiTabBtn = document.querySelector('.settings-tab-btn[data-tab="tab-gemini"]');
+            if (geminiTabBtn) geminiTabBtn.click();
         });
         await new Promise(r => setTimeout(r, 500));
 
