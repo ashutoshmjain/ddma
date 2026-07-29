@@ -1220,6 +1220,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     raise Exception("Failed to receive response from Gemini models.")
 
                 # Extract JSON array from Gemini response
+                import re
                 json_match = re.search(r'\[\s*\{.*\}\s*\]', gemini_res_text, re.DOTALL)
                 if not json_match:
                     raise Exception("Gemini response did not contain a valid JSON array of clips.")
