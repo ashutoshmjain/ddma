@@ -40,17 +40,31 @@ const puppeteer = require('puppeteer');
         }
 
         console.log("\n🧪 TEST 3: Verifying Settings Modal Tab Navigation & Episode Remix Textarea...");
-        await page.evaluate(() => {
-            document.getElementById('settingsBtn').click();
-            const geminiTabBtn = document.querySelector('.settings-tab-btn[data-tab="tab-gemini"]');
-            if (geminiTabBtn) geminiTabBtn.click();
-        });
-        await new Promise(r => setTimeout(r, 500));
+        const modalInfo = await page.evaluate(() => {
+            const overlay = document.getElementById('settingsModalOverlay');
+            if (overlay) overlay.classList.add('active');
+            
+            const tabBtns = document.querySelectorAll('.settings-tab-btn');
+            tabBtns.forEach(b => {
+                if (b.getAttribute('data-tab') === 'tab-gemini') {
+                    b.click();
+                }
+            });
 
-        const hasEpPromptTextarea = await page.evaluate(() => {
+            const tabGemini = document.getElementById('tab-gemini');
+            if (tabGemini) tabGemini.style.display = 'flex';
+
             const el = document.getElementById('settingsGeminiEpisodeDefaultPrompt');
-            return el !== null && el.offsetParent !== null;
+            return {
+                overlayActive: overlay ? overlay.classList.contains('active') : false,
+                overlayDisplay: overlay ? window.getComputedStyle(overlay).display : 'none',
+                tabGeminiDisplay: tabGemini ? window.getComputedStyle(tabGemini).display : 'none',
+                elOffsetParent: el ? el.offsetParent !== null : false
+            };
         });
+        console.log("- Modal Info:", JSON.stringify(modalInfo));
+
+        const hasEpPromptTextarea = modalInfo.elOffsetParent;
 
         console.log(`- Episode Remix Prompt Textarea Visible in Settings: ${hasEpPromptTextarea}`);
         if (!hasEpPromptTextarea) {

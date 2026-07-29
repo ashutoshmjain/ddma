@@ -17,8 +17,10 @@ async function runTest() {
 
     // Capture console errors and page errors
     page.on('console', msg => {
-        if (msg.type() === 'error') {
-            const text = msg.text();
+        const text = msg.text();
+        if (text.includes('[DEBUG]')) {
+            console.log(`[Browser Console DEBUG] ${text}`);
+        } else if (msg.type() === 'error') {
             if (!text.includes('404') && !text.includes('favicon.ico')) {
                 console.log(`[Browser Console ERROR] ${text}`);
                 capturedErrors.push(`[Console Error] ${text}`);
@@ -32,13 +34,28 @@ async function runTest() {
     });
 
     try {
-        console.log("Navigating to http://127.0.0.1:8000/curator.html ...");
-        await page.goto('http://127.0.0.1:8000/curator.html', { waitUntil: 'domcontentloaded', timeout: 10000 }).catch(e => {
+        console.log("Navigating to http://127.0.0.1:8000/curator.html?project=episode_245 ...");
+        await page.goto('http://127.0.0.1:8000/curator.html?project=episode_245', { waitUntil: 'domcontentloaded', timeout: 10000 }).catch(e => {
             console.log("Page load timeout (ignored as expected):", e.message);
         });
 
         console.log("Waiting for workspace to initialize and clips to load...");
-        await page.waitForSelector('.clip-card', { timeout: 10000 });
+        try {
+            await page.waitForSelector('.clip-card', { timeout: 25000 });
+        } catch (err) {
+            const pageState = await page.evaluate(() => {
+                const container = document.getElementById('clipListContainer');
+                const stateBar = document.getElementById('stateText');
+                return {
+                    activeProjectId: window.activeProjectId || 'null',
+                    containerHTML: container ? container.innerHTML : 'no container',
+                    stateText: stateBar ? stateBar.textContent : 'no stateText'
+                };
+            });
+            console.log("DEBUG PAGE STATE ON TIMEOUT:", JSON.stringify(pageState));
+            console.log("CAPTURED ERRORS:", capturedErrors);
+            throw err;
+        }
         await new Promise(r => setTimeout(r, 2000));
 
         // 🧪 TEST 0: Verifying Persistent Top-Line Header Bar Elements
@@ -49,10 +66,10 @@ async function runTest() {
             const topSettingsBtn = document.getElementById('topSettingsBtn');
             const teamBadge = document.querySelector('.team-badge');
             return {
-                topbarVisible: topbar !== null && topbar.offsetParent !== null,
+                topbarVisible: topbar !== null && window.getComputedStyle(topbar).display !== 'none' && topbar.getBoundingClientRect().height > 0,
                 selectOptionsCount: select ? select.options.length : 0,
                 selectedEpisode: select ? select.value : null,
-                topSettingsBtnVisible: topSettingsBtn !== null && topSettingsBtn.offsetParent !== null,
+                topSettingsBtnVisible: topSettingsBtn !== null && window.getComputedStyle(topSettingsBtn).display !== 'none',
                 teamBadgeText: teamBadge ? teamBadge.textContent.trim() : null
             };
         });

@@ -1406,17 +1406,46 @@
 </head>
 <body>
 
-    <header>
-        <h1>DDMA CLIP PLANNER</h1>
-        <div style="display: flex; gap: 0.8rem; align-items: center;">
-            <div id="activeProjectBadge" class="header-project-badge">No active project</div>
+    <header class="app-topbar" style="padding: 0.35rem 1rem; height: 42px; display: flex; justify-content: space-between; align-items: center; background-color: var(--panel-bg-darker); border-bottom: 1px solid var(--border-color); flex-shrink: 0; z-index: 100;">
+        <!-- Left: DDMA App Name + Team Badge + Episode Quick Switcher -->
+        <div style="display: flex; align-items: center; gap: 0.8rem;">
+            <h1 style="font-size: 1rem; font-weight: 800; font-family: var(--font-mono); background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; white-space: nowrap;">DDMA</h1>
+            
+            <div class="team-badge" style="display: flex; align-items: center; gap: 0.35rem; padding: 0.15rem 0.5rem; background: var(--bg-color); border-radius: 12px; border: 1px solid var(--border-color); font-size: 0.72rem;">
+                <span style="font-size: 0.85rem;">👤</span>
+                <span style="font-weight: 600; color: var(--text-main);">Ashutosh</span>
+                <span style="font-size: 0.6rem; color: var(--primary); background: rgba(99,102,241,0.15); padding: 0.05rem 0.35rem; border-radius: 8px; font-weight: 700;">Creator</span>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.4rem; background: var(--bg-color); padding: 0.15rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-color);">
+                <label for="topEpisodeSelect" style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); font-family: var(--font-mono);">EPISODE:</label>
+                <select id="topEpisodeSelect" style="background: transparent; border: none; color: var(--text-main); font-size: 0.78rem; font-weight: 700; outline: none; cursor: pointer; padding-right: 0.4rem;">
+                    <!-- Populated dynamically -->
+                </select>
+                <button class="btn btn-primary btn-mini" id="topNewProjectBtn" style="padding: 0.15rem 0.45rem; font-size: 0.68rem; font-weight: 600;" title="Ingest new audio recording into DDMA pipeline">➕ Ingest New</button>
+            </div>
+        </div>
+
+        <!-- Right: Theme Selector + Docs + Help + Settings -->
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <select id="headerThemeSelector" style="background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.4rem; border-radius: 6px; outline: none; cursor: pointer;">
+                <option value="midnight">🎨 Midnight Neon</option>
+                <option value="cyberpunk">⚡ Cyberpunk</option>
+                <option value="light">❄️ Nordic Breeze</option>
+            </select>
+
             <a href="/docs/documentation.html" target="_blank" style="text-decoration: none;">
-                <button class="btn btn-secondary" style="font-weight: 600; padding: 0.4rem 0.8rem; display: flex; align-items: center; gap: 0.4rem;" title="Open interactive step-by-step documentation & CLI guide">
+                <button class="btn btn-secondary btn-mini" style="font-weight: 600; padding: 0.2rem 0.5rem; display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem;" title="Open documentation">
                     <span>📖</span> Docs
                 </button>
             </a>
-            <button id="toggleHelpChatHeaderBtn" class="btn btn-primary" style="background-image: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%); font-weight: 600; padding: 0.4rem 0.8rem; display: flex; align-items: center; gap: 0.4rem;" title="Toggle Help Split Screen">
+            
+            <button id="toggleHelpChatHeaderBtn" class="btn btn-primary btn-mini" style="background-image: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%); font-weight: 600; padding: 0.2rem 0.5rem; display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem;" title="Toggle Help Split Screen">
                 <span>💡</span> Help
+            </button>
+
+            <button class="btn btn-secondary btn-mini" id="topSettingsBtn" style="padding: 0.2rem 0.55rem; font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem;" title="Open Studio System Settings">
+                ⚙️ Settings
             </button>
         </div>
     </header>
@@ -1456,46 +1485,6 @@
         </div>
         <!-- Vim-style drag resize handle -->
         <div class="help-chat-resizer" id="helpChatResizer" title="Drag to resize Help panel height"></div>
-    </div>
-
-    <!-- Persistent Top-Line Header Bar -->
-    <div class="app-topbar" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 1.2rem; background-color: var(--panel-bg-darker); border-bottom: 1px solid var(--border-color); height: 48px; box-sizing: border-box; flex-shrink: 0; z-index: 100;">
-        <!-- Left: Logo & Brand -->
-        <div style="display: flex; align-items: center; gap: 0.8rem;">
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 1.2rem;">🎙️</span>
-                <span style="font-family: var(--font-mono); font-weight: 800; font-size: 0.95rem; background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">DDMA STUDIO</span>
-            </div>
-        </div>
-
-        <!-- Center: Episode Quick Switcher Dropdown -->
-        <div style="display: flex; align-items: center; gap: 0.6rem; background: var(--bg-color); padding: 0.25rem 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);">
-            <label for="topEpisodeSelect" style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); font-family: var(--font-mono); display: flex; align-items: center; gap: 0.3rem;">
-                <span>EPISODE:</span>
-            </label>
-            <select id="topEpisodeSelect" style="background: transparent; border: none; color: var(--text-main); font-size: 0.82rem; font-weight: 700; outline: none; cursor: pointer; padding-right: 0.5rem;">
-                <!-- Populated dynamically via JS -->
-            </select>
-            <button class="btn btn-primary btn-mini" id="topNewProjectBtn" style="padding: 0.2rem 0.6rem; font-size: 0.72rem; font-weight: 600;" title="Ingest new audio recording into DDMA pipeline">➕ Ingest New</button>
-        </div>
-
-        <!-- Right: Control Badges & Settings Trigger -->
-        <div style="display: flex; align-items: center; gap: 0.8rem;">
-            <button id="voiceControlBtn" class="btn btn-secondary btn-mini" style="font-size: 0.72rem; font-weight: 600; gap: 0.3rem;" title="Voice Commander (Alt + V)">
-                <span id="voiceStatusDot" style="width: 8px; height: 8px; border-radius: 50%; background-color: #94a3b8; display: inline-block;"></span>
-                <span id="voiceStatusText">🎙️ Voice (Alt+V)</span>
-            </button>
-            
-            <div class="team-badge" style="display: flex; align-items: center; gap: 0.4rem; padding: 0.25rem 0.6rem; background: var(--panel-bg); border-radius: 20px; border: 1px solid var(--border-color); font-size: 0.75rem;">
-                <span style="font-size: 0.85rem;">👤</span>
-                <span style="font-weight: 600; color: var(--text-main);">Ashutosh</span>
-                <span style="font-size: 0.65rem; color: var(--primary); background: rgba(99,102,241,0.15); padding: 0.1rem 0.4rem; border-radius: 10px; font-weight: 700;">Creator</span>
-            </div>
-
-            <button class="btn btn-secondary btn-mini" id="topSettingsBtn" style="padding: 0.35rem 0.8rem; font-size: 0.78rem; font-weight: 600; display: flex; align-items: center; gap: 0.35rem;" title="Open Studio System Settings">
-                ⚙️ Settings
-            </button>
-        </div>
     </div>
 
     <div class="main-container">
@@ -1543,12 +1532,6 @@
 
         <!-- Panel 2: Middle Pane (Curated Clips) -->
         <div class="left-panel" style="width: auto; flex: 1;">
-            <div class="panel-header">
-                <div style="display: flex; align-items: center; gap: 0.4rem; overflow: hidden; flex: 1;">
-                    <button id="expandSidebarBtn" class="btn btn-secondary btn-mini" style="display: none; font-weight: 600; flex-shrink: 0; padding: 0.2rem 0.5rem; gap: 0.25rem;">▶ Projects</button>
-                    <h2 id="activeProjectTitleHeader" style="margin: 0; font-size: 0.85rem;">CLIP PLAN</h2>
-                </div>
-            </div>
             <!-- Utility Toolbar for All Actions -->
             <div class="clips-toolbar" id="clipsToolbar" style="display: none; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border-color); background-color: var(--panel-bg-darker); align-items: center; justify-content: space-between; gap: 0.5rem;">
                 <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
@@ -2280,12 +2263,14 @@
                 }
 
                 if (window.location.protocol.startsWith('http')) {
+                    console.log("[DEBUG] initApp starting, fetching /list-music...");
                     updateStateBar("Loading projects list...");
                     
                     // Fetch music stings
                     fetch('/list-music')
                         .then(r => r.json())
                         .then(files => {
+                            console.log("[DEBUG] /list-music success, calling loadProjectsList...");
                             availableMusicFiles = files;
                             // Fetch projects
                             loadProjectsList();
@@ -2347,44 +2332,48 @@
             }
         }
 
+        function openSettingsModal() {
+            const savedFormat = localStorage.getItem('ddma-export-format') || 'audio';
+            exportFormatSelector.value = savedFormat;
+            if (savedFormat === 'video') {
+                videoSettingsArea.style.display = 'flex';
+            } else {
+                videoSettingsArea.style.display = 'none';
+            }
+            
+            const savedRes = localStorage.getItem('ddma-video-res') || '740x740';
+            videoResolutionSelector.value = savedRes;
+            
+            const savedBg = localStorage.getItem('ddma-video-bg') || 'black';
+            if (savedBg !== 'black' && savedBg !== '#161822' && savedBg !== '#475569') {
+                videoBgPresetSelector.value = 'custom';
+                customColorField.style.display = 'flex';
+                videoBgCustomInput.value = savedBg;
+            } else {
+                videoBgPresetSelector.value = savedBg;
+                customColorField.style.display = 'none';
+            }
+
+            document.getElementById('settingsMosaicApiKey').value = localStorage.getItem('ddma-mosaic-api-key') || '';
+            document.getElementById('settingsMosaicAgentId').value = localStorage.getItem('ddma-mosaic-agent-id') || '';
+            document.getElementById('settingsMosaicMogrNodeId').value = localStorage.getItem('ddma-mosaic-mogr-node-id') || '';
+            document.getElementById('settingsMosaicCaptionsNodeId').value = localStorage.getItem('ddma-mosaic-captions-node-id') || '';
+            document.getElementById('settingsGeminiApiKey').value = localStorage.getItem('ddma-gemini-api-key') || '';
+            document.getElementById('settingsMosaicDefaultPrompt').value = localStorage.getItem('ddma-mosaic-default-prompt') || '';
+            document.getElementById('settingsGeminiDefaultPrompt').value = localStorage.getItem('ddma-gemini-default-prompt') || '';
+            const epPromptEl = document.getElementById('settingsGeminiEpisodeDefaultPrompt');
+            if (epPromptEl) epPromptEl.value = localStorage.getItem('ddma-gemini-episode-default-prompt') || '';
+
+            renderSettingsMusicList();
+            settingsModalOverlay.classList.add('active');
+        }
+        window.openSettingsModal = openSettingsModal;
+
         // Settings Modal Setup
         function setupSettingsModal() {
-            settingsBtn.addEventListener('click', () => {
-                // Refresh settings modal fields to match current localStorage
-                const savedFormat = localStorage.getItem('ddma-export-format') || 'audio';
-                exportFormatSelector.value = savedFormat;
-                if (savedFormat === 'video') {
-                    videoSettingsArea.style.display = 'flex';
-                } else {
-                    videoSettingsArea.style.display = 'none';
-                }
-                
-                const savedRes = localStorage.getItem('ddma-video-res') || '740x740';
-                videoResolutionSelector.value = savedRes;
-                
-                const savedBg = localStorage.getItem('ddma-video-bg') || 'black';
-                if (savedBg !== 'black' && savedBg !== '#161822' && savedBg !== '#475569') {
-                    videoBgPresetSelector.value = 'custom';
-                    customColorField.style.display = 'flex';
-                    videoBgCustomInput.value = savedBg;
-                } else {
-                    videoBgPresetSelector.value = savedBg;
-                    customColorField.style.display = 'none';
-                }
-
-                document.getElementById('settingsMosaicApiKey').value = localStorage.getItem('ddma-mosaic-api-key') || '';
-                document.getElementById('settingsMosaicAgentId').value = localStorage.getItem('ddma-mosaic-agent-id') || '';
-                document.getElementById('settingsMosaicMogrNodeId').value = localStorage.getItem('ddma-mosaic-mogr-node-id') || '';
-                document.getElementById('settingsMosaicCaptionsNodeId').value = localStorage.getItem('ddma-mosaic-captions-node-id') || '';
-                document.getElementById('settingsGeminiApiKey').value = localStorage.getItem('ddma-gemini-api-key') || '';
-                document.getElementById('settingsMosaicDefaultPrompt').value = localStorage.getItem('ddma-mosaic-default-prompt') || '';
-                document.getElementById('settingsGeminiDefaultPrompt').value = localStorage.getItem('ddma-gemini-default-prompt') || '';
-                const epPromptEl = document.getElementById('settingsGeminiEpisodeDefaultPrompt');
-                if (epPromptEl) epPromptEl.value = localStorage.getItem('ddma-gemini-episode-default-prompt') || '';
-
-                renderSettingsMusicList();
-                settingsModalOverlay.classList.add('active');
-            });
+            settingsBtn.addEventListener('click', openSettingsModal);
+            const topSettingsBtn = document.getElementById('topSettingsBtn');
+            if (topSettingsBtn) topSettingsBtn.addEventListener('click', openSettingsModal);
 
             closeSettingsModalBtn.addEventListener('click', () => {
                 settingsModalOverlay.classList.remove('active');
@@ -2508,11 +2497,12 @@
                 });
             }
 
-            const topSettingsBtn = document.getElementById('topSettingsBtn');
-            if (topSettingsBtn) {
-                topSettingsBtn.addEventListener('click', () => {
-                    const settingsBtn = document.getElementById('settingsBtn');
-                    if (settingsBtn) settingsBtn.click();
+            const headerThemeSelector = document.getElementById('headerThemeSelector');
+            if (headerThemeSelector) {
+                const currentTheme = localStorage.getItem('ddma-theme') || 'midnight';
+                headerThemeSelector.value = currentTheme;
+                headerThemeSelector.addEventListener('change', function() {
+                    applyTheme(this.value);
                 });
             }
             
@@ -2645,23 +2635,29 @@
 
         // Sidebar collapse logic
         function setupSidebarCollapse() {
-            collapseSidebarBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                sidebarPanel.classList.add('collapsed');
-                leftCollapsedTab.style.display = 'flex';
-            });
+            if (collapseSidebarBtn) {
+                collapseSidebarBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebarPanel.classList.add('collapsed');
+                    leftCollapsedTab.style.display = 'flex';
+                });
+            }
             
-            leftCollapsedTab.addEventListener('click', function(e) {
-                e.stopPropagation();
-                sidebarPanel.classList.remove('collapsed');
-                leftCollapsedTab.style.display = 'none';
-            });
+            if (leftCollapsedTab) {
+                leftCollapsedTab.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebarPanel.classList.remove('collapsed');
+                    leftCollapsedTab.style.display = 'none';
+                });
+            }
             
-            expandSidebarBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                sidebarPanel.classList.remove('collapsed');
-                leftCollapsedTab.style.display = 'none';
-            });
+            if (expandSidebarBtn) {
+                expandSidebarBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebarPanel.classList.remove('collapsed');
+                    leftCollapsedTab.style.display = 'none';
+                });
+            }
         }
 
         // Transcript panel collapse logic
@@ -2881,10 +2877,17 @@
             projectInfo = null;
             clips = [];
             transcriptionData = null;
-            document.getElementById('activeProjectBadge').textContent = "No active project";
-            document.getElementById('activeProjectBadge').style.display = "none";
-            document.getElementById('activeProjectTitleHeader').textContent = "CLIP PLAN";
-            document.getElementById('clipsToolbar').style.display = 'none';
+            const badge = document.getElementById('activeProjectBadge');
+            if (badge) {
+                badge.textContent = "No active project";
+                badge.style.display = "none";
+            }
+            const header = document.getElementById('activeProjectTitleHeader');
+            if (header) {
+                header.textContent = "CLIP PLAN";
+            }
+            const tb = document.getElementById('clipsToolbar');
+            if (tb) tb.style.display = 'none';
             
             // Clear player
             audioElement.pause();
@@ -3038,6 +3041,10 @@
                             if (p.id === activeProjectId) opt.selected = true;
                             topEpisodeSelect.appendChild(opt);
                         });
+                        const ingestOpt = document.createElement('option');
+                        ingestOpt.value = 'NEW_PROJECT';
+                        ingestOpt.textContent = '➕ Ingest New Episode...';
+                        topEpisodeSelect.appendChild(ingestOpt);
                     }
 
                     if (projects.length === 0) {
@@ -3094,16 +3101,9 @@
 
                     if (!activeProjectId && projects.length > 0) {
                         const targetMatch = initialTarget ? projects.find(p => p.id === initialTarget) : null;
-                        if (targetMatch) {
-                            selectProject(targetMatch.id);
-                        } else {
-                            const firstReady = projects.find(p => p.status === 'ready');
-                            if (firstReady) {
-                                selectProject(firstReady.id);
-                            } else {
-                                selectProject(projects[0].id);
-                            }
-                        }
+                        const projToSelect = targetMatch ? targetMatch.id : (projects.find(p => p.status === 'ready') ? projects.find(p => p.status === 'ready').id : projects[0].id);
+                        console.log("[DEBUG] Auto-selecting project:", projToSelect);
+                        selectProject(projToSelect);
                     } else if (activeProjectId) {
                         const currProj = projects.find(p => p.id === activeProjectId);
                         if (currProj) {
@@ -3114,6 +3114,7 @@
                     }
                 })
                 .catch(err => {
+                    console.error("[DEBUG] /list-projects error:", err);
                     showDebug("Failed to list projects: " + err.message);
                 });
         }
@@ -3135,6 +3136,9 @@
                 window.history.replaceState({}, '', url);
             } catch (e) {}
             
+            const topEpisodeSelect = document.getElementById('topEpisodeSelect');
+            if (topEpisodeSelect) topEpisodeSelect.value = projectId;
+
             lastCombinedUrl = "";
             
             loadProjectsListOnly();
@@ -3147,7 +3151,9 @@
                     return r.json();
                 })
                 .then(data => {
+                    console.log("[DEBUG] /get-project received for", projectId, "clips count:", data.plan ? data.plan.length : 0);
                     projectInfo = data.info;
+                    console.log("[DEBUG] projectInfo status:", projectInfo ? projectInfo.status : "null");
                     clips = (data.plan || []).map(c => {
                         if (c.segments && Array.isArray(c.segments) && c.segments.length > 0) {
                             return c;
@@ -3194,9 +3200,9 @@
                     const projName = projectInfo.name || projectInfo.id || 'Project';
                     const epTitle = projectInfo.title || projName;
                     const audioName = projectInfo.audio_filename || projectInfo.audio_file || 'audio';
-                    activeProjectBadge.textContent = projName;
+                    if (activeProjectBadge) activeProjectBadge.textContent = projName;
                     const headerLabel = (projectInfo.title && projectInfo.title !== projName) ? `${projName}: "${epTitle}"` : projName;
-                    activeProjectTitleHeader.textContent = `${headerLabel.toUpperCase()} CLIP PLAN`;
+                    if (activeProjectTitleHeader) activeProjectTitleHeader.textContent = `${headerLabel.toUpperCase()} CLIP PLAN`;
                     const editGrandTitleBtn = document.getElementById('editGrandTitleBtn');
                     if (editGrandTitleBtn) editGrandTitleBtn.style.display = 'inline-flex';
                     nowPlayingTitle.textContent = `${projName} (${audioName})`;
@@ -3219,14 +3225,17 @@
                         audioElement.src = '';
                         updateStateBar("Ready (error status)");
                     } else {
-                        renderTranscription();
                         renderClips();
+                        setTimeout(() => {
+                            renderTranscription();
+                        }, 20);
                         
                         audioElement.src = `/project-audio?id=${projectId}`;
                         updateStateBar("Ready");
                     }
                 })
                 .catch(err => {
+                    console.error("[DEBUG] selectProject error:", err);
                     showDebug("Failed loading project details: " + err.message);
                     updateStateBar("Ready");
                 });
