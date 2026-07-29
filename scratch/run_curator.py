@@ -2789,50 +2789,21 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not project_id or not clip_num:
                     raise Exception("Missing project id or clip number.")
                 
-                job_key = (project_id, int(clip_num))
-                if job_key in mosaic_runs and mosaic_runs[job_key].get("status") in ("starting", "running", "compiling", "processing"):
-                    raise Exception("A compile or export job is already in progress for this clip.")
-                
-                def run_compile_job(proj_id, num):
-                    mosaic_runs[job_key] = {
-                        "status": "processing",
-                        "progress": 0,
-                        "error": None,
-                        "run_id": "local_compile"
-                    }
-                    try:
-                        plan_path = os.path.join("projects", proj_id, "plan.json")
-                        if not os.path.exists(plan_path):
-                            plan_path = "plan.json"
-                        cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(num), "--plan-file", plan_path]
-                        print(f"[{proj_id}][Clip {num}] Starting background compilation: {' '.join(cmd)}")
-                        proc = subprocess.run(cmd, capture_output=True, text=True, cwd=".")
-                        if proc.returncode != 0:
-                            raise Exception(f"Compile-clip failed with return code {proc.returncode}: {proc.stderr}")
-                        print(f"[{proj_id}][Clip {num}] Background compilation completed successfully!")
-                        if job_key in mosaic_runs:
-                            del mosaic_runs[job_key]
-                    except Exception as ex:
-                        print(f"[{proj_id}][Clip {num}] Background compilation failed: {ex}")
-                        mosaic_runs[job_key] = {
-                            "status": "failed",
-                            "progress": 0,
-                            "error": str(ex),
-                            "run_id": "local_compile"
-                        }
-                
-                t = threading.Thread(
-                    target=run_compile_job,
-                    args=(project_id, int(clip_num)),
-                    daemon=True
-                )
-                t.start()
+                plan_path = os.path.join("projects", project_id, "plan.json")
+                if not os.path.exists(plan_path):
+                    plan_path = "plan.json"
+                cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", plan_path]
+                print(f"[{project_id}][Clip {clip_num}] Starting synchronous compilation: {' '.join(cmd)}")
+                proc = subprocess.run(cmd, capture_output=True, text=True, cwd=".")
+                if proc.returncode != 0:
+                    raise Exception(f"Compile-clip failed with return code {proc.returncode}: {proc.stderr}")
+                print(f"[{project_id}][Clip {clip_num}] Synchronous compilation completed successfully!")
                 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
-                self.wfile.write(json.dumps({"success": True, "message": "Compilation started in the background."}).encode('utf-8'))
+                self.wfile.write(json.dumps({"success": True, "message": "Compilation completed successfully."}).encode('utf-8'))
                 return
             except Exception as e:
                 self.send_response(500)
