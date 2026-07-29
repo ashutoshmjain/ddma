@@ -4420,6 +4420,8 @@
             .then(data => {
                 btnEl.disabled = false;
                 btnEl.innerHTML = '⏸ Pause';
+                btnEl.classList.remove('btn-status-gray', 'btn-status-warning');
+                btnEl.classList.add('btn-status-success');
                 playBtn.textContent = '⏸';
                 activeClipPlayIdx = clipIdx;
                 
@@ -5455,7 +5457,7 @@
                 card.querySelector(`#introCardBtn_${index}`).addEventListener('click', function(e) {
                     e.stopPropagation();
                     const btn = this;
-                    btn.innerHTML = '⏳ Rendering...';
+                    btn.innerHTML = '⏳ Compiling...';
                     btn.disabled = true;
                     updateStateBar("Rendering 2-second intro title card clip...");
                     
@@ -5467,6 +5469,8 @@
                         return res.json();
                     })
                     .then(data => {
+                        btn.classList.remove('btn-status-warning', 'btn-status-gray');
+                        btn.classList.add('btn-status-success');
                         audioElement.pause();
                         playBtn.textContent = '▶';
                         
@@ -5492,7 +5496,7 @@
                 card.querySelector(`#outroCardBtn_${index}`).addEventListener('click', function(e) {
                     e.stopPropagation();
                     const btn = this;
-                    btn.innerHTML = '⏳ Rendering...';
+                    btn.innerHTML = '⏳ Compiling...';
                     btn.disabled = true;
                     updateStateBar("Rendering 5-second outro bridge card clip...");
                     
@@ -5504,6 +5508,8 @@
                         return res.json();
                     })
                     .then(data => {
+                        btn.classList.remove('btn-status-warning', 'btn-status-gray');
+                        btn.classList.add('btn-status-success');
                         audioElement.pause();
                         playBtn.textContent = '▶';
                         
@@ -5553,6 +5559,8 @@
                             return res.json();
                         })
                         .then(data => {
+                            btn.classList.remove('btn-status-warning', 'btn-status-gray');
+                            btn.classList.add('btn-status-success');
                             const freshVideoUrl = `/clips/${activeProjectId}-${clip.num}.mp4?t=` + Date.now();
                             previewVideoPlayer.src = freshVideoUrl;
                             videoModalTitle.textContent = `VIDEO PREVIEW - Part ${clip.num}: ${clip.title}`;
