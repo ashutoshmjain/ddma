@@ -4692,7 +4692,7 @@
 
                     if (data.success) {
                         showDebug(`Successfully created ${data.clip_count} AI-curated clips for ${activeProjectId}!`, false);
-                        loadProjectPlan(activeProjectId);
+                        selectProject(activeProjectId);
                     } else {
                         alert("Episode AI Auto-Plan failed: " + (data.error || "Unknown error"));
                     }

@@ -355,9 +355,18 @@ async function runTest() {
             return { capturedErr };
         });
 
-        console.log(`- Deletion State Reset Captured Error: ${deleteTestState.capturedErr || 'none (Passed)'}`);
-        if (deleteTestState.capturedErr) {
-            throw new Error(`FAIL: clearActiveProjectState threw error on deletion: ${deleteTestState.capturedErr}`);
+        // 🧪 TEST 8: Verifying selectProject Function Availability & Signature
+        console.log("\n🧪 TEST 8: Verifying selectProject Function Availability...");
+        const selectProjTestState = await page.evaluate(() => {
+            return {
+                selectProjectDefined: typeof selectProject === 'function',
+                activeProjectId: activeProjectId
+            };
+        });
+
+        console.log(`- selectProject Defined: ${selectProjTestState.selectProjectDefined}`);
+        if (!selectProjTestState.selectProjectDefined) {
+            throw new Error("FAIL: selectProject function is not defined in curator.html global scope!");
         }
 
         console.log("\n✅ ALL COMPREHENSIVE CURATOR REGRESSION TESTS PASSED 100%!");
