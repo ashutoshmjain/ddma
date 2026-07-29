@@ -1,59 +1,155 @@
-# 🎬 DDMA Clip Dynamics & Feature Reference Guide
+# 🎬 DDMA Clip Dynamics - Master Reference & Technical Specification Guide
 
-## 📌 Executive Overview
-The **Clip** is the core functional building block of the **DeepDive Media Automator (DDMA)** progressive podcast production workflow. Each clip represents a high-engagement, standalone short-form asset (up to 2m 55s) tailored for social distribution (YouTube Shorts, Instagram Reels, TikTok) while collectively forming the baseline long-form podcast episode.
+## 📌 1. Executive Summary & Purpose
 
----
+The **Clip** is the core functional building block of the **DeepDive Media Automator (DDMA)** progressive podcast production engine. In the DDMA paradigm, unedited raw multi-hour audio is transformed into standalone, high-engagement short-form video assets (up to 2 minutes 55 seconds) for social platforms (YouTube Shorts, Instagram Reels, TikTok) while simultaneously forming the baseline long-form podcast episode.
 
-## 🎛️ Header Control Bar & Action Buttons
-
-### 1. Clip Identifier & Title Editor
-* **Badge (`245-1`)**: Color-coded clip number indicating Episode and Clip sequence.
-* **Title Field**: Editable input for the social title card. Automatically constrained to two balanced lines for Instagram safe-zone compliance.
-* **Expand/Collapse Arrow (`▼`)**: Accordion toggle to show or hide segment details.
-
-### 2. Clip Attributes Bar
-* **Duration (`MM:SS`)**: Calculated total duration of the concatenated audio segments.
-* **Volume (`1.0`)**: Global output multiplier for the clip audio stream. Default is `1.0` (100%).
-* **Crossfade (`0s`)**: Global crossfade duration applied across adjacent clip transitions.
-* **Audio Only Checkbox**: When checked, skips video generation for audio-only export targets (e.g. Spotify baseline podcast).
+### 🎯 Dual-Purpose Architecture of This Document
+This document is designed as the **definitive reference standard** for two target audiences:
+1. **End-Users / Content Directors**: Step-by-step visual UI guide, interactive controls, transcript boundary selection workflows, lock safety latches, and sting volume rules.
+2. **AI Agents & Software Developers**: Complete technical specification detailing API endpoints, JSON data contracts (`plan.json`), FFmpeg rendering pipelines, DOM selectors, and automated E2E test assertions (`scratch/test-env/test_curator.js`).
 
 ---
 
-## 🚀 Status & Action Trigger Buttons
+## 🎛️ 2. UI Layout & Visual Anatomy
 
-| Button & Icon | State / Style | Function & Workflow Description |
-| :--- | :--- | :--- |
-| **`🎬 Intro`** | Amber (Uncompiled) / Green (Compiled) | Generates and previews the **2-second Title Card Intro slide** with charcoal background and white text layout. |
-| **`🎬 Outro`** | Amber (Uncompiled) / Green (Compiled) | Generates and previews the **5-second Curiosity Question Outro slide** with a linear 5.0s audio fade-out. |
-| **`▶ Audio`** | Bright Green Active | Plays sample-accurate concatenated clip audio (Intro Sting + Speech Audio + Outro Sting). |
-| **`📹 Draft` / `📹 Video`** | Amber (`📹 Draft`) / Green (`📹 Video`) | **Pre-Mosaic (`📹 Draft`)**: Compiles 2s Title Card + Black Canvas Audio + 5s Outro slide.<br>**Post-Mosaic (`📹 Video`)**: Compiles 2s Title Card + Mosaic Motion Graphics + 5s Outro slide. |
-| **`🌌 Mosaic`** | Disabled (Unlocked) / Enabled (Locked) | Triggers Mosaic external API to render motion infographics. **Cost-Protected**: Requires explicit card locking (`🔒 Locked`) to prevent accidental API invokes. |
-| **`🤖 Remix`** | Disabled (Unlocked) / Enabled (Locked) | Triggers Gemini AI Co-Pilot to analyze and re-structure clip boundaries and titles. |
-| **`🔓 Unlocked` / `🔒 Locked`** | Toggle Switch | Safety latch protecting expensive external API operations (Mosaic & Gemini Remix) and locking segment boundaries from accidental edits. |
+Each Clip Card in the Curator interface (`curator.html`) consists of four primary structural regions:
+
+```
++---------------------------------------------------------------------------------------------------------+
+| [▼] [245-1]  Title Editor Input                                                                        |
+| Duration: 02:07 | Volume: 1.0 | Crossfade: 0s | [ ] Audio Only                                          |
+| [🎬 Intro] [🎬 Outro] [▶ Audio] [📹 Draft/Video] [🌌 Mosaic] [🤖 Remix] [🔓 Unlocked / 🔒 Locked]      |
++---------------------------------------------------------------------------------------------------------+
+| 🎬 Intro Clip (Title Card Slide)                                                   Duration: 2.0s       |
+| 🎵 Music Segment (Intro Sting)                                                     Duration: 5.0s       |
+| 🎙️ Audio Segment (Speech Track) [Double-Click to Edit Boundaries]                   Duration: 110.62s    |
+| 🎵 Music Segment (Outro Sting)                                                     Duration: 5.5s       |
+| 🌉 Outro Clip (Bridge Card Slide - Editable Question)                               Duration: 5.0s       |
++---------------------------------------------------------------------------------------------------------+
+```
 
 ---
 
-## 🎵 Segment Dynamics (Audio, Music Stings, & Slides)
+## 🖱️ 3. Interactive Workflows & User Controls
 
-### 🎬 Intro Clip (Title Card Slide)
-* **Duration**: Fixed `2.0s`.
-* **Top Line**: Displays layout text (`EPISODE 245` or `EPISODE 245 • PART 1`).
-* **Bottom Line**: Displays the curated clip title.
+### 🎙️ Transcript Boundary Selection via Double-Click
+The primary mechanism for refining audio boundaries is interactive transcript snapping:
 
-### 🎵 Music Segments (Intro/Outro Stings)
-* **Sting Dropdown**: Select custom music files (`deepDive-soft-ok.mp3`, `Bluesy Vibes...mp3`).
-* **Duration**: Configurable sting playback duration (typically 5.0s–5.5s).
-* **Volume**: Default `1.0` (100% volume). Standalone stings play at full volume.
-* **Crossfade**: Smooth crossfade overlap with adjacent speech audio (e.g. `1s` intro / `0.3s` outro).
-* **Segment Controls**: `📋 Duplicate` and `🗑️ Delete` icons for reordering or removing stings.
+* **Trigger**: Double-click on any `.segment-row.audio-seg` row.
+* **Unlocked State (`🔓 Unlocked`)**:
+  1. Instantly triggers audio snippet preview (`playAudioRange(start, end)`).
+  2. Automatically expands the right-side **Transcript Panel** (`ensureTranscriptPanelExpanded()`).
+  3. Highlights spoken word-level timestamps in the transcript corresponding to the current speech segment.
+  4. Clicking any word in the transcript automatically snaps that word's exact Whisper timestamp as the new `start` or `end` boundary for the segment.
+* **Locked State (`🔒 Locked`)**:
+  * Triggers audio snippet preview, but **freezes transcript boundary selection** to protect finalized clips from accidental timestamp mutations.
 
-### 🎙️ Audio Segment (Speech Track)
-* **Speech Quote**: Verbatim Whisper transcription anchor text.
-* **Duration**: Start/End time range (e.g., `110.62s`).
-* **Sample-Accurate Slicing**: Re-encoded using FFmpeg (`-c:a libmp3lame -q:a 2`) to ensure clean word-boundary cuts without word clipping.
+---
 
-### 🌉 Outro Clip (Bridge Card Slide)
-* **Duration**: Fixed `5.0s`.
-* **Editable Curiosity Question**: Editable text field rendered in **Segoe UI Bold (34px)** centered on a solid black background.
-* **Audio Track**: Fades out the last 5 seconds of preceding clip audio to prevent jarring cutoffs.
+### 🎵 Music Segment Double-Click Snippet Preview
+* **Trigger**: Double-click on any `.segment-row.music-seg` row.
+* **Behavior**: Instantly plays a standalone preview of the selected music sting file (`playMusicSegment(file, duration, volume)`), using the exact sting duration and volume setting (`default: 1.0`).
+
+---
+
+### 🔒 Cost-Protection Safety Latch (`🔓 Unlocked` vs `🔒 Locked`)
+
+To protect creators against accidental billing from external cloud services, DDMA enforces a strict safety latch:
+
+| Card State | Boundary & Title Editing | External API Buttons (`🌌 Mosaic`, `🤖 Remix`) | Video Preview (`📹 Draft` / `📹 Video`) |
+| :--- | :--- | :--- | :--- |
+| **`🔓 Unlocked`** | **Enabled** (Editable text, boundary snapping, segment reordering) | **DISABLED** (Grayed out to prevent accidental API charges) | **Enabled** (Compiles Pre-Mosaic Draft video) |
+| **`🔒 Locked`** | **Frozen** (Protected against accidental clicks) | **ENABLED** (Allows intentional invoke of Mosaic & Gemini Remix) | **Enabled** (Compiles Post-Mosaic Master video if rendered) |
+
+---
+
+## 🚀 4. Render Pipeline & Video Status Dynamics
+
+DDMA distinguishes between Pre-Mosaic draft baselines and Post-Mosaic final master videos:
+
+```
+[Audio Slicing] ---> [Pre-Mosaic Draft] ---> [Mosaic Motion Graphics] ---> [Post-Mosaic Master]
+                         (📹 Draft)                                             (📹 Video)
+```
+
+| Pipeline Stage | Button Badge | Video Composition & Rendering Engine | Video Modal Banner & Subtitle |
+| :--- | :--- | :--- | :--- |
+| **Pre-Mosaic Baseline** | **`📹 Draft`** *(Amber Badge)* | **2s Title Card Intro** + **740x740 Solid Black Canvas Audio** + **5s Curiosity Question Outro** | **`📹 DRAFT BASELINE (Pre-Mosaic) - Part X: <Title>`**<br>`ℹ️ Pre-Mosaic Draft Baseline (2s Title Card + Black Canvas Audio + 5s Outro). Lock clip & run Mosaic for motion infographics.` |
+| **Post-Mosaic Master** | **`📹 Video`** *(Bright Green Badge)* | **2s Title Card Intro** + **Mosaic Motion Graphics Video** + **5s Curiosity Question Outro** | **`📹 FINAL MASTER VIDEO (Post-Mosaic) - Part X: <Title>`**<br>`✨ Master Video with Motion Graphics • clips/<project>-<num>.mp4` |
+
+---
+
+## 🛠️ 5. Technical Specifications & Developer Contract
+
+### 📄 `plan.json` Clip Object Schema
+
+```json
+{
+  "num": 1,
+  "title": "Ground breaking new research on nature of Singularity !",
+  "start": 0.0,
+  "end": 110.62,
+  "locked": false,
+  "music": "deepDive-soft-ok.mp3",
+  "music_volume": 1.0,
+  "bridge_text": [
+    "Thanks for tuning in as we prep the full episode - one clip at a time :-)"
+  ],
+  "segments": [
+    {
+      "type": "music",
+      "music_file": "deepDive-soft-ok.mp3",
+      "duration": 5.0,
+      "volume": 1.0,
+      "crossfade": 1.0
+    },
+    {
+      "type": "audio",
+      "start": 0.0,
+      "end": 110.62,
+      "duration": 110.62,
+      "volume": 1.0,
+      "crossfade": 0.0,
+      "text": "Episode 245"
+    },
+    {
+      "type": "music",
+      "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+      "duration": 5.5,
+      "volume": 1.0,
+      "crossfade": 0.3
+    }
+  ]
+}
+```
+
+---
+
+### 🌐 HTTP API Endpoints (`scratch/run_curator.py`)
+
+* **`POST /compile-clip?id=<project_id>&num=<clip_num>`**:
+  * Triggers `ddma.py compile-clip --num <clip_num> --plan-file projects/<project_id>/plan.json`.
+  * Auto-selects the newest sliced audio MP3 matching the clip number.
+  * Equalizes audio and video stream durations using FFprobe.
+  * Returns `{"success": true, "message": "Compilation completed successfully."}`.
+
+---
+
+### 🧪 Automated E2E Test Assertion Matrix (`scratch/test-env/test_curator.js`)
+
+All automated test suites must validate the clip dynamics contract defined in this document:
+
+```javascript
+// TEST 2b: Verifying Safety Latch & Button Availability
+// Unlocked Clip -> Mosaic Button Disabled
+assert(unlockedClip.mosaicButton.disabled === true);
+// Locked Clip -> Mosaic Button Enabled
+assert(lockedClip.mosaicButton.disabled === false);
+
+// TEST 5: Duration & Stream Alignment Verification
+assert(abs(videoDuration - audioDuration) <= 0.05);
+
+// TEST 6: On-Demand Compilation & Green-Out Status
+assert(videoButton.classList.contains('btn-status-success'));
+```
