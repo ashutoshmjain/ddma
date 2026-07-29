@@ -1,13 +1,33 @@
 # 🎬 DDMA Clip Dynamics - Master Reference & Technical Specification Guide
 
-## 📌 1. Executive Summary & Purpose
+## 📌 1. Conceptual Paradigm: The Four Elements of a Clip
 
-The **Clip** is the core functional building block of the **DeepDive Media Automator (DDMA)** progressive podcast production engine. In the DDMA paradigm, unedited raw multi-hour audio is transformed into standalone, high-engagement short-form video assets (up to 2 minutes 55 seconds) for social platforms (YouTube Shorts, Instagram Reels, TikTok) while simultaneously forming the baseline long-form podcast episode.
+In the **DeepDive Media Automator (DDMA)** architecture, a **Clip** is NOT a simple trimmed audio file. It is a fully-produced, progressive media construct composed of **four foundational elements**:
 
-### 🎯 Dual-Purpose Architecture of This Document
-This document is designed as the **definitive reference standard** for two target audiences:
-1. **End-Users / Content Directors**: Step-by-step visual UI guide, interactive controls, transcript boundary selection workflows, lock safety latches, and sting volume rules.
-2. **AI Agents & Software Developers**: Complete technical specification detailing API endpoints, JSON data contracts (`plan.json`), FFmpeg rendering pipelines, DOM selectors, and automated E2E test assertions (`scratch/test-env/test_curator.js`).
+```
++-------------------------------------------------------------------------------------------------------------------------+
+|  [1] Intro Card (Fixed: 1)  --->  [2] Music Segments (N)  <--->  [3] Audio Segments (N)  --->  [4] Outro Card (Fixed: 1)  |
++-------------------------------------------------------------------------------------------------------------------------+
+```
+
+### 1.1 Element Definitions, Ingestion Sources, & Cardinality
+
+| Element | Description | Content Source / Origin | Cardinality Rule | Editable Properties |
+| :--- | :--- | :--- | :--- | :--- |
+| **`🎬 Intro Card`** | 2-second visual title card slide prepended to the clip. | Dynamically rendered in-memory by Python/Pillow on a charcoal background using project metadata. | **Exactly 1** (Always at position 1) | Episode title, Part number layout (`EPISODE X • PART Y`), two-line balanced line wrapping. |
+| **`🎵 Music Segment`** | Audio sting or music track segment inserted before, during, or after speech. | Sourced from the project `music/` library directory (e.g. `deepDive-soft-ok.mp3`, `deepDive-main.mp3`, `Bluesy Vibes.mp3`). | **Arbitrary / Unlimited ($N \ge 0$)** | Music file selection, duration ($s$), volume (default `1.0`), crossfade ($s$). |
+| **`🎙️ Audio Segment`** | Spoken dialogue speech track containing raw podcast discussion. | Extracted from raw audio (`.m4a`/`.mp3`) using OpenAI Whisper word-level timestamps (`transcription.json`). | **Arbitrary / Unlimited ($N \ge 1$)** | Start time, end time, transcript word boundary snapping (via double-click), speech volume. |
+| **`🌉 Outro Card`** | 5-second curiosity question slide appended to the end of the clip for storyboard continuity. | Text sourced from `"bridge_text"` in `plan.json`. Audio is a 5.0s linear fade-out of preceding audio. | **Exactly 1** (Always at final position) | Editable Curiosity Question text rendered in **Segoe UI Bold (34px)** centered on black canvas. |
+
+---
+
+### 1.2 The Role of Mosaic Infographics in the Clip Body
+
+* **What is Mosaic?**: Mosaic is DDMA's motion design & infographics rendering engine.
+* **Pre-Mosaic State (Draft Baseline)**: The body of the clip (between Intro Card and Outro Card) displays a solid black square canvas (`740x740`) while playing the multi-segment audio track.
+* **Post-Mosaic State (Final Master)**: Mosaic replaces the solid black canvas body with dynamic motion graphics, animated infographics, kinetic typography, and visual diagrams synchronized to the speech audio.
+* **Master Concatenation**: When compiling the final video clip, DDMA losslessly concatenates:
+  $$\text{Final Master Video} = \text{Intro Title Card (2s)} + \text{Mosaic Motion Infographics Video} + \text{Outro Curiosity Question Slide (5s)}$$
 
 ---
 
@@ -34,7 +54,7 @@ Each Clip Card in the Curator interface (`curator.html`) consists of four primar
 ## 🖱️ 3. Interactive Workflows & User Controls
 
 ### 🎙️ Transcript Boundary Selection via Double-Click
-The primary mechanism for refining audio boundaries is interactive transcript snapping:
+The primary mechanism for refining speech boundaries is interactive transcript snapping:
 
 * **Trigger**: Double-click on any `.segment-row.audio-seg` row.
 * **Unlocked State (`🔓 Unlocked`)**:
