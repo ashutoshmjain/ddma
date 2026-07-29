@@ -384,14 +384,16 @@
                 <input type="text" class="search-input" id="searchInput" placeholder="Search documentation...">
             </div>
         </div>
-        <nav class="nav-links">
             <div class="nav-section-title">Overview</div>
             <a href="#quickstart" class="nav-link active"><i class="fa-solid fa-bolt"></i> Quickstart & AGY</a>
             <a href="#gui-workflow" class="nav-link"><i class="fa-solid fa-desktop"></i> Curator GUI Guide</a>
 
+            <div class="nav-section-title">Core Architecture & Reference</div>
+            <a href="#clip-dynamics" class="nav-link"><i class="fa-solid fa-film"></i> 🎬 Clip Dynamics Reference</a>
+            <a href="#demuxer-spec" class="nav-link"><i class="fa-solid fa-film"></i> Fast Demuxer Engine</a>
+
             <div class="nav-section-title">CLI & Automation</div>
             <a href="#cli-commands" class="nav-link"><i class="fa-solid fa-terminal"></i> CLI Commands Reference</a>
-            <a href="#demuxer-spec" class="nav-link"><i class="fa-solid fa-film"></i> Fast Demuxer Engine</a>
 
             <div class="nav-section-title">AI & Backend</div>
             <a href="#gemini-remix" class="nav-link"><i class="fa-solid fa-wand-magic-sparkles"></i> Gemini AI Remix</a>
@@ -447,6 +449,56 @@
                         </ul>
                     </li>
                 </ul>
+            </section>
+
+            <!-- Clip Dynamics Reference -->
+            <section id="clip-dynamics" class="doc-section">
+                <h2><i class="fa-solid fa-film"></i> 🎬 Clip Dynamics - Master Reference & Technical Specification</h2>
+                <p>A <strong>Clip</strong> is the core functional building block of DDMA. In the progressive production workflow, raw audio recordings are converted into high-engagement short-form video clips (up to 2m 55s) while forming the baseline long-form podcast episode.</p>
+
+                <div class="info-card primary" style="margin-top: 1rem;">
+                    <h4><i class="fa-solid fa-layer-group"></i> The Four-Element Construct Paradigm</h4>
+                    <p>Every clip is composed of exactly <strong>four structural elements</strong>:</p>
+                    <ol style="margin-left: 1.2rem; margin-top: 0.5rem; line-height: 1.6;">
+                        <li><strong>🎬 Intro Card (Fixed: 1)</strong>: 2s title card rendered dynamically on charcoal background with <code>EPISODE X • PART Y</code> layout.</li>
+                        <li><strong>🎵 Music Segments (Arbitrary: N &ge; 0)</strong>: Audio stings sourced from the project <code>music/</code> library (e.g. <code>deepDive-soft-ok.mp3</code>) with duration, volume (default <code>1.0</code>), and crossfade.</li>
+                        <li><strong>🎙️ Audio Segments (Arbitrary: N &ge; 1)</strong>: Spoken dialogue speech tracks extracted from raw audio using OpenAI Whisper timestamps (<code>transcription.json</code>). Snapped interactively via double-click.</li>
+                        <li><strong>🌉 Outro Card (Fixed: 1)</strong>: 5s curiosity question transition card rendered on black canvas with a 5.0s linear audio fade-out.</li>
+                    </ol>
+                </div>
+
+                <h3>Interactive Workflows & Safety Latches</h3>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Action / Control</th>
+                            <th>Trigger</th>
+                            <th>Behavior & Workflow Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Transcript Boundary Snapping</strong></td>
+                            <td><code>Double-Click</code> Audio Segment</td>
+                            <td>Plays range preview. If <code>🔓 Unlocked</code>, auto-expands right Transcript Panel & enables word-click timestamp snapping.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Music Sting Preview</strong></td>
+                            <td><code>Double-Click</code> Music Segment</td>
+                            <td>Plays sting audio snippet using configured duration and volume multiplier (default: <code>1.0</code>).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cost-Protection Latch</strong></td>
+                            <td>Toggle <code>🔓 Unlocked / 🔒 Locked</code></td>
+                            <td>External paid API triggers (<code>🌌 Mosaic</code>, <code>🤖 Remix</code>) are <strong>disabled</strong> in unlocked state to prevent accidental charges.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-card" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3);">
+                    <h4 style="color: #10b981;"><i class="fa-solid fa-file-code"></i> Definitive Specification File</h4>
+                    <p>Read the complete technical specification, JSON data contracts, and test assertion matrix at: <a href="file:///c:/Users/ashut/OneDrive/Documents/Longs/docs/CLIP_DYNAMICS.md" target="_blank" style="color: #10b981; font-weight: 600;">docs/CLIP_DYNAMICS.md</a></p>
+                </div>
             </section>
 
             <!-- CLI Commands Reference -->
