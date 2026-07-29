@@ -1779,7 +1779,7 @@
                             <label style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: block;">GEMINI API CREDENTIALS</label>
                             <span style="font-size: 0.72rem; color: var(--text-muted);">Required for Gemini AI Clip Remixing & Episode AI Auto-Plan.</span>
                         </div>
-                        <input type="password" id="settingsGeminiApiKey" placeholder="Enter Gemini API Key" style="width: 380px; padding: 0.55rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                        <input type="password" id="settingsGeminiApiKey" placeholder="Enter Gemini API Key" autocomplete="new-password" data-lpignore="true" style="width: 380px; padding: 0.55rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
                     </div>
 
                     <!-- Single Clip Remix Prompt -->
@@ -1815,7 +1815,7 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.8rem;">
                             <div class="music-editor-field" style="width: 100%;">
                                 <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">API Key (mk_...):</label>
-                                <input type="password" id="settingsMosaicApiKey" placeholder="Enter Mosaic API Key" style="width: 100%; padding: 0.55rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                                <input type="password" id="settingsMosaicApiKey" placeholder="Enter Mosaic API Key" autocomplete="new-password" data-lpignore="true" style="width: 100%; padding: 0.55rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
                             </div>
                             <div class="music-editor-field" style="width: 100%;">
                                 <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Agent ID (UUID):</label>
@@ -3012,9 +3012,8 @@
                     updateStateBar("Project deleted.");
                     if (activeProjectId === projectId) {
                         clearActiveProjectState();
-                    } else {
-                        loadProjectsList();
                     }
+                    loadProjectsList();
                 } else {
                     throw new Error("Failed to delete project");
                 }
@@ -3208,9 +3207,9 @@
                     nowPlayingTitle.textContent = `${projName} (${audioName})`;
                     
                     if (projectInfo.status === 'transcribing' || projectInfo.status === 'ingesting') {
-                        renderIngestionDashboard(data.ingestion_progress || null);
                         clips = [];
-                        renderClips();
+                        if (planEmptyState) planEmptyState.style.display = 'none';
+                        renderIngestionDashboard(data.ingestion_progress || null);
                         audioElement.src = '';
                         
                         pollingInterval = setInterval(() => {
@@ -3317,6 +3316,19 @@
         function renderIngestionDashboard(progressData) {
             const data = progressData || { current_stage: 1, percent: 5, action_text: "Initializing project ingestion...", stages: [], logs: [] };
             
+            if (planEmptyState) planEmptyState.style.display = 'none';
+
+            // Render placeholder card in right transcript container during ingestion
+            if (transcriptContainer) {
+                transcriptContainer.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 280px; padding: 2rem; text-align: center; color: var(--text-muted);">
+                        <div style="font-size: 2.2rem; margin-bottom: 0.8rem; animation: pulse 1.5s infinite alternate;">🎙️</div>
+                        <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem;">Whisper Transcription in Progress</h3>
+                        <p style="font-size: 0.78rem; max-width: 320px; line-height: 1.4; margin: 0; color: var(--text-muted);">Word-level timestamps are currently being extracted. Interactive transcript view will unlock as soon as Stage 1 completes.</p>
+                    </div>
+                `;
+            }
+
             const stages = data.stages && data.stages.length > 0 ? data.stages : [
                 {"index": 1, "name": "Transcription", "icon": "🎙️", "label": "Transcribing Raw Audio"},
                 {"index": 2, "name": "Storyboarding", "icon": "🧠", "label": "Structuring Clip Boundaries"},
@@ -3356,44 +3368,51 @@
             const logs = data.logs || [];
             const logsText = logs.length > 0 ? logs.join('\n') : '[System] Waiting for execution log stream...';
 
-            transcriptContainer.innerHTML = `
-                <div class="ingestion-dashboard-container" style="padding: 2rem 1.5rem; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box;">
-                    <div style="text-align: center; margin-bottom: 1.5rem;">
-                        <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.4rem;">
-                            <span style="display:inline-block; animation: spin 2s linear infinite;">⚙️</span> Automated Ingestion Pipeline
-                        </h2>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Executing end-to-end media automation: Transcription, Audio Slicing, Draft Muxing, Title Cards, and Outro slides.</p>
-                    </div>
+            let dashboardElem = document.getElementById('ingestionDashboardContainer');
+            if (!dashboardElem) {
+                dashboardElem = document.createElement('div');
+                dashboardElem.id = 'ingestionDashboardContainer';
+                dashboardElem.className = 'ingestion-dashboard-container';
+                dashboardElem.style.cssText = 'padding: 2rem 1.5rem; max-width: 900px; margin: 0 auto; width: 100%; box-sizing: border-box;';
+                clipListContainer.appendChild(dashboardElem);
+            }
 
-                    <!-- Pipeline Stages Grid -->
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; justify-content: center;">
-                        ${stagesHtml}
-                    </div>
-
-                    <!-- Progress Bar -->
-                    <div style="background: var(--border-color); height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 0.8rem; position: relative;">
-                        <div id="ingestionProgressBar" style="width: ${data.percent}%; height: 100%; background: linear-gradient(90deg, #6366f1, #10b981); transition: width 0.5s ease; border-radius: 6px;"></div>
-                    </div>
-
-                    <!-- Live Action Subtitle & Percentage -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                        <div id="ingestionActionText" style="font-size: 0.85rem; font-weight: 600; color: var(--text-main); font-family: var(--font-mono); display: flex; align-items: center; gap: 0.4rem;">
-                            <span style="color: var(--primary);">➔</span> ${data.action_text || 'Processing...'}
-                        </div>
-                        <div id="ingestionPercentText" style="font-size: 1.1rem; font-weight: 800; color: var(--primary); font-family: var(--font-mono);">${data.percent}%</div>
-                    </div>
-
-                    <!-- Technical Logs Console Drawer -->
-                    <details style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;" open>
-                        <summary style="padding: 0.5rem 0.8rem; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); cursor: pointer; user-select: none; font-family: var(--font-mono); display: flex; justify-content: space-between; align-items: center;">
-                            <span>💻 Execution Logs (<span id="ingestionLogCount">${logs.length}</span> entries)</span>
-                            <span style="font-size: 0.7rem; opacity: 0.6;">Click to toggle</span>
-                        </summary>
-                        <pre id="ingestionLogPre" style="padding: 0.8rem; margin: 0; font-family: var(--font-mono); font-size: 0.7rem; color: #10b981; background: #0d1117; max-height: 200px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; border-top: 1px solid var(--border-color);">${logsText}</pre>
-                    </details>
+            dashboardElem.innerHTML = `
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+                        <span style="display:inline-block; animation: spin 2s linear infinite;">⚙️</span> Automated Ingestion Pipeline
+                    </h2>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Executing end-to-end media automation: Transcription, Audio Slicing, Draft Muxing, Title Cards, and Outro slides.</p>
                 </div>
+
+                <!-- Pipeline Stages Grid -->
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; justify-content: center;">
+                    ${stagesHtml}
+                </div>
+
+                <!-- Progress Bar -->
+                <div style="background: var(--border-color); height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 0.8rem; position: relative;">
+                    <div id="ingestionProgressBar" style="width: ${data.percent}%; height: 100%; background: linear-gradient(90deg, #6366f1, #10b981); transition: width 0.5s ease; border-radius: 6px;"></div>
+                </div>
+
+                <!-- Live Action Subtitle & Percentage -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div id="ingestionActionText" style="font-size: 0.85rem; font-weight: 600; color: var(--text-main); font-family: var(--font-mono); display: flex; align-items: center; gap: 0.4rem;">
+                        <span style="color: var(--primary);">➔</span> ${data.action_text || 'Processing...'}
+                    </div>
+                    <div id="ingestionPercentText" style="font-size: 1.1rem; font-weight: 800; color: var(--primary); font-family: var(--font-mono);">${data.percent}%</div>
+                </div>
+
+                <!-- Technical Logs Console Drawer -->
+                <details style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;" open>
+                    <summary style="padding: 0.5rem 0.8rem; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); cursor: pointer; user-select: none; font-family: var(--font-mono); display: flex; justify-content: space-between; align-items: center;">
+                        <span>💻 Execution Logs (<span id="ingestionLogCount">${logs.length}</span> entries)</span>
+                        <span style="font-size: 0.7rem; opacity: 0.6;">Click to toggle</span>
+                    </summary>
+                    <pre id="ingestionLogPre" style="padding: 0.8rem; margin: 0; font-family: var(--font-mono); font-size: 0.7rem; color: #10b981; background: #0d1117; max-height: 200px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; border-top: 1px solid var(--border-color);">${logsText}</pre>
+                </details>
             `;
-            segmentCount.textContent = `${data.percent}% Ingesting`;
+            if (segmentCount) segmentCount.textContent = `${data.percent}% Ingesting`;
         }
 
         function renderTranscribingSpinner() {
@@ -4988,8 +5007,15 @@
 
         // Render planned clips list
         function renderClips() {
+            if (projectInfo && (projectInfo.status === 'transcribing' || projectInfo.status === 'ingesting')) {
+                return;
+            }
+
             const savedScrollTop = clipListContainer.scrollTop;
             function clearExistingCards() {
+                const dashboard = document.getElementById('ingestionDashboardContainer');
+                if (dashboard) dashboard.remove();
+
                 const cards = clipListContainer.querySelectorAll('.clip-card');
                 cards.forEach(c => {
                     try {

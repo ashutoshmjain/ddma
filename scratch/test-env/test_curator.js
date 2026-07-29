@@ -83,6 +83,27 @@ async function runTest() {
             throw new Error("FAIL: Persistent Top-Line Header Bar elements missing or unpopulated!");
         }
 
+        // 🧪 TEST 0b: Verifying Ingestion Dashboard Placement in Main Window
+        console.log("\n🧪 TEST 0b: Verifying Ingestion Dashboard Placement in Main Central Window...");
+        const dashState = await page.evaluate(() => {
+            renderIngestionDashboard({ current_stage: 1, percent: 25, action_text: "Testing E2E ingestion...", stages: [], logs: ["Test log entry"] });
+            const inMain = document.querySelector('#clipListContainer #ingestionDashboardContainer') !== null;
+            const inRight = document.querySelector('#transcriptContainer #ingestionDashboardContainer') !== null;
+            const emptyStateVisible = document.getElementById('planEmptyState').style.display !== 'none';
+            return { inMain, inRight, emptyStateVisible };
+        });
+        console.log(`- Dashboard in Main Window (#clipListContainer): ${dashState.inMain}`);
+        console.log(`- Dashboard in Right Transcript Panel (#transcriptContainer): ${dashState.inRight}`);
+        console.log(`- Plan Empty State Hidden: ${!dashState.emptyStateVisible}`);
+
+        if (!dashState.inMain || dashState.inRight || dashState.emptyStateVisible) {
+            throw new Error("FAIL: Ingestion Dashboard is not correctly placed in the main central window (#clipListContainer)!");
+        }
+
+        // Reset workspace to ready state
+        await page.evaluate(() => selectProject(activeProjectId));
+        await new Promise(r => setTimeout(r, 1000));
+
         // 🧪 TEST 1: Title Card Input Editing (No premature auto-compile gray-out)
         console.log("\n🧪 TEST 1: Editing Title Input & Verifying State Stability...");
         const titleInputSelector = '.clip-card[data-index="0"] .clip-card-title';
