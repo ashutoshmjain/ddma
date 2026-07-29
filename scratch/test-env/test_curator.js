@@ -41,6 +41,31 @@ async function runTest() {
         await page.waitForSelector('.clip-card', { timeout: 10000 });
         await new Promise(r => setTimeout(r, 2000));
 
+        // 🧪 TEST 0: Verifying Persistent Top-Line Header Bar Elements
+        console.log("\n🧪 TEST 0: Verifying Persistent Top-Line Header Bar & Episode Switcher...");
+        const topbarState = await page.evaluate(() => {
+            const topbar = document.querySelector('.app-topbar');
+            const select = document.getElementById('topEpisodeSelect');
+            const topSettingsBtn = document.getElementById('topSettingsBtn');
+            const teamBadge = document.querySelector('.team-badge');
+            return {
+                topbarVisible: topbar !== null && topbar.offsetParent !== null,
+                selectOptionsCount: select ? select.options.length : 0,
+                selectedEpisode: select ? select.value : null,
+                topSettingsBtnVisible: topSettingsBtn !== null && topSettingsBtn.offsetParent !== null,
+                teamBadgeText: teamBadge ? teamBadge.textContent.trim() : null
+            };
+        });
+
+        console.log(`- Topbar Visible: ${topbarState.topbarVisible}`);
+        console.log(`- Episode Select Options: ${topbarState.selectOptionsCount} (Selected: ${topbarState.selectedEpisode})`);
+        console.log(`- Top Settings Button Visible: ${topbarState.topSettingsBtnVisible}`);
+        console.log(`- Team Badge: "${topbarState.teamBadgeText}"`);
+
+        if (!topbarState.topbarVisible || topbarState.selectOptionsCount === 0 || !topbarState.topSettingsBtnVisible) {
+            throw new Error("FAIL: Persistent Top-Line Header Bar elements missing or unpopulated!");
+        }
+
         // 🧪 TEST 1: Title Card Input Editing (No premature auto-compile gray-out)
         console.log("\n🧪 TEST 1: Editing Title Input & Verifying State Stability...");
         const titleInputSelector = '.clip-card[data-index="0"] .clip-card-title';

@@ -1458,6 +1458,46 @@
         <div class="help-chat-resizer" id="helpChatResizer" title="Drag to resize Help panel height"></div>
     </div>
 
+    <!-- Persistent Top-Line Header Bar -->
+    <div class="app-topbar" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 1.2rem; background-color: var(--panel-bg-darker); border-bottom: 1px solid var(--border-color); height: 48px; box-sizing: border-box; flex-shrink: 0; z-index: 100;">
+        <!-- Left: Logo & Brand -->
+        <div style="display: flex; align-items: center; gap: 0.8rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.2rem;">🎙️</span>
+                <span style="font-family: var(--font-mono); font-weight: 800; font-size: 0.95rem; background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">DDMA STUDIO</span>
+            </div>
+        </div>
+
+        <!-- Center: Episode Quick Switcher Dropdown -->
+        <div style="display: flex; align-items: center; gap: 0.6rem; background: var(--bg-color); padding: 0.25rem 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);">
+            <label for="topEpisodeSelect" style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); font-family: var(--font-mono); display: flex; align-items: center; gap: 0.3rem;">
+                <span>EPISODE:</span>
+            </label>
+            <select id="topEpisodeSelect" style="background: transparent; border: none; color: var(--text-main); font-size: 0.82rem; font-weight: 700; outline: none; cursor: pointer; padding-right: 0.5rem;">
+                <!-- Populated dynamically via JS -->
+            </select>
+            <button class="btn btn-primary btn-mini" id="topNewProjectBtn" style="padding: 0.2rem 0.6rem; font-size: 0.72rem; font-weight: 600;" title="Ingest new audio recording into DDMA pipeline">➕ Ingest New</button>
+        </div>
+
+        <!-- Right: Control Badges & Settings Trigger -->
+        <div style="display: flex; align-items: center; gap: 0.8rem;">
+            <button id="voiceControlBtn" class="btn btn-secondary btn-mini" style="font-size: 0.72rem; font-weight: 600; gap: 0.3rem;" title="Voice Commander (Alt + V)">
+                <span id="voiceStatusDot" style="width: 8px; height: 8px; border-radius: 50%; background-color: #94a3b8; display: inline-block;"></span>
+                <span id="voiceStatusText">🎙️ Voice (Alt+V)</span>
+            </button>
+            
+            <div class="team-badge" style="display: flex; align-items: center; gap: 0.4rem; padding: 0.25rem 0.6rem; background: var(--panel-bg); border-radius: 20px; border: 1px solid var(--border-color); font-size: 0.75rem;">
+                <span style="font-size: 0.85rem;">👤</span>
+                <span style="font-weight: 600; color: var(--text-main);">Ashutosh</span>
+                <span style="font-size: 0.65rem; color: var(--primary); background: rgba(99,102,241,0.15); padding: 0.1rem 0.4rem; border-radius: 10px; font-weight: 700;">Creator</span>
+            </div>
+
+            <button class="btn btn-secondary btn-mini" id="topSettingsBtn" style="padding: 0.35rem 0.8rem; font-size: 0.78rem; font-weight: 600; display: flex; align-items: center; gap: 0.35rem;" title="Open Studio System Settings">
+                ⚙️ Settings
+            </button>
+        </div>
+    </div>
+
     <div class="main-container">
         <!-- Left Collapsed Tab Indicator (Projects Switcher) -->
         <div id="leftCollapsedTab" class="collapsed-tab collapsed-tab-left">
@@ -2449,6 +2489,32 @@
                 settingsModalOverlay.classList.remove('active');
                 showDebug(`Settings saved successfully!`, false);
             });
+
+            // Topbar event listeners
+            const topEpisodeSelect = document.getElementById('topEpisodeSelect');
+            if (topEpisodeSelect) {
+                topEpisodeSelect.addEventListener('change', function() {
+                    if (this.value) {
+                        selectProject(this.value);
+                    }
+                });
+            }
+
+            const topNewProjectBtn = document.getElementById('topNewProjectBtn');
+            if (topNewProjectBtn) {
+                topNewProjectBtn.addEventListener('click', () => {
+                    const newProjectBtn = document.getElementById('newProjectBtn');
+                    if (newProjectBtn) newProjectBtn.click();
+                });
+            }
+
+            const topSettingsBtn = document.getElementById('topSettingsBtn');
+            if (topSettingsBtn) {
+                topSettingsBtn.addEventListener('click', () => {
+                    const settingsBtn = document.getElementById('settingsBtn');
+                    if (settingsBtn) settingsBtn.click();
+                });
+            }
             
             // Music Upload triggers
             importMusicBtn.addEventListener('click', () => {
@@ -2961,6 +3027,19 @@
                 .then(r => r.json())
                 .then(projects => {
                     projectList.innerHTML = '';
+                    
+                    const topEpisodeSelect = document.getElementById('topEpisodeSelect');
+                    if (topEpisodeSelect) {
+                        topEpisodeSelect.innerHTML = '';
+                        projects.forEach(p => {
+                            const opt = document.createElement('option');
+                            opt.value = p.id;
+                            opt.textContent = p.name;
+                            if (p.id === activeProjectId) opt.selected = true;
+                            topEpisodeSelect.appendChild(opt);
+                        });
+                    }
+
                     if (projects.length === 0) {
                         projectList.innerHTML = `<div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; padding: 1rem 0;">No projects. Create one above!</div>`;
                         return;
