@@ -649,6 +649,41 @@ def get_gemini_default_prompt():
     )
 
 
+def get_gemini_episode_default_prompt():
+    settings_path = "settings.json"
+    if os.path.exists(settings_path):
+        try:
+            with open(settings_path, "r", encoding="utf-8") as sf:
+                s_data = json.load(sf)
+                prompt = s_data.get("gemini_episode_remix_prompt_template")
+                if prompt:
+                    return prompt
+        except Exception as se:
+            print(f"Warning: Failed to load settings.json for episode gemini prompt: {se}")
+            
+    return (
+        "You are the Executive Producer & AI Storyboard Curator for the DeepDive Media Automator (DDMA).\n"
+        "Your task is to analyze the full raw episode transcript and structure it into a sequence of standalone, high-engagement podcast/social video clips (typically 12 to 18 clips).\n\n"
+        "### EPISODE STORYBOARDING RULES:\n"
+        "1. **Clip Duration Limits**: Each clip MUST be between 60 seconds (1 minute) and 165 seconds (2 minutes 45 seconds). No clip may ever exceed 2 minutes 55 seconds (175 seconds).\n"
+        "2. **Selective Forward Chronology**: Scan the transcript chronologically from start to finish. Identify complete, high-impact thematic concepts, metaphors, and logical statements. Do not feel obligated to cover every filler sentence; focus on standalone thought integrity.\n"
+        "3. **Catchy Titles**: Assign a concise, high-curiosity title (under 8 words) for each clip.\n"
+        "4. **Word-Level Quote Anchors**: For each clip, output exact start and end sentence quote fragments from the transcript (\"start_quote\" and \"end_quote\") so DDMA can snap boundaries to exact Whisper word timestamps.\n"
+        "5. **Curiosity Question Bridge Cards**: For each clip, provide a single bold curiosity-provoking question under \"bridge_text\" (a 1-element list of string). The question must create anticipation for what comes next in the episode.\n"
+        "6. **Music Sting Assignments**: \n"
+        "   - Clip 1 & 2: Assign introductory music sting `deepDive-soft-ok.mp3` or `deepDive-strong.mp3`.\n"
+        "   - Clip 3+: Assign standard stings like `deepDive-main.mp3`, `Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3`, or `Cartoon Bank Heist (Sting) - Doug Maxwell_Media Right Productions.mp3`.\n\n"
+        "### Output Format (JSON Array):\n"
+        "Return ONLY a valid JSON array of clip objects with fields:\n"
+        "- \"num\": integer\n"
+        "- \"title\": string\n"
+        "- \"start_quote\": string\n"
+        "- \"end_quote\": string\n"
+        "- \"music\": string\n"
+        "- \"bridge_text\": array of strings"
+    )
+
+
 def build_gemini_prompt(project_id, clip_num, directive=None):
     project_dir = os.path.join("projects", project_id)
     plan_path = os.path.join(project_dir, "plan.json")
@@ -1177,6 +1212,122 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
+                return
+
+        elif parsed_url.path == '/remix-episode':
+            project_id = params.get('id', [None])[0]
+            custom_prompt = ""
+            try:
+                content_length = int(self.headers.get('Content-Length', 0))
+                if content_length > 0:
+                    post_data = self.rfile.read(content_length)
+                    body_json = json.loads(post_data.decode('utf-8'))
+                    if not project_id:
+                        project_id = body_json.get("project_id") or body_json.get("id")
+                    custom_prompt = body_json.get("prompt", "").strip()
+            except Exception as ex_body:
+                print(f"Warning parsing /remix-episode body: {ex_body}")
+
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+
+                project_dir = os.path.join("projects", project_id)
+                trans_path = os.path.join(project_dir, "transcription.json")
+                if not os.path.exists(trans_path):
+                    raise Exception(f"transcription.json not found for {project_id}.")
+
+                with open(trans_path, "r", encoding="utf-8") as tf:
+                    t_data = json.load(tf)
+
+                words = []
+                for seg in t_data.get("segments", []):
+                    words.extend(seg.get("words", []))
+
+                if not words:
+                    raise Exception("Transcription words list is empty.")
+
+                prompt_template = custom_prompt or get_gemini_episode_default_prompt()
+                transcript_summary = "\n".join([f"[{s.get('start', 0):.1f}s - {s.get('end', 0):.1f}s] {s.get('text', '').strip()}" for s in t_data.get("segments", [])])
+                full_prompt = f"{prompt_template}\n\nFULL EPISODE TRANSCRIPT:\n{transcript_summary}"
+
+                # Gemini API setup
+                settings_api_key = None
+                if os.path.exists("settings.json"):
+                    try:
+                        with open("settings.json", "r", encoding="utf-8") as sf:
+                            s_data = json.load(sf)
+                            settings_api_key = s_data.get("gemini_api_key")
+                    except Exception: pass
+                api_key = settings_api_key or os.environ.get("GEMINI_API_KEY")
+                if not api_key and not os.path.exists("gemini-creds.json"):
+                    raise Exception("Gemini API key is not configured.")
+
+                configure_gemini(api_key)
+                model_names = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-flash-latest"]
+                gemini_res_text = None
+                for m_name in model_names:
+                    try:
+                        print(f"[{project_id}] Attempting Episode Remix with model {m_name}...")
+                        g_model = genai.GenerativeModel(m_name)
+                        response = g_model.generate_content(full_prompt)
+                        if response and response.text:
+                            gemini_res_text = response.text.strip()
+                            break
+                    except Exception as m_ex:
+                        print(f"Model {m_name} failed: {m_ex}")
+
+                if not gemini_res_text:
+                    raise Exception("Failed to receive response from Gemini models.")
+
+                # Extract JSON array from Gemini response
+                json_match = re.search(r'\[\s*\{.*\}\s*\]', gemini_res_text, re.DOTALL)
+                if not json_match:
+                    raise Exception("Gemini response did not contain a valid JSON array of clips.")
+                
+                ai_clips_raw = json.loads(json_match.group(0))
+                
+                # Match quotes to Whisper word timestamps
+                from ddma import snap_quote_to_words
+                new_plan = []
+                for c_idx, raw_c in enumerate(ai_clips_raw):
+                    c_num = c_idx + 1
+                    s_quote = raw_c.get("start_quote", "")
+                    e_quote = raw_c.get("end_quote", "")
+                    s_time, e_time = snap_quote_to_words(s_quote, words, float(raw_c.get("approx_start", 0.0)))
+                    
+                    if not s_time:
+                        s_time = round(float(raw_c.get("approx_start", c_idx * 115.0)), 3)
+                    if not e_time:
+                        e_time = round(float(raw_c.get("approx_end", s_time + 115.0)), 3)
+                        
+                    new_plan.append({
+                        "num": c_num,
+                        "title": raw_c.get("title", f"Clip {c_num}"),
+                        "start": s_time,
+                        "end": e_time,
+                        "locked": False,
+                        "music": raw_c.get("music", "deepDive-soft-ok.mp3" if c_num <= 2 else "deepDive-main.mp3"),
+                        "music_volume": float(raw_c.get("music_volume", 0.18)),
+                        "bridge_text": raw_c.get("bridge_text", [f"What happens in Part {c_num + 1}?"])
+                    })
+
+                plan_path = os.path.join(project_dir, "plan.json")
+                with open(plan_path, "w", encoding="utf-8") as pf:
+                    json.dump(new_plan, pf, indent=2)
+
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "plan": new_plan, "clip_count": len(new_plan)}).encode('utf-8'))
+                return
+            except Exception as ep_err:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(ep_err)}).encode('utf-8'))
                 return
                 
         elif parsed_url.path == '/save-project-snapshot':
@@ -2883,6 +3034,27 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(json.dumps({"success": True, "prompt": prompt_content}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
+                return
+
+        elif parsed_url.path == '/get-episode-gemini-prompt':
+            project_id = params.get('id', [None])[0]
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                
+                prompt_template = get_gemini_episode_default_prompt()
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "prompt": prompt_template}).encode('utf-8'))
                 return
             except Exception as e:
                 self.send_response(500)

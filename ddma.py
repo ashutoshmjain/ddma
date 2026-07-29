@@ -1207,11 +1207,46 @@ def update_ingestion_progress(proj_dir, stage_index, percent, action_text, log_l
 
 
 @app.command()
+def snap_quote_to_words(quote, words, search_start_sec=0.0):
+    """
+    Search Whisper word list for matching quote text and return exact (start_sec, end_sec).
+    """
+    if not words or not quote:
+        return None, None
+    
+    clean_quote = re.sub(r'[^\w\s]', '', str(quote).lower()).strip()
+    quote_tokens = clean_quote.split()
+    if not quote_tokens:
+        return None, None
+
+    transcript_tokens = [re.sub(r'[^\w]', '', w.get("word", "").lower().strip()) for w in words]
+    first_token = quote_tokens[0]
+    
+    for idx, w in enumerate(words):
+        if w.get("start", 0) < search_start_sec - 10.0:
+            continue
+        if transcript_tokens[idx] == first_token:
+            match_count = 0
+            for j in range(len(quote_tokens)):
+                if idx + j < len(transcript_tokens) and transcript_tokens[idx + j] == quote_tokens[j]:
+                    match_count += 1
+                else:
+                    break
+            if match_count >= min(2, len(quote_tokens)):
+                s_time = round(words[idx]["start"], 3)
+                e_idx = min(idx + len(quote_tokens) - 1, len(words) - 1)
+                e_time = round(words[e_idx]["end"], 3)
+                return s_time, e_time
+
+    return None, None
+
+@app.command("ingest-episode")
 def ingest_episode(
     audio: str = typer.Option(..., help="Path to input audio file"),
     episode: int = typer.Option(..., help="Episode number (e.g. 246)"),
     title: str = typer.Option(..., help="Episode title"),
-    num_clips: int = typer.Option(18, help="Number of structural clips to divide into (default 18)")
+    num_clips: int = typer.Option(18, help="Number of structural clips to divide into (default 18)"),
+    mode: str = typer.Option("structured", help="Ingestion mode: 'structured' (fast uniform sentence snapping) or 'unstructured' (Gemini AI topic discovery)")
 ):
     """
     Automated end-to-end ingestion pipeline: project setup, transcription, plan generation,
@@ -1221,12 +1256,13 @@ def ingest_episode(
     if hasattr(episode, 'default'): episode = int(episode.default)
     if hasattr(title, 'default'): title = str(title.default)
     if hasattr(num_clips, 'default'): num_clips = int(num_clips.default)
+    if hasattr(mode, 'default'): mode = str(mode.default)
 
     proj_id = f"episode_{episode}"
     proj_dir = os.path.join("projects", proj_id)
     os.makedirs(proj_dir, exist_ok=True)
 
-    update_ingestion_progress(proj_dir, 1, 5, "Initializing workspace and copying source audio...", f"Started ingestion pipeline for Episode {episode}: {title}")
+    update_ingestion_progress(proj_dir, 1, 5, "Initializing workspace and copying source audio...", f"Started ingestion pipeline for Episode {episode}: {title} (Mode: {mode})")
 
     ext = os.path.splitext(audio)[1]
     audio_dest_name = f"{episode}{ext}"
