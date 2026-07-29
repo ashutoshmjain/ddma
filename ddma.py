@@ -619,6 +619,7 @@ def compile_clip(
         audio_matches = glob.glob(os.path.join(master_dir, f"*-{num}-*.mp3")) + glob.glob(os.path.join(master_dir, f"*-{num}.mp3"))
     
     if audio_matches and os.path.exists(backup_path):
+        audio_matches.sort(key=os.path.getmtime, reverse=True)
         fresh_audio_path = audio_matches[0]
         typer.echo(f"Updating master body audio from fresh audio clip: {fresh_audio_path}...")
         
