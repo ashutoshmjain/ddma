@@ -5379,7 +5379,6 @@
                             <button class="btn btn-secondary btn-mini btn-card-outro ${outroStatusClass}" id="outroCardBtn_${index}" style="font-weight:600;" ${outroBtnDisabled} title="Preview Outro Clip (Bridge Card Question + Fadeout)">🎬 Outro</button>
                             <button class="btn-card-play ${audioStatusClass}" id="playCardBtn_${index}">▶ Audio</button>
                             ${videoBtnHtml}
-                            <button class="btn btn-secondary btn-mini btn-card-compile" id="compileCardBtn_${index}" style="font-weight:600;" title="Re-compile full video clip with updated title card intro & question outro">⚡ Recompile</button>
                             
                             <div class="actions-separator"></div>
                             
@@ -5527,14 +5526,24 @@
                     });
                 });
 
-                const compileBtn = card.querySelector(`#compileCardBtn_${index}`);
-                if (compileBtn) {
-                    compileBtn.addEventListener('click', function(e) {
+                card.querySelector('.outro-bridge-text-input')?.addEventListener('change', function(e) {
+                    const idx = parseInt(e.target.dataset.index);
+                    const val = e.target.value.trim();
+                    clips[idx].bridge_text = val ? [val] : [];
+                    savePlanToServer();
+                });
+
+                const videoPlayBtnEl = card.querySelector(`#playVideoBtn_${index}`);
+                if (videoPlayBtnEl && statusInfo.video_state !== 'processing') {
+                    videoPlayBtnEl.addEventListener('click', function(e) {
                         e.stopPropagation();
                         const btn = this;
+                        audioElement.pause();
+                        playBtn.textContent = '▶';
+                        
                         btn.innerHTML = '⏳ Compiling...';
                         btn.disabled = true;
-                        updateStateBar(`Re-compiling Clip ${clip.num} with updated title and outro...`);
+                        updateStateBar(`Compiling video preview for Part ${clip.num}: "${clip.title}"...`);
                         
                         fetch(`/compile-clip?id=${activeProjectId}&num=${clip.num}`, {
                             method: 'POST'
@@ -5544,44 +5553,23 @@
                             return res.json();
                         })
                         .then(data => {
-                            updateStateBar(`Clip ${clip.num} compiled successfully!`);
-                            showDebug(`Clip ${clip.num} compiled successfully!`, false);
-                            if (activeProjectId) selectProject(activeProjectId);
+                            const freshVideoUrl = `/clips/${activeProjectId}-${clip.num}.mp4?t=` + Date.now();
+                            previewVideoPlayer.src = freshVideoUrl;
+                            videoModalTitle.textContent = `VIDEO PREVIEW - Part ${clip.num}: ${clip.title}`;
+                            videoModalSubtitle.textContent = `clips/${activeProjectId}-${clip.num}.mp4`;
+                            downloadVideoBtn.href = freshVideoUrl;
+                            videoModalOverlay.classList.add('active');
+                            previewVideoPlayer.play();
+                            updateStateBar(`Playing video preview for Part ${clip.num}`);
                         })
                         .catch(err => {
-                            alert("Error compiling clip: " + err.message);
-                            showDebug("Error compiling clip: " + err.message, true);
+                            alert("Error compiling video preview: " + err.message);
                             updateStateBar("Ready");
                         })
                         .finally(() => {
-                            btn.innerHTML = '⚡ Recompile';
+                            btn.innerHTML = '📹 Video';
                             btn.disabled = false;
                         });
-                    });
-                }
-
-                card.querySelector('.outro-bridge-text-input')?.addEventListener('change', function(e) {
-                    const idx = parseInt(e.target.dataset.index);
-                    const val = e.target.value.trim();
-                    clips[idx].bridge_text = val ? [val] : [];
-                    savePlanToServer();
-                });
-
-                if (matchingVideo && statusInfo.video_state !== 'processing') {
-                    card.querySelector(`#playVideoBtn_${index}`).addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        // Pause the audio player
-                        audioElement.pause();
-                        playBtn.textContent = '▶';
-                        
-                        // Setup and show video modal
-                        const freshVideoUrl = matchingVideo.url + (matchingVideo.url.includes('?') ? '&' : '?') + 't=' + Date.now();
-                        previewVideoPlayer.src = freshVideoUrl;
-                        videoModalTitle.textContent = `VIDEO PREVIEW - Part ${clip.num}: ${clip.title}`;
-                        videoModalSubtitle.textContent = `clips/${matchingVideo.filename}`;
-                        downloadVideoBtn.href = freshVideoUrl;
-                        videoModalOverlay.classList.add('active');
-                        previewVideoPlayer.play();
                     });
                 }
                 

@@ -294,20 +294,20 @@ async function runTest() {
             console.log(`- Note: ${clip1Video} not found on disk, skipping media stream probe.`);
         }
 
-        // 🧪 TEST 6: Verifying On-Demand Recompile Button Functionality
-        console.log("\n🧪 TEST 6: Verifying On-Demand Recompile Button...");
-        const recompileBtnState = await page.evaluate(() => {
+        // 🧪 TEST 6: Verifying On-Demand Video Compilation via Video Button
+        console.log("\n🧪 TEST 6: Verifying On-Demand Video Compilation via Video Button...");
+        const videoBtnState = await page.evaluate(() => {
             const card1 = document.querySelector('.clip-card[data-index="0"]');
-            const compileBtn = card1 ? card1.querySelector('.btn-card-compile') : null;
+            const videoBtn = card1 ? card1.querySelector('.btn-card-video') : null;
             return {
-                exists: !!compileBtn,
-                text: compileBtn ? compileBtn.textContent.trim() : null
+                exists: !!videoBtn,
+                text: videoBtn ? videoBtn.textContent.trim() : null
             };
         });
 
-        console.log(`- Recompile Button Present: ${recompileBtnState.exists} ("${recompileBtnState.text}")`);
-        if (!recompileBtnState.exists) {
-            throw new Error("FAIL: Recompile button (.btn-card-compile) not found on clip card 1!");
+        console.log(`- Video Button Present: ${videoBtnState.exists} ("${videoBtnState.text}")`);
+        if (!videoBtnState.exists) {
+            throw new Error("FAIL: Video button (.btn-card-video) not found on clip card 1!");
         }
 
         // 🧪 TEST 7: Verifying Project Deletion Logic & Error Handling
