@@ -41,7 +41,7 @@ async function runTest() {
 
         console.log("Waiting for workspace to initialize and clips to load...");
         try {
-            await page.waitForSelector('.clip-card', { timeout: 25000 });
+            await page.waitForFunction(() => document.querySelector('.clip-card') || document.querySelector('#ingestionDashboardContainer'), { timeout: 25000 });
         } catch (err) {
             const pageState = await page.evaluate(() => {
                 const container = document.getElementById('clipListContainer');
@@ -100,9 +100,9 @@ async function runTest() {
             throw new Error("FAIL: Ingestion Dashboard is not correctly placed in the main central window (#clipListContainer)!");
         }
 
-        // Reset workspace to ready state
-        await page.evaluate(() => selectProject(activeProjectId));
-        await new Promise(r => setTimeout(r, 1000));
+        // Reset workspace to ready project state (e.g., episode_244)
+        await page.evaluate(() => selectProject('episode_244'));
+        await page.waitForFunction(() => document.querySelector('.clip-card') !== null, { timeout: 15000 });
 
         // 🧪 TEST 1: Title Card Input Editing (No premature auto-compile gray-out)
         console.log("\n🧪 TEST 1: Editing Title Input & Verifying State Stability...");

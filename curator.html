@@ -3111,7 +3111,9 @@
                     } else if (activeProjectId) {
                         const currProj = projects.find(p => p.id === activeProjectId);
                         if (currProj) {
-                            if (currProj.status === 'ready' && (!transcriptionData || !Array.isArray(transcriptionData.segments) || transcriptionData.segments.length === 0)) {
+                            if ((currProj.status === 'transcribing' || currProj.status === 'ingesting') && !pollingInterval) {
+                                selectProject(activeProjectId);
+                            } else if (currProj.status === 'ready' && (!transcriptionData || !Array.isArray(transcriptionData.segments) || transcriptionData.segments.length === 0)) {
                                 selectProject(activeProjectId);
                             }
                         }
@@ -3607,8 +3609,8 @@
                 })
                 .then(data => {
                     hideProjectModal();
-                    activeProjectId = data.project_id;
-                    loadProjectsList();
+                    selectProject(data.project_id);
+                    loadProjectsListOnly();
                     showDebug(`Project "${name}" created! Starting ingestion pipeline...`, false);
                 })
                 .catch(err => {
