@@ -639,8 +639,14 @@ def compile_clip(
             typer.echo(f"Warning probing durations: {ex_probe}")
 
         temp_remux_path = f"temp_remux_{num}.mp4"
-        if a_dur_fresh and (v_dur_master is None or abs(a_dur_fresh - v_dur_master) > 0.1):
-            typer.echo(f"Updating video draft duration to match fresh audio duration ({a_dur_fresh:.2f}s)...")
+        target_clip = next((c for c in plan_data if c.get("num") == num), None)
+        has_mosaic_id = bool(target_clip and target_clip.get("mosaic_run_id"))
+        
+        # A clip is a black canvas draft ONLY if it has never been rendered by Mosaic
+        is_black_canvas = not has_mosaic_id
+
+        if is_black_canvas:
+            typer.echo(f"Generating clean draft body video ({a_dur_fresh:.2f}s) from fresh audio clip...")
             cmd_remux = [
                 "ffmpeg", "-y",
                 "-f", "lavfi", "-i", f"color=c=black:s=740x740:r=25:d={a_dur_fresh:.3f}",
@@ -651,6 +657,7 @@ def compile_clip(
                 temp_remux_path
             ]
         else:
+            typer.echo(f"Preserving Mosaic motion graphics video track from {backup_path}...")
             cmd_remux = [
                 "ffmpeg", "-y",
                 "-i", backup_path,
@@ -661,17 +668,6 @@ def compile_clip(
                 "-c:a", "aac",
                 "-b:a", "192k",
                 "-t", f"{a_dur_fresh:.3f}" if a_dur_fresh else "0",
-                temp_remux_path
-            ] if a_dur_fresh else [
-                "ffmpeg", "-y",
-                "-i", backup_path,
-                "-i", fresh_audio_path,
-                "-map", "0:v",
-                "-map", "1:a",
-                "-c:v", "copy",
-                "-c:a", "aac",
-                "-b:a", "192k",
-                "-shortest",
                 temp_remux_path
             ]
         
