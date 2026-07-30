@@ -680,8 +680,8 @@ def get_gemini_episode_default_prompt():
         "  {\n"
         "    \"num\": 1,\n"
         "    \"title\": \"High-Curiosity Two-Line Title\",\n"
-        "    \"start_quote\": \"exact 3-7 words from start of speech\",\n"
-        "    \"end_quote\": \"exact 3-7 words from end of speech\",\n"
+        "    \"start_quote\": \"exact 3-7 words from start of clip speech\",\n"
+        "    \"end_quote\": \"exact 3-7 words from end of clip speech (70s-150s after start_quote)\",\n"
         "    \"approx_start\": 0.0,\n"
         "    \"approx_end\": 125.5,\n"
         "    \"music\": \"deepDive-soft-ok.mp3\",\n"
@@ -1204,7 +1204,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     raise Exception("Gemini API key is not configured.")
 
                 configure_gemini(api_key)
-                model_names = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-flash-latest"]
+                model_names = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro", "gemini-flash-latest"]
                 gemini_res_text = None
                 for m_name in model_names:
                     try:
@@ -1235,12 +1235,20 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     c_num = c_idx + 1
                     s_quote = raw_c.get("start_quote", "")
                     e_quote = raw_c.get("end_quote", "")
-                    s_time, e_time = snap_quote_to_words(s_quote, words, float(raw_c.get("approx_start", 0.0)))
+                    approx_start = float(raw_c.get("approx_start", c_idx * 115.0))
+                    approx_end = float(raw_c.get("approx_end", approx_start + 115.0))
                     
-                    if not s_time:
-                        s_time = round(float(raw_c.get("approx_start", c_idx * 115.0)), 3)
-                    if not e_time:
-                        e_time = round(float(raw_c.get("approx_end", s_time + 115.0)), 3)
+                    s_time_found, _ = snap_quote_to_words(s_quote, words, search_start_sec=approx_start)
+                    _, e_time_found = snap_quote_to_words(e_quote, words, search_start_sec=max(0.0, approx_end - 25.0))
+                    
+                    s_time = s_time_found if s_time_found is not None else round(approx_start, 3)
+                    e_time = e_time_found if e_time_found is not None else round(approx_end, 3)
+                    
+                    # Safeguard clip duration between 60.0s and 165.0s
+                    if e_time <= s_time + 50.0:
+                        e_time = round(max(s_time + 90.0, approx_end), 3)
+                    if e_time - s_time > 170.0:
+                        e_time = round(s_time + 165.0, 3)
                         
                     music_file = raw_c.get("music", "deepDive-soft-ok.mp3" if c_num <= 2 else "deepDive-main.mp3")
                     title = raw_c.get("title", f"Clip {c_num}")
