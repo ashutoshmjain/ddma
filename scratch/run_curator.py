@@ -668,7 +668,7 @@ def get_gemini_episode_default_prompt():
         "1. **Strict Duration Limits**: Each clip MUST be between 60 seconds (1 minute) and 165 seconds (2 minutes 45 seconds). No clip may ever exceed 2 minutes 55 seconds (175 seconds) to maintain YouTube Shorts & Instagram Reels compliance.\n"
         "2. **Four-Element Clip Structure**: Every clip is structured into a 4-element flow: (1) Intro Title Card (2s), (2) Speech Punchline / Hook (10-15s audio segment), (3) Intro Music Sting (4-5s, full volume 1.0), (4) Main Speech Discussion Audio Segment, and (5) Ending Music Sting (4-5s, full volume 1.0) before the (6) Outro Curiosity Question Card.\n"
         "3. **Selective Forward Chronology & Standalone Integrity**: Scan the transcript chronologically from start to finish. Identify complete, high-impact thematic concepts, metaphors, and logical statements. Every clip MUST stand on its own as a self-contained, coherent, high-value thought without requiring context from previous clips. Do not create dependent \"part 2\" fragments or include unedited filler.\n"
-        "4. **Punchy Social Titles**: Assign a concise, high-curiosity title (under 8 words) for each clip. Ensure titles are formatted for visual impact on two-line social media title cards.\n"
+        "4. **Punchy Social Titles**: Assign a concise, high-curiosity title (under 8 words) for each clip. DO NOT include colons, slashes, or quotes in the title text (use dashes or spaces instead) so titles are clean, readable, and safe for media files.\n"
         "5. **Verbatim Word-Level Quote Anchors**: For each clip, output exact 3-7 word verbatim transcript quote fragments (\"start_quote\" and \"end_quote\") matching the spoken transcript text so DDMA can snap clip boundaries sample-accurately to Whisper word timestamps.\n"
         "6. **Curiosity Question Bridge Cards**: Provide a single bold, forward-looking curiosity question under \"bridge_text\" (a 1-element list of strings). This question acts as a narrative bridge introducing the topic of the NEXT clip to retain audience curiosity across transitions.\n"
         "7. **Music Sting Restrictions & Volume**: Music volume must ALWAYS be set to 1.0 (100% full volume).\n"
@@ -1107,6 +1107,12 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 recasted_clip["locked"] = False
                 
+                if recasted_clip.get("title"):
+                    raw_title = recasted_clip["title"]
+                    clean_title = re.sub(r'[:\\/*?<>|"]', ' - ', raw_title)
+                    clean_title = re.sub(r'\s+-\s+-', ' -', clean_title)
+                    recasted_clip["title"] = re.sub(r'\s+', ' ', clean_title).strip(" -")
+                
                 # Update plan_data
                 with open(plan_path, 'r', encoding='utf-8') as f:
                     plan_data = json.load(f)
@@ -1251,7 +1257,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         e_time = round(s_time + 165.0, 3)
                         
                     music_file = raw_c.get("music", "deepDive-soft-ok.mp3" if c_num <= 2 else "deepDive-main.mp3")
-                    title = raw_c.get("title", f"Clip {c_num}")
+                    raw_title = raw_c.get("title", f"Clip {c_num}")
+                    clean_title = re.sub(r'[:\\/*?<>|"]', ' - ', raw_title)
+                    clean_title = re.sub(r'\s+-\s+-', ' -', clean_title)
+                    title = re.sub(r'\s+', ' ', clean_title).strip(" -")
                     
                     # Construct 4-Element Segment Flow: Punchline Hook -> Music Sting -> Main Audio -> Ending Music
                     hook_duration = 12.0
