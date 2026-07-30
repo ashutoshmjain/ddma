@@ -698,23 +698,6 @@ def compile_clip(
     temp_extracted_frame = f"temp_extracted_{num}.png"
 
     try:
-        # Extract frame at 1.0s of backup master video as title card background
-        extracted = False
-        if os.path.exists(backup_path):
-            cmd_extract = [
-                "ffmpeg", "-y",
-                "-ss", "00:00:01.000",
-                "-i", backup_path,
-                "-vframes", "1",
-                temp_extracted_frame
-            ]
-            try:
-                res_extract = subprocess.run(cmd_extract, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                if res_extract.returncode == 0 and os.path.exists(temp_extracted_frame):
-                    extracted = True
-            except Exception as e:
-                typer.echo(f"Warning: Could not extract frame from master clip: {e}")
-
         # Helpers defined inside compile_clip
         def wrap_text(text, font, max_width, draw_obj):
             words = text.split()
@@ -748,15 +731,11 @@ def compile_clip(
                     return reg, bold
             return None, None
 
-        # Open image canvas
+        # Open image canvas with clean solid charcoal background
         from PIL import Image, ImageDraw, ImageFont
-        if extracted:
-            image = Image.open(temp_extracted_frame).convert("RGBA")
-            width, height = image.size
-        else:
-            width, height = 740, 740
-            bg_color = (18, 18, 18)
-            image = Image.new("RGBA", (width, height), bg_color)
+        width, height = 740, 740
+        bg_color = (18, 18, 18)
+        image = Image.new("RGBA", (width, height), bg_color)
 
         draw_overlay = ImageDraw.Draw(image)
 
