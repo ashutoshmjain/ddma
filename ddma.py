@@ -272,7 +272,8 @@ def cut(
         # Naming: e.g. 242-1.mp3 or 242-1-title.mp3
         title = c.get("title", "")
         if title:
-            out_filename = f"{base_name}-{c['num']}-{title}.mp3"
+            clean_title = re.sub(r'[:\\/*?<>|"]', '', title)
+            out_filename = f"{base_name}-{c['num']}-{clean_title}.mp3"
         else:
             out_filename = f"{base_name}-{c['num']}.mp3"
         out_path = os.path.join(out_dir, out_filename)
