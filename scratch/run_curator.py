@@ -666,11 +666,12 @@ def get_gemini_episode_default_prompt():
         "Your task is to analyze the full raw episode transcript and structure it into a sequence of high-engagement, standalone podcast/social video clips (typically 12 to 18 clips per episode).\n\n"
         "### 🎬 EPISODE STORYBOARDING & PRODUCTION RULES:\n"
         "1. **Strict Duration Limits**: Each clip MUST be between 60 seconds (1 minute) and 165 seconds (2 minutes 45 seconds). No clip may ever exceed 2 minutes 55 seconds (175 seconds) to maintain YouTube Shorts & Instagram Reels compliance.\n"
-        "2. **Selective Forward Chronology & Standalone Integrity**: Scan the transcript chronologically from start to finish. Identify complete, high-impact thematic concepts, metaphors, and logical statements. Every clip MUST stand on its own as a self-contained, coherent, high-value thought without requiring context from previous clips. Do not create dependent \"part 2\" fragments or include unedited filler.\n"
-        "3. **Punchy Social Titles**: Assign a concise, high-curiosity title (under 8 words) for each clip. Ensure titles are formatted for visual impact on two-line social media title cards.\n"
-        "4. **Verbatim Word-Level Quote Anchors**: For each clip, output exact 3-7 word verbatim transcript quote fragments (\"start_quote\" and \"end_quote\") matching the spoken transcript text so DDMA can snap clip boundaries sample-accurately to Whisper word timestamps.\n"
-        "5. **Curiosity Question Bridge Cards**: Provide a single bold, forward-looking curiosity question under \"bridge_text\" (a 1-element list of strings). This question acts as a narrative bridge introducing the topic of the NEXT clip to retain audience curiosity across transitions.\n"
-        "6. **Music Sting Restrictions**:\n"
+        "2. **Four-Element Clip Structure**: Every clip is structured into a 4-element flow: (1) Intro Title Card (2s), (2) Speech Punchline / Hook (10-15s audio segment), (3) Intro Music Sting (4-5s, full volume 1.0), (4) Main Speech Discussion Audio Segment, and (5) Ending Music Sting (4-5s, full volume 1.0) before the (6) Outro Curiosity Question Card.\n"
+        "3. **Selective Forward Chronology & Standalone Integrity**: Scan the transcript chronologically from start to finish. Identify complete, high-impact thematic concepts, metaphors, and logical statements. Every clip MUST stand on its own as a self-contained, coherent, high-value thought without requiring context from previous clips. Do not create dependent \"part 2\" fragments or include unedited filler.\n"
+        "4. **Punchy Social Titles**: Assign a concise, high-curiosity title (under 8 words) for each clip. Ensure titles are formatted for visual impact on two-line social media title cards.\n"
+        "5. **Verbatim Word-Level Quote Anchors**: For each clip, output exact 3-7 word verbatim transcript quote fragments (\"start_quote\" and \"end_quote\") matching the spoken transcript text so DDMA can snap clip boundaries sample-accurately to Whisper word timestamps.\n"
+        "6. **Curiosity Question Bridge Cards**: Provide a single bold, forward-looking curiosity question under \"bridge_text\" (a 1-element list of strings). This question acts as a narrative bridge introducing the topic of the NEXT clip to retain audience curiosity across transitions.\n"
+        "7. **Music Sting Restrictions & Volume**: Music volume must ALWAYS be set to 1.0 (100% full volume).\n"
         "   - **Clip 1 & Clip 2**: Assign introductory welcome stings (`deepDive-soft-ok.mp3` or `deepDive-strong.mp3`).\n"
         "   - **Clip 3+**: Assign standard stings (`deepDive-main.mp3`, `Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3`, or `Cartoon Bank Heist (Sting) - Doug Maxwell_Media Right Productions.mp3`). Welcome stings are STRICTLY PROHIBITED on Clip 3+ to prevent repetitive intro audio.\n\n"
         "### 📋 OUTPUT FORMAT (JSON ARRAY ONLY):\n"
@@ -1241,15 +1242,85 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     if not e_time:
                         e_time = round(float(raw_c.get("approx_end", s_time + 115.0)), 3)
                         
+                    music_file = raw_c.get("music", "deepDive-soft-ok.mp3" if c_num <= 2 else "deepDive-main.mp3")
+                    title = raw_c.get("title", f"Clip {c_num}")
+                    
+                    # Construct 4-Element Segment Flow: Punchline Hook -> Music Sting -> Main Audio -> Ending Music
+                    hook_duration = 12.0
+                    hook_end = min(round(s_time + hook_duration, 2), round(e_time - 10.0, 2))
+                    
+                    if hook_end > s_time + 3.0:
+                        segments = [
+                            {
+                                "type": "audio",
+                                "start": s_time,
+                                "end": hook_end,
+                                "duration": round(hook_end - s_time, 2),
+                                "volume": 1.0,
+                                "crossfade": 0.0,
+                                "text": f"{title} (Punchline Hook)"
+                            },
+                            {
+                                "type": "music",
+                                "music_file": music_file,
+                                "duration": 5.0,
+                                "volume": 1.0,
+                                "crossfade": 1.0
+                            },
+                            {
+                                "type": "audio",
+                                "start": hook_end,
+                                "end": e_time,
+                                "duration": round(e_time - hook_end, 2),
+                                "volume": 1.0,
+                                "crossfade": 0.0,
+                                "text": title
+                            },
+                            {
+                                "type": "music",
+                                "music_file": music_file,
+                                "duration": 5.0,
+                                "volume": 1.0,
+                                "crossfade": 1.0
+                            }
+                        ]
+                    else:
+                        segments = [
+                            {
+                                "type": "music",
+                                "music_file": music_file,
+                                "duration": 5.0,
+                                "volume": 1.0,
+                                "crossfade": 1.0
+                            },
+                            {
+                                "type": "audio",
+                                "start": s_time,
+                                "end": e_time,
+                                "duration": round(e_time - s_time, 2),
+                                "volume": 1.0,
+                                "crossfade": 0.0,
+                                "text": title
+                            },
+                            {
+                                "type": "music",
+                                "music_file": music_file,
+                                "duration": 5.0,
+                                "volume": 1.0,
+                                "crossfade": 1.0
+                            }
+                        ]
+                        
                     new_plan.append({
                         "num": c_num,
-                        "title": raw_c.get("title", f"Clip {c_num}"),
+                        "title": title,
                         "start": s_time,
                         "end": e_time,
                         "locked": False,
-                        "music": raw_c.get("music", "deepDive-soft-ok.mp3" if c_num <= 2 else "deepDive-main.mp3"),
-                        "music_volume": float(raw_c.get("music_volume", 1.0)),
-                        "bridge_text": raw_c.get("bridge_text", [f"What happens in Part {c_num + 1}?"])
+                        "music": music_file,
+                        "music_volume": 1.0,
+                        "bridge_text": raw_c.get("bridge_text", [f"What happens in Part {c_num + 1}?"]),
+                        "segments": segments
                     })
 
                 plan_path = os.path.join(project_dir, "plan.json")
