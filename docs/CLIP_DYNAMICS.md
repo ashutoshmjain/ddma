@@ -40,8 +40,8 @@ Each Clip Card in the Curator interface (`curator.html`) consists of four primar
 ```
 +---------------------------------------------------------------------------------------------------------+
 | [▼] [245-1]  Title Editor Input                                                                        |
-| Duration: 02:07 | Volume: 1.0 | Crossfade: 0s | [ ] Audio Only                                          |
-| [🎬 Intro] [🎬 Outro] [▶ Audio] [📹 Draft/Video] [🌌 Mosaic] [🤖 Remix] [🔓 Unlocked / 🔒 Locked]      |
+| Video Dur: 02:07 | Audio Body: 01:54 | Volume: 1.0 | Crossfade: 0s | [ ] Audio Only                      |
+| [🎬 Intro] [🎬 Outro] [▶ Audio] [📹 Draft] [🌌 Mosaic] [🤖 Remix] [🔓 Unlocked / 🔒 Locked]            |
 +---------------------------------------------------------------------------------------------------------+
 | 🎬 Intro Clip (Title Card Slide)                                                   Duration: 2.0s       |
 | 🎵 Music Segment (Intro Sting)                                                     Duration: 5.0s       |
@@ -79,26 +79,33 @@ The primary mechanism for refining speech boundaries is interactive transcript s
 
 To protect creators against accidental billing from external cloud services, DDMA enforces a strict safety latch:
 
-| Card State | Boundary & Title Editing | External API Buttons (`🌌 Mosaic`, `🤖 Remix`) | Video Preview (`📹 Draft` / `📹 Video`) |
+| Card State | Boundary & Title Editing | External API Buttons (`🌌 Mosaic`, `🤖 Remix`) | Baseline Preview (`📹 Draft`) |
 | :--- | :--- | :--- | :--- |
-| **`🔓 Unlocked`** | **Enabled** (Editable text, boundary snapping, segment reordering) | **DISABLED** (Grayed out to prevent accidental API charges) | **Enabled** (Compiles Pre-Mosaic Draft video) |
-| **`🔒 Locked`** | **Frozen** (Protected against accidental clicks) | **ENABLED** (Allows intentional invoke of Mosaic & Gemini Remix) | **Enabled** (Compiles Post-Mosaic Master video if rendered) |
+| **`🔓 Unlocked`** | **Enabled** (Editable text, boundary snapping, segment reordering) | **DISABLED** (Grayed out to prevent accidental API charges) | **Enabled** (Compiles Black Canvas Baseline preview) |
+| **`🔒 Locked`** | **Frozen** (Protected against accidental clicks) | **ENABLED** (Allows intentional invoke of Mosaic & Gemini Remix) | **Enabled** (Compiles Black Canvas Baseline preview) |
 
 ---
 
 ## 🚀 4. Render Pipeline & Video Status Dynamics
 
-DDMA distinguishes between Pre-Mosaic draft baselines and Post-Mosaic final master videos:
+DDMA distinguishes strictly between Pre-Mosaic draft baselines and Post-Mosaic final master videos:
 
 ```
-[Audio Slicing] ---> [Pre-Mosaic Draft] ---> [Mosaic Motion Graphics] ---> [Post-Mosaic Master]
-                         (📹 Draft)                                             (📹 Video)
+[Audio Slicing] ---> [Black Canvas Baseline] ---> [Mosaic Motion Graphics] ---> [Post-Mosaic Master]
+                         (📹 Draft)                                                 (🌌 Mosaic)
 ```
 
-| Pipeline Stage | Button Badge | Video Composition & Rendering Engine | Video Modal Banner & Subtitle |
-| :--- | :--- | :--- | :--- |
-| **Pre-Mosaic Baseline** | **`📹 Draft`** *(Amber Badge)* | **2s Title Card Intro** + **740x740 Solid Black Canvas Audio** + **5s Curiosity Question Outro** | **`📹 DRAFT BASELINE (Pre-Mosaic) - Part X: <Title>`**<br>`ℹ️ Pre-Mosaic Draft Baseline (2s Title Card + Black Canvas Audio + 5s Outro). Lock clip & run Mosaic for motion infographics.` |
-| **Post-Mosaic Master** | **`📹 Video`** *(Bright Green Badge)* | **2s Title Card Intro** + **Mosaic Motion Graphics Video** + **5s Curiosity Question Outro** | **`📹 FINAL MASTER VIDEO (Post-Mosaic) - Part X: <Title>`**<br>`✨ Master Video with Motion Graphics • clips/<project>-<num>.mp4` |
+### 4.1 Button Behavior & Pipeline Contracts
+
+| Button | Target Output | Pipeline Mechanics | API Cost | Master Backup Protection |
+| :--- | :--- | :--- | :--- | :--- |
+| **`📹 Draft`** | **Black Canvas Baseline Preview** | **2s Title Intro** + **Solid Black Canvas Audio Body** + **5s Outro Curiosity Question Slide**. Re-slices fresh audio on demand. | **$0.00** *(100% Local)* | **IMMUTABLE**: Never touches or overwrites `clips/<ep>-<num>-original.mp4` (the Mosaic master). |
+| **`🌌 Mosaic`** | **Master Motion Infographics Video** | **2s Title Intro** + **Mosaic Motion Graphics Video Body** + **5s Outro Curiosity Question Slide**. | **$0.00** *(Reusing render)* / **Cloud Cost** *(Fresh render)* | **Interactive Confirmation**: If a render exists, prompts user to assemble with existing Mosaic render for free OR trigger a fresh Mosaic API render. |
+
+### 4.2 Immutable Master Backup Contract
+* **`clips/<ep>-<num>-original.mp4`** holds the downloaded, immutable Mosaic Motion Graphics body video track.
+* Compiling a Draft Baseline preview via `📹 Draft` (`--force-draft`) generates a transient `temp_remux_path` for assembling `clips/<ep>-<num>.mp4` without modifying `clips/<ep>-<num>-original.mp4`.
+* Compiling a Master Video via `🌌 Mosaic` remuxes updated audio onto `clips/<ep>-<num>-original.mp4` and concatenates fresh 2s Title & 5s Outro cards.
 
 ---
 
@@ -115,6 +122,7 @@ DDMA distinguishes between Pre-Mosaic draft baselines and Post-Mosaic final mast
   "locked": false,
   "music": "deepDive-soft-ok.mp3",
   "music_volume": 1.0,
+  "mosaic_run_id": "a2edf22f-9dd8-41ac-a540-10ee633122b4",
   "bridge_text": [
     "Thanks for tuning in as we prep the full episode - one clip at a time :-)"
   ],
@@ -150,10 +158,11 @@ DDMA distinguishes between Pre-Mosaic draft baselines and Post-Mosaic final mast
 
 ### 🌐 HTTP API Endpoints (`scratch/run_curator.py`)
 
-* **`POST /compile-clip?id=<project_id>&num=<clip_num>`**:
-  * Triggers `ddma.py compile-clip --num <clip_num> --plan-file projects/<project_id>/plan.json`.
-  * Auto-selects the newest sliced audio MP3 matching the clip number.
+* **`POST /compile-clip?id=<project_id>&num=<clip_num>[&draft=true]`**:
+  * Triggers `ddma.py compile-clip --num <clip_num> --plan-file projects/<project_id>/plan.json [--force-draft]`.
+  * Automatically re-slices fresh sample-accurate audio body before compiling.
   * Equalizes audio and video stream durations using FFprobe.
+  * If `draft=true` is passed, forces black canvas draft body compilation while preserving any existing Mosaic master at `clips/<ep>-<num>-original.mp4`.
   * Returns `{"success": true, "message": "Compilation completed successfully."}`.
 
 ---
@@ -164,8 +173,10 @@ All automated test suites must validate the clip dynamics contract defined in th
 
 ```javascript
 // TEST 2b: Verifying Safety Latch & Button Availability
-// Unlocked Clip -> Mosaic Button Disabled
+// Unlocked Clip -> Draft Button Enabled, Mosaic Button Disabled
+assert(unlockedClip.draftButton.disabled === false);
 assert(unlockedClip.mosaicButton.disabled === true);
+
 // Locked Clip -> Mosaic Button Enabled
 assert(lockedClip.mosaicButton.disabled === false);
 
@@ -173,5 +184,5 @@ assert(lockedClip.mosaicButton.disabled === false);
 assert(abs(videoDuration - audioDuration) <= 0.05);
 
 // TEST 6: On-Demand Compilation & Green-Out Status
-assert(videoButton.classList.contains('btn-status-success'));
+assert(draftButton.classList.contains('btn-status-success'));
 ```
