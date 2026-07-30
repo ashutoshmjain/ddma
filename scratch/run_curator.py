@@ -2904,6 +2904,32 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 plan_path = os.path.join("projects", project_id, "plan.json")
                 if not os.path.exists(plan_path):
                     plan_path = "plan.json"
+
+                # 1. First re-slice fresh audio from plan.json for this clip to capture any recent user edits
+                info_path = os.path.join("projects", project_id, "project_info.json")
+                audio_file = None
+                if os.path.exists(info_path):
+                    with open(info_path, "r", encoding="utf-8") as f_info:
+                        p_info = json.load(f_info)
+                        audio_file = p_info.get("audio_file") or p_info.get("audio_filename")
+                if audio_file and not os.path.exists(audio_file):
+                    audio_file = os.path.join("projects", project_id, audio_file)
+                if not audio_file or not os.path.exists(audio_file):
+                    ep_num = project_id.replace('episode_', '')
+                    for candidate_ext in [f"{ep_num}.m4a", f"{ep_num}.mp3", f"episode_{ep_num}.m4a", f"episode_{ep_num}.mp3"]:
+                        candidate_path = os.path.join("projects", project_id, candidate_ext)
+                        if os.path.exists(candidate_path):
+                            audio_file = candidate_path
+                            break
+
+                if audio_file and os.path.exists(audio_file):
+                    cut_cmd = [sys.executable, "ddma.py", "cut", "--audio", audio_file, "--plan-file", plan_path, "--out-dir", "clips"]
+                    print(f"[{project_id}][Clip {clip_num}] Re-slicing fresh audio for Clip {clip_num}: {' '.join(cut_cmd)}")
+                    res_cut = subprocess.run(cut_cmd, capture_output=True, text=True, cwd=".")
+                    if res_cut.returncode != 0:
+                        print(f"[{project_id}][Clip {clip_num}] Warning: Audio re-slicing emitted stderr: {res_cut.stderr}")
+
+                # 2. Synchronously compile intro card, equalized master body, and outro curiosity card
                 cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", plan_path]
                 print(f"[{project_id}][Clip {clip_num}] Starting synchronous compilation: {' '.join(cmd)}")
                 proc = subprocess.run(cmd, capture_output=True, text=True, cwd=".")

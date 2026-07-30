@@ -639,8 +639,8 @@ def compile_clip(
             typer.echo(f"Warning probing durations: {ex_probe}")
 
         temp_remux_path = f"temp_remux_{num}.mp4"
-        if a_dur_fresh and v_dur_master and a_dur_fresh > v_dur_master + 0.1:
-            typer.echo(f"Audio duration ({a_dur_fresh:.2f}s) exceeds video duration ({v_dur_master:.2f}s). Extending black canvas video to {a_dur_fresh:.2f}s...")
+        if a_dur_fresh and (v_dur_master is None or abs(a_dur_fresh - v_dur_master) > 0.1):
+            typer.echo(f"Updating video draft duration to match fresh audio duration ({a_dur_fresh:.2f}s)...")
             cmd_remux = [
                 "ffmpeg", "-y",
                 "-f", "lavfi", "-i", f"color=c=black:s=740x740:r=25:d={a_dur_fresh:.3f}",
