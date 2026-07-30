@@ -852,6 +852,8 @@ def compile_clip(
         fps_str = "25"
         tb_den = "90000"
         ar_str = "48000"
+        v_width = 740
+        v_height = 740
         v_dur = None
         a_dur = None
 
@@ -881,6 +883,8 @@ def compile_clip(
                 
                 if codec_type == "video":
                      v_dur = dur_sec
+                     v_width = int(stream.get("width") or 740)
+                     v_height = int(stream.get("height") or 740)
                      avg_fps = stream.get("avg_frame_rate")
                      r_fps = stream.get("r_frame_rate")
                      fps_str = avg_fps if avg_fps and avg_fps != "0/0" else r_fps
@@ -908,7 +912,7 @@ def compile_clip(
                 # Video is shorter than audio: extend black canvas video stream to match audio duration exactly
                 cmd_norm = [
                     "ffmpeg", "-y",
-                    "-f", "lavfi", "-i", f"color=c=black:s=740x740:r=25:d={target_dur:.3f}",
+                    "-f", "lavfi", "-i", f"color=c=black:s={v_width}x{v_height}:r=25:d={target_dur:.3f}",
                     "-i", backup_path,
                     "-map", "0:v",
                     "-map", "1:a",
@@ -984,36 +988,36 @@ def compile_clip(
             else:
                 bridge_text = str(bridge_text_input).strip()
             if not bridge_text:
-                bridge_text = "Next question is coming up..."
+                bridge_text = f"What is the deeper secret behind Part {num}?"
 
             # Generate outro image
-            img_outro = Image.new("RGB", (width, height), color=(0, 0, 0))
+            img_outro = Image.new("RGB", (v_width, v_height), color=(0, 0, 0))
             draw_outro = ImageDraw.Draw(img_outro)
             
-            if font_path_bold and os.path.exists(font_path_bold):
-                font_outro = ImageFont.truetype(font_path_bold, 34)
-            else:
+            font_path_outro = find_system_fonts()[0]
+            try:
+                font_outro = ImageFont.truetype(font_path_outro, 34)
+            except Exception:
                 font_outro = ImageFont.load_default()
 
-            def wrap_text_outro(text, font_obj, max_w):
+            def wrap_text_outro(text, font, max_w):
                 words = text.split()
                 lines = []
-                curr = []
-                for word in words:
-                    test_line = " ".join(curr + [word])
-                    bbox = draw_outro.textbbox((0, 0), test_line, font=font_obj)
-                    w = bbox[2] - bbox[0]
-                    if w <= max_w:
-                        curr.append(word)
+                curr = ""
+                for w in words:
+                    test = f"{curr} {w}".strip()
+                    bbox = draw_outro.textbbox((0, 0), test, font=font)
+                    if (bbox[2] - bbox[0]) <= max_w:
+                        curr = test
                     else:
                         if curr:
-                            lines.append(" ".join(curr))
-                        curr = [word]
+                            lines.append(curr)
+                        curr = w
                 if curr:
-                    lines.append(" ".join(curr))
+                    lines.append(curr)
                 return lines
 
-            lines_outro = wrap_text_outro(bridge_text, font_outro, width - 160)
+            lines_outro = wrap_text_outro(bridge_text, font_outro, v_width - 160)
             line_spacing_outro = 18
             line_heights_outro = []
             total_h_outro = 0
@@ -1024,11 +1028,11 @@ def compile_clip(
                 total_h_outro += h
             total_h_outro += line_spacing_outro * (len(lines_outro) - 1)
 
-            curr_y_outro = (height - total_h_outro) // 2
+            curr_y_outro = (v_height - total_h_outro) // 2
             for idx, line in enumerate(lines_outro):
                 bbox = draw_outro.textbbox((0, 0), line, font=font_outro)
                 w = bbox[2] - bbox[0]
-                draw_outro.text(((width - w) // 2, curr_y_outro), line, font=font_outro, fill=(255, 255, 255))
+                draw_outro.text(((v_width - w) // 2, curr_y_outro), line, font=font_outro, fill=(255, 255, 255))
                 curr_y_outro += line_heights_outro[idx] + line_spacing_outro
 
             img_outro.save(temp_img_outro_path)
@@ -1069,6 +1073,7 @@ def compile_clip(
             ]
             subprocess.run(cmd_outro, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
+        scale_filter = f"scale={v_width}:{v_height}:force_original_aspect_ratio=decrease,pad={v_width}:{v_height}:(ow-iw)/2:(oh-ih)/2,setsar=1"
         if not is_last_clip and os.path.exists(temp_outro_video_path):
             typer.echo(f"Compiling (Intro -> Body -> Outro) into {out_path}...")
             cmd_concat = [
@@ -1077,9 +1082,9 @@ def compile_clip(
                 "-i", body_video_path,
                 "-i", temp_outro_video_path,
                 "-filter_complex",
-                "[0:v]settb=1/90000[v0];"
-                "[1:v]settb=1/90000[v1];"
-                "[2:v]settb=1/90000[v2];"
+                f"[0:v]{scale_filter},settb=1/90000[v0];"
+                f"[1:v]{scale_filter},settb=1/90000[v1];"
+                f"[2:v]{scale_filter},settb=1/90000[v2];"
                 "[v0][v1]concat=n=2:v=1:a=0[v01];"
                 "[v01]settb=1/90000[v01tb];"
                 f"[v01tb][v2]xfade=transition=fade:duration=1.0:offset={2.0 + body_duration - 1.0:.3f}[v];"
@@ -1102,8 +1107,8 @@ def compile_clip(
                 "-i", intro_video_path,
                 "-i", body_video_path,
                 "-filter_complex",
-                "[0:v]settb=1/90000[v0];"
-                "[1:v]settb=1/90000[v1];"
+                f"[0:v]{scale_filter},settb=1/90000[v0];"
+                f"[1:v]{scale_filter},settb=1/90000[v1];"
                 "[v0][v1]concat=n=2:v=1:a=0[v];"
                 "[0:a][1:a]concat=n=2:v=0:a=1[a]",
                 "-map", "[v]",
