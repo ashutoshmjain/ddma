@@ -684,7 +684,7 @@ def get_gemini_episode_default_prompt():
         "    \"approx_start\": 0.0,\n"
         "    \"approx_end\": 125.5,\n"
         "    \"music\": \"deepDive-soft-ok.mp3\",\n"
-        "    \"music_volume\": 0.18,\n"
+        "    \"music_volume\": 1.0,\n"
         "    \"bridge_text\": [\"Curiosity question for next topic?\"]\n"
         "  }\n"
         "]"
@@ -1248,7 +1248,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         "end": e_time,
                         "locked": False,
                         "music": raw_c.get("music", "deepDive-soft-ok.mp3" if c_num <= 2 else "deepDive-main.mp3"),
-                        "music_volume": float(raw_c.get("music_volume", 0.18)),
+                        "music_volume": float(raw_c.get("music_volume", 1.0)),
                         "bridge_text": raw_c.get("bridge_text", [f"What happens in Part {c_num + 1}?"])
                     })
 
@@ -2237,7 +2237,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             "type": "music",
                             "music_file": clip.get("music"),
                             "duration": 5.0,
-                            "volume": clip.get("music_volume", 0.18),
+                            "volume": clip.get("music_volume", 1.0),
                             "crossfade": 1.0
                         })
                     segments.append({

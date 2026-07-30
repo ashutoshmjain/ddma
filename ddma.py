@@ -1344,7 +1344,7 @@ def ingest_episode(
                 "end": e_time,
                 "locked": True,
                 "music": "deepDive-soft-ok.mp3" if c_num <= 2 else "deepDive-main.mp3",
-                "music_volume": 0.18,
+                "music_volume": 1.0,
                 "bridge_text": [f"What happens in Part {c_num + 1}?"] if c_num < num_clips else []
             })
             curr_start = end_idx + 1
