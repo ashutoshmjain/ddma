@@ -5614,47 +5614,58 @@
                             const hasMosaic = statusInfo.video_state === 'compiled' || Boolean(clip.mosaic_run_id);
                             
                             if (hasMosaic) {
-                                // 1-Click Master Mosaic Video compilation (re-renders fresh Intro/Outro cards around existing Mosaic body for 0 cost)
-                                audioElement.pause();
-                                playBtn.textContent = '▶';
-                                
-                                btn.innerHTML = '⏳ Compiling...';
-                                btn.disabled = true;
-                                updateStateBar(`Compiling Master Mosaic video preview for Part ${clip.num}: "${clip.title}"...`);
-                                
-                                fetch(`/compile-clip?id=${activeProjectId}&num=${clip.num}`, {
-                                    method: 'POST'
-                                })
-                                .then(res => {
-                                    if (!res.ok) return res.json().then(data => { throw new Error(data.error || "Master compilation failed"); });
-                                    return res.json();
-                                })
-                                .then(data => {
-                                    btn.classList.remove('btn-status-purple', 'btn-status-gray');
-                                    btn.classList.add('btn-status-success');
+                                const useExisting = confirm(
+                                    `Part ${clip.num} ("${clip.title}") has an existing Mosaic video render!\n\n` +
+                                    `• Click [OK] to assemble and preview the Master Video with the existing Mosaic graphics (Free / 0 API Cost).\n` +
+                                    `• Click [Cancel] to launch a new Mosaic AI Motion Graphics render.`
+                                );
+
+                                if (useExisting) {
+                                    // 1-Click Master Mosaic Video compilation (re-renders fresh Intro/Outro cards around existing Mosaic body for 0 cost)
+                                    audioElement.pause();
+                                    playBtn.textContent = '▶';
                                     
-                                    const epNum = activeProjectId.replace('episode_', '');
-                                    const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
-                                    previewVideoPlayer.src = freshVideoUrl;
+                                    btn.innerHTML = '⏳ Compiling...';
+                                    btn.disabled = true;
+                                    updateStateBar(`Compiling Master Mosaic video preview for Part ${clip.num}: "${clip.title}"...`);
                                     
-                                    videoModalTitle.textContent = `🌌 MASTER MOSAIC VIDEO (Motion Infographics) - Part ${clip.num}: ${clip.title}`;
-                                    videoModalSubtitle.textContent = `✨ Master Video with Dan Koe–style Motion Graphics • clips/${epNum}-${clip.num}.mp4`;
-                                    
-                                    downloadVideoBtn.href = freshVideoUrl;
-                                    videoModalOverlay.classList.add('active');
-                                    previewVideoPlayer.play();
-                                    updateStateBar(`Playing Master Mosaic video preview for Part ${clip.num}`);
-                                })
-                                .catch(err => {
-                                    alert("Error compiling Master Mosaic preview: " + err.message);
-                                    updateStateBar("Ready");
-                                })
-                                .finally(() => {
-                                    btn.innerHTML = '🌌 Mosaic';
-                                    btn.disabled = false;
-                                });
+                                    fetch(`/compile-clip?id=${activeProjectId}&num=${clip.num}`, {
+                                        method: 'POST'
+                                    })
+                                    .then(res => {
+                                        if (!res.ok) return res.json().then(data => { throw new Error(data.error || "Master compilation failed"); });
+                                        return res.json();
+                                    })
+                                    .then(data => {
+                                        btn.classList.remove('btn-status-purple', 'btn-status-gray');
+                                        btn.classList.add('btn-status-success');
+                                        
+                                        const epNum = activeProjectId.replace('episode_', '');
+                                        const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
+                                        previewVideoPlayer.src = freshVideoUrl;
+                                        
+                                        videoModalTitle.textContent = `🌌 MASTER MOSAIC VIDEO (Motion Infographics) - Part ${clip.num}: ${clip.title}`;
+                                        videoModalSubtitle.textContent = `✨ Master Video with Dan Koe–style Motion Graphics • clips/${epNum}-${clip.num}.mp4`;
+                                        
+                                        downloadVideoBtn.href = freshVideoUrl;
+                                        videoModalOverlay.classList.add('active');
+                                        previewVideoPlayer.play();
+                                        updateStateBar(`Playing Master Mosaic video preview for Part ${clip.num}`);
+                                    })
+                                    .catch(err => {
+                                        alert("Error compiling Master Mosaic preview: " + err.message);
+                                        updateStateBar("Ready");
+                                    })
+                                    .finally(() => {
+                                        btn.innerHTML = '🌌 Mosaic';
+                                        btn.disabled = false;
+                                    });
+                                } else {
+                                    // User chose to run a new API call
+                                    exportToMosaic(index, btn);
+                                }
                             } else {
-                                // Direct export to Mosaic API
+                                // Direct export to Mosaic API for clips without existing renders
                                 exportToMosaic(index, btn);
                             }
                         });
