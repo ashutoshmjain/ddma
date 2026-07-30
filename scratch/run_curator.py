@@ -884,7 +884,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         })
                         
                         # Generate content with fallback list of valid models
-                        model_names = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-flash-latest", "gemini-pro-latest"]
+                        model_names = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.0-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"]
                         reply = None
                         last_err = None
                         for model_name in model_names:
@@ -1040,7 +1040,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                 # Call Gemini with fallback chain of valid models
                 configure_gemini(api_key)
-                model_names = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-flash-latest", "gemini-pro-latest"]
+                model_names = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.0-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"]
                 response = None
                 last_err = None
                 
@@ -1204,7 +1204,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     raise Exception("Gemini API key is not configured.")
 
                 configure_gemini(api_key)
-                model_names = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-1.5-pro", "gemini-flash-latest"]
+                model_names = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.0-flash", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"]
                 gemini_res_text = None
                 for m_name in model_names:
                     try:
