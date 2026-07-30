@@ -902,31 +902,46 @@ def compile_clip(
         else:
             typer.echo(f"Warning probing media specs via ffprobe. Using defaults.")
 
-        # 6. Equalize master body durations if mismatch > 0.05 seconds to prevent drift/desync
+        # 6. Equalize master body durations (Audio is the master timeline ground truth)
         body_video_path = backup_path
         temp_body_path = f"temp_body_{num}.mp4"
-        if v_dur is not None and a_dur is not None and abs(v_dur - a_dur) > 0.05:
-            min_dur = min(v_dur, a_dur)
-            typer.echo(f"Equalizing master stream durations (video={v_dur:.3f}s, audio={a_dur:.3f}s)...")
-            typer.echo(f"Trimming master body to {min_dur:.3f}s...")
-            cmd_norm = [
-                "ffmpeg", "-y",
-                "-i", backup_path,
-                "-ss", "0",
-                "-t", f"{min_dur:.3f}",
-                "-c:v", "libx264",
-                "-crf", "18",
-                "-preset", "fast",
-                "-pix_fmt", "yuv420p",
-                "-c:a", "aac",
-                "-b:a", "192k",
-                "-ar", ar_str,
-                temp_body_path
-            ]
+        if a_dur is not None and (v_dur is None or abs(v_dur - a_dur) > 0.05):
+            target_dur = a_dur
+            typer.echo(f"Equalizing master body stream durations to match audio ground truth ({a_dur:.3f}s)...")
+            if v_dur and v_dur < a_dur:
+                # Video is shorter than audio: extend black canvas video stream to match audio duration exactly
+                cmd_norm = [
+                    "ffmpeg", "-y",
+                    "-f", "lavfi", "-i", f"color=c=black:s=740x740:r=25:d={target_dur:.3f}",
+                    "-i", backup_path,
+                    "-map", "0:v",
+                    "-map", "1:a",
+                    "-c:v", "libx264", "-tune", "stillimage", "-pix_fmt", "yuv420p",
+                    "-c:a", "aac", "-b:a", "192k",
+                    "-ar", ar_str,
+                    "-t", f"{target_dur:.3f}",
+                    temp_body_path
+                ]
+            else:
+                # Trim video stream down to match audio duration
+                cmd_norm = [
+                    "ffmpeg", "-y",
+                    "-i", backup_path,
+                    "-ss", "0",
+                    "-t", f"{target_dur:.3f}",
+                    "-c:v", "libx264",
+                    "-crf", "18",
+                    "-preset", "fast",
+                    "-pix_fmt", "yuv420p",
+                    "-c:a", "aac",
+                    "-b:a", "192k",
+                    "-ar", ar_str,
+                    temp_body_path
+                ]
             res_norm = subprocess.run(cmd_norm, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if res_norm.returncode == 0:
                 body_video_path = temp_body_path
-                typer.echo("Master body successfully equalized.")
+                typer.echo(f"Master body successfully equalized to {target_dur:.3f}s.")
             else:
                 typer.echo(f"Warning: Failed to equalize master body, using original backup path. Error: {res_norm.stderr}")
 

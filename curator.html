@@ -2028,17 +2028,30 @@
         let sequencePlayIdx = -1;
         let segmentClipboard = null;
 
-        function calculateClipDuration(clip) {
+        function calculateClipAudioDuration(clip) {
             let total = 0;
-            if (clip && clip.segments) {
+            if (clip && clip.segments && clip.segments.length > 0) {
                 clip.segments.forEach((seg, idx) => {
                     total += parseFloat(seg.duration || 0);
                     if (idx < clip.segments.length - 1) {
                         total -= parseFloat(seg.crossfade || 0);
                     }
                 });
+            } else if (clip) {
+                total = (parseFloat(clip.end) || 0) - (parseFloat(clip.start) || 0);
             }
-            return total;
+            return Math.max(0, total);
+        }
+
+        function calculateClipVideoDuration(clip) {
+            const bodyDur = calculateClipAudioDuration(clip);
+            if (bodyDur <= 0) return 0;
+            // 4-Element Construct Model: 2.0s Intro Card + Audio Body + 5.0s Outro Curiosity Card
+            return bodyDur + 7.0;
+        }
+
+        function calculateClipDuration(clip) {
+            return calculateClipVideoDuration(clip);
         }
 
         // Elements
@@ -5360,8 +5373,12 @@
                             <!-- Clip Level Settings (Duration, Volume, Crossfade) -->
                             <div class="music-editor-row" style="margin-top: 0.4rem; padding: 0.3rem 0.5rem; background: rgba(255,255,255,0.02); border-radius: 4px; display: inline-flex; align-self: flex-start;" onclick="event.stopPropagation();">
                                 <div class="music-editor-field">
-                                    <label style="font-size: 0.7rem; color: var(--text-muted);">Duration (s):</label>
-                                    <input type="text" class="clip-dur-input" style="width: 55px; background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-mono); padding: 0;" value="${formatTime(totalDuration)}" disabled>
+                                    <label style="font-size: 0.7rem; color: #06b6d4; font-weight: 700;">Video Dur (s):</label>
+                                    <input type="text" class="clip-dur-input" style="width: 55px; background: transparent; border: none; color: #06b6d4; font-size: 0.75rem; font-family: var(--font-mono); font-weight: bold; padding: 0;" value="${formatTime(totalDuration)}" disabled title="Full 4-Element Video Duration (Intro 2s + Body + Outro 5s)">
+                                </div>
+                                <div class="music-editor-field">
+                                    <label style="font-size: 0.7rem; color: var(--text-muted);">Audio Body:</label>
+                                    <input type="text" style="width: 55px; background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-mono); padding: 0;" value="${formatTime(calculateClipAudioDuration(clip))}" disabled title="Audio Segments Body Duration">
                                 </div>
                                 <div class="music-editor-field">
                                     <label style="font-size: 0.7rem;">Volume:</label>
