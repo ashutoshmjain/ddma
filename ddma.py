@@ -675,8 +675,11 @@ def compile_clip(
         
         res_remux = subprocess.run(cmd_remux, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         if res_remux.returncode == 0:
-            shutil.move(temp_remux_path, backup_path)
-            typer.echo(f"Successfully updated master body audio track: {backup_path}")
+            if is_black_canvas and has_mosaic_id:
+                typer.echo(f"Draft baseline body created at {temp_remux_path} (Mosaic master preserved at {backup_path}).")
+            else:
+                shutil.move(temp_remux_path, backup_path)
+                typer.echo(f"Successfully updated master body audio track: {backup_path}")
         else:
             if os.path.exists(temp_remux_path):
                 try:
@@ -905,7 +908,10 @@ def compile_clip(
             typer.echo(f"Warning probing media specs via ffprobe. Using defaults.")
 
         # 6. Equalize master body durations (Audio is the master timeline ground truth)
-        body_video_path = backup_path
+        if is_black_canvas and has_mosaic_id and os.path.exists(temp_remux_path):
+            body_video_path = temp_remux_path
+        else:
+            body_video_path = backup_path
         temp_body_path = f"temp_body_{num}.mp4"
         if a_dur is not None and (v_dur is None or abs(v_dur - a_dur) > 0.05):
             target_dur = a_dur
