@@ -2897,6 +2897,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         elif parsed_url.path == '/compile-clip':
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
+            is_draft = params.get('draft', ['false'])[0].lower() in ('true', '1')
             try:
                 if not project_id or not clip_num:
                     raise Exception("Missing project id or clip number.")
@@ -2931,6 +2932,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                 # 2. Synchronously compile intro card, equalized master body, and outro curiosity card
                 cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", plan_path]
+                if is_draft:
+                    cmd.append("--force-draft")
                 print(f"[{project_id}][Clip {clip_num}] Starting synchronous compilation: {' '.join(cmd)}")
                 proc = subprocess.run(cmd, capture_output=True, text=True, cwd=".")
                 if proc.returncode != 0:

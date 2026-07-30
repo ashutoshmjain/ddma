@@ -516,7 +516,8 @@ def compile_clip(
     out_dir: str = typer.Option("clips", help="Output directory for the compiled video"),
     font_path: Optional[str] = typer.Option(None, help="Optional path to custom TrueType font"),
     backup: bool = typer.Option(True, help="Create a backup of the original master clip"),
-    episode_title: str = typer.Option("Life, Death and the Lysosome", help="Title of the episode")
+    episode_title: str = typer.Option("Life, Death and the Lysosome", help="Title of the episode"),
+    force_draft: bool = typer.Option(False, help="Force black canvas draft body compilation even if Mosaic video exists")
 ):
     """
     Mux and compile a clip with dynamic title card intro and finished Mosaic video.
@@ -532,6 +533,7 @@ def compile_clip(
     if hasattr(font_path, 'default'): font_path = font_path.default
     if hasattr(backup, 'default'): backup = bool(backup.default)
     if hasattr(episode_title, 'default'): episode_title = str(episode_title.default)
+    if hasattr(force_draft, 'default'): force_draft = bool(force_draft.default)
 
     temp_img_path = f"temp_title_{num}.png"
     intro_video_path = f"temp_intro_{num}.mp4"
@@ -642,8 +644,8 @@ def compile_clip(
         target_clip = next((c for c in plan_data if c.get("num") == num), None)
         has_mosaic_id = bool(target_clip and target_clip.get("mosaic_run_id"))
         
-        # A clip is a black canvas draft ONLY if it has never been rendered by Mosaic
-        is_black_canvas = not has_mosaic_id
+        # A clip is a black canvas draft if force_draft is requested OR if it has never been rendered by Mosaic
+        is_black_canvas = force_draft or not has_mosaic_id
 
         if is_black_canvas:
             typer.echo(f"Generating clean draft body video ({a_dur_fresh:.2f}s) from fresh audio clip...")

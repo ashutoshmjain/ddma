@@ -5337,16 +5337,14 @@
                     videoStatusClass = "btn-status-warning";
                 }
                 
-                // 5. Mosaic status: green if Mosaic exists, purple if not
-                const mosaicStatusClass = statusInfo.video_state === 'compiled' ? "btn-status-success" : "btn-status-purple";
+                const hasMosaicRender = statusInfo.video_state === 'compiled' || Boolean(clip.mosaic_run_id);
+                const mosaicStatusClass = hasMosaicRender ? "btn-status-success" : "btn-status-purple";
                 
                 let videoBtnHtml = "";
                 if (statusInfo.video_state === 'processing') {
-                    videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-warning" style="font-weight:600; opacity: 0.8; cursor: not-allowed;" disabled title="Video is currently compiling/processing...">⏳ Processing</button>`;
-                } else if (statusInfo.video_state === 'compiled') {
-                    videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-success" id="playVideoBtn_${index}" style="font-weight:600;" title="Play Post-Mosaic master video with motion graphics">📹 Video</button>`;
+                    videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-warning" style="font-weight:600; opacity: 0.8; cursor: not-allowed;" disabled title="Draft baseline is currently compiling...">⏳ Processing</button>`;
                 } else {
-                    videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-warning" id="playVideoBtn_${index}" style="font-weight:600;" title="Play Pre-Mosaic draft video (Title Card + Black Canvas Baseline + Outro)">📹 Draft</button>`;
+                    videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-warning" id="playVideoBtn_${index}" style="font-weight:600;" title="Play 1-click Black Canvas Baseline preview (Intro 2s + Black Canvas Audio Body + Outro 5s)">📹 Draft</button>`;
                 }
                 
                 let mosaicBtnHtml = "";
@@ -5354,8 +5352,10 @@
                     if (statusInfo.video_state === 'processing') {
                         const pct = statusInfo.progress !== undefined ? statusInfo.progress : 0;
                         mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-warning" id="mosaicCardBtn_${index}" style="font-weight: 600; opacity: 0.8; cursor: not-allowed;" disabled title="Mosaic generation in progress...">⏳ ${pct}%</button>`;
+                    } else if (hasMosaicRender) {
+                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-success" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Play 1-click Master Motion Graphics video (Intro 2s + Mosaic Body + Outro 5s)">🌌 Mosaic</button>`;
                     } else {
-                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic ${mosaicStatusClass}" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Send draft video to Mosaic API for overlaying infographics and visual graphics">🌌 Mosaic</button>`;
+                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-purple" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Send draft video to Mosaic API for AI Motion Graphics">🌌 Mosaic</button>`;
                     }
                 } else {
                     mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-gray" style="font-weight: 600; opacity: 0.4; cursor: not-allowed;" disabled title="Lock clip first to enable Mosaic">🌌 Mosaic</button>`;
@@ -5563,21 +5563,19 @@
                     videoPlayBtnEl.addEventListener('click', function(e) {
                         e.stopPropagation();
                         const btn = this;
-                        const isMasterCompiled = statusInfo.video_state === 'compiled';
-                        const originalBtnLabel = isMasterCompiled ? '📹 Video' : '📹 Draft';
                         
                         audioElement.pause();
                         playBtn.textContent = '▶';
                         
                         btn.innerHTML = '⏳ Compiling...';
                         btn.disabled = true;
-                        updateStateBar(`Compiling ${isMasterCompiled ? 'master' : 'draft'} video preview for Part ${clip.num}: "${clip.title}"...`);
+                        updateStateBar(`Compiling Black Canvas Baseline preview for Part ${clip.num}: "${clip.title}"...`);
                         
-                        fetch(`/compile-clip?id=${activeProjectId}&num=${clip.num}`, {
+                        fetch(`/compile-clip?id=${activeProjectId}&num=${clip.num}&draft=true`, {
                             method: 'POST'
                         })
                         .then(res => {
-                            if (!res.ok) return res.json().then(data => { throw new Error(data.error || "Compilation failed"); });
+                            if (!res.ok) return res.json().then(data => { throw new Error(data.error || "Baseline compilation failed"); });
                             return res.json();
                         })
                         .then(data => {
@@ -5588,35 +5586,79 @@
                             const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
                             previewVideoPlayer.src = freshVideoUrl;
                             
-                            if (isMasterCompiled) {
-                                videoModalTitle.textContent = `📹 FINAL MASTER VIDEO (Post-Mosaic) - Part ${clip.num}: ${clip.title}`;
-                                videoModalSubtitle.textContent = `✨ Master Video with Motion Graphics • clips/${epNum}-${clip.num}.mp4`;
-                            } else {
-                                videoModalTitle.textContent = `📹 DRAFT BASELINE (Pre-Mosaic) - Part ${clip.num}: ${clip.title}`;
-                                videoModalSubtitle.textContent = `ℹ️ Pre-Mosaic Draft Baseline (2s Title Card + Black Canvas Audio + 5s Outro). Lock clip & run Mosaic for motion infographics.`;
-                            }
+                            videoModalTitle.textContent = `📹 DRAFT BASELINE (Black Canvas Preview) - Part ${clip.num}: ${clip.title}`;
+                            videoModalSubtitle.textContent = `ℹ️ Local Black Canvas Baseline (2s Title Intro + Black Canvas Audio Body + 5s Outro Curiosity Question).`;
                             
                             downloadVideoBtn.href = freshVideoUrl;
                             videoModalOverlay.classList.add('active');
                             previewVideoPlayer.play();
-                            updateStateBar(`Playing ${isMasterCompiled ? 'master' : 'draft'} video preview for Part ${clip.num}`);
+                            updateStateBar(`Playing Draft Baseline video preview for Part ${clip.num}`);
                         })
                         .catch(err => {
-                            alert("Error compiling video preview: " + err.message);
+                            alert("Error compiling Draft Baseline preview: " + err.message);
                             updateStateBar("Ready");
                         })
                         .finally(() => {
-                            btn.innerHTML = originalBtnLabel;
+                            btn.innerHTML = '📹 Draft';
                             btn.disabled = false;
                         });
                     });
                 }
                 
                 if (isLocked) {
-                    card.querySelector(`#mosaicCardBtn_${index}`).addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        exportToMosaic(index, this);
-                    });
+                    const mosaicBtnEl = card.querySelector(`#mosaicCardBtn_${index}`);
+                    if (mosaicBtnEl) {
+                        mosaicBtnEl.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const btn = this;
+                            const hasMosaic = statusInfo.video_state === 'compiled' || Boolean(clip.mosaic_run_id);
+                            
+                            if (hasMosaic) {
+                                // 1-Click Master Mosaic Video compilation (re-renders fresh Intro/Outro cards around existing Mosaic body for 0 cost)
+                                audioElement.pause();
+                                playBtn.textContent = '▶';
+                                
+                                btn.innerHTML = '⏳ Compiling...';
+                                btn.disabled = true;
+                                updateStateBar(`Compiling Master Mosaic video preview for Part ${clip.num}: "${clip.title}"...`);
+                                
+                                fetch(`/compile-clip?id=${activeProjectId}&num=${clip.num}`, {
+                                    method: 'POST'
+                                })
+                                .then(res => {
+                                    if (!res.ok) return res.json().then(data => { throw new Error(data.error || "Master compilation failed"); });
+                                    return res.json();
+                                })
+                                .then(data => {
+                                    btn.classList.remove('btn-status-purple', 'btn-status-gray');
+                                    btn.classList.add('btn-status-success');
+                                    
+                                    const epNum = activeProjectId.replace('episode_', '');
+                                    const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
+                                    previewVideoPlayer.src = freshVideoUrl;
+                                    
+                                    videoModalTitle.textContent = `🌌 MASTER MOSAIC VIDEO (Motion Infographics) - Part ${clip.num}: ${clip.title}`;
+                                    videoModalSubtitle.textContent = `✨ Master Video with Dan Koe–style Motion Graphics • clips/${epNum}-${clip.num}.mp4`;
+                                    
+                                    downloadVideoBtn.href = freshVideoUrl;
+                                    videoModalOverlay.classList.add('active');
+                                    previewVideoPlayer.play();
+                                    updateStateBar(`Playing Master Mosaic video preview for Part ${clip.num}`);
+                                })
+                                .catch(err => {
+                                    alert("Error compiling Master Mosaic preview: " + err.message);
+                                    updateStateBar("Ready");
+                                })
+                                .finally(() => {
+                                    btn.innerHTML = '🌌 Mosaic';
+                                    btn.disabled = false;
+                                });
+                            } else {
+                                // Direct export to Mosaic API
+                                exportToMosaic(index, btn);
+                            }
+                        });
+                    }
                 }
                 
                 if (!isLocked) {

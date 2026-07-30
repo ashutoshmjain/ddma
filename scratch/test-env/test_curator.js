@@ -173,11 +173,11 @@ async function runTest() {
             };
         });
 
-        console.log(`- Unlocked Clip 1 -> Video Button: "${unlockedStates.videoText}" | Disabled: ${unlockedStates.videoDisabled} (Expected: false)`);
+        console.log(`- Unlocked Clip 1 -> Draft Button: "${unlockedStates.videoText}" | Disabled: ${unlockedStates.videoDisabled} (Expected: false)`);
         console.log(`- Unlocked Clip 1 -> Mosaic Button: "${unlockedStates.mosaicText}" | Disabled: ${unlockedStates.mosaicDisabled} (Expected: true)`);
 
         if (unlockedStates.videoDisabled) {
-            throw new Error("FAIL: Video button is grayed out / disabled on unlocked Clip 1!");
+            throw new Error("FAIL: Draft button is grayed out / disabled on unlocked Clip 1!");
         }
         if (!unlockedStates.mosaicDisabled) {
             throw new Error("FAIL: Mosaic button should be disabled when clip is unlocked to protect against premature Mosaic renders!");
