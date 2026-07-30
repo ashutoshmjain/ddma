@@ -2183,6 +2183,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 project_dir = os.path.join("projects", project_id)
                 plan_path = os.path.join(project_dir, "plan.json")
                 if not os.path.exists(plan_path):
+                    plan_path = "plan.json"
+                if not os.path.exists(plan_path):
                     raise Exception("plan.json not found.")
                 
                 with open(plan_path, "r", encoding="utf-8") as f:
@@ -2227,7 +2229,28 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     info_data = json.load(inf_f)
                 full_audio_path = os.path.join(project_dir, info_data["audio_filename"])
                 
-                self.compile_segments(clip["segments"], temp_compiled_audio, full_audio_path)
+                segments = clip.get("segments")
+                if not segments or not isinstance(segments, list):
+                    segments = []
+                    if clip.get("music"):
+                        segments.append({
+                            "type": "music",
+                            "music_file": clip.get("music"),
+                            "duration": 5.0,
+                            "volume": clip.get("music_volume", 0.18),
+                            "crossfade": 1.0
+                        })
+                    segments.append({
+                        "type": "audio",
+                        "start": clip.get("start", 0.0),
+                        "end": clip.get("end", 0.0),
+                        "duration": clip.get("end", 0.0) - clip.get("start", 0.0),
+                        "volume": 1.0,
+                        "crossfade": 0.0,
+                        "text": clip.get("title", "")
+                    })
+                
+                self.compile_segments(segments, temp_compiled_audio, full_audio_path)
                 audio_source = temp_compiled_audio
                 
                 duration = 5.0

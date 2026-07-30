@@ -369,6 +369,24 @@ async function runTest() {
             throw new Error("FAIL: selectProject function is not defined in curator.html global scope!");
         }
 
+        // 🧪 TEST 9: Verifying /get-clip-outro Endpoint & Segments Fallback
+        console.log("\n🧪 TEST 9: Verifying /get-clip-outro Endpoint & Segments Fallback...");
+        const outroEndpointState = await page.evaluate(async () => {
+            try {
+                const targetId = activeProjectId && activeProjectId !== 'null' ? activeProjectId : 'episode_245';
+                const res = await fetch(`/get-clip-outro?id=${targetId}&num=1`, { method: 'POST' });
+                const data = await res.json();
+                return { status: res.status, success: data.success, error: data.error, preview_url: data.preview_url };
+            } catch (err) {
+                return { status: 500, success: false, error: err.message };
+            }
+        });
+
+        console.log(`- Outro Endpoint Response: status=${outroEndpointState.status}, success=${outroEndpointState.success}`);
+        if (!outroEndpointState.success) {
+            throw new Error(`FAIL: /get-clip-outro failed with error: ${outroEndpointState.error}`);
+        }
+
         console.log("\n✅ ALL COMPREHENSIVE CURATOR REGRESSION TESTS PASSED 100%!");
 
     } catch (err) {
