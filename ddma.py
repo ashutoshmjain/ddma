@@ -916,7 +916,7 @@ def compile_clip(
             typer.echo(f"Warning probing media specs via ffprobe. Using defaults.")
 
         # 6. Equalize master body durations (Audio is the master timeline ground truth)
-        if is_black_canvas:
+        if is_black_canvas and has_mosaic_id and os.path.exists(temp_remux_path):
             body_video_path = temp_remux_path
         else:
             body_video_path = backup_path
