@@ -2239,6 +2239,16 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 out_path = f"previews/intro_{project_id}_{clip_num}.mp4"
                 
                 music_file = "title-card-music.mp3"
+                if not os.path.exists(music_file):
+                    fallback_music = [
+                        os.path.join("music", "deepDive-soft-ok.mp3"),
+                        os.path.join("music", "deepDive-strong.mp3"),
+                        os.path.join("music", "deepDive-main.mp3")
+                    ]
+                    for cand in fallback_music:
+                        if os.path.exists(cand):
+                            music_file = cand
+                            break
                 cmd_ffmpeg = [
                     "ffmpeg", "-y",
                     "-loop", "1",
