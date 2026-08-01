@@ -665,6 +665,17 @@ def compile_clip(
         typer.echo(f"Error: Clip {num} not found in plan.", err=True)
         raise typer.Exit(code=1)
 
+    # Dynamic music resolution from clip segments
+    segments = clip.get("segments", [])
+    if segments and isinstance(segments, list):
+        for seg in segments:
+            if seg.get("type") == "music" and seg.get("music_file"):
+                m_cand = seg["music_file"].split('/').pop().split('\\').pop()
+                m_path = os.path.join("music", m_cand)
+                if os.path.exists(m_path):
+                    music = m_path
+                    break
+
     # 1. Locate the master clip (e.g. clips/245-4.mp4)
     ep_prefix = None
     if "episode_" in plan_file:

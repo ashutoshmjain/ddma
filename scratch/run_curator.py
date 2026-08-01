@@ -2238,9 +2238,29 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 os.makedirs("previews", exist_ok=True)
                 out_path = f"previews/intro_{project_id}_{clip_num}.mp4"
                 
-                music_file = "title-card-music.mp3"
-                if not os.path.exists(music_file):
+                music_file = None
+                segments = clip.get("segments", [])
+                if segments and isinstance(segments, list):
+                    for seg in segments:
+                        if seg.get("type") == "music" and seg.get("music_file"):
+                            m_candidate = seg["music_file"].split('/').pop().split('\\').pop()
+                            m_path = os.path.join("music", m_candidate)
+                            if os.path.exists(m_path):
+                                music_file = m_path
+                                break
+                            elif os.path.exists(seg["music_file"]):
+                                music_file = seg["music_file"]
+                                break
+                
+                if not music_file and clip.get("music"):
+                    m_candidate = str(clip["music"]).split('/').pop().split('\\').pop()
+                    m_path = os.path.join("music", m_candidate)
+                    if os.path.exists(m_path):
+                        music_file = m_path
+
+                if not music_file or not os.path.exists(music_file):
                     fallback_music = [
+                        "title-card-music.mp3",
                         os.path.join("music", "deepDive-soft-ok.mp3"),
                         os.path.join("music", "deepDive-strong.mp3"),
                         os.path.join("music", "deepDive-main.mp3")
