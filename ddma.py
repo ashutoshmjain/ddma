@@ -63,59 +63,107 @@ def parse_time(time_str: str) -> float:
 
 def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, segments: list, total_clips: int) -> dict:
     """
-    Builds a 5-part Rough-Cut Plan segment structure for a clip:
-    1. Intro Music Sting (deepDive-soft-ok.mp3 for clip 1 & 2; sting for clip 3+)
-    2. Punchline / Hook Audio Segment (extracted 15-25s quote from transcript within window)
-    3. Music Transition Sting (4.5s sting with 0.3s crossfade)
-    4. Main Body Audio Segment (the main timeline range)
-    5. Curiosity Bridge Question (text question in bridge_text)
+    Builds an enhanced 5-part Rough-Cut Plan segment structure for a clip:
+    1. Intro Music Sting: Pure music sting without vocal intro (e.g. Bluesy Vibes), 5.5s duration, 1.3s crossfade.
+    2. Punchline / Hook Audio Segment: 20-25s quote snapped to a complete sentence boundary.
+    3. Transition Music Sting: Show vocal tag (deepDive-strong.mp3 / deepDive-soft-ok.mp3 for clip 1 & 2), 7.5s duration, placed AFTER the hook.
+    4. Main Body Audio Segment: Starts cleanly at hook.end + 0.08s (zero hook repetition), snapped to a complete sentence end.
+    5. Outro Music Sting: 4.5s tail sting (Howling.mp3) with 0.3s crossfade.
     """
     in_window = [s for s in segments if s.get("start", 0) >= start_time and s.get("end", 0) <= end_time + 1.0]
     
-    if clip_num in [1, 2]:
-        intro_music = "deepDive-soft-ok.mp3"
-    else:
-        stings = [
-            "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
-            "Howling (Sting) - Gunnar Olsen.mp3",
-            "Demilitarized Zone (Sting) - Ethan Meixsell.mp3",
-            "Double Helix (Sting) - Ethan Meixsell.mp3"
-        ]
-        intro_music = stings[(clip_num - 1) % len(stings)]
+    # All words in window for word-level sentence boundary snapping
+    window_words = []
+    for s in in_window:
+        window_words.extend(s.get("words", []))
+    
+    # 1. Pure music sting for Segment 0 (Intro Sting at top of clip - NO vocal intro)
+    pure_stings = [
+        "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+        "Howling (Sting) - Gunnar Olsen.mp3",
+        "Demilitarized Zone (Sting) - Ethan Meixsell.mp3",
+        "Double Helix (Sting) - Ethan Meixsell.mp3"
+    ]
+    intro_music = pure_stings[(clip_num - 1) % len(pure_stings)]
 
+    # 2. Extract Hook Audio (20-25s snapped to complete sentence boundary)
     hook_segment = None
-    if in_window:
-        for seg in reversed(in_window):
-            seg_dur = seg.get("end", 0) - seg.get("start", 0)
-            if 10.0 <= seg_dur <= 30.0:
-                hook_segment = {
-                    "type": "audio",
-                    "start": round(seg.get("start"), 2),
-                    "end": round(seg.get("end"), 2),
-                    "duration": round(seg_dur, 2),
-                    "text": seg.get("text", "").strip()
-                }
-                break
-
-    if not hook_segment and in_window:
-        first_seg = in_window[0]
+    if window_words:
+        target_hook_end = window_words[0]["start"] + 22.0
+        best_hook_idx = 0
+        min_diff = 999999
+        for idx in range(min(15, len(window_words)-1), min(80, len(window_words))):
+            w = window_words[idx]
+            diff = abs(w["end"] - target_hook_end)
+            w_text = w.get("word", "").strip()
+            if w_text.endswith(".") or w_text.endswith("?") or w_text.endswith("!"):
+                diff -= 10.0
+            if diff < min_diff:
+                min_diff = diff
+                best_hook_idx = idx
+        
+        h_start = round(window_words[0]["start"], 2)
+        h_end = round(window_words[best_hook_idx]["end"], 2)
+        h_words = [w.get("word", "").strip() for w in window_words[:best_hook_idx+1]]
+        
         hook_segment = {
             "type": "audio",
-            "start": round(first_seg.get("start"), 2),
-            "end": round(min(first_seg.get("start") + 15.0, end_time), 2),
-            "duration": round(min(15.0, end_time - first_seg.get("start")), 2),
-            "text": first_seg.get("text", "").strip()
+            "start": h_start,
+            "end": h_end,
+            "duration": round(h_end - h_start, 2),
+            "text": " ".join(h_words)
         }
 
-    mid_music = "Howling (Sting) - Gunnar Olsen.mp3"
-    main_text = " ".join([s.get("text", "").strip() for s in in_window]).strip()
+    # 3. Transition Sting after Hook: Use "Welcome to Deep Dive!" vocal tag stings HERE!
+    if clip_num in [1, 2]:
+        mid_music = "deepDive-strong.mp3" if clip_num == 1 else "deepDive-soft-ok.mp3"
+        mid_duration = 7.5
+    else:
+        mid_music = "Howling (Sting) - Gunnar Olsen.mp3"
+        mid_duration = 4.5
+
+    # 4. Main Body Audio Segment (starts right after hook.end, ends at sentence boundary)
+    if hook_segment:
+        main_start = round(hook_segment["end"] + 0.08, 2)
+    else:
+        main_start = round(start_time, 2)
+
+    main_end = round(end_time, 2)
+    if window_words:
+        best_end_idx = len(window_words) - 1
+        min_end_diff = 999999
+        for idx in range(max(0, len(window_words) - 60), len(window_words)):
+            w = window_words[idx]
+            diff = abs(w["end"] - end_time)
+            w_text = w.get("word", "").strip()
+            if w_text.endswith(".") or w_text.endswith("?") or w_text.endswith("!"):
+                diff -= 15.0
+            if diff < min_end_diff:
+                min_end_diff = diff
+                best_end_idx = idx
+        main_end = round(window_words[best_end_idx]["end"], 2)
+
+    body_words = [w.get("word", "").strip() for w in window_words if w.get("start", 0) >= main_start and w.get("end", 0) <= main_end + 0.5]
+    main_text = " ".join(body_words) if body_words else " ".join([s.get("text", "").strip() for s in in_window]).strip()
+
+    # Generate dynamic title from punchy transcript phrase or first sentence
+    clip_title = f"Episode 245 Part {clip_num}"
+    if window_words:
+        first_sentence = ""
+        for w in window_words:
+            first_sentence += w.get("word", "") + " "
+            if w.get("word", "").strip().endswith((".", "?", "!")) and len(first_sentence.strip()) > 15:
+                break
+        clean_t = first_sentence.strip().rstrip(".?!")
+        if 10 < len(clean_t) <= 60:
+            clip_title = clean_t
 
     seg_list = [
         {
             "type": "music",
             "music_file": intro_music,
-            "duration": 4.5,
-            "crossfade": 0,
+            "duration": 5.5,
+            "crossfade": 1.3,
             "volume": 1.0
         }
     ]
@@ -124,16 +172,25 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
         seg_list.append({
             "type": "music",
             "music_file": mid_music,
-            "duration": 4.5,
-            "crossfade": 0.3
+            "duration": mid_duration,
+            "crossfade": 0.0,
+            "volume": 1.0
         })
 
     seg_list.append({
         "type": "audio",
-        "start": round(start_time, 2),
-        "end": round(end_time, 2),
-        "duration": round(end_time - start_time, 2),
+        "start": main_start,
+        "end": main_end,
+        "duration": round(main_end - main_start, 2),
         "text": main_text
+    })
+
+    seg_list.append({
+        "type": "music",
+        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+        "duration": 4.5,
+        "crossfade": 0.3,
+        "volume": 1.0
     })
 
     bridge_question = f"What is the deeper secret behind Part {clip_num}?"
@@ -142,10 +199,10 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
 
     return {
         "num": clip_num,
-        "title": f"Episode 245 Part {clip_num}" if clip_num > 1 else "Episode 245",
+        "title": clip_title,
         "start": round(start_time, 2),
-        "end": round(end_time, 2),
-        "duration": round(end_time - start_time, 2),
+        "end": main_end,
+        "duration": round(main_end - start_time, 2),
         "bridge_text": [bridge_question],
         "segments": seg_list,
         "locked": False
