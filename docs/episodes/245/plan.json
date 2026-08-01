@@ -1,546 +1,216 @@
 [
-    {
-        "num": 1,
-        "title": "a brand new research paper on Singularity",
-        "start": 0,
-        "end": 113.02,
-        "locked": true,
-        "music": "deepDive-soft-ok.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "Standby for part 2 and leave comments if you disagree with the hypothesis"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-soft-ok.mp3",
-                "duration": 7,
-                "volume": 2,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 0,
-                "end": 113.02,
-                "duration": 113.02,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245"
-            },
-            {
-                "type": "music",
-                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
-                "duration": 5.5,
-                "crossfade": 0.3
-            }
-        ]
-    },
-    {
-        "num": 2,
-        "title": "Episode 245 Part 2",
-        "start": 113.02,
-        "end": 222.66,
-        "locked": true,
-        "music": "deepDive-soft-ok.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 3?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-soft-ok.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 113.02,
-                "end": 222.66,
-                "duration": 109.64,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 2"
-            }
-        ]
-    },
-    {
-        "num": 3,
-        "title": "Episode 245 Part 3",
-        "start": 223,
-        "end": 338.94,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 4?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 223,
-                "end": 338.94,
-                "duration": 115.94,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 3"
-            }
-        ]
-    },
-    {
-        "num": 4,
-        "title": "Episode 245 Part 4",
-        "start": 339.02,
-        "end": 449.5,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 5?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 339.02,
-                "end": 449.5,
-                "duration": 110.48,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 4"
-            }
-        ]
-    },
-    {
-        "num": 5,
-        "title": "Episode 245 Part 5",
-        "start": 449.86,
-        "end": 563.92,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 6?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 449.86,
-                "end": 563.92,
-                "duration": 114.06,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 5"
-            }
-        ]
-    },
-    {
-        "num": 6,
-        "title": "Episode 245 Part 6",
-        "start": 564.02,
-        "end": 673.94,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 7?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 564.02,
-                "end": 673.94,
-                "duration": 109.92,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 6"
-            }
-        ]
-    },
-    {
-        "num": 7,
-        "title": "Episode 245 Part 7",
-        "start": 674.24,
-        "end": 784.52,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 8?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 674.24,
-                "end": 784.52,
-                "duration": 110.28,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 7"
-            }
-        ]
-    },
-    {
-        "num": 8,
-        "title": "Episode 245 Part 8",
-        "start": 784.78,
-        "end": 896.84,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 9?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 784.78,
-                "end": 896.84,
-                "duration": 112.06,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 8"
-            }
-        ]
-    },
-    {
-        "num": 9,
-        "title": "Episode 245 Part 9",
-        "start": 897.1,
-        "end": 1007.46,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 10?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 897.1,
-                "end": 1007.46,
-                "duration": 110.36,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 9"
-            }
-        ]
-    },
-    {
-        "num": 10,
-        "title": "Episode 245 Part 10",
-        "start": 1007.8,
-        "end": 1119.92,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 11?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 1007.8,
-                "end": 1119.92,
-                "duration": 112.12,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 10"
-            }
-        ]
-    },
-    {
-        "num": 11,
-        "title": "Episode 245 Part 11",
-        "start": 1120.06,
-        "end": 1231.6,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 12?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 1120.06,
-                "end": 1231.6,
-                "duration": 111.54,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 11"
-            }
-        ]
-    },
-    {
-        "num": 12,
-        "title": "Episode 245 Part 12",
-        "start": 1231.88,
-        "end": 1345.28,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 13?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 1231.88,
-                "end": 1345.28,
-                "duration": 113.4,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 12"
-            }
-        ]
-    },
-    {
-        "num": 13,
-        "title": "Episode 245 Part 13",
-        "start": 1345.72,
-        "end": 1458.06,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 14?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 1345.72,
-                "end": 1458.06,
-                "duration": 112.34,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 13"
-            }
-        ]
-    },
-    {
-        "num": 14,
-        "title": "Episode 245 Part 14",
-        "start": 1458.46,
-        "end": 1571.18,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 15?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 1458.46,
-                "end": 1571.18,
-                "duration": 112.72,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 14"
-            }
-        ]
-    },
-    {
-        "num": 15,
-        "title": "Episode 245 Part 15",
-        "start": 1571.64,
-        "end": 1678.02,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 16?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 1571.64,
-                "end": 1678.02,
-                "duration": 106.38,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 15"
-            }
-        ]
-    },
-    {
-        "num": 16,
-        "title": "Episode 245 Part 16",
-        "start": 1678.26,
-        "end": 1791.14,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 17?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 1678.26,
-                "end": 1791.14,
-                "duration": 112.88,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 16"
-            }
-        ]
-    },
-    {
-        "num": 17,
-        "title": "Episode 245 Part 17",
-        "start": 1791.32,
-        "end": 1905.1,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [
-            "What happens in Part 18?"
-        ],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 1791.32,
-                "end": 1905.1,
-                "duration": 113.78,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 17"
-            }
-        ]
-    },
-    {
-        "num": 18,
-        "title": "Episode 245 Part 18",
-        "start": 1905.98,
-        "end": 2017.38,
-        "locked": true,
-        "music": "deepDive-main.mp3",
-        "music_volume": 0.18,
-        "bridge_text": [],
-        "segments": [
-            {
-                "type": "music",
-                "music_file": "deepDive-main.mp3",
-                "duration": 5,
-                "volume": 0.18,
-                "crossfade": 1
-            },
-            {
-                "type": "audio",
-                "start": 1905.98,
-                "end": 2017.38,
-                "duration": 111.4,
-                "volume": 1,
-                "crossfade": 0,
-                "text": "Episode 245 Part 18"
-            }
-        ]
-    }
+  {
+    "num": 1,
+    "title": "Episode 245",
+    "start": 0.0,
+    "end": 143.62,
+    "locked": true,
+    "music": "deepDive-soft-ok.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 2?"
+    ]
+  },
+  {
+    "num": 2,
+    "title": "Episode 245 Part 2",
+    "start": 143.82,
+    "end": 285.12,
+    "locked": true,
+    "music": "deepDive-soft-ok.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 3?"
+    ]
+  },
+  {
+    "num": 3,
+    "title": "Episode 245 Part 3",
+    "start": 285.7,
+    "end": 432.65,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 4?"
+    ]
+  },
+  {
+    "num": 4,
+    "title": "Episode 245 Part 4",
+    "start": 433.09,
+    "end": 571.53,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 5?"
+    ]
+  },
+  {
+    "num": 5,
+    "title": "Episode 245 Part 5",
+    "start": 571.75,
+    "end": 715.65,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 6?"
+    ]
+  },
+  {
+    "num": 6,
+    "title": "Episode 245 Part 6",
+    "start": 715.97,
+    "end": 859.29,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 7?"
+    ]
+  },
+  {
+    "num": 7,
+    "title": "Episode 245 Part 7",
+    "start": 859.53,
+    "end": 1003.73,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 8?"
+    ]
+  },
+  {
+    "num": 8,
+    "title": "Episode 245 Part 8",
+    "start": 1004.19,
+    "end": 1146.47,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 9?"
+    ]
+  },
+  {
+    "num": 9,
+    "title": "Episode 245 Part 9",
+    "start": 1146.85,
+    "end": 1290.71,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 10?"
+    ]
+  },
+  {
+    "num": 10,
+    "title": "Episode 245 Part 10",
+    "start": 1291.03,
+    "end": 1436.75,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 11?"
+    ]
+  },
+  {
+    "num": 11,
+    "title": "Episode 245 Part 11",
+    "start": 1436.85,
+    "end": 1577.61,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 12?"
+    ]
+  },
+  {
+    "num": 12,
+    "title": "Episode 245 Part 12",
+    "start": 1578.15,
+    "end": 1717.97,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 13?"
+    ]
+  },
+  {
+    "num": 13,
+    "title": "Episode 245 Part 13",
+    "start": 1718.71,
+    "end": 1865.83,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 14?"
+    ]
+  },
+  {
+    "num": 14,
+    "title": "Episode 245 Part 14",
+    "start": 1865.99,
+    "end": 2005.63,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 15?"
+    ]
+  },
+  {
+    "num": 15,
+    "title": "Episode 245 Part 15",
+    "start": 2005.91,
+    "end": 2150.83,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 16?"
+    ]
+  },
+  {
+    "num": 16,
+    "title": "Episode 245 Part 16",
+    "start": 2151.07,
+    "end": 2294.91,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 17?"
+    ]
+  },
+  {
+    "num": 17,
+    "title": "Episode 245 Part 17",
+    "start": 2294.91,
+    "end": 2439.35,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": [
+      "What happens in Part 18?"
+    ]
+  },
+  {
+    "num": 18,
+    "title": "Episode 245 Part 18",
+    "start": 2439.67,
+    "end": 2580.99,
+    "locked": true,
+    "music": "deepDive-main.mp3",
+    "music_volume": 1.0,
+    "bridge_text": []
+  }
 ]

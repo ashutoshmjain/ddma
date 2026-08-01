@@ -2,8 +2,8 @@
   {
     "id": "244",
     "number": 244,
-    "title": "Architecture of Intellectual Demolition",
-    "fullTitle": "Episode 244: Architecture of Intellectual Demolition",
+    "title": "Rethinking Singularity: Matter vs Intelligence",
+    "fullTitle": "Episode 244: Rethinking Singularity: Matter vs Intelligence",
     "planPath": "episodes/244/plan.json",
     "clipsDir": "episodes/244/clips",
     "links": {
@@ -14,16 +14,6 @@
       "instagram": "https://www.instagram.com/deepdivegemini",
       "tiktok": "https://www.tiktok.com/@deepdivegemini"
     },
-    "isDefault": false
-  },
-  {
-    "id": "245",
-    "number": 245,
-    "title": "Singularity - matter intelligence equilibrium",
-    "fullTitle": "Episode 245: Singularity - matter intelligence equilibrium",
-    "planPath": "episodes/245/plan.json",
-    "clipsDir": "episodes/245/clips",
-    "links": {},
     "isDefault": true
   }
 ]
