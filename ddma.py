@@ -529,6 +529,17 @@ def compile_clip(
     if hasattr(plan_file, 'default'): plan_file = str(plan_file.default)
     if hasattr(master_dir, 'default'): master_dir = str(master_dir.default)
     if hasattr(music, 'default'): music = str(music.default)
+    if not os.path.exists(music):
+        fallback_candidates = [
+            "music/deepDive-soft-ok.mp3",
+            "music/deepDive-strong.mp3",
+            "music/deepDive-main.mp3"
+        ]
+        for cand in fallback_candidates:
+            if os.path.exists(cand):
+                music = cand
+                break
+
     if hasattr(out_dir, 'default'): out_dir = str(out_dir.default)
     if hasattr(font_path, 'default'): font_path = font_path.default
     if hasattr(backup, 'default'): backup = bool(backup.default)
@@ -980,7 +991,10 @@ def compile_clip(
             "-t", "2.0",
             intro_video_path
         ]
-        subprocess.run(cmd_intro, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        res_intro = subprocess.run(cmd_intro, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if res_intro.returncode != 0:
+            typer.echo(f"Error rendering intro video: {res_intro.stderr}", err=True)
+            raise typer.Exit(code=1)
 
         # 8. Concatenate with a 1-second crossfade
         os.makedirs(out_dir, exist_ok=True)
