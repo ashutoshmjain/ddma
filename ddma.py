@@ -1527,11 +1527,36 @@ def ingest_episode(
             c_num = i + 1
 
             c_obj = build_rough_cut_segments(c_num, s_time, e_time, t_data.get("segments", []), num_clips)
-            c_obj["title"] = f"{title} Part {c_num}" if c_num > 1 else title
             clips_list.append(c_obj)
             curr_start = end_idx + 1
             if curr_start >= len(words):
                 break
+
+        # Pass 2: Intelligent Outro Bridge Questions based on NEXT clip's transcript content!
+        for i in range(len(clips_list) - 1):
+            curr_c = clips_list[i]
+            next_c = clips_list[i + 1]
+            
+            next_title = next_c.get("title", f"Part {i+2}")
+            next_text = ""
+            for seg in next_c.get("segments", []):
+                if seg.get("type") == "audio":
+                    next_text += " " + seg.get("text", "")
+            
+            # Look for a direct question sentence in the next clip's text
+            found_q = None
+            sentences = re.split(r'(?<=[.!?])\s+', next_text.strip())
+            for s in sentences:
+                if s.endswith("?") and 15 <= len(s) <= 120:
+                    found_q = s.strip()
+                    break
+            
+            if found_q:
+                bridge_q = found_q
+            else:
+                bridge_q = f"Coming up in Part {i+2}: {next_title} — What is the deeper secret?"
+            
+            curr_c["bridge_text"] = [bridge_q]
 
         with open(plan_path, "w", encoding="utf-8") as pf:
             json.dump(clips_list, pf, indent=2)
