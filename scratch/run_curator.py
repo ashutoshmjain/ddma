@@ -3006,6 +3006,45 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(projects_list).encode('utf-8'))
             return
             
+        elif parsed_url.path == '/get-project-audio':
+            project_id = params.get('id', [None])[0]
+            try:
+                if not project_id:
+                    raise Exception("Missing project id.")
+                project_dir = os.path.join("projects", project_id)
+                info_path = os.path.join(project_dir, "project_info.json")
+                if not os.path.exists(info_path):
+                    raise Exception(f"Project info for {project_id} not found.")
+                with open(info_path, "r", encoding="utf-8") as f:
+                    info = json.load(f)
+                audio_file_name = info.get("audio_filename") or info.get("audio_file")
+                audio_path = os.path.join(project_dir, audio_file_name) if audio_file_name else None
+                if not audio_path or not os.path.exists(audio_path):
+                    ep_num = project_id.replace("episode_", "")
+                    for ext in [".m4a", ".mp3", ".wav"]:
+                        cand = os.path.join(project_dir, f"{ep_num}{ext}")
+                        if os.path.exists(cand):
+                            audio_path = cand
+                            break
+                if not audio_path or not os.path.exists(audio_path):
+                    raise Exception(f"Audio file for project {project_id} not found.")
+                
+                mime_type = "audio/mpeg"
+                if audio_path.endswith(".m4a"): mime_type = "audio/mp4"
+                elif audio_path.endswith(".wav"): mime_type = "audio/wav"
+                
+                self.send_response(200)
+                self.send_header("Content-type", mime_type)
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Content-Length", str(os.path.getsize(audio_path)))
+                self.end_headers()
+                with open(audio_path, "rb") as f_audio:
+                    shutil.copyfileobj(f_audio, self.wfile)
+                return
+            except Exception as e:
+                self.send_error(500, f"Error getting project audio: {e}")
+                return
+
         elif parsed_url.path == '/list-workspace-audio':
             files = []
             for f in sorted(os.listdir(".")):

@@ -4033,21 +4033,41 @@
                 window.musicPreviewTimeout = null;
             }
 
-            audioElement.currentTime = startVal;
-            audioElement.play().then(() => {
-                playBtn.textContent = '⏸';
-            }).catch(err => {
-                console.log("Audio play error:", err);
-            });
+            const sourceAudioUrl = `/get-project-audio?id=${activeProjectId}`;
+            const needsSourceSwitch = !audioElement.src || !audioElement.src.includes(`/get-project-audio?id=${activeProjectId}`);
             
-            if (window.activeAudioCheck) clearInterval(window.activeAudioCheck);
-            window.activeAudioCheck = setInterval(() => {
-                if (audioElement.currentTime >= endVal || audioElement.paused) {
-                    audioElement.pause();
-                    playBtn.textContent = '▶';
-                    clearInterval(window.activeAudioCheck);
-                }
-            }, 100);
+            if (needsSourceSwitch) {
+                audioElement.src = sourceAudioUrl;
+                audioElement.load();
+            }
+
+            const startPlayback = () => {
+                audioElement.currentTime = startVal;
+                audioElement.play().then(() => {
+                    playBtn.textContent = '⏸';
+                    nowPlayingTitle.textContent = `🎙 Source Audio Segment (${startVal.toFixed(2)}s - ${endVal.toFixed(2)}s)`;
+                }).catch(err => {
+                    console.log("Audio play error:", err);
+                });
+                
+                if (window.activeAudioCheck) clearInterval(window.activeAudioCheck);
+                window.activeAudioCheck = setInterval(() => {
+                    if (audioElement.currentTime >= endVal || audioElement.paused) {
+                        audioElement.pause();
+                        playBtn.textContent = '▶';
+                        clearInterval(window.activeAudioCheck);
+                    }
+                }, 100);
+            };
+
+            if (needsSourceSwitch) {
+                audioElement.oncanplay = function() {
+                    audioElement.oncanplay = null;
+                    startPlayback();
+                };
+            } else {
+                startPlayback();
+            }
         }
 
         function playMusicSegment(musicFile, duration, volume) {

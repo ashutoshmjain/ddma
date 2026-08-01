@@ -148,7 +148,7 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
         "duration": round(end_time - start_time, 2),
         "bridge_text": [bridge_question],
         "segments": seg_list,
-        "locked": True
+        "locked": False
     }
 
 
