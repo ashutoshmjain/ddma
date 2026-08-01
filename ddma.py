@@ -61,6 +61,96 @@ def parse_time(time_str: str) -> float:
     return float(time_str)
 
 
+def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, segments: list, total_clips: int) -> dict:
+    """
+    Builds a 5-part Rough-Cut Plan segment structure for a clip:
+    1. Intro Music Sting (deepDive-soft-ok.mp3 for clip 1 & 2; sting for clip 3+)
+    2. Punchline / Hook Audio Segment (extracted 15-25s quote from transcript within window)
+    3. Music Transition Sting (4.5s sting with 0.3s crossfade)
+    4. Main Body Audio Segment (the main timeline range)
+    5. Curiosity Bridge Question (text question in bridge_text)
+    """
+    in_window = [s for s in segments if s.get("start", 0) >= start_time and s.get("end", 0) <= end_time + 1.0]
+    
+    if clip_num in [1, 2]:
+        intro_music = "deepDive-soft-ok.mp3"
+    else:
+        stings = [
+            "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+            "Howling (Sting) - Gunnar Olsen.mp3",
+            "Demilitarized Zone (Sting) - Ethan Meixsell.mp3",
+            "Double Helix (Sting) - Ethan Meixsell.mp3"
+        ]
+        intro_music = stings[(clip_num - 1) % len(stings)]
+
+    hook_segment = None
+    if in_window:
+        for seg in reversed(in_window):
+            seg_dur = seg.get("end", 0) - seg.get("start", 0)
+            if 10.0 <= seg_dur <= 30.0:
+                hook_segment = {
+                    "type": "audio",
+                    "start": round(seg.get("start"), 2),
+                    "end": round(seg.get("end"), 2),
+                    "duration": round(seg_dur, 2),
+                    "text": seg.get("text", "").strip()
+                }
+                break
+
+    if not hook_segment and in_window:
+        first_seg = in_window[0]
+        hook_segment = {
+            "type": "audio",
+            "start": round(first_seg.get("start"), 2),
+            "end": round(min(first_seg.get("start") + 15.0, end_time), 2),
+            "duration": round(min(15.0, end_time - first_seg.get("start")), 2),
+            "text": first_seg.get("text", "").strip()
+        }
+
+    mid_music = "Howling (Sting) - Gunnar Olsen.mp3"
+    main_text = " ".join([s.get("text", "").strip() for s in in_window]).strip()
+
+    seg_list = [
+        {
+            "type": "music",
+            "music_file": intro_music,
+            "duration": 4.5,
+            "crossfade": 0,
+            "volume": 1.0
+        }
+    ]
+    if hook_segment:
+        seg_list.append(hook_segment)
+        seg_list.append({
+            "type": "music",
+            "music_file": mid_music,
+            "duration": 4.5,
+            "crossfade": 0.3
+        })
+
+    seg_list.append({
+        "type": "audio",
+        "start": round(start_time, 2),
+        "end": round(end_time, 2),
+        "duration": round(end_time - start_time, 2),
+        "text": main_text
+    })
+
+    bridge_question = f"What is the deeper secret behind Part {clip_num}?"
+    if clip_num < total_clips:
+        bridge_question = f"What happens when intelligence expands in Part {clip_num + 1}?"
+
+    return {
+        "num": clip_num,
+        "title": f"Episode 245 Part {clip_num}" if clip_num > 1 else "Episode 245",
+        "start": round(start_time, 2),
+        "end": round(end_time, 2),
+        "duration": round(end_time - start_time, 2),
+        "bridge_text": [bridge_question],
+        "segments": seg_list,
+        "locked": True
+    }
+
 
 @app.command()
 def plan(
@@ -154,13 +244,8 @@ def plan(
             if duration > max_duration:
                 typer.echo(f"Warning: Aligned clip {idx + 1} duration ({duration:.2f}s) exceeds max_duration ({max_duration}s).")
             
-            clips_plan.append({
-                "num": idx + 1,
-                "title": "",
-                "start": start_aligned,
-                "end": end_aligned,
-                "duration": duration
-            })
+            c_obj = build_rough_cut_segments(idx + 1, start_aligned, end_aligned, segments, len(range_strs))
+            clips_plan.append(c_obj)
     else:
         # Automated forward chronological partitioning with clip integrity focus
         boundary_candidates = []
@@ -181,6 +266,9 @@ def plan(
                 "gap": gap
             })
 
+        # Calculate estimated total clip count
+        estimated_clips = max(1, int(round(total_duration / ((min_duration + max_duration) / 2))))
+
         t_curr = 0.0
         clip_num = 1
 
@@ -193,10 +281,6 @@ def plan(
             valid_candidates = [b for b in candidates if min_duration <= (b["time"] - t_curr) <= max_duration]
             
             if valid_candidates:
-                # Score candidates to preserve clip integrity:
-                # 1. Punctuation at end (weight +2.0)
-                # 2. Size of silent gap following the segment (weight up to +1.5)
-                # 3. Preference for longer clips within limits (weight up to +0.5)
                 def get_score(b):
                     punct_score = 2.0 if b["has_punctuation"] else 0.0
                     gap_score = min(b["gap"], 1.5)
@@ -219,13 +303,14 @@ def plan(
 
             clip_duration = target_b - t_curr
 
-            clips_plan.append({
-                "num": clip_num,
-                "title": "",
-                "start": t_curr,
-                "end": target_b,
-                "duration": clip_duration
-            })
+            c_obj = build_rough_cut_segments(clip_num, t_curr, target_b, segments, estimated_clips)
+            clips_plan.append(c_obj)
+
+            if target_b == total_duration:
+                break
+
+            t_curr = target_b
+            clip_num += 1
 
             if target_b == total_duration:
                 break
@@ -298,7 +383,7 @@ def cut(
                 t_seg = os.path.join(out_dir, f"temp_seg_{c['num']}_{s_idx}.wav")
                 temp_seg_files.append(t_seg)
                 if seg.get("type") == "music":
-                    m_file = seg.get("music_file", "deepDive-soft-ok.mp3")
+                    m_file = os.path.basename(seg.get("music_file", "deepDive-soft-ok.mp3"))
                     m_dur = seg.get("duration", 5.0)
                     m_vol = seg.get("volume", 1.0)
                     m_path = os.path.join("music", m_file)
@@ -313,7 +398,9 @@ def cut(
                         "-af", f"volume={m_vol}",
                         t_seg
                     ]
-                    subprocess.run(cmd_m, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                    res_m = subprocess.run(cmd_m, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                    if res_m.returncode != 0:
+                        typer.echo(f"Warning rendering music segment {s_idx} for clip {c['num']}: {res_m.stderr}", err=True)
                 else:
                     s_start = to_time_str(seg.get("start", c["start"]))
                     s_end = to_time_str(seg.get("end", c["end"]))
@@ -327,15 +414,22 @@ def cut(
                         "-af", f"volume={s_vol}",
                         t_seg
                     ]
-                    subprocess.run(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                    res_a = subprocess.run(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                    if res_a.returncode != 0:
+                        typer.echo(f"Warning rendering audio segment {s_idx} for clip {c['num']}: {res_a.stderr}", err=True)
             
             # Combine segment files
             temp_concat_wav = os.path.join(out_dir, f"temp_concat_{c['num']}.wav")
             cmd_cat = ["ffmpeg", "-y"]
-            for tf in temp_seg_files:
+            valid_seg_files = [tf for tf in temp_seg_files if os.path.exists(tf) and os.path.getsize(tf) > 0]
+            if not valid_seg_files:
+                typer.echo(f"Error: No valid segment audio files created for clip {c['num']}", err=True)
+                continue
+
+            for tf in valid_seg_files:
                 cmd_cat += ["-i", tf]
-            filter_complex = "".join(f"[{i}:a]" for i in range(len(temp_seg_files)))
-            filter_complex += f"concat=n={len(temp_seg_files)}:v=0:a=1[out]"
+            filter_complex = "".join(f"[{i}:a]" for i in range(len(valid_seg_files)))
+            filter_complex += f"concat=n={len(valid_seg_files)}:v=0:a=1[out]"
             cmd_cat += ["-filter_complex", filter_complex, "-map", "[out]", temp_concat_wav]
             subprocess.run(cmd_cat, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             
@@ -1363,16 +1457,10 @@ def ingest_episode(
             s_time = round(words[curr_start]["start"], 3)
             e_time = round(words[end_idx]["end"], 3)
             c_num = i + 1
-            clips_list.append({
-                "num": c_num,
-                "title": f"{title} Part {c_num}" if c_num > 1 else title,
-                "start": s_time,
-                "end": e_time,
-                "locked": True,
-                "music": "deepDive-soft-ok.mp3" if c_num <= 2 else "deepDive-main.mp3",
-                "music_volume": 1.0,
-                "bridge_text": [f"What happens in Part {c_num + 1}?"] if c_num < num_clips else []
-            })
+
+            c_obj = build_rough_cut_segments(c_num, s_time, e_time, t_data.get("segments", []), num_clips)
+            c_obj["title"] = f"{title} Part {c_num}" if c_num > 1 else title
+            clips_list.append(c_obj)
             curr_start = end_idx + 1
             if curr_start >= len(words):
                 break
