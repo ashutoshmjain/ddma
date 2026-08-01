@@ -146,17 +146,47 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
     body_words = [w.get("word", "").strip() for w in window_words if w.get("start", 0) >= main_start and w.get("end", 0) <= main_end + 0.5]
     main_text = " ".join(body_words) if body_words else " ".join([s.get("text", "").strip() for s in in_window]).strip()
 
-    # Generate dynamic title from punchy transcript phrase or first sentence
+    # Smart Dynamic Title Extraction algorithm
     clip_title = f"Episode 245 Part {clip_num}"
     if window_words:
-        first_sentence = ""
-        for w in window_words:
-            first_sentence += w.get("word", "") + " "
-            if w.get("word", "").strip().endswith((".", "?", "!")) and len(first_sentence.strip()) > 15:
-                break
-        clean_t = first_sentence.strip().rstrip(".?!")
-        if 10 < len(clean_t) <= 60:
-            clip_title = clean_t
+        window_text = " ".join([w.get("word", "").strip() for w in window_words])
+        sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', window_text) if s.strip()]
+        
+        keywords = ["singularity", "observer", "chiral", "synchronization", "paradox", "physics", "topology", "quantum", "density", "curvature", "geometry", "information", "matter", "intelligence", "equidistance", "relativity"]
+        candidate_titles = []
+        
+        for s in sentences:
+            clean_s = re.sub(r'\s+', ' ', s.rstrip(".?!").strip())
+            s_lower = clean_s.lower()
+            
+            score = sum(10 for kw in keywords if kw in s_lower)
+            
+            if 15 <= len(clean_s) <= 60:
+                candidate_titles.append((score + 5, clean_s))
+            elif len(clean_s) > 60:
+                sub_parts = re.split(r'[,:;—–-]', clean_s)
+                for part in sub_parts:
+                    p_clean = re.sub(r'\s+', ' ', part.strip())
+                    p_lower = p_clean.lower()
+                    p_score = sum(10 for kw in keywords if kw in p_lower)
+                    if 15 <= len(p_clean) <= 55 and p_score > 0:
+                        candidate_titles.append((p_score + 8, p_clean))
+
+        if candidate_titles:
+            candidate_titles.sort(key=lambda x: x[0], reverse=True)
+            chosen = candidate_titles[0][1]
+            # Format title nicely
+            words_title = chosen.split()
+            formatted = []
+            for w in words_title:
+                w_l = w.lower()
+                if w_l in ["a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by", "is", "it"]:
+                    formatted.append(w_l)
+                else:
+                    formatted.append(w.capitalize())
+            if formatted:
+                formatted[0] = formatted[0].capitalize()
+            clip_title = " ".join(formatted)
 
     seg_list = [
         {
