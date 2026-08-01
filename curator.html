@@ -529,6 +529,13 @@
             background-color: rgba(99, 102, 241, 0.08);
         }
 
+        .segment-row.active-playing-seg {
+            border: 1px solid #22c55e !important;
+            background-color: rgba(34, 197, 94, 0.12) !important;
+            box-shadow: 0 0 12px rgba(34, 197, 94, 0.3) !important;
+            transition: all 0.2s ease;
+        }
+
         .curator-tools {
             padding: 0.8rem 1.2rem;
             border-top: 1px solid var(--border-color);
@@ -4411,77 +4418,203 @@
             }
         });
 
-        // Compile and Play FFmpeg preview
-        function playFFmpegPreview(clipIdx, btnEl, event) {
-            event.stopPropagation();
-            
+        // Web Audio API Browser Preview Engine (0ms Latency, Zero Server CPU)
+        let activeWebAudioContext = null;
+        let activeScheduledNodes = [];
+        let activeClipAudioTrackTimer = null;
+
+        function stopWebAudioPreview() {
+            if (activeWebAudioContext) {
+                try {
+                    activeWebAudioContext.close();
+                } catch (e) {}
+                activeWebAudioContext = null;
+            }
+            activeScheduledNodes = [];
+            if (activeClipAudioTrackTimer) {
+                cancelAnimationFrame(activeClipAudioTrackTimer);
+                activeClipAudioTrackTimer = null;
+            }
+            document.querySelectorAll('.segment-row.active-playing-seg').forEach(el => {
+                el.classList.remove('active-playing-seg');
+            });
+            if (activeClipPlayIdx !== null) {
+                const activeBtn = document.querySelector(`#playCardBtn_${activeClipPlayIdx}`);
+                if (activeBtn) activeBtn.innerHTML = '▶ Audio';
+                activeClipPlayIdx = null;
+            }
+            playBtn.textContent = '▶';
+            updateStateBar("Ready");
+        }
+
+        async function playBrowserClipAudio(clipIdx, btnEl, event) {
+            if (event) event.stopPropagation();
+
             if (activeLockedSequence !== null) {
                 stopLockedSequence();
             }
-            
-            if (activeClipPlayIdx === clipIdx && !audioElement.paused) {
-                audioElement.pause();
-                btnEl.innerHTML = '▶ Audio';
-                playBtn.textContent = '▶';
-                activeClipPlayIdx = null;
-                updateStateBar("Ready");
+
+            // Toggle pause if currently playing this clip
+            if (activeClipPlayIdx === clipIdx && activeWebAudioContext) {
+                stopWebAudioPreview();
                 return;
             }
-            
+
+            stopWebAudioPreview();
+            if (!audioElement.paused) audioElement.pause();
+
             const clip = clips[clipIdx];
-            if (clip.segments.length === 0) {
-                alert("This clip has no segments. Add some audio or music segments first.");
+            if (!clip.segments || clip.segments.length === 0) {
+                alert("This clip has no segments. Add audio or music segments first.");
                 return;
             }
-            
-            btnEl.innerHTML = '⏳ Compiling...';
+
+            btnEl.innerHTML = '⏳ Loading...';
             btnEl.disabled = true;
-            updateStateBar(`Compiling preview for: "${clip.title}"...`);
-            
-            fetch(`/compile-project-preview?id=${activeProjectId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    clip_idx: clipIdx,
-                    segments: clip.segments
-                })
-            })
-            .then(res => {
-                if (!res.ok) throw new Error("Compilation server error");
-                return res.json();
-            })
-            .then(data => {
+            updateStateBar(`Preparing instant audio preview for: "${clip.title}"...`);
+
+            try {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                const ctx = new AudioContextClass();
+                activeWebAudioContext = ctx;
+
+                // Buffer cache
+                const bufferCache = window.bufferCache || {};
+                window.bufferCache = bufferCache;
+
+                async function getAudioBuffer(url) {
+                    if (bufferCache[url]) return bufferCache[url];
+                    const resp = await fetch(url);
+                    if (!resp.ok) throw new Error(`Could not fetch ${url}`);
+                    const arrayBuf = await resp.arrayBuffer();
+                    const audioBuf = await ctx.decodeAudioData(arrayBuf);
+                    bufferCache[url] = audioBuf;
+                    return audioBuf;
+                }
+
+                // Pre-load all segment audio buffers concurrently
+                const segmentBuffers = await Promise.all(clip.segments.map(async seg => {
+                    if (seg.type === 'music') {
+                        const mFile = seg.music_file ? seg.music_file.split('/').pop().split('\\').pop() : "deepDive-soft-ok.mp3";
+                        const mUrl = `/music/${encodeURIComponent(mFile)}`;
+                        return { type: 'music', buffer: await getAudioBuffer(mUrl), seg };
+                    } else {
+                        const sourceUrl = `/get-project-audio?id=${activeProjectId}`;
+                        return { type: 'audio', buffer: await getAudioBuffer(sourceUrl), seg };
+                    }
+                }));
+
+                if (activeWebAudioContext !== ctx) return;
+
                 btnEl.disabled = false;
                 btnEl.innerHTML = '⏸ Pause';
                 btnEl.classList.remove('btn-status-gray', 'btn-status-warning');
                 btnEl.classList.add('btn-status-success');
                 playBtn.textContent = '⏸';
                 activeClipPlayIdx = clipIdx;
-                
-                audioElement.src = data.preview_url;
-                audioElement.volume = 1.0;
-                audioElement.play()
-                    .then(() => {
-                        updateStateBar(`Playing preview: "${clip.title}"`);
-                    })
-                    .catch(err => {
-                        showDebug("Failed to play preview file: " + err.message);
+
+                const masterGain = ctx.createGain();
+                masterGain.connect(ctx.destination);
+
+                let currentScheduleTime = ctx.currentTime + 0.05;
+                const segmentTimeRanges = [];
+
+                segmentBuffers.forEach((item, idx) => {
+                    const { type, buffer, seg } = item;
+                    const gainNode = ctx.createGain();
+                    gainNode.connect(masterGain);
+
+                    const source = ctx.createBufferSource();
+                    source.buffer = buffer;
+                    source.connect(gainNode);
+
+                    let segDuration = 0.0;
+                    let segStartOffset = 0.0;
+
+                    if (type === 'music') {
+                        segDuration = parseFloat(seg.duration) || 4.5;
+                        segStartOffset = 0.0;
+                        const vol = seg.volume !== undefined ? parseFloat(seg.volume) : 1.0;
+                        gainNode.gain.setValueAtTime(vol, currentScheduleTime);
+                    } else {
+                        const sStart = parseFloat(seg.start) || 0.0;
+                        const sEnd = parseFloat(seg.end) || (sStart + 10.0);
+                        segStartOffset = sStart;
+                        segDuration = Math.max(0.1, sEnd - sStart);
+                        const vol = seg.volume !== undefined ? parseFloat(seg.volume) : 1.0;
+                        gainNode.gain.setValueAtTime(vol, currentScheduleTime);
+                    }
+
+                    // Apply crossfade ramp if specified
+                    const crossfade = parseFloat(seg.crossfade) || 0.0;
+                    if (crossfade > 0 && idx > 0) {
+                        const fadeDuration = Math.min(crossfade, segDuration);
+                        gainNode.gain.setValueAtTime(0.001, currentScheduleTime);
+                        gainNode.gain.exponentialRampToValueAtTime(1.0, currentScheduleTime + fadeDuration);
+                    }
+
+                    source.start(currentScheduleTime, segStartOffset, segDuration);
+
+                    const startTimeline = currentScheduleTime - (ctx.currentTime + 0.05);
+                    const endTimeline = startTimeline + segDuration;
+
+                    segmentTimeRanges.push({
+                        clipIdx,
+                        segIdx: idx,
+                        startTimeline,
+                        endTimeline,
+                        type
                     });
-                
-                audioElement.onended = () => {
-                    btnEl.innerHTML = '▶ Audio';
-                    playBtn.textContent = '▶';
-                    activeClipPlayIdx = null;
-                    audioElement.src = `/project-audio?id=${activeProjectId}`;
-                    updateStateBar("Ready");
-                };
-            })
-            .catch(err => {
+
+                    activeScheduledNodes.push({ source, gainNode });
+                    currentScheduleTime += segDuration;
+                });
+
+                const totalClipDuration = currentScheduleTime - (ctx.currentTime + 0.05);
+                const startRealTime = ctx.currentTime + 0.05;
+
+                nowPlayingTitle.textContent = `🎵 Instant Audio Preview - Part ${clip.num}: ${clip.title}`;
+                totTime.textContent = formatTime(totalClipDuration);
+
+                function updatePlaybackProgress() {
+                    if (!activeWebAudioContext || activeWebAudioContext !== ctx) return;
+
+                    const elapsed = ctx.currentTime - startRealTime;
+                    if (elapsed >= totalClipDuration) {
+                        stopWebAudioPreview();
+                        return;
+                    }
+
+                    currTime.textContent = formatTime(elapsed);
+                    playerSlider.value = Math.min(100, (elapsed / totalClipDuration) * 100);
+
+                    segmentTimeRanges.forEach(range => {
+                        const segRow = document.querySelector(`.segment-row[data-clip="${range.clipIdx}"][data-seg="${range.segIdx}"]`);
+                        if (segRow) {
+                            if (elapsed >= range.startTimeline && elapsed < range.endTimeline) {
+                                segRow.classList.add('active-playing-seg');
+                            } else {
+                                segRow.classList.remove('active-playing-seg');
+                            }
+                        }
+                    });
+
+                    activeClipAudioTrackTimer = requestAnimationFrame(updatePlaybackProgress);
+                }
+
+                activeClipAudioTrackTimer = requestAnimationFrame(updatePlaybackProgress);
+
+            } catch (err) {
+                console.error("Web Audio Preview error:", err);
                 btnEl.disabled = false;
                 btnEl.innerHTML = '▶ Audio';
-                showDebug("FFmpeg preview compilation failed: " + err.message);
-                updateStateBar("Ready (compilation failed)");
-            });
+                showDebug("Browser Audio Preview error: " + err.message, true);
+                updateStateBar("Ready (preview error)");
+            }
+        }
+
+        function playFFmpegPreview(clipIdx, btnEl, event) {
+            playBrowserClipAudio(clipIdx, btnEl, event);
         }
 
         // Export Individual Clip File
