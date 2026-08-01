@@ -89,7 +89,8 @@ async function runTest() {
             renderIngestionDashboard({ current_stage: 1, percent: 25, action_text: "Testing E2E ingestion...", stages: [], logs: ["Test log entry"] });
             const inMain = document.querySelector('#clipListContainer #ingestionDashboardContainer') !== null;
             const inRight = document.querySelector('#transcriptContainer #ingestionDashboardContainer') !== null;
-            const emptyStateVisible = document.getElementById('planEmptyState').style.display !== 'none';
+            const el = document.getElementById('planEmptyState');
+            const emptyStateVisible = el ? el.style.display !== 'none' : false;
             return { inMain, inRight, emptyStateVisible };
         });
         console.log(`- Dashboard in Main Window (#clipListContainer): ${dashState.inMain}`);

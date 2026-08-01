@@ -301,7 +301,8 @@
             color: var(--accent);
         }
 
-        .project-status-badge.transcribing {
+        .project-status-badge.transcribing,
+        .project-status-badge.ingesting {
             background-color: rgba(99, 102, 241, 0.15);
             color: var(--primary);
             animation: pulse-opacity 1.5s infinite ease-in-out;
@@ -3136,6 +3137,7 @@
                         
                         let statusText = 'Ready';
                         if (p.status === 'transcribing') statusText = 'Transcribing...';
+                        if (p.status === 'ingesting') statusText = 'Ingesting...';
                         if (p.status === 'error') statusText = 'Error';
                         
                         item.innerHTML = `
@@ -3451,6 +3453,7 @@
 
             let dashboardElem = document.getElementById('ingestionDashboardContainer');
             if (!dashboardElem) {
+                clipListContainer.innerHTML = '';
                 dashboardElem = document.createElement('div');
                 dashboardElem.id = 'ingestionDashboardContainer';
                 dashboardElem.className = 'ingestion-dashboard-container';
