@@ -1986,6 +1986,26 @@
                 <a id="downloadVideoBtn" class="btn btn-accent btn-mini" style="text-decoration: none; padding: 0.35rem 0.7rem; font-size: 0.75rem;" download>⬇ Download Video</a>
             </div>
         </div>
+    <!-- Delete Confirmation Modal -->
+    <div class="export-modal-overlay" id="deleteConfirmModalOverlay">
+        <div class="export-modal" style="max-width: 500px; padding: 1.5rem; border: 1px solid var(--danger);">
+            <div class="export-modal-header" style="border-bottom: 1px solid rgba(239, 68, 68, 0.2); padding-bottom: 0.8rem; margin-bottom: 1rem;">
+                <h3 style="color: var(--danger); display: flex; align-items: center; gap: 0.5rem; margin: 0; font-size: 1.1rem; font-weight: 800;">
+                    <span>⚠️</span> DELETE PROJECT CONFIRMATION
+                </h3>
+                <button class="icon-btn" id="closeDeleteConfirmModalBtn" title="Cancel">✖</button>
+            </div>
+            <div style="color: var(--text-main); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem;">
+                <p style="margin-top: 0; font-weight: 700; color: var(--text-main);" id="deleteConfirmModalProjectName">Are you sure you want to permanently delete this project?</p>
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0;">
+                    This will permanently delete all metadata, segment plans, transcripts, audio cuts, draft videos, compiled intros/outros, and published preview assets. <strong>This action CANNOT be undone.</strong>
+                </p>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 0.8rem;">
+                <button class="btn btn-secondary" id="cancelDeleteConfirmBtn">Cancel</button>
+                <button class="btn btn-danger" id="executeDeleteConfirmBtn" style="background-color: var(--danger); color: white; border: none; font-weight: 700; padding: 0.4rem 0.9rem;">🗑 Delete Permanently</button>
+            </div>
+        </div>
     </div>
 
     <!-- Right Click Context Menu -->
@@ -3024,33 +3044,61 @@
             });
         }
  
+        let pendingDeleteProjectId = null;
+        const deleteConfirmModalOverlay = document.getElementById('deleteConfirmModalOverlay');
+        const deleteConfirmModalProjectName = document.getElementById('deleteConfirmModalProjectName');
+        const closeDeleteConfirmModalBtn = document.getElementById('closeDeleteConfirmModalBtn');
+        const cancelDeleteConfirmBtn = document.getElementById('cancelDeleteConfirmBtn');
+        const executeDeleteConfirmBtn = document.getElementById('executeDeleteConfirmBtn');
+
+        function hideDeleteConfirmModal() {
+            if (deleteConfirmModalOverlay) deleteConfirmModalOverlay.classList.remove('active');
+            pendingDeleteProjectId = null;
+        }
+
+        if (closeDeleteConfirmModalBtn) closeDeleteConfirmModalBtn.addEventListener('click', hideDeleteConfirmModal);
+        if (cancelDeleteConfirmBtn) cancelDeleteConfirmBtn.addEventListener('click', hideDeleteConfirmModal);
+
         function deleteProjectConfirm(projectId, name) {
-            const confirmed = confirm(`Are you sure you want to permanently delete the project "${name}"?\n\nThis will permanently delete all metadata, segment plans, transcripts, audio cuts, draft videos, compiled intros/outros, and published preview assets for this project. This action CANNOT be undone.`);
-            if (!confirmed) return;
-            
-            updateStateBar("Deleting project...");
-            fetch(`/delete-project?id=${projectId}`, {
-                method: 'POST'
-            })
-            .then(r => {
-                if (!r.ok) {
-                    return r.text().then(text => { throw new Error(text); });
-                }
-                return r.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    updateStateBar("Project deleted.");
-                    if (activeProjectId === projectId) {
-                        clearActiveProjectState();
+            pendingDeleteProjectId = projectId;
+            if (deleteConfirmModalProjectName) {
+                deleteConfirmModalProjectName.textContent = `Are you sure you want to permanently delete "${name}"?`;
+            }
+            if (deleteConfirmModalOverlay) {
+                deleteConfirmModalOverlay.classList.add('active');
+            }
+        }
+
+        if (executeDeleteConfirmBtn) {
+            executeDeleteConfirmBtn.addEventListener('click', function() {
+                if (!pendingDeleteProjectId) return;
+                const projectId = pendingDeleteProjectId;
+                hideDeleteConfirmModal();
+
+                updateStateBar("Deleting project...");
+                fetch(`/delete-project?id=${projectId}`, {
+                    method: 'POST'
+                })
+                .then(r => {
+                    if (!r.ok) {
+                        return r.text().then(text => { throw new Error(text); });
                     }
-                    loadProjectsList();
-                } else {
-                    throw new Error("Failed to delete project");
-                }
-            })
-            .catch(err => {
-                showDebug("Delete project failed: " + err.message, true);
+                    return r.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        updateStateBar("Project deleted.");
+                        if (activeProjectId === projectId) {
+                            clearActiveProjectState();
+                        }
+                        loadProjectsList();
+                    } else {
+                        throw new Error("Failed to delete project");
+                    }
+                })
+                .catch(err => {
+                    showDebug("Delete project failed: " + err.message, true);
+                });
             });
         }
 
