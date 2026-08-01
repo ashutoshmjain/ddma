@@ -1478,34 +1478,14 @@ def ingest_episode(
     os.makedirs(docs_ep_dir, exist_ok=True)
     shutil.copy2(plan_path, os.path.join(docs_ep_dir, "plan.json"))
 
-    # 5. Audio Cut
-    update_ingestion_progress(proj_dir, 3, 45, "Slicing audio clips with EBU R128 loudness normalization...", "Re-encoding audio slices to -16 LUFS / -1.5 dB Peak...")
-    typer.echo(f"Cutting sample-accurate audio clips with EBU R128 normalization...")
-    cut(audio=audio_dest_path, plan_file=plan_path, out_dir="clips")
-
-    update_ingestion_progress(proj_dir, 4, 55, "Audio slicing complete. Starting black canvas draft video muxing...", "All audio clips normalized and saved.")
-
-    # 6. Mux & Compile Clips
-    total_clips = max(1, len(clips_list))
-    for idx, c in enumerate(clips_list):
-        n = c["num"]
-        mux_pct = 55 + int((idx / total_clips) * 15)
-        update_ingestion_progress(proj_dir, 4, mux_pct, f"Draft-muxing Clip {n} of {total_clips}...", f"Generating 740x740 black video canvas for Clip {n}")
-        mux_clip(num=n, plan_file=plan_path, audio_dir="clips", out_dir="clips")
-
-        comp_pct = 70 + int((idx / total_clips) * 25)
-        update_ingestion_progress(proj_dir, 5, comp_pct, f"Compiling Title Intro & Outro for Clip {n} of {total_clips}...", f"Rendering 2s Title Card Intro & 5s Curiosity Question Outro for Clip {n}")
-        compile_clip(num=n, plan_file=plan_path, master_dir="clips", out_dir="clips", backup=True)
-
-    # 7. Register in docs/episodes.json
-    update_ingestion_progress(proj_dir, 6, 95, "Syncing episode manifest and preview player assets...", "Updating docs/episodes.json for GitHub Pages routing.")
+    # 5. Register in docs/episodes.json
+    update_ingestion_progress(proj_dir, 5, 90, "Syncing episode manifest and preview player assets...", "Updating docs/episodes.json for GitHub Pages routing.")
     ep_manifest_path = os.path.join("docs", "episodes.json")
     if os.path.exists(ep_manifest_path):
         try:
             with open(ep_manifest_path, "r", encoding="utf-8") as mf:
                 manifest = json.load(mf)
             
-            # Deduplicate manifest by episode id/number
             manifest = [m for m in manifest if str(m.get("id")) != str(episode) and str(m.get("number")) != str(episode)]
             for m in manifest:
                 m["isDefault"] = False
@@ -1534,8 +1514,8 @@ def ingest_episode(
     with open(os.path.join(proj_dir, "project_info.json"), "w", encoding="utf-8") as f:
         json.dump(info_data, f, indent=2)
 
-    update_ingestion_progress(proj_dir, 6, 100, "Episode ingestion complete! Project ready in Curator.", f"Episode {episode} ingestion pipeline completed successfully.")
-    typer.echo(f"[SUCCESS] Episode {episode} ingestion pipeline complete! Project ready in Curator & Preview Player.")
+    update_ingestion_progress(proj_dir, 6, 100, "Episode ingestion complete! Project ready in Curator.", f"Episode {episode} instant ingestion pipeline completed successfully.")
+    typer.echo(f"[SUCCESS] Episode {episode} instant ingestion pipeline complete! Project ready in Curator & Preview Player.")
 
 
 if __name__ == "__main__":
