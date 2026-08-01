@@ -21,8 +21,9 @@ env/
 243.mp3
 244.m4a
 
-# Shared resources stings (except title card music)
+# Shared resources stings (allow default MP3 stings)
 music/*
+!music/*.mp3
 !music/title-card-music.mp3
 
 # Previews & final clips outputs

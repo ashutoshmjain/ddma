@@ -15,7 +15,7 @@ except ImportError:
     print("Error: 'google-generativeai' package is not installed. Please install it first.")
     sys.exit(1)
 
-PYTHON_EXE = r"C:\Users\ashut\AppData\Local\Programs\Python\Python312\python.exe"
+PYTHON_EXE = sys.executable
 
 def parse_args():
     parser = argparse.ArgumentParser(description="DDMA Autonomous Creative Curation Agent")

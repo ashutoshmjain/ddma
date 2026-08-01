@@ -479,7 +479,7 @@ def compile_segments_helper(segments, output_path, audio_source_path):
 def run_transcribe(project_id, audio_path, out_json_path, info_path):
     try:
         print(f"[{project_id}] Background Whisper transcription started on {audio_path}")
-        python_exe = r"C:\Users\ashut\AppData\Local\Programs\Python\Python312\python.exe"
+        python_exe = sys.executable
         cmd = [
             python_exe,
             "ddma.py",
@@ -589,6 +589,32 @@ def migrate_legacy_files():
                 print("Episode 244 successfully migrated to projects/episode_244/")
             except Exception as e:
                 print(f"Warning: Failed to migrate legacy files: {e}")
+
+    # Auto-seed published episodes from docs/episodes/ for fresh git clones
+    for ep in ["244", "245"]:
+        ep_dir = os.path.join("projects", f"episode_{ep}")
+        docs_plan = os.path.join("docs", "episodes", ep, "plan.json")
+        if not os.path.exists(ep_dir) and os.path.exists(docs_plan):
+            print(f"[AUTO-SEED] Seeding starter project Episode {ep} from docs/episodes/{ep}/...")
+            try:
+                os.makedirs(ep_dir, exist_ok=True)
+                shutil.copy2(docs_plan, os.path.join(ep_dir, "plan.json"))
+                shutil.copy2(docs_plan, os.path.join(ep_dir, "plan_snapshot.json"))
+                
+                audio_name = f"{ep}.m4a"
+                info = {
+                    "id": f"episode_{ep}",
+                    "name": f"Episode {ep}",
+                    "title": f"Episode {ep}",
+                    "audio_filename": audio_name,
+                    "audio_file": audio_name,
+                    "status": "ready"
+                }
+                with open(os.path.join(ep_dir, "project_info.json"), "w", encoding="utf-8") as f:
+                    json.dump(info, f, indent=4)
+                print(f"[AUTO-SEED] Starter project Episode {ep} successfully seeded!")
+            except Exception as seed_err:
+                print(f"Warning: Failed to auto-seed Episode {ep}: {seed_err}")
 
 
 def get_mosaic_default_prompt():
