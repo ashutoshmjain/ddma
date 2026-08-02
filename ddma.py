@@ -8,7 +8,10 @@ import time
 import shutil
 from typing import Optional
 
-app = typer.Typer(help="DeepDive Media Automator (DDMA) CLI Tool")
+__version__ = "0.1.0"
+
+app = typer.Typer(help="DeepDive Media Automator (DDMA) CLI Tool v0.1.0")
+
 
 @app.command()
 def transcribe(
