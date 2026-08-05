@@ -8,10 +8,7 @@ import time
 import shutil
 from typing import Optional
 
-__version__ = "0.1.0"
-
-app = typer.Typer(help="DeepDive Media Automator (DDMA) CLI Tool v0.1.0")
-
+app = typer.Typer(help="DeepDive Media Automator (DDMA) CLI Tool")
 
 @app.command()
 def transcribe(
@@ -781,7 +778,7 @@ def compile_clip(
 
     if not master_files:
         typer.echo(f"No video file found for clip {num} in {master_dir}. Auto-muxing solid black canvas draft...")
-        mux_clip(num=num, plan_file=plan_file, master_dir=master_dir, out_dir=out_dir)
+        mux_clip(num=num, plan_file=plan_file, audio_dir=master_dir, out_dir=out_dir)
         if ep_prefix:
             search_pattern = os.path.join(master_dir, f"{ep_prefix}-{num}.mp4")
             master_files = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
