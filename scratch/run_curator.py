@@ -228,22 +228,6 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             run_id = res_run.json().get("run_id")
             if not run_id:
                 raise Exception("Failed to retrieve run ID from Mosaic execution response.")
-                
-            # Save the run_id inside plan.json persistently
-            try:
-                plan_path = os.path.join("projects", project_id, "plan.json")
-                if os.path.exists(plan_path):
-                    with open(plan_path, "r", encoding="utf-8") as f:
-                        plan = json.load(f)
-                    for c in plan:
-                        if int(c.get("num", -1)) == int(clip_num):
-                            c["mosaic_run_id"] = run_id
-                            break
-                    with open(plan_path, "w", encoding="utf-8") as f:
-                        json.dump(plan, f, indent=4)
-                    print(f"[{project_id}][Clip {clip_num}] Persisted mosaic_run_id {run_id} to plan.json")
-            except Exception as e:
-                print(f"[{project_id}][Clip {clip_num}] Warning: Failed to save mosaic_run_id: {e}")
 
             mosaic_runs[job_key]["run_id"] = run_id
 
@@ -331,6 +315,22 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             print(f"[{project_id}][Clip {clip_num}] Auto-compilation completed successfully!")
         except Exception as comp_err:
             print(f"[{project_id}][Clip {clip_num}] Warning: Auto-compilation failed: {comp_err}")
+
+        # ONLY persist mosaic_run_id into plan.json AFTER successful download and compilation verification!
+        try:
+            plan_path = os.path.join("projects", project_id, "plan.json")
+            if os.path.exists(plan_path):
+                with open(plan_path, "r", encoding="utf-8") as f:
+                    plan = json.load(f)
+                for c in plan:
+                    if int(c.get("num", -1)) == int(clip_num):
+                        c["mosaic_run_id"] = run_id
+                        break
+                with open(plan_path, "w", encoding="utf-8") as f:
+                    json.dump(plan, f, indent=4)
+                print(f"[{project_id}][Clip {clip_num}] Persisted mosaic_run_id {run_id} to plan.json after successful download!")
+        except Exception as pe:
+            print(f"[{project_id}][Clip {clip_num}] Warning: Failed to save mosaic_run_id to plan.json: {pe}")
             
         mosaic_runs[job_key]["status"] = "completed"
         mosaic_runs[job_key]["progress"] = 100
@@ -340,9 +340,23 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         import traceback
         tb_str = traceback.format_exc()
         print(f"Error in run_mosaic_pipeline for clip {clip_num}: {ex}\n{tb_str}")
-        mosaic_runs[job_key]["status"] = "failed"
-        mosaic_runs[job_key]["error"] = str(ex)
-        mosaic_runs[job_key]["progress"] = 0
+        mosaic_runs[job_key] = {"status": "failed", "error": str(ex), "progress": 0}
+        
+        # If run failed or crashed, clean up any unverified mosaic_run_id in plan.json
+        try:
+            plan_path = os.path.join("projects", project_id, "plan.json")
+            if os.path.exists(plan_path):
+                with open(plan_path, "r", encoding="utf-8") as f:
+                    plan = json.load(f)
+                for c in plan:
+                    if int(c.get("num", -1)) == int(clip_num) and "mosaic_run_id" in c:
+                        del c["mosaic_run_id"]
+                        break
+                with open(plan_path, "w", encoding="utf-8") as f:
+                    json.dump(plan, f, indent=4)
+                print(f"[{project_id}][Clip {clip_num}] Cleaned up unverified mosaic_run_id from plan.json on error")
+        except Exception as pe:
+            print(f"Warning: Failed to clean up mosaic_run_id from plan.json on error: {pe}")
 
 # Helper function to slice and concatenate audio/music segments using FFmpeg (identical to compile_segments)
 def compile_segments_helper(segments, output_path, audio_source_path):
