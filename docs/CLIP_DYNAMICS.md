@@ -110,10 +110,12 @@ DDMA distinguishes strictly between Pre-Mosaic draft baselines and Post-Mosaic f
 
 ### 4.1 Button Behavior & Pipeline Contracts
 
-| Button | Target Output | Pipeline Mechanics | API Cost | Master Backup Protection |
-| :--- | :--- | :--- | :--- | :--- |
-| **`📹 Draft`** | **Black Canvas Baseline Preview** | **2s Title Intro** + **Solid Black Canvas Audio Body** + **5s Outro Curiosity Question Slide**. Re-slices fresh audio on demand. | **$0.00** *(100% Local)* | **IMMUTABLE**: Never touches or overwrites `clips/<ep>-<num>-original.mp4` (the Mosaic master). |
-| **`🌌 Mosaic`** | **Master Motion Infographics Video** | **2s Title Intro** + **Mosaic Motion Graphics Video Body** + **5s Outro Curiosity Question Slide**. | **$0.00** *(Reusing render)* / **Cloud Cost** *(Fresh render)* | **Interactive Confirmation**: If a render exists, prompts user to assemble with existing Mosaic render for free OR trigger a fresh Mosaic API render. |
+* **`📹 Draft` (Always Fresh Baseline Compilation):**
+  * Clicking **`📹 Draft`** ALWAYS triggers a fresh 100% local baseline compilation from scratch on demand, re-slicing fresh audio from `plan.json` to capture recent music, volume, crossfade, or timestamp edits. Never looks at or prompts for existing videos.
+* **`🌌 Mosaic` (Motion Graphics API - Strictly Bound to `mosaic_run_id`):**
+  * Clicking **`🌌 Mosaic`** checks **`Boolean(clip.mosaic_run_id)` ONLY**. Local black canvas draft videos compiled by `📹 Draft` do NOT count as Mosaic videos.
+  * **If `clip.mosaic_run_id` exists:** Prompts user: *"Part X has an existing Mosaic video render! Click [OK] to assemble and preview the Master Video for free (0 API Cost), or [Cancel] to launch a new Mosaic AI render."*
+  * **If `clip.mosaic_run_id` is absent:** Instantly launches Mosaic AI render without false "existing video" prompts.
 
 ### 4.2 Immutable Master Backup Contract
 * **`clips/<ep>-<num>-original.mp4`** holds the downloaded, immutable Mosaic Motion Graphics body video track.
