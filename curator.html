@@ -1614,6 +1614,11 @@
                     <span>End: <strong id="selEnd">--</strong>s</span>
                     <span>Duration: <strong id="selDuration">0.00</strong>s</span>
                 </div>
+                <div class="selection-actions-bar" style="display: flex; gap: 0.4rem; margin-left: auto; align-items: center;">
+                    <button class="btn btn-secondary btn-mini" id="btnSetStart" title="Set current selection as Segment Start" style="font-size: 0.725rem; font-weight: 600; padding: 0.25rem 0.6rem;">🚩 Set Start</button>
+                    <button class="btn btn-secondary btn-mini" id="btnSetEnd" title="Set current selection as Segment End" style="font-size: 0.725rem; font-weight: 600; padding: 0.25rem 0.6rem;">🚩 Set End</button>
+                    <button class="btn btn-secondary btn-mini" id="btnClearSel" title="Clear selection" style="font-size: 0.725rem; font-weight: 600; padding: 0.25rem 0.6rem;">🧹 Clear</button>
+                </div>
             </div>
         </div>
 
@@ -3863,9 +3868,74 @@
         document.getElementById('ctxClear').addEventListener('click', function() {
             startWordIdx = null;
             endWordIdx = null;
+            editingSegmentRef = null;
             updateSelectionUI();
             contextMenu.style.display = 'none';
         });
+
+        // Visible curator tools action button handlers
+        const btnSetStart = document.getElementById('btnSetStart');
+        const btnSetEnd = document.getElementById('btnSetEnd');
+        const btnClearSel = document.getElementById('btnClearSel');
+
+        if (btnSetStart) {
+            btnSetStart.addEventListener('click', function() {
+                if (startWordIdx === null && allWords.length > 0) {
+                    startWordIdx = 0;
+                }
+                updateSelectionUI();
+            });
+        }
+
+        if (btnSetEnd) {
+            btnSetEnd.addEventListener('click', function() {
+                if (startWordIdx !== null && endWordIdx === null) {
+                    endWordIdx = startWordIdx;
+                }
+                updateSelectionUI();
+            });
+        }
+
+        if (btnClearSel) {
+            btnClearSel.addEventListener('click', function() {
+                startWordIdx = null;
+                endWordIdx = null;
+                editingSegmentRef = null;
+                document.querySelectorAll('.segment-row').forEach(row => {
+                    row.style.border = '1px solid rgba(255, 255, 255, 0.05)';
+                    row.style.backgroundColor = 'rgba(255, 255, 255, 0.02)';
+                });
+                updateSelectionUI();
+            });
+        }
+
+        // Mouse text selection detection in transcript container
+        if (transcriptContainer) {
+            transcriptContainer.addEventListener('mouseup', function() {
+                const sel = window.getSelection();
+                if (!sel || sel.isCollapsed) return;
+                
+                try {
+                    const range = sel.getRangeAt(0);
+                    const wordSpans = Array.from(transcriptContainer.querySelectorAll('.word'));
+                    let selectedIndices = [];
+                    
+                    wordSpans.forEach(span => {
+                        if (range.intersectsNode(span)) {
+                            const idx = parseInt(span.dataset.wordIdx);
+                            if (!isNaN(idx)) selectedIndices.push(idx);
+                        }
+                    });
+                    
+                    if (selectedIndices.length > 0) {
+                        selectedIndices.sort((a, b) => a - b);
+                        startWordIdx = selectedIndices[0];
+                        endWordIdx = selectedIndices[selectedIndices.length - 1];
+                        updateSelectionUI();
+                    }
+                } catch(e) {}
+            });
+        }
 
         // Search highlight functionality
         searchInput.addEventListener('input', function(e) {
@@ -4091,17 +4161,29 @@
                 window.musicPreviewTimeout = null;
             }
 
-            const sourceAudioUrl = `/get-project-audio?id=${activeProjectId}`;
-            const needsSourceSwitch = !audioElement.src || !audioElement.src.includes(`/get-project-audio?id=${activeProjectId}`);
-            
-            if (needsSourceSwitch) {
-                audioElement.src = sourceAudioUrl;
-                audioElement.load();
+            // Always clear active interval timer first to prevent state corruption
+            if (window.activeAudioCheck) {
+                clearInterval(window.activeAudioCheck);
+                window.activeAudioCheck = null;
             }
 
+            const sourceAudioUrl = `/get-project-audio?id=${activeProjectId}`;
+            const currentSrc = audioElement.getAttribute('src') || audioElement.src || '';
+            const needsSourceSwitch = !currentSrc.includes(`/get-project-audio?id=${activeProjectId}`);
+            
             const startPlayback = () => {
-                audioElement.currentTime = startVal;
+                audioElement.pause();
+                try {
+                    audioElement.currentTime = startVal;
+                } catch (e) {
+                    console.warn("Setting currentTime failed:", e);
+                }
+
                 audioElement.play().then(() => {
+                    // Double verify currentTime after play starts to prevent browser resetting to 0.0s
+                    if (Math.abs(audioElement.currentTime - startVal) > 1.5) {
+                        audioElement.currentTime = startVal;
+                    }
                     playBtn.textContent = '⏸';
                     nowPlayingTitle.textContent = `🎙 Source Audio Segment (${startVal.toFixed(2)}s - ${endVal.toFixed(2)}s)`;
                 }).catch(err => {
@@ -4113,18 +4195,38 @@
                     if (audioElement.currentTime >= endVal || audioElement.paused) {
                         audioElement.pause();
                         playBtn.textContent = '▶';
-                        clearInterval(window.activeAudioCheck);
+                        if (window.activeAudioCheck) {
+                            clearInterval(window.activeAudioCheck);
+                            window.activeAudioCheck = null;
+                        }
                     }
                 }, 100);
             };
 
             if (needsSourceSwitch) {
-                audioElement.oncanplay = function() {
-                    audioElement.oncanplay = null;
+                audioElement.pause();
+                audioElement.src = sourceAudioUrl;
+                
+                const onMetadataLoaded = function() {
+                    audioElement.removeEventListener('loadedmetadata', onMetadataLoaded);
+                    audioElement.removeEventListener('canplay', onMetadataLoaded);
                     startPlayback();
                 };
+                audioElement.addEventListener('loadedmetadata', onMetadataLoaded);
+                audioElement.addEventListener('canplay', onMetadataLoaded);
+                audioElement.load();
             } else {
-                startPlayback();
+                if (audioElement.readyState >= 1) { // HAVE_METADATA
+                    startPlayback();
+                } else {
+                    const onMetadataLoaded = function() {
+                        audioElement.removeEventListener('loadedmetadata', onMetadataLoaded);
+                        audioElement.removeEventListener('canplay', onMetadataLoaded);
+                        startPlayback();
+                    };
+                    audioElement.addEventListener('loadedmetadata', onMetadataLoaded);
+                    audioElement.addEventListener('canplay', onMetadataLoaded);
+                }
             }
         }
 
