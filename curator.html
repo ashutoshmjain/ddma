@@ -6531,6 +6531,7 @@
 
         closeVideoModalBtn.addEventListener('click', function() {
             videoModalOverlay.classList.remove('active');
+            videoModalOverlay.style.display = 'none';
             previewVideoPlayer.pause();
             previewVideoPlayer.src = "";
         });
