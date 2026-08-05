@@ -3982,21 +3982,29 @@
 
         // Click Word Handler
         function handleWordClick(idx) {
-            if (editingSegmentRef !== null && startWordIdx !== null && endWordIdx !== null) {
-                // When actively editing a segment, single clicks adjust boundaries without deselecting!
-                const distToStart = Math.abs(idx - startWordIdx);
-                const distToEnd = Math.abs(idx - endWordIdx);
-
-                if (idx < startWordIdx) {
+            if (editingSegmentRef !== null) {
+                if (startWordIdx === null) {
                     startWordIdx = idx;
-                } else if (idx > endWordIdx) {
-                    endWordIdx = idx;
-                } else {
-                    // Inside range: adjust whichever boundary is closer
-                    if (distToStart <= distToEnd) {
+                } else if (endWordIdx === null) {
+                    if (idx < startWordIdx) {
+                        endWordIdx = startWordIdx;
                         startWordIdx = idx;
                     } else {
                         endWordIdx = idx;
+                    }
+                } else {
+                    const distToStart = Math.abs(idx - startWordIdx);
+                    const distToEnd = Math.abs(idx - endWordIdx);
+                    if (idx < startWordIdx) {
+                        startWordIdx = idx;
+                    } else if (idx > endWordIdx) {
+                        endWordIdx = idx;
+                    } else {
+                        if (distToStart <= distToEnd) {
+                            startWordIdx = idx;
+                        } else {
+                            endWordIdx = idx;
+                        }
                     }
                 }
             } else {
@@ -4055,6 +4063,9 @@
 
         // Segment selection and live adjustments!
         function selectSegmentForEditing(clipIdx, segIdx) {
+            if (!clips || !clips[clipIdx] || !clips[clipIdx].segments || !clips[clipIdx].segments[segIdx]) {
+                return;
+            }
             if (clips[clipIdx].locked) {
                 console.log("Ignored segment selection: Clip is locked.");
                 return;
@@ -4146,6 +4157,9 @@
                 if (editingSegmentRef !== null) {
                     const { clipIdx, segIdx } = editingSegmentRef;
                     
+                    if (!clips || !clips[clipIdx] || !clips[clipIdx].segments || !clips[clipIdx].segments[segIdx]) {
+                        return;
+                    }
                     if (clips[clipIdx].locked) {
                         return; // Lock guard
                     }

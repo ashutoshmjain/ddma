@@ -217,6 +217,7 @@ async function runTest() {
             const overlay = document.getElementById('videoModalOverlay');
             const videoEl = document.getElementById('previewVideoPlayer');
             overlay.classList.add('active');
+            overlay.style.display = 'flex';
             videoEl.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
         });
 
@@ -370,8 +371,8 @@ async function runTest() {
             throw new Error("FAIL: selectProject function is not defined in curator.html global scope!");
         }
 
-        // 🧪 TEST 10: Verifying Audio Segment Double-Click Seeking & Transcript Selection Action Bar
-        console.log("\n🧪 TEST 10: Verifying Audio Segment Double-Click Seeking & Transcript Selection Action Bar...");
+        // 🧪 TEST 10: Verifying Audio Segment Double-Click Seeking & Transcript Selection Mechanics
+        console.log("\n🧪 TEST 10: Verifying Audio Segment Double-Click Seeking & Transcript Selection Mechanics...");
         const segmentDblClickState = await page.evaluate(async () => {
             const btnSetStart = document.getElementById('btnSetStart');
             const btnSetEnd = document.getElementById('btnSetEnd');
@@ -391,7 +392,7 @@ async function runTest() {
                 testedClipIdx = clipIdx;
                 testedStartVal = seg.start;
                 
-                // Simulate double click
+                // Simulate double click on segment row
                 targetRow.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
             }
             
@@ -400,12 +401,31 @@ async function runTest() {
             const audioEl = document.getElementById('audioElement');
             const currentTime = audioEl ? audioEl.currentTime : 0;
 
+            // Verify transcript word single-click during active editing preserves segment session
+            if (!allWords || allWords.length === 0) {
+                allWords = [
+                    { word: "Welcome", start: 0.0, end: 1.0 },
+                    { word: "to", start: 1.0, end: 1.5 },
+                    { word: "DeepDive", start: 1.5, end: 2.5 }
+                ];
+            }
+            editingSegmentRef = { clipIdx: 0, segIdx: 0 };
+            startWordIdx = 0;
+            endWordIdx = 2;
+            const initialEditingRef = editingSegmentRef;
+            
+            handleWordClick(1);
+            
+            const postClickEditingRef = editingSegmentRef;
+            const singleClickPreservesEditing = (initialEditingRef !== null && postClickEditingRef !== null);
+
             return {
                 hasActionBtns,
                 testedClipIdx,
                 testedStartVal,
                 audioCurrentTime: currentTime,
-                audioSeekedSuccess: testedStartVal !== null ? Math.abs(currentTime - testedStartVal) < 2.0 : true
+                audioSeekedSuccess: testedStartVal !== null ? Math.abs(currentTime - testedStartVal) < 2.0 : true,
+                singleClickPreservesEditing
             };
         });
 
@@ -413,12 +433,16 @@ async function runTest() {
         console.log(`- Tested Audio Segment in Clip #${segmentDblClickState.testedClipIdx}: Target Start = ${segmentDblClickState.testedStartVal}s`);
         console.log(`- Audio Element Current Time After DblClick: ${segmentDblClickState.audioCurrentTime.toFixed(2)}s`);
         console.log(`- Audio Seeked Successfully to Target: ${segmentDblClickState.audioSeekedSuccess}`);
+        console.log(`- Single Click Preserves Active Segment Session: ${segmentDblClickState.singleClickPreservesEditing}`);
 
         if (!segmentDblClickState.hasActionBtns) {
             throw new Error("FAIL: Transcript selection action buttons (Set Start / Set End / Clear) missing from DOM!");
         }
         if (!segmentDblClickState.audioSeekedSuccess) {
             throw new Error(`FAIL: Audio segment double-click did not seek to target start (${segmentDblClickState.testedStartVal}s), currentTime remains at ${segmentDblClickState.audioCurrentTime}s!`);
+        }
+        if (!segmentDblClickState.singleClickPreservesEditing) {
+            throw new Error("FAIL: Single-click in transcript pane collapsed or deselected active editing segment!");
         }
 
         console.log("\n✅ ALL COMPREHENSIVE CURATOR REGRESSION TESTS PASSED 100%!");
