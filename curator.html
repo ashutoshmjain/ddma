@@ -2014,11 +2014,12 @@
         </div>
     </div>
 
-    <!-- Right Click Context Menu -->
+    <!-- Right Click & Double Click Transcript Context Menu -->
     <div id="contextMenu" class="context-menu">
-        <div class="context-menu-item" id="ctxSetStart">📍 Start Selection Here</div>
-        <div class="context-menu-item" id="ctxSetEnd">📍 End Selection Here</div>
-        <div class="context-menu-item" id="ctxClear">✖ Clear Selection</div>
+        <div class="context-menu-item" id="ctxSetStart">🚩 Set Start Word</div>
+        <div class="context-menu-item" id="ctxSetEnd">🚩 Set End Word</div>
+        <div class="context-menu-item" id="ctxPlay">▶ Play Preview</div>
+        <div class="context-menu-item" id="ctxClear">🧹 Clear Selection</div>
     </div>
 
     <!-- Visual Debug Status Banner for Local Auditing -->
@@ -3811,6 +3812,15 @@
             segmentCount.textContent = `${allWords.length} words loaded`;
         }
 
+        function showTranscriptContextMenu(x, y, wordIdx) {
+            ctxWordIdx = wordIdx !== undefined ? wordIdx : startWordIdx;
+            if (!contextMenu) return;
+            contextMenu.style.left = `${Math.max(10, Math.min(x, window.innerWidth - 200))}px`;
+            contextMenu.style.top = `${Math.max(10, Math.min(y, window.innerHeight - 180))}px`;
+            contextMenu.style.display = 'block';
+            contextMenu.style.zIndex = '10000';
+        }
+
         // Single Event Delegation listener for word clicks
         transcriptContainer.addEventListener('click', function(e) {
             const wordEl = e.target.closest('.word');
@@ -3819,16 +3829,22 @@
             }
         });
 
+        // Double Click Listener on word elements to pop up context menu options
+        transcriptContainer.addEventListener('dblclick', function(e) {
+            const wordEl = e.target.closest('.word');
+            if (wordEl && wordEl.dataset.wordIdx !== undefined) {
+                const wIdx = parseInt(wordEl.dataset.wordIdx);
+                handleWordClick(wIdx);
+                showTranscriptContextMenu(e.clientX || e.pageX, e.clientY || e.pageY, wIdx);
+            }
+        });
+
         // Right-Click Context Menu Trigger on word elements
         transcriptContainer.addEventListener('contextmenu', function(e) {
             const wordEl = e.target.closest('.word');
             if (wordEl) {
                 e.preventDefault();
-                ctxWordIdx = parseInt(wordEl.dataset.wordIdx);
-                
-                contextMenu.style.left = `${e.pageX}px`;
-                contextMenu.style.top = `${e.pageY}px`;
-                contextMenu.style.display = 'block';
+                showTranscriptContextMenu(e.pageX, e.pageY, parseInt(wordEl.dataset.wordIdx));
             }
         });
 
@@ -3864,6 +3880,18 @@
             }
             contextMenu.style.display = 'none';
         });
+
+        const ctxPlay = document.getElementById('ctxPlay');
+        if (ctxPlay) {
+            ctxPlay.addEventListener('click', function() {
+                if (startWordIdx !== null) {
+                    const startVal = allWords[startWordIdx].start;
+                    const endVal = endWordIdx !== null ? allWords[endWordIdx].end : allWords[startWordIdx].end;
+                    playAudioRange(startVal, endVal);
+                }
+                contextMenu.style.display = 'none';
+            });
+        }
 
         document.getElementById('ctxClear').addEventListener('click', function() {
             startWordIdx = null;
@@ -3954,15 +3982,34 @@
 
         // Click Word Handler
         function handleWordClick(idx) {
-            if (startWordIdx === null || (startWordIdx !== null && endWordIdx !== null)) {
-                startWordIdx = idx;
-                endWordIdx = null;
-            } else {
+            if (editingSegmentRef !== null && startWordIdx !== null && endWordIdx !== null) {
+                // When actively editing a segment, single clicks adjust boundaries without deselecting!
+                const distToStart = Math.abs(idx - startWordIdx);
+                const distToEnd = Math.abs(idx - endWordIdx);
+
                 if (idx < startWordIdx) {
-                    endWordIdx = startWordIdx;
                     startWordIdx = idx;
-                } else {
+                } else if (idx > endWordIdx) {
                     endWordIdx = idx;
+                } else {
+                    // Inside range: adjust whichever boundary is closer
+                    if (distToStart <= distToEnd) {
+                        startWordIdx = idx;
+                    } else {
+                        endWordIdx = idx;
+                    }
+                }
+            } else {
+                if (startWordIdx === null || (startWordIdx !== null && endWordIdx !== null)) {
+                    startWordIdx = idx;
+                    endWordIdx = null;
+                } else {
+                    if (idx < startWordIdx) {
+                        endWordIdx = startWordIdx;
+                        startWordIdx = idx;
+                    } else {
+                        endWordIdx = idx;
+                    }
                 }
             }
             updateSelectionUI();
@@ -4032,10 +4079,18 @@
             
             updateSelectionUIOnly();
             
-            const startWordEl = transcriptContainer.querySelector(`[data-word-idx="${startWordIdx}"]`);
-            if (startWordEl) {
-                startWordEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            const doScrollAndPopover = () => {
+                const startWordEl = transcriptContainer.querySelector(`[data-word-idx="${startWordIdx}"]`);
+                if (startWordEl) {
+                    startWordEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    const rect = startWordEl.getBoundingClientRect();
+                    showTranscriptContextMenu(rect.left + window.scrollX, rect.top + window.scrollY - 40, startWordIdx);
+                }
+            };
+
+            // Execute delayed scrolling and popover display so reflow is complete on first open
+            setTimeout(doScrollAndPopover, 120);
+            setTimeout(doScrollAndPopover, 350);
             
             updateStateBar(`Editing Segment #${segIdx + 1} of Clip: "${clips[clipIdx].title}"`);
         }
