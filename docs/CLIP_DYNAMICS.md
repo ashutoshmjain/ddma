@@ -99,6 +99,21 @@ To protect creators against accidental billing from external cloud services, DDM
 
 ---
 
+### 🎵 Bottom Media Player Control Suite
+
+The bottom sticky player bar (`.player-bar`) provides a complete, full-featured audio control center:
+
+| Control Element | Icon / Button | Target Action | Event Synchronization & Keyboard Shortcut |
+| :--- | :--- | :--- | :--- |
+| **Rewind (-10s)** | `⏪ 10s` (`#rwBtn`) | Seeks backward 10 seconds. | Key: `◄ Left Arrow` (Rewinds 5s when focused outside text inputs). |
+| **Play / Pause** | `▶` / `⏸` (`#playBtn`) | Toggles audio playback. | **100% Native Sync**: Bound directly to HTML5 `play`, `pause`, and `ended` events. Key: `Space` (Toggle). |
+| **Stop** | `⏹` (`#stopBtn`) | Pauses audio and resets `currentTime = 0`. | Clears playback timers and resets scrubber slider. |
+| **Fast-Forward (+10s)** | `10s ⏩` (`#ffBtn`) | Seeks forward 10 seconds. | Key: `► Right Arrow` (Fast-forwards 5s when focused outside text inputs). |
+| **Scrubbing Progress Slider** | Progress Bar (`#playerSlider`) | Draggable / clickable timeline scrubber. | Real-time position updates via `timeupdate` and interactive position seeking on input. |
+| **Volume & Mute** | `🔊` / `🔇` (`#muteBtn` / `#volumeSlider`) | Adjusts volume (`0.0`–`1.0`) and toggles mute state. | Live updates HTML5 `audioElement.volume` and `audioElement.muted`. |
+
+---
+
 ## 🚀 4. Render Pipeline & Video Status Dynamics
 
 DDMA distinguishes strictly between Pre-Mosaic draft baselines and Post-Mosaic final master videos:
