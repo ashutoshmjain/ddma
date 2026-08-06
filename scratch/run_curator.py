@@ -1933,8 +1933,21 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 with open(info_path, "r", encoding="utf-8") as f:
                     info = json.load(f)
                 
-                audio_file_name = info.get("audio_filename") or info.get("audio_file") or "245.m4a"
-                audio_path = os.path.join(project_dir, audio_file_name)
+                audio_file_name = info.get("audio_filename") or info.get("audio_file")
+                audio_path = os.path.join(project_dir, audio_file_name) if audio_file_name else None
+                if not audio_path or not os.path.exists(audio_path):
+                    ep_num = project_id.replace("episode_", "")
+                    for ext in [".m4a", ".mp3", ".wav"]:
+                        cand = os.path.join(project_dir, f"{ep_num}{ext}")
+                        if os.path.exists(cand):
+                            audio_path = cand
+                            break
+                        cand2 = os.path.join(project_dir, f"episode_{ep_num}{ext}")
+                        if os.path.exists(cand2):
+                            audio_path = cand2
+                            break
+                if not audio_path or not os.path.exists(audio_path):
+                    raise Exception(f"Audio file for project {project_id} not found.")
                 
                 json_data = json.loads(post_data.decode('utf-8'))
                 segments = json_data.get("segments", [])

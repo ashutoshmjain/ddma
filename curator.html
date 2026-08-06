@@ -4964,7 +4964,66 @@
         }
 
         function playFFmpegPreview(clipIdx, btnEl, event) {
-            playBrowserClipAudio(clipIdx, btnEl, event);
+            if (event) event.stopPropagation();
+            const clip = clips[clipIdx];
+            if (!clip) return;
+
+            // Toggle pause if currently playing this exact clip preview
+            const currentSrc = audioElement.getAttribute('src') || audioElement.src || '';
+            const isPlayingThisClip = currentSrc.includes(`preview_${activeProjectId}_${clipIdx}`);
+            if (isPlayingThisClip && activeClipPlayIdx === clipIdx && !audioElement.paused) {
+                audioElement.pause();
+                btnEl.innerHTML = '▶ Audio';
+                playBtn.textContent = '▶';
+                return;
+            }
+
+            if (typeof stopWebAudioPreview === 'function') {
+                stopWebAudioPreview();
+            }
+
+            btnEl.disabled = true;
+            btnEl.innerHTML = '⏳ Compiling...';
+            updateStateBar(`Preparing clip audio preview for Part ${clip.num}: "${clip.title}"...`);
+
+            fetch(`/compile-project-preview?id=${activeProjectId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    clip_idx: clipIdx,
+                    segments: clip.segments
+                })
+            })
+            .then(res => {
+                if (!res.ok) return res.json().then(data => { throw new Error(data.error || "Preview compilation failed"); });
+                return res.json();
+            })
+            .then(data => {
+                btnEl.classList.remove('btn-status-gray', 'btn-status-warning');
+                btnEl.classList.add('btn-status-success');
+                btnEl.innerHTML = '⏸ Pause';
+
+                // Assign the compiled clip preview MP3 directly to HTML5 audioElement!
+                audioElement.src = data.preview_url;
+                audioElement.volume = 1.0;
+                nowPlayingTitle.textContent = `🎵 Part ${clip.num} Audio: ${clip.title}`;
+                activeClipPlayIdx = clipIdx;
+
+                audioElement.play().then(() => {
+                    playBtn.textContent = '⏸';
+                    updateStateBar(`Playing clip audio preview for Part ${clip.num}: "${clip.title}"`);
+                }).catch(err => {
+                    console.log("Audio play error, falling back to WebAudio:", err);
+                    playBrowserClipAudio(clipIdx, btnEl, event);
+                });
+            })
+            .catch(err => {
+                console.warn("Server preview compilation failed, falling back to WebAudio:", err);
+                playBrowserClipAudio(clipIdx, btnEl, event);
+            })
+            .finally(() => {
+                btnEl.disabled = false;
+            });
         }
 
         // Export Individual Clip File

@@ -112,6 +112,9 @@ The bottom sticky player bar (`.player-bar`) provides a complete, full-featured 
 | **Scrubbing Progress Slider** | Progress Bar (`#playerSlider`) | Draggable / clickable timeline scrubber. | Real-time position updates via `timeupdate` and interactive position seeking on input. |
 | **Volume & Mute** | `🔊` / `🔇` (`#muteBtn` / `#volumeSlider`) | Adjusts volume (`0.0`–`1.0`) and toggles mute state. | Live updates HTML5 `audioElement.volume` and `audioElement.muted`. |
 
+> **Clip Audio Assignment Contract:**
+> When `▶ Audio` is clicked on any clip card (e.g. Clip 8 or Clip 9), the system compiles `/compile-project-preview` and assigns `audioElement.src = previews/preview_{projectId}_{clipIdx}.mp3`. The entire bottom media player bar (`audioElement`, `#playerSlider`, `#currTime`, `#totTime`, `#playBtn`, `#rwBtn`, `#ffBtn`, `#stopBtn`, `#playerDownloadBtn`) is **100% assigned to that specific clip's compiled audio track** (e.g., 45 seconds for Clip 8, 38 seconds for Clip 9), allowing play/pause, seeking, rewinding, fast-forwarding, and downloading directly on the active clip.
+
 ---
 
 ## 🚀 4. Render Pipeline & Video Status Dynamics
