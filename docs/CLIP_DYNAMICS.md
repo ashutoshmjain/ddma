@@ -135,6 +135,12 @@ DDMA distinguishes strictly between Pre-Mosaic draft baselines and Post-Mosaic f
   * **If `clip.mosaic_run_id` exists:** Prompts user: *"Part X has an existing Mosaic video render! Click [OK] to assemble and preview the Master Video for free (0 API Cost), or [Cancel] to launch a new Mosaic AI render."*
   * **If `clip.mosaic_run_id` is absent:** Instantly launches Mosaic AI render without false "existing video" prompts.
 
+* **Long-Running Infographic Polling & Timeout Contract:**
+  * Complex motion graphics and infographic video renders on Mosaic AI can take several hours (up to 34 hours max).
+  * Backend status polling (`GET /agent_run/{run_id}`) runs at **5-minute intervals** (`time.sleep(300)`).
+  * Maximum polling duration is **34 hours** (408 attempts * 300s = 122,400 seconds).
+  * In-memory background job tracking cache purges stale jobs after 34 hours (122,400s).
+
 ### 4.2 Immutable Master Backup Contract
 * **`clips/<ep>-<num>-original.mp4`** holds the downloaded, immutable Mosaic Motion Graphics body video track.
 * Compiling a Draft Baseline preview via `📹 Draft` (`--force-draft`) generates a transient `temp_remux_path` for assembling `clips/<ep>-<num>.mp4` without modifying `clips/<ep>-<num>-original.mp4`.
