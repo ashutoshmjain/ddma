@@ -35,9 +35,8 @@ Open Antigravity in your terminal or IDE and give it this natural language instr
 For developers running on Linux or WSL with 100% isolation from the host OS:
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/ashutoshmjain/ddma.git
-cd ddma
+# 1. CD into your existing project folder (or clone if new setup)
+cd /mnt/c/Users/ashut/OneDrive/Desktop/github/deepDive/ddma
 
 # 2. Install Linux system packages (Python venv, pip, FFmpeg)
 sudo apt update && sudo apt install -y python3-venv python3-pip ffmpeg
