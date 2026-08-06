@@ -1,5 +1,7 @@
-openai-whisper==20250625
+openai-whisper
+requests
 typer
 pillow
 numpy
 google-generativeai
+pyyaml

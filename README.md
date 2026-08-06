@@ -29,6 +29,54 @@ Open Antigravity in your terminal or IDE and give it this natural language instr
 
 ---
 
+## 🛠️ Complete Installation & Environment Setup
+
+### 🐧 Option 1: Isolated Native Linux / WSL Environment (Recommended)
+For developers running on Linux or WSL with 100% isolation from the host OS:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/ashutoshmjain/ddma.git
+cd ddma
+
+# 2. Install Linux system packages (Python venv, pip, FFmpeg)
+sudo apt update && sudo apt install -y python3-venv python3-pip ffmpeg
+
+# 3. Create and activate an isolated Linux virtual environment (.venv)
+python3 -m venv .venv
+source .venv/bin/activate
+
+# 4. Install all Python dependencies (Whisper, Torch, Requests, Typer, Pillow, Gemini)
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# 5. Launch the Curator Server
+python scratch/run_curator.py
+```
+
+### 🪟 Option 2: Windows PowerShell Setup
+For native Windows execution:
+
+```powershell
+# 1. Clone the repository
+git clone https://github.com/ashutoshmjain/ddma.git
+cd ddma
+
+# 2. Verify FFmpeg is installed (or install via winget)
+winget install Gyan.FFmpeg
+
+# 3. Create and activate Windows virtual environment (.venv)
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+# 4. Install all Python dependencies
+pip install --upgrade pip
+pip install -r requirements.txt
+
+# 5. Launch the Curator Server
+python scratch/run_curator.py
+```
+
 ---
 
 ## 📖 Full Documentation & Interactive Guide
