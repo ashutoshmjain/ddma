@@ -3251,7 +3251,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 plan_data = []
                 if os.path.exists(plan_path):
-                    with open(plan_path, "r", encoding="utf-8") as f:
+                    with open(plan_path, "r", encoding="utf-8-sig") as f:
                         plan_data = json.load(f)
                     try:
                         shutil.copy2(plan_path, "plan.json")
@@ -3271,6 +3271,25 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 compiled_videos_dict = {}
                 import re
                 ep_num_match = re.search(r'\d+', project_id)
+
+                # Self-healing check: ensure clips with mosaic_run_id actually have -original.mp4 file on disk
+                plan_modified = False
+                if ep_num_match and plan_data:
+                    ep_num = ep_num_match.group(0)
+                    for clip in plan_data:
+                        if "mosaic_run_id" in clip:
+                            c_num = clip.get("num")
+                            orig_file = os.path.join("clips", f"{ep_num}-{c_num}-original.mp4")
+                            if not os.path.exists(orig_file):
+                                print(f"[{project_id}][Clip {c_num}] Stale mosaic_run_id {clip['mosaic_run_id']} found without downloaded video file. Cleaning up...")
+                                del clip["mosaic_run_id"]
+                                plan_modified = True
+                    if plan_modified:
+                        try:
+                            with open(plan_path, "w", encoding="utf-8") as f:
+                                json.dump(plan_data, f, indent=4)
+                        except Exception as w_err:
+                            print(f"Error saving self-healed plan.json: {w_err}")
                 if ep_num_match:
                     ep_num = ep_num_match.group(0)
                     clips_dir = "clips"
