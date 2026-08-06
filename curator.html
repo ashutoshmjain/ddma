@@ -5889,7 +5889,7 @@
                     videoStatusClass = "btn-status-warning";
                 }
                 
-                const hasMosaicRender = Boolean(clip.mosaic_run_id);
+                const hasMosaicRender = Boolean(clip.mosaic_run_id) && Boolean(statusInfo.has_mosaic_file);
                 const mosaicStatusClass = hasMosaicRender ? "btn-status-success" : "btn-status-purple";
                 
                 let videoBtnHtml = "";

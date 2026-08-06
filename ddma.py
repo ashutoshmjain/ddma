@@ -853,9 +853,10 @@ def compile_clip(
         temp_remux_path = f"temp_remux_{num}.mp4"
         target_clip = next((c for c in plan_data if c.get("num") == num), None)
         has_mosaic_id = bool(target_clip and target_clip.get("mosaic_run_id"))
+        has_mosaic_file = os.path.exists(os.path.join(master_dir, f"{episode}-{num}-original.mp4"))
         
-        # A clip is a black canvas draft if force_draft is requested OR if it has never been rendered by Mosaic
-        is_black_canvas = force_draft or not has_mosaic_id
+        # A clip is a black canvas draft if force_draft is requested OR if Mosaic video file does not exist on disk
+        is_black_canvas = force_draft or not (has_mosaic_id and has_mosaic_file)
 
         if is_black_canvas:
             typer.echo(f"Generating clean draft body video ({a_dur_fresh:.2f}s) from fresh audio clip...")

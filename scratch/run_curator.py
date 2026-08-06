@@ -332,8 +332,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         except Exception as pe:
             print(f"[{project_id}][Clip {clip_num}] Warning: Failed to save mosaic_run_id to plan.json: {pe}")
             
-        mosaic_runs[job_key]["status"] = "completed"
-        mosaic_runs[job_key]["progress"] = 100
+        mosaic_runs[job_key] = {"status": "completed", "progress": 100, "run_id": run_id, "error": None}
         print(f"[{project_id}][Clip {clip_num}] Mosaic export and auto-compilation completed successfully!")
         
     except Exception as ex:
@@ -3315,12 +3314,13 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                     clip_num = int(clip_num_str)
                                     
                                     if clip_num not in clip_statuses:
-                                        clip_statuses[clip_num] = {"has_audio": False, "video_state": "none"}
+                                        clip_statuses[clip_num] = {"has_audio": False, "video_state": "none", "has_mosaic_file": False}
                                     
                                     if file.endswith(".mp3"):
                                         clip_statuses[clip_num]["has_audio"] = True
                                     elif file.endswith("-original.mp4"):
                                         clip_statuses[clip_num]["video_state"] = "compiled"
+                                        clip_statuses[clip_num]["has_mosaic_file"] = True
                                     elif file.endswith(".mp4"):
                                         if clip_statuses[clip_num].get("video_state") != "compiled":
                                             clip_statuses[clip_num]["video_state"] = "draft"
