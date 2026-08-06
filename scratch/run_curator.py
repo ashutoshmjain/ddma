@@ -3071,7 +3071,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             audio_path = cand
                             break
                 if not audio_path or not os.path.exists(audio_path):
-                    raise Exception(f"Audio file for project {project_id} not found.")
+                    self.send_error(404, f"Audio file for project {project_id} not found.")
+                    return
                 
                 # Delegate to super().do_GET() with path set to static audio file
                 # This automatically provides full HTTP 206 Range request support for seeking!

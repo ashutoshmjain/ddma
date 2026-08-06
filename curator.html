@@ -3333,7 +3333,17 @@
                             renderTranscription();
                         }, 20);
                         
-                        audioElement.src = `/project-audio?id=${projectId}`;
+                        fetch(`/get-project-audio?id=${projectId}`, { method: 'HEAD' })
+                            .then(res => {
+                                if (res.ok) {
+                                    audioElement.src = `/get-project-audio?id=${projectId}`;
+                                } else {
+                                    audioElement.removeAttribute('src');
+                                }
+                            })
+                            .catch(() => {
+                                audioElement.removeAttribute('src');
+                            });
                         updateStateBar("Ready");
                     }
                 })
@@ -3739,6 +3749,11 @@
 
         // Audio Player Controls
         playBtn.addEventListener('click', function() {
+            const src = audioElement.getAttribute('src') || audioElement.src || '';
+            if ((!src || src === '' || src.endsWith('#') || src.endsWith('curator.html')) && activeProjectId) {
+                audioElement.src = `/get-project-audio?id=${activeProjectId}`;
+                nowPlayingTitle.textContent = `🎙 Episode Audio (${activeProjectId})`;
+            }
             if (audioElement.paused) {
                 audioElement.play().catch(e => console.log("Audio play error:", e));
             } else {
@@ -3748,7 +3763,11 @@
 
         if (rwBtn) {
             rwBtn.addEventListener('click', function() {
-                if (audioElement.duration) {
+                const src = audioElement.getAttribute('src') || audioElement.src || '';
+                if ((!src || src === '' || src.endsWith('#') || src.endsWith('curator.html')) && activeProjectId) {
+                    audioElement.src = `/get-project-audio?id=${activeProjectId}`;
+                }
+                if (audioElement.duration && !isNaN(audioElement.duration)) {
                     audioElement.currentTime = Math.max(0, audioElement.currentTime - 10);
                 }
             });
@@ -3756,7 +3775,11 @@
 
         if (ffBtn) {
             ffBtn.addEventListener('click', function() {
-                if (audioElement.duration) {
+                const src = audioElement.getAttribute('src') || audioElement.src || '';
+                if ((!src || src === '' || src.endsWith('#') || src.endsWith('curator.html')) && activeProjectId) {
+                    audioElement.src = `/get-project-audio?id=${activeProjectId}`;
+                }
+                if (audioElement.duration && !isNaN(audioElement.duration)) {
                     audioElement.currentTime = Math.min(audioElement.duration, audioElement.currentTime + 10);
                 }
             });
@@ -3765,7 +3788,9 @@
         if (stopBtn) {
             stopBtn.addEventListener('click', function() {
                 audioElement.pause();
-                audioElement.currentTime = 0;
+                try {
+                    audioElement.currentTime = 0;
+                } catch (e) {}
                 playerSlider.value = 0;
                 currTime.textContent = '00:00';
             });
