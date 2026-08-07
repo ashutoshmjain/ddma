@@ -808,15 +808,7 @@ def compile_clip(
         except Exception:
             pass
 
-    # 3. Back up original master clip if needed
-    if backup:
-        if not os.path.exists(backup_path):
-            typer.echo(f"Creating backup of original clip to {backup_path}...")
-            shutil.copy2(master_path, backup_path)
-        else:
-            typer.echo(f"Backup already exists at {backup_path}")
-    else:
-        backup_path = master_path
+    backup_path = f"clips/{episode}-{num}-original.mp4"
 
     # Check for freshly cut audio clip (e.g. clips/245-1-*.mp3) and remux audio track
     audio_pattern1 = os.path.join(master_dir, f"{episode}-{num}-*.mp3")
@@ -825,38 +817,37 @@ def compile_clip(
     if not audio_matches:
         audio_matches = glob.glob(os.path.join(master_dir, f"*-{num}-*.mp3")) + glob.glob(os.path.join(master_dir, f"*-{num}.mp3"))
     
-    if audio_matches and os.path.exists(backup_path):
+    temp_remux_path = f"temp_remux_{num}.mp4"
+    target_clip = next((c for c in plan_data if c.get("num") == num), None)
+    has_mosaic_id = bool(target_clip and target_clip.get("mosaic_run_id"))
+    has_mosaic_file = os.path.exists(backup_path)
+    
+    # A clip is a black canvas draft if force_draft is requested OR if Mosaic video file does not exist on disk
+    is_black_canvas = force_draft or not (has_mosaic_id and has_mosaic_file)
+
+    a_dur_fresh = None
+    fps_str = "30"
+
+    if audio_matches:
         audio_matches.sort(key=os.path.getmtime, reverse=True)
         fresh_audio_path = audio_matches[0]
         typer.echo(f"Updating master body audio from fresh audio clip: {fresh_audio_path}...")
-        
-        # Probe fresh audio duration and master video duration
-        a_dur_fresh = None
-        v_dur_master = None
-        fps_str = "30"
         try:
             p_a = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", fresh_audio_path], capture_output=True, text=True)
             if p_a.returncode == 0:
                 a_dur_fresh = float(p_a.stdout.strip())
-            p_v = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "stream=r_frame_rate,avg_frame_rate,duration", "-of", "json", backup_path], capture_output=True, text=True)
-            if p_v.returncode == 0:
-                v_data = json.loads(p_v.stdout)
-                for st in v_data.get("streams", []):
-                    if st.get("codec_type") == "video":
-                        fps_cand = st.get("avg_frame_rate") or st.get("r_frame_rate")
-                        if fps_cand and "/" in fps_cand and fps_cand != "0/0":
-                            fps_str = fps_cand
-                        break
+            if has_mosaic_file:
+                p_v = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "stream=r_frame_rate,avg_frame_rate,duration", "-of", "json", backup_path], capture_output=True, text=True)
+                if p_v.returncode == 0:
+                    v_data = json.loads(p_v.stdout)
+                    for st in v_data.get("streams", []):
+                        if st.get("codec_type") == "video":
+                            fps_cand = st.get("avg_frame_rate") or st.get("r_frame_rate")
+                            if fps_cand and "/" in fps_cand and fps_cand != "0/0":
+                                fps_str = fps_cand
+                            break
         except Exception as ex_probe:
             typer.echo(f"Warning probing durations: {ex_probe}")
-
-        temp_remux_path = f"temp_remux_{num}.mp4"
-        target_clip = next((c for c in plan_data if c.get("num") == num), None)
-        has_mosaic_id = bool(target_clip and target_clip.get("mosaic_run_id"))
-        has_mosaic_file = os.path.exists(os.path.join(master_dir, f"{episode}-{num}-original.mp4"))
-        
-        # A clip is a black canvas draft if force_draft is requested OR if Mosaic video file does not exist on disk
-        is_black_canvas = force_draft or not (has_mosaic_id and has_mosaic_file)
 
         if is_black_canvas:
             typer.echo(f"Generating clean draft body video ({a_dur_fresh:.2f}s) from fresh audio clip...")
@@ -870,6 +861,9 @@ def compile_clip(
                 "-t", f"{a_dur_fresh:.3f}",
                 temp_remux_path
             ]
+            res_remux = subprocess.run(cmd_remux, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if res_remux.returncode == 0:
+                body_video_path = temp_remux_path
         else:
             typer.echo(f"Preserving Mosaic motion graphics video track from {backup_path}...")
             cmd_remux = [
@@ -884,14 +878,10 @@ def compile_clip(
                 "-t", f"{a_dur_fresh:.3f}" if a_dur_fresh else "0",
                 temp_remux_path
             ]
-        
-        res_remux = subprocess.run(cmd_remux, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if res_remux.returncode == 0:
-            if is_black_canvas and has_mosaic_id:
-                typer.echo(f"Draft baseline body created at {temp_remux_path} (Mosaic master preserved at {backup_path}).")
-            else:
+            res_remux = subprocess.run(cmd_remux, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if res_remux.returncode == 0:
                 shutil.move(temp_remux_path, backup_path)
-                typer.echo(f"Successfully updated master body audio track: {backup_path}")
+                body_video_path = backup_path
         else:
             if os.path.exists(temp_remux_path):
                 try:
