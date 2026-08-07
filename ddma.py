@@ -961,8 +961,8 @@ def compile_clip(
 
         try:
             if font_path_reg and font_path_bold:
-                font_sub = ImageFont.truetype(font_path_reg, 24)
-                font_title = ImageFont.truetype(font_path_bold, 40)
+                font_sub = ImageFont.truetype(font_path_reg, 28)
+                font_title = ImageFont.truetype(font_path_bold, 48)
             else:
                 raise Exception("No standard system fonts found")
         except Exception as e:
@@ -993,14 +993,14 @@ def compile_clip(
         draw_overlay = ImageDraw.Draw(overlay)
 
         # Centered charcoal banner
-        box_width = int(width * 0.85)
-        box_height = 280
+        box_width = int(width * 0.88)
+        box_height = 320
         x0 = (width - box_width) // 2
-        y0 = height // 2 - 160
+        y0 = height // 2 - 180
         x1 = x0 + box_width
         y1 = y0 + box_height
 
-        draw_overlay.rounded_rectangle([(x0, y0), (x1, y1)], radius=15, fill=(18, 18, 18, 200))
+        draw_overlay.rounded_rectangle([(x0, y0), (x1, y1)], radius=15, fill=(18, 18, 18, 210))
 
         def draw_centered_text_overlay(draw_obj, text, font, y_pos, color=(255, 255, 255, 255)):
             bbox = draw_obj.textbbox((0, 0), text, font=font)
@@ -1213,35 +1213,42 @@ def compile_clip(
             if not bridge_text:
                 bridge_text = f"What is the deeper secret behind Part {num}?"
 
-            # Generate outro image
-            img_outro = Image.new("RGB", (v_width, v_height), color=(0, 0, 0))
+            # Generate outro image with semi-transparent charcoal banner
+            img_outro = Image.new("RGBA", (v_width, v_height), color=(18, 18, 18, 255))
             draw_outro = ImageDraw.Draw(img_outro)
             
             font_path_outro = find_system_fonts()[0]
             try:
-                font_outro = ImageFont.truetype(font_path_outro, 34)
+                font_outro = ImageFont.truetype(font_path_outro, 42)
             except Exception:
                 font_outro = ImageFont.load_default()
 
             def wrap_text_outro(text, font, max_w):
-                words = text.split()
-                lines = []
-                curr = ""
-                for w in words:
-                    test = f"{curr} {w}".strip()
-                    bbox = draw_outro.textbbox((0, 0), test, font=font)
-                    if (bbox[2] - bbox[0]) <= max_w:
-                        curr = test
-                    else:
-                        if curr:
-                            lines.append(curr)
-                        curr = w
-                if curr:
-                    lines.append(curr)
-                return lines
+                if "\n" in text:
+                    raw_lines = [l.strip() for l in text.split("\n") if l.strip()]
+                else:
+                    raw_lines = [text]
+                
+                final_lines = []
+                for r_line in raw_lines:
+                    words = r_line.split()
+                    curr = ""
+                    for w in words:
+                        test = f"{curr} {w}".strip()
+                        bbox = draw_outro.textbbox((0, 0), test, font=font)
+                        if (bbox[2] - bbox[0]) <= max_w:
+                            curr = test
+                        else:
+                            if curr:
+                                final_lines.append(curr)
+                            curr = w
+                    if curr:
+                        final_lines.append(curr)
+                return final_lines
 
-            lines_outro = wrap_text_outro(bridge_text, font_outro, v_width - 160)
-            line_spacing_outro = 18
+            # Set max width to v_width - 240 (~500px) so text breaks into 2-4 balanced lines
+            lines_outro = wrap_text_outro(bridge_text, font_outro, v_width - 240)
+            line_spacing_outro = 14
             line_heights_outro = []
             total_h_outro = 0
             for line in lines_outro:
@@ -1251,14 +1258,21 @@ def compile_clip(
                 total_h_outro += h
             total_h_outro += line_spacing_outro * (len(lines_outro) - 1)
 
+            # Draw charcoal container box behind outro text
+            box_w_outro = int(v_width * 0.88)
+            box_h_outro = max(240, total_h_outro + 80)
+            x0_out = (v_width - box_w_outro) // 2
+            y0_out = (v_height - box_h_outro) // 2
+            draw_outro.rounded_rectangle([(x0_out, y0_out), (x0_out + box_w_outro, y0_out + box_h_outro)], radius=15, fill=(28, 28, 28, 230))
+
             curr_y_outro = (v_height - total_h_outro) // 2
             for idx, line in enumerate(lines_outro):
                 bbox = draw_outro.textbbox((0, 0), line, font=font_outro)
                 w = bbox[2] - bbox[0]
-                draw_outro.text(((v_width - w) // 2, curr_y_outro), line, font=font_outro, fill=(255, 255, 255))
+                draw_outro.text(((v_width - w) // 2, curr_y_outro), line, font=font_outro, fill=(255, 255, 255, 255))
                 curr_y_outro += line_heights_outro[idx] + line_spacing_outro
 
-            img_outro.save(temp_img_outro_path)
+            img_outro.convert("RGB").save(temp_img_outro_path)
 
             # Probe duration of equalized master body to slice end audio
             try:
