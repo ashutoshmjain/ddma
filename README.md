@@ -8,6 +8,17 @@ DeepDive Media Automator (DDMA) is a progressive media automation engine powered
 
 ---
 
+> [!IMPORTANT]
+> 💻 **Minimum Hardware Specifications & System Requirements**:
+> Because DDMA performs local AI speech-to-text transcription (Whisper), high-definition video stream remuxing (FFmpeg), and dynamic image overlays (Pillow), we recommend the following minimum hardware configuration:
+> * **CPU**: Quad-Core Processor (Intel Core i5 8th Gen+ / AMD Ryzen 5 3000+ or Apple Silicon M1/M2/M3).
+> * **RAM**: **8 GB Minimum** (16 GB Recommended for handling multi-hour audio files, Whisper model weights, and 1080p/740p video rendering smoothly).
+> * **Disk Storage**: **10 GB Free Disk Space** (for Python libraries, PyTorch weights, FFmpeg binaries, and temporary media clip buffers).
+> * **GPU (Optional)**: NVIDIA GPU with CUDA support for accelerated transcription (automatically falls back to CPU if no GPU is available).
+> * **Supported Operating Systems**: Windows 10/11 (with WSL2), macOS 12+, or Ubuntu Linux 20.04+.
+
+---
+
 ## ⚡ Setup & Quickstart Guide
 
 Choose the path that fits your workflow:
@@ -56,20 +67,19 @@ Once installed, open **WSL** (or Ubuntu) from your Windows Start Menu.
 
 ---
 
-#### 📌 Step 2: Navigate to Your DDMA Directory
-In your WSL terminal, navigate to your DDMA project folder. 
+#### 📌 Step 2: Clone the DDMA Repository inside WSL
+In your WSL terminal, clone the repository into your native Linux home directory:
+```bash
+cd ~
+git clone https://github.com/ashutoshmjain/ddma.git
+cd ~/ddma
+```
 
-* **If working directly inside your existing Windows project folder:**
-  *(Windows drive `C:` is mounted inside WSL under `/mnt/c/`)*
-  ```bash
-  cd /mnt/c/Users/ashut/OneDrive/Desktop/github/deepDive/ddma
-  ```
-* **Or if cloning a fresh isolated copy inside WSL native home directory:**
-  ```bash
-  cd ~
-  git clone https://github.com/ashutoshmjain/ddma.git
-  cd ~/ddma
-  ```
+> 🔬 **Advanced / Local Testing Alternative (Working directly inside your existing Windows folder)**:
+> If you already have DDMA on your Windows machine and want to test directly inside your existing Windows directory without cloning, you can navigate directly to your Windows drive (mounted inside WSL under `/mnt/c/`):
+> ```bash
+> cd /mnt/c/Users/ashut/OneDrive/Desktop/github/deepDive/ddma
+> ```
 
 ---
 
@@ -137,7 +147,7 @@ Open your web browser (Chrome, Edge, Firefox) and navigate to:
 Whenever you open your WSL terminal in the future, you only need to run these 3 quick commands:
 
 ```bash
-cd /mnt/c/Users/ashut/OneDrive/Desktop/github/deepDive/ddma
+cd ~/ddma
 source .venv/bin/activate
 python scratch/run_curator.py
 ```
