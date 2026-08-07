@@ -1609,15 +1609,17 @@
                 </div>
             </div>
             <div class="curator-tools">
-                <div class="selection-stats">
+                <div class="selection-stats" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                     <span>Start: <strong id="selStart">--</strong>s</span>
                     <span>End: <strong id="selEnd">--</strong>s</span>
                     <span>Duration: <strong id="selDuration">0.00</strong>s</span>
+                    <span id="editingSegmentBadge" style="display: none; background: var(--primary); color: white; padding: 0.15rem 0.45rem; border-radius: 4px; font-size: 0.7rem; font-weight: bold; font-family: var(--font-mono);">✏️ Editing Seg</span>
                 </div>
                 <div class="selection-actions-bar" style="display: flex; gap: 0.4rem; margin-left: auto; align-items: center;">
                     <button class="btn btn-secondary btn-mini" id="btnSetStart" title="Set current selection as Segment Start" style="font-size: 0.725rem; font-weight: 600; padding: 0.25rem 0.6rem;">🚩 Set Start</button>
                     <button class="btn btn-secondary btn-mini" id="btnSetEnd" title="Set current selection as Segment End" style="font-size: 0.725rem; font-weight: 600; padding: 0.25rem 0.6rem;">🚩 Set End</button>
                     <button class="btn btn-secondary btn-mini" id="btnClearSel" title="Clear selection" style="font-size: 0.725rem; font-weight: 600; padding: 0.25rem 0.6rem;">🧹 Clear</button>
+                    <button class="btn btn-mini" id="btnDoneEditing" title="Done editing active segment" style="font-size: 0.725rem; font-weight: 600; padding: 0.25rem 0.6rem; display: none; background: var(--primary); color: white;">Done Editing</button>
                 </div>
             </div>
         </div>
@@ -4033,6 +4035,7 @@
         const btnSetStart = document.getElementById('btnSetStart');
         const btnSetEnd = document.getElementById('btnSetEnd');
         const btnClearSel = document.getElementById('btnClearSel');
+        const btnDoneEditing = document.getElementById('btnDoneEditing');
 
         if (btnSetStart) {
             btnSetStart.addEventListener('click', function() {
@@ -4056,12 +4059,35 @@
             btnClearSel.addEventListener('click', function() {
                 startWordIdx = null;
                 endWordIdx = null;
+                // If in active segment editing mode, clearing transcript text selection keeps editingSegmentRef active
+                // so user can select a new start/end word range for that segment!
+                if (editingSegmentRef === null) {
+                    document.querySelectorAll('.segment-row').forEach(row => {
+                        row.style.border = '1px solid rgba(255, 255, 255, 0.05)';
+                        row.style.backgroundColor = 'rgba(255, 255, 255, 0.02)';
+                    });
+                } else {
+                    const { clipIdx, segIdx } = editingSegmentRef;
+                    if (clips[clipIdx]) {
+                        updateStateBar(`Cleared transcript range. Click words on transcript to assign new range for Clip ${clips[clipIdx].num} Seg #${segIdx + 1}.`);
+                    }
+                }
+                updateSelectionUIOnly();
+            });
+        }
+
+        if (btnDoneEditing) {
+            btnDoneEditing.addEventListener('click', function() {
                 editingSegmentRef = null;
+                startWordIdx = null;
+                endWordIdx = null;
                 document.querySelectorAll('.segment-row').forEach(row => {
                     row.style.border = '1px solid rgba(255, 255, 255, 0.05)';
                     row.style.backgroundColor = 'rgba(255, 255, 255, 0.02)';
                 });
-                updateSelectionUI();
+                updateSelectionUIOnly();
+                renderClips();
+                updateStateBar("Exited segment editing mode.");
             });
         }
 
@@ -4262,6 +4288,23 @@
                 }
             });
 
+            const editingSegmentBadge = document.getElementById('editingSegmentBadge');
+            const btnDoneEditing = document.getElementById('btnDoneEditing');
+
+            if (editingSegmentRef !== null) {
+                const { clipIdx, segIdx } = editingSegmentRef;
+                if (clips[clipIdx]) {
+                    if (editingSegmentBadge) {
+                        editingSegmentBadge.style.display = 'inline-block';
+                        editingSegmentBadge.textContent = `✏️ Editing Clip ${clips[clipIdx].num} Seg #${segIdx + 1}`;
+                    }
+                    if (btnDoneEditing) btnDoneEditing.style.display = 'inline-block';
+                }
+            } else {
+                if (editingSegmentBadge) editingSegmentBadge.style.display = 'none';
+                if (btnDoneEditing) btnDoneEditing.style.display = 'none';
+            }
+
             if (startWordIdx !== null) {
                 const startVal = allWords[startWordIdx].start;
                 const endVal = endWordIdx !== null ? allWords[endWordIdx].end : allWords[startWordIdx].end;
@@ -4270,6 +4313,10 @@
                 selStart.textContent = startVal.toFixed(2);
                 selEnd.textContent = endVal.toFixed(2);
                 selDuration.textContent = durationVal.toFixed(2);
+            } else {
+                selStart.textContent = '--';
+                selEnd.textContent = '--';
+                selDuration.textContent = '0.00';
             }
         }
 
