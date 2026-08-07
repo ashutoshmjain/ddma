@@ -6043,8 +6043,9 @@
                         btn.classList.remove('btn-status-warning', 'btn-status-gray');
                         btn.classList.add('btn-status-success');
                         
+                        const cacheBustIntroUrl = data.preview_url + '?t=' + Date.now();
                         openVideoModal(
-                            data.preview_url,
+                            cacheBustIntroUrl,
                             `INTRO PREVIEW - Part ${clip.num}: ${clip.title}`,
                             `previews/intro_${activeProjectId}_${clip.num}.mp4`
                         );
@@ -6079,8 +6080,9 @@
                         btn.classList.remove('btn-status-warning', 'btn-status-gray');
                         btn.classList.add('btn-status-success');
                         
+                        const cacheBustOutroUrl = data.preview_url + '?t=' + Date.now();
                         openVideoModal(
-                            data.preview_url,
+                            cacheBustOutroUrl,
                             `OUTRO PREVIEW (Bridge Card) - Part ${clip.num}`,
                             `previews/outro_${activeProjectId}_${clip.num}.mp4`
                         );
