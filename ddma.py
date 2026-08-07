@@ -1104,8 +1104,11 @@ def compile_clip(
             typer.echo(f"Warning probing media specs via ffprobe. Using defaults.")
 
         # 6. Equalize master body durations (Audio is the master timeline ground truth)
-        if is_black_canvas and has_mosaic_id and os.path.exists(temp_remux_path):
-            body_video_path = temp_remux_path
+        if is_black_canvas:
+            if os.path.exists(temp_remux_path):
+                body_video_path = temp_remux_path
+            else:
+                body_video_path = master_path
         else:
             body_video_path = backup_path
             temp_body_path = f"temp_body_{num}.mp4"
@@ -1294,7 +1297,7 @@ def compile_clip(
             ]
             subprocess.run(cmd_outro, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-        scale_filter = f"scale={v_width}:{v_height}:force_original_aspect_ratio=decrease,pad={v_width}:{v_height}:(ow-iw)/2:(oh-ih)/2,setsar=1"
+        scale_filter = f"scale={v_width}:{v_height}:force_original_aspect_ratio=decrease,pad={v_width}:{v_height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=25"
         if not is_last_clip and os.path.exists(temp_outro_video_path):
             typer.echo(f"Compiling (Intro -> Body -> Outro) into {out_path}...")
             cmd_concat = [
@@ -1307,7 +1310,7 @@ def compile_clip(
                 f"[1:v]{scale_filter},settb=1/90000[v1];"
                 f"[2:v]{scale_filter},settb=1/90000[v2];"
                 "[v0][v1]concat=n=2:v=1:a=0[v01];"
-                "[v01]settb=1/90000[v01tb];"
+                "[v01]fps=25,settb=1/90000[v01tb];"
                 f"[v01tb][v2]xfade=transition=fade:duration=1.0:offset={2.0 + body_duration - 1.0:.3f}[v];"
                 "[0:a][1:a]concat=n=2:v=0:a=1[a0];"
                 "[a0][2:a]acrossfade=d=1.0:c1=tri:c2=tri[a]",
