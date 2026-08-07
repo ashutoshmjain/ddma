@@ -4534,9 +4534,10 @@
             if (clips[clipIdx].locked) return;
             
             clips[clipIdx].segments.splice(segIdx, 1);
-            if (editingSegmentRef && editingSegmentRef.clipIdx === clipIdx && editingSegmentRef.segIdx === segIdx) {
-                editingSegmentRef = null;
-            }
+            editingSegmentRef = null;
+            startWordIdx = null;
+            endWordIdx = null;
+            updateSelectionUIOnly();
             renderClips();
             updateUsedHighlights();
             savePlanToServer();
@@ -5510,6 +5511,10 @@
             
             const prevStatePopped = undoStack.pop();
             clips = prevStatePopped;
+            editingSegmentRef = null;
+            startWordIdx = null;
+            endWordIdx = null;
+            updateSelectionUIOnly();
             renderClips();
             updateUsedHighlights();
             savePlanToServer(false); // save changes without pushing to undo stack again
@@ -5635,6 +5640,16 @@
             let focusedFieldClass = null;
             let caretStart = null;
             let caretEnd = null;
+
+            if (editingSegmentRef) {
+                const { clipIdx, segIdx } = editingSegmentRef;
+                if (!clips[clipIdx] || !clips[clipIdx].segments || !clips[clipIdx].segments[segIdx]) {
+                    editingSegmentRef = null;
+                    startWordIdx = null;
+                    endWordIdx = null;
+                    updateSelectionUIOnly();
+                }
+            }
 
             if (isTyping) {
                 const parentCard = activeEl.closest('.clip-card');
