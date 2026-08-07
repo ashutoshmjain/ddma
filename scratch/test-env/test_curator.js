@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const { execSync } = require('child_process');
 const fs = require('fs');
+const path = require('path');
 
 async function runTest() {
     console.log("🚀 Starting Comprehensive Headless Browser Curator Regression Suite...");
@@ -12,6 +13,7 @@ async function runTest() {
         ]
     });
     const page = await browser.newPage();
+    page.setDefaultTimeout(120000);
 
     const capturedErrors = [];
 
@@ -490,6 +492,48 @@ async function runTest() {
 
         if (!clipAudioAssignmentState?.success) {
             throw new Error(`FAIL: Clip audio button click failed to assign clip preview source to audioElement! Error: "${clipAudioAssignmentState?.err}", Src: "${clipAudioAssignmentState?.currentSrc}"`);
+        }
+
+        // 🧪 TEST 12: Verifying On-Demand Draft Video Compilation & FFprobe Stream Integrity (Clip 10)
+        console.log("\n🧪 TEST 12: Verifying On-Demand Draft Video Compilation Execution & Stream Integrity...");
+        const compileResult = await page.evaluate(async () => {
+            const res = await fetch('/compile-clip?id=episode_245&num=10', { method: 'POST' });
+            if (!res.ok) {
+                const txt = await res.text();
+                return { success: false, status: res.status, error: txt };
+            }
+            const data = await res.json();
+            return { success: data.success, video_url: data.video_url, status: 200 };
+        });
+
+        console.log(`- Clip 10 Compilation HTTP Status: ${compileResult.status}`);
+        console.log(`- Clip 10 Video URL: ${compileResult.video_url}`);
+
+        if (!compileResult.success) {
+            throw new Error(`FAIL: On-demand compilation for Clip 10 failed! Error: ${compileResult.error}`);
+        }
+
+        const clip10VideoPath = path.resolve(__dirname, '../../clips/245-10.mp4');
+        if (fs.existsSync(clip10VideoPath)) {
+            const probeJsonStr = execSync(`ffprobe -v error -show_streams -of json "${clip10VideoPath}"`).toString();
+            const probeData = JSON.parse(probeJsonStr);
+            const vStream = probeData.streams.find(s => s.codec_type === 'video');
+            const aStream = probeData.streams.find(s => s.codec_type === 'audio');
+
+            const vDur = parseFloat(vStream ? vStream.duration || 0 : 0);
+            const aDur = parseFloat(aStream ? aStream.duration || 0 : 0);
+
+            console.log(`- Video Stream Present: ${!!vStream} (${vStream ? vStream.codec_name : 'none'}, duration: ${vDur.toFixed(2)}s)`);
+            console.log(`- Audio Stream Present: ${!!aStream} (${aStream ? aStream.codec_name + ' @ ' + aStream.sample_rate + 'Hz' : 'none'}, duration: ${aDur.toFixed(2)}s)`);
+
+            if (!vStream || !aStream) {
+                throw new Error("FAIL: Compiled draft video for Clip 10 is missing required video or audio stream!");
+            }
+            if (aStream.sample_rate !== '48000') {
+                throw new Error(`FAIL: Audio sample rate ${aStream.sample_rate}Hz does not match required 48000Hz!`);
+            }
+        } else {
+            throw new Error(`FAIL: Expected compiled video ${clip10VideoPath} does not exist on disk after successful compilation!`);
         }
 
         console.log("\n✅ ALL COMPREHENSIVE CURATOR REGRESSION TESTS PASSED 100%!");
