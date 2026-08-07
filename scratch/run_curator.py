@@ -231,6 +231,22 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
 
             mosaic_runs[job_key]["run_id"] = run_id
 
+            # Persist mosaic_run_id to plan.json immediately so interrupt/resumes are 100% recoverable
+            try:
+                plan_path = os.path.join("projects", project_id, "plan.json")
+                if os.path.exists(plan_path):
+                    with open(plan_path, "r", encoding="utf-8") as f:
+                        plan = json.load(f)
+                    for c in plan:
+                        if int(c.get("num", -1)) == int(clip_num):
+                            c["mosaic_run_id"] = run_id
+                            break
+                    with open(plan_path, "w", encoding="utf-8") as f:
+                        json.dump(plan, f, indent=4)
+                    print(f"[{project_id}][Clip {clip_num}] Immediately saved mosaic_run_id {run_id} to plan.json for interrupt/resume protection!")
+            except Exception as pe:
+                print(f"[{project_id}][Clip {clip_num}] Warning: Failed to save initial mosaic_run_id to plan.json: {pe}")
+
         # Resume / Start Step 4: Polling
         mosaic_runs[job_key]["status"] = "running"
         mosaic_runs[job_key]["progress"] = 70
