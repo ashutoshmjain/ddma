@@ -882,12 +882,6 @@ def compile_clip(
             if res_remux.returncode == 0:
                 shutil.move(temp_remux_path, backup_path)
                 body_video_path = backup_path
-        else:
-            if os.path.exists(temp_remux_path):
-                try:
-                    os.remove(temp_remux_path)
-                except Exception:
-                    pass
 
     # 3. Get title
     title = clip.get("title", "")
