@@ -8,71 +8,137 @@ DeepDive Media Automator (DDMA) is a progressive media automation engine powered
 
 ---
 
-## 🤖 Recommended Quickstart with Google Antigravity (AGY)
+## ⚡ Setup & Quickstart Guide
 
-Skip manual repository setup, virtual environments, and manual FFmpeg/Whisper installations! You can let **Google Antigravity** handle the entire setup, environment provisioning, transcription, and clip rendering automatically.
+Choose the path that fits your workflow:
+* **🚀 Track A: The Easy Way (Google Antigravity on Windows)** — 100% automated setup with natural language. No manual terminal steps or virtual environment creation needed!
+* **🐧 Track B: The Manual Way (Isolated Native WSL Linux on Windows)** — Complete step-by-step instructions for native Linux isolation. Written for absolute beginners.
 
-### 1. Install Google Antigravity
+---
+
+### 🚀 Track A: The Easy Way (Google Antigravity on Windows)
+
+Let **Google Antigravity** handle environment provisioning, dependency installation, FFmpeg verification, transcription, and server launch automatically!
+
+#### 1. Install Google Antigravity
 Install the Antigravity CLI globally (or open the Antigravity IDE / Desktop Assistant):
 ```bash
 npm install -g @google/antigravity-cli
 ```
 
-### 2. Prompt Antigravity
+#### 2. Prompt Antigravity
 Open Antigravity in your terminal or IDE and give it this natural language instruction:
 > **"Clone `https://github.com/ashutoshmjain/ddma.git`, install all Python dependencies from `requirements.txt`, verify FFmpeg is installed, start the local curator server (`python scratch/run_curator.py`), and transcribe my audio file."**
 
-### 🧠 How Antigravity Knows What to Do:
-- **Repository Source**: Antigravity uses the target URL (`https://github.com/ashutoshmjain/ddma.git`) to clone the codebase.
-- **Dependencies**: It inspects `requirements.txt` to install `openai-whisper`, `fastapi`, `pillow`, `typer`, and checks for `ffmpeg` (installing it via `winget`, `brew`, or `apt` if missing).
-- **Execution Blueprint**: Once inside the codebase, Antigravity automatically reads [`.agents/AGENTS.md`](file:///.agents/AGENTS.md) and [README.md](file:///README.md) to discover exact server commands, API specs, and execution workflows.
+#### 🧠 How Antigravity Handles Setup Automatically:
+* **Repository & Dependencies**: Clones `ddma.git` and inspects `requirements.txt` to install `openai-whisper`, `torch`, `requests`, `typer`, `pillow`, and `pyyaml`.
+* **System Tools**: Automatically verifies or installs system binaries (`ffmpeg`) via `winget`, `brew`, or `apt`.
+* **Server Execution**: Launches the Curator web server automatically and provides the local web URL (`http://localhost:8000/curator.html?project=episode_245`).
 
 ---
 
-## 🛠️ Complete Installation & Environment Setup
+### 🐧 Track B: The Manual Way (Isolated Native WSL Linux on Windows)
 
-### 🐧 Option 1: Isolated Native Linux / WSL Environment (Recommended)
-For developers running on Linux or WSL with 100% isolation from the host OS:
+If you prefer to run inside **WSL (Windows Subsystem for Linux)** with native Linux execution and total environment isolation from Windows, follow this beginner-friendly step-by-step guide.
+
+> 💡 **What is WSL?** WSL allows you to run a native Linux terminal inside Windows.
+> 💡 **What is `localhost`?** `localhost` means your own computer. When Curator runs on `http://localhost:8000`, it means your computer is serving the web interface locally on port `8000`.
+> 💡 **What is a `.venv` (Virtual Environment)?** A virtual environment is an isolated "folder box" for Python packages so they don't interfere with your system or other projects.
+
+---
+
+#### 📌 Step 1: Open Your WSL Linux Terminal
+If you haven't installed WSL yet, open Windows PowerShell as Administrator and run:
+```powershell
+wsl --install
+```
+Once installed, open **WSL** (or Ubuntu) from your Windows Start Menu.
+
+---
+
+#### 📌 Step 2: Navigate to Your DDMA Directory
+In your WSL terminal, navigate to your DDMA project folder. 
+
+* **If working directly inside your existing Windows project folder:**
+  *(Windows drive `C:` is mounted inside WSL under `/mnt/c/`)*
+  ```bash
+  cd /mnt/c/Users/ashut/OneDrive/Desktop/github/deepDive/ddma
+  ```
+* **Or if cloning a fresh isolated copy inside WSL native home directory:**
+  ```bash
+  cd ~
+  git clone https://github.com/ashutoshmjain/ddma.git
+  cd ~/ddma
+  ```
+
+---
+
+#### 📌 Step 3: Install Linux System Dependencies (Run Once)
+Install system packages (`python3-full`, `python3-venv`, `python3-pip`, and `ffmpeg`) inside Linux:
+```bash
+sudo apt update && sudo apt install -y python3-full python3-venv python3.14-venv python3-pip ffmpeg
+```
+* **`sudo`**: Runs the installer with administrative privileges inside Linux.
+* **`apt`**: The standard Linux package manager.
+* **`ffmpeg`**: The multimedia processing library used for video stream remuxing and title card concatenation.
+* **`python3-full` / `python3-venv`**: Provides Python's virtual environment creation tools.
+
+---
+
+#### 📌 Step 4: Create and Activate Your Isolated Virtual Environment (`.venv`)
+Inside your DDMA directory, create a clean virtual environment folder named `.venv`:
 
 ```bash
-# 1. CD into your existing project folder (or clone if new setup)
-cd /mnt/c/Users/ashut/OneDrive/Desktop/github/deepDive/ddma
+# 1. Remove any broken draft environments (if retrying)
+rm -rf .venv
 
-# 2. Install Linux system packages (Python venv, pip, FFmpeg)
-sudo apt update && sudo apt install -y python3-venv python3-pip ffmpeg
-
-# 3. Create and activate an isolated Linux virtual environment (.venv)
+# 2. Create a clean Linux virtual environment
 python3 -m venv .venv
-source .venv/bin/activate
 
-# 4. Install all Python dependencies (Whisper, Torch, Requests, Typer, Pillow, Gemini)
+# 3. Activate the environment
+source .venv/bin/activate
+```
+*(When active, your terminal prompt will show `(.venv)` at the beginning of the line!)*
+
+---
+
+#### 📌 Step 5: Install Python Dependencies
+With `(.venv)` active, install all required Python libraries from `requirements.txt`:
+```bash
 pip install --upgrade pip
 pip install -r requirements.txt
+```
+This installs:
+* **`openai-whisper`** (AI speech-to-text transcription engine)
+* **`requests`** (Mosaic API status polling & video downloader)
+* **`typer`** (CLI automation framework)
+* **`pillow`** (Dynamic Intro Title Card & Outro Curiosity Card PNG image renderer)
+* **`google-generativeai`** (Gemini AI Clip Remixing engine)
 
-# 5. Launch the Curator Server
+---
+
+#### 📌 Step 6: Launch the Curator Server
+Start the local Curator web server:
+```bash
 python scratch/run_curator.py
 ```
 
-### 🪟 Option 2: Windows PowerShell Setup
-For native Windows execution:
+You will see the server startup log:
+```text
+Serving on http://localhost:8000
+```
 
-```powershell
-# 1. Clone the repository
-git clone https://github.com/ashutoshmjain/ddma.git
-cd ddma
+Open your web browser (Chrome, Edge, Firefox) and navigate to:
+👉 **[http://localhost:8000/curator.html?project=episode_245](http://localhost:8000/curator.html?project=episode_245)**
 
-# 2. Verify FFmpeg is installed (or install via winget)
-winget install Gyan.FFmpeg
+---
 
-# 3. Create and activate Windows virtual environment (.venv)
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+#### 🔄 How to Resume Curator Next Time (Future Daily Usage)
+Whenever you open your WSL terminal in the future, you only need to run these 3 quick commands:
 
-# 4. Install all Python dependencies
-pip install --upgrade pip
-pip install -r requirements.txt
-
-# 5. Launch the Curator Server
+```bash
+cd /mnt/c/Users/ashut/OneDrive/Desktop/github/deepDive/ddma
+source .venv/bin/activate
 python scratch/run_curator.py
 ```
 
