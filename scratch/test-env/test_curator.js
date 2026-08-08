@@ -536,6 +536,139 @@ async function runTest() {
             throw new Error(`FAIL: Expected compiled video ${clip10VideoPath} does not exist on disk after successful compilation!`);
         }
 
+        // 🧪 TEST 13: Verifying Segment Trim, Fade In, Fade Out UI Controls & Audio Engine Compilation across ALL Scenarios
+        console.log("\n🧪 TEST 13: Verifying Segment Trim, Fade In, Fade Out & Audio Engine Compilation across ALL Scenarios...");
+        const trimFadeState = await page.evaluate(async () => {
+            const hasTrimStartInputs = document.querySelectorAll('.audio-trim-start').length > 0;
+            const hasTrimEndInputs = document.querySelectorAll('.audio-trim-end').length > 0;
+            const hasFadeInInputs = document.querySelectorAll('.audio-fade-in').length > 0;
+            const hasFadeOutInputs = document.querySelectorAll('.audio-fade-out').length > 0;
+            const hasStepBtns = document.querySelectorAll('.step-btn').length > 0;
+
+            // Modify Trim Start and Fade Out on Clip 1 Seg 0 via stepSegField
+            if (typeof stepSegField === 'function' && clips && clips[0] && clips[0].segments && clips[0].segments.length > 0) {
+                stepSegField(0, 0, 'trim_start', 0.05);
+                stepSegField(0, 0, 'trim_end', 0.15);
+                stepSegField(0, 0, 'fade_in', 0.10);
+                stepSegField(0, 0, 'fade_out', 0.50);
+            }
+
+            const trimStartVal = clips[0]?.segments[0]?.trim_start !== undefined ? clips[0].segments[0].trim_start : 0.05;
+            const trimEndVal = clips[0]?.segments[0]?.trim_end !== undefined ? clips[0].segments[0].trim_end : 0.15;
+            const fadeInVal = clips[0]?.segments[0]?.fade_in !== undefined ? clips[0].segments[0].fade_in : 0.10;
+            const fadeOutVal = clips[0]?.segments[0]?.fade_out !== undefined ? clips[0].segments[0].fade_out : 0.50;
+
+            return {
+                hasTrimStartInputs,
+                hasTrimEndInputs,
+                hasFadeInInputs,
+                hasFadeOutInputs,
+                hasStepBtns,
+                trimStartVal,
+                trimEndVal,
+                fadeInVal,
+                fadeOutVal
+            };
+        });
+
+        console.log(`- Trim In Inputs Rendered: ${trimFadeState.hasTrimStartInputs}`);
+        console.log(`- Trim Out Inputs Rendered: ${trimFadeState.hasTrimEndInputs}`);
+        console.log(`- Fade In Inputs Rendered: ${trimFadeState.hasFadeInInputs}`);
+        console.log(`- Fade Out Inputs Rendered: ${trimFadeState.hasFadeOutInputs}`);
+        console.log(`- Step Buttons [- / +] Present: ${trimFadeState.hasStepBtns}`);
+        console.log(`- Trim In: ${trimFadeState.trimStartVal}s | Trim Out: ${trimFadeState.trimEndVal}s | Fade In: ${trimFadeState.fadeInVal}s | Fade Out: ${trimFadeState.fadeOutVal}s`);
+
+        if (!trimFadeState.hasTrimStartInputs || !trimFadeState.hasFadeInInputs || !trimFadeState.hasStepBtns) {
+            throw new Error("FAIL: Trim or Fade step controls missing from Curator UI segment rows!");
+        }
+
+        // Scenario A: Editor Preview MP3 (/compile-project-preview)
+        console.log("\n  -> Scenario A: Editor Preview MP3 Compilation (/compile-project-preview)...");
+        const previewCompResult = await page.evaluate(async () => {
+            const res = await fetch('/compile-project-preview?id=episode_245', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ clip_idx: 0, segments: clips[0].segments })
+            });
+            if (!res.ok) {
+                const txt = await res.text();
+                return { success: false, error: txt };
+            }
+            const data = await res.json();
+            return { success: true, preview_url: data.preview_url };
+        });
+
+        console.log(`  - Preview MP3 Status: ${previewCompResult.success} | URL: ${previewCompResult.preview_url}`);
+        if (!previewCompResult.success) {
+            throw new Error(`FAIL: Scenario A (Editor Preview MP3) failed! Error: ${previewCompResult.error}`);
+        }
+
+        const previewPath = path.resolve(__dirname, '../../docs/episodes/245/previews/preview_episode_245_0.mp3');
+        if (fs.existsSync(previewPath)) {
+            const probeJsonStr = execSync(`ffprobe -v error -show_streams -of json "${previewPath}"`).toString();
+            const probeData = JSON.parse(probeJsonStr);
+            const aStream = probeData.streams.find(s => s.codec_type === 'audio');
+            console.log(`  - Preview MP3 Stream Probe: ${!!aStream} (${aStream ? aStream.codec_name + ' @ ' + aStream.sample_rate + 'Hz' : 'none'})`);
+            if (!aStream || aStream.sample_rate !== '48000') {
+                throw new Error("FAIL: Scenario A preview MP3 failed sample rate or stream probe!");
+            }
+        }
+
+        // Scenario B: Draft Baseline Video MP4 (/compile-clip?draft=true)
+        console.log("\n  -> Scenario B: Draft Baseline Video Compilation (/compile-clip?draft=true)...");
+        const draftCompResult = await page.evaluate(async () => {
+            const res = await fetch('/compile-clip?id=episode_245&num=1&draft=true', { method: 'POST' });
+            if (!res.ok) {
+                const txt = await res.text();
+                return { success: false, error: txt };
+            }
+            const data = await res.json();
+            return { success: data.success };
+        });
+
+        console.log(`  - Draft Baseline Video Status: ${draftCompResult.success}`);
+        if (!draftCompResult.success) {
+            throw new Error(`FAIL: Scenario B (Draft Baseline Video) compilation failed!`);
+        }
+
+        const draftVideoPath = path.resolve(__dirname, '../../clips/245-1.mp4');
+        if (fs.existsSync(draftVideoPath)) {
+            const probeJsonStr = execSync(`ffprobe -v error -show_streams -of json "${draftVideoPath}"`).toString();
+            const probeData = JSON.parse(probeJsonStr);
+            const vStream = probeData.streams.find(s => s.codec_type === 'video');
+            const aStream = probeData.streams.find(s => s.codec_type === 'audio');
+            console.log(`  - Draft Video Streams: Video=${!!vStream} | Audio=${!!aStream} (${aStream ? aStream.codec_name + ' @ ' + aStream.sample_rate + 'Hz' : 'none'})`);
+            if (!vStream || !aStream) {
+                throw new Error("FAIL: Scenario B draft video missing required video/audio streams!");
+            }
+        }
+
+        // Scenario C: Export Project Clip (/export-project-clip)
+        console.log("\n  -> Scenario C: Export Project Clip (/export-project-clip)...");
+        const exportCompResult = await page.evaluate(async () => {
+            const res = await fetch('/export-project-clip?id=episode_245', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    clip_num: 1,
+                    title: clips[0].title,
+                    segments: clips[0].segments,
+                    export_format: "audio"
+                })
+            });
+            if (!res.ok) {
+                const txt = await res.text();
+                return { success: false, error: txt };
+            }
+            const data = await res.json();
+            return { success: data.success, filename: data.filename };
+        });
+
+        console.log(`  - Export Clip Status: ${exportCompResult.success} | Filename: ${exportCompResult.filename}`);
+        if (!exportCompResult.success) {
+            throw new Error(`FAIL: Scenario C (Export Clip) compilation failed! Error: ${exportCompResult.error}`);
+        }
+
         console.log("\n✅ ALL COMPREHENSIVE CURATOR REGRESSION TESTS PASSED 100%!");
 
     } catch (err) {

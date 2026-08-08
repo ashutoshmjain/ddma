@@ -4970,26 +4970,45 @@
                     let segDuration = 0.0;
                     let segStartOffset = 0.0;
 
+                    const tStart = parseFloat(seg.trim_start) || 0.0;
+                    const tEnd = parseFloat(seg.trim_end !== undefined ? seg.trim_end : (type === 'audio' ? 0.1 : 0.0));
+                    const fadeIn = parseFloat(seg.fade_in) || 0.0;
+                    const fadeOut = parseFloat(seg.fade_out !== undefined ? seg.fade_out : (type === 'music' ? 2.0 : 0.0));
+                    const vol = seg.volume !== undefined ? parseFloat(seg.volume) : 1.0;
+
                     if (type === 'music') {
-                        segDuration = parseFloat(seg.duration) || 4.5;
-                        segStartOffset = 0.0;
-                        const vol = seg.volume !== undefined ? parseFloat(seg.volume) : 1.0;
-                        gainNode.gain.setValueAtTime(vol, currentScheduleTime);
+                        const rawDur = parseFloat(seg.duration) || 4.5;
+                        segStartOffset = tStart;
+                        segDuration = Math.max(0.1, rawDur - tStart - tEnd);
                     } else {
-                        const sStart = parseFloat(seg.start) || 0.0;
-                        const sEnd = parseFloat(seg.end) || (sStart + 10.0);
-                        segStartOffset = sStart;
-                        segDuration = Math.max(0.1, sEnd - sStart);
-                        const vol = seg.volume !== undefined ? parseFloat(seg.volume) : 1.0;
-                        gainNode.gain.setValueAtTime(vol, currentScheduleTime);
+                        const rawStart = parseFloat(seg.start) || 0.0;
+                        const rawEnd = parseFloat(seg.end) || (rawStart + 10.0);
+                        segStartOffset = rawStart + tStart;
+                        const effEnd = Math.max(segStartOffset + 0.1, rawEnd - tEnd);
+                        segDuration = effEnd - segStartOffset;
+                    }
+
+                    gainNode.gain.setValueAtTime(vol, currentScheduleTime);
+
+                    if (fadeIn > 0) {
+                        const fadeInDur = Math.min(fadeIn, segDuration / 2);
+                        gainNode.gain.setValueAtTime(0.001, currentScheduleTime);
+                        gainNode.gain.exponentialRampToValueAtTime(vol, currentScheduleTime + fadeInDur);
+                    }
+
+                    if (fadeOut > 0) {
+                        const fadeOutDur = Math.min(fadeOut, segDuration / 2);
+                        const fadeOutStart = currentScheduleTime + Math.max(0, segDuration - fadeOutDur);
+                        gainNode.gain.setValueAtTime(vol, fadeOutStart);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, currentScheduleTime + segDuration);
                     }
 
                     // Apply crossfade ramp if specified
                     const crossfade = parseFloat(seg.crossfade) || 0.0;
-                    if (crossfade > 0 && idx > 0) {
+                    if (crossfade > 0 && idx > 0 && fadeIn === 0) {
                         const fadeDuration = Math.min(crossfade, segDuration);
                         gainNode.gain.setValueAtTime(0.001, currentScheduleTime);
-                        gainNode.gain.exponentialRampToValueAtTime(1.0, currentScheduleTime + fadeDuration);
+                        gainNode.gain.exponentialRampToValueAtTime(vol, currentScheduleTime + fadeDuration);
                     }
 
                     source.start(currentScheduleTime, segStartOffset, segDuration);
