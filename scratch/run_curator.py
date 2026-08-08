@@ -382,47 +382,90 @@ def compile_segments_helper(segments, output_path, audio_source_path):
             temp_files.append(temp_file)
             
             if seg["type"] == "audio":
-                # Slice audio segment from project audio source
-                start = seg["start"]
-                end = seg["end"]
-                volume = seg.get("volume", 1.0)
+                # Slice audio segment from project audio source with trim & fade
+                raw_start = float(seg["start"])
+                raw_end = float(seg["end"])
+                trim_start = float(seg.get("trim_start", 0.0))
+                # Default trim_end for speech audio is 0.1s (cleans trailing Whisper phoneme bleed)
+                trim_end = float(seg.get("trim_end", 0.1 if "trim_end" not in seg else seg.get("trim_end")))
+                
+                effective_start = raw_start + trim_start
+                effective_end = max(effective_start + 0.1, raw_end - trim_end)
+                eff_dur = effective_end - effective_start
+
+                fade_in = float(seg.get("fade_in", 0.0))
+                fade_out = float(seg.get("fade_out", 0.0))
+                volume = float(seg.get("volume", 1.0))
+
+                filters = []
+                if fade_in > 0:
+                    fade_in_dur = min(fade_in, eff_dur / 2.0)
+                    filters.append(f"afade=t=in:ss=0:d={fade_in_dur:.3f}:curve=qsin")
+                if fade_out > 0:
+                    fade_out_dur = min(fade_out, eff_dur / 2.0)
+                    st_time = max(0.0, eff_dur - fade_out_dur)
+                    filters.append(f"afade=t=out:st={st_time:.3f}:d={fade_out_dur:.3f}:curve=qsin")
+                filters.append(f"volume={volume}")
+                af_str = ",".join(filters)
+
                 cmd = [
                     "ffmpeg", "-y",
-                    "-ss", str(start),
-                    "-to", str(end),
+                    "-ss", f"{effective_start:.3f}",
+                    "-to", f"{effective_end:.3f}",
                     "-i", audio_source_path,
                     "-ar", "48000",
                     "-ac", "2",
-                    "-af", f"volume={volume}",
+                    "-af", af_str,
                     temp_file
                 ]
                 res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 if res.returncode != 0:
                     raise Exception(f"FFmpeg error slicing audio: {res.stderr.decode('utf-8')}")
+
             elif seg["type"] == "music":
-                # Slice music segment
-                music_file = seg["music_file"]
-                duration = seg["duration"]
-                music_path = os.path.join("music", music_file)
+                # Slice music segment with trim & fade
+                music_file = seg.get("music_file", "")
+                raw_duration = float(seg.get("duration", 4.5))
+                trim_start = float(seg.get("trim_start", 0.0))
+                trim_end = float(seg.get("trim_end", 0.0))
+                
+                eff_dur = max(0.1, raw_duration - trim_start - trim_end)
+                fade_in = float(seg.get("fade_in", 0.0))
+                # Default fade_out for music stings is 2.0s for DJ ducking
+                fade_out = float(seg.get("fade_out", 2.0 if "fade_out" not in seg else seg.get("fade_out")))
+                volume = float(seg.get("volume", 1.0))
+
+                music_path = os.path.join("music", music_file) if music_file else ""
                 
                 if not os.path.exists(music_path) or music_file == "none":
                     # Generate digital silence
                     cmd = [
                         "ffmpeg", "-y",
                         "-f", "lavfi",
-                        "-i", f"anullsrc=r=48000:cl=stereo:d={duration}",
+                        "-i", f"anullsrc=r=48000:cl=stereo:d={eff_dur:.3f}",
                         temp_file
                     ]
                 else:
-                    # Slice music and scale volume down
-                    volume = seg.get("volume", 1.0)
-                    cmd = [
-                        "ffmpeg", "-y",
+                    filters = []
+                    if fade_in > 0:
+                        fade_in_dur = min(fade_in, eff_dur / 2.0)
+                        filters.append(f"afade=t=in:ss=0:d={fade_in_dur:.3f}:curve=qsin")
+                    if fade_out > 0:
+                        fade_out_dur = min(fade_out, eff_dur)
+                        st_time = max(0.0, eff_dur - fade_out_dur)
+                        filters.append(f"afade=t=out:st={st_time:.3f}:d={fade_out_dur:.3f}:curve=qsin")
+                    filters.append(f"volume={volume}")
+                    af_str = ",".join(filters)
+
+                    cmd = ["ffmpeg", "-y"]
+                    if trim_start > 0:
+                        cmd += ["-ss", f"{trim_start:.3f}"]
+                    cmd += [
                         "-i", music_path,
-                        "-t", str(duration),
+                        "-t", f"{eff_dur:.3f}",
                         "-ar", "48000",
                         "-ac", "2",
-                        "-af", f"volume={volume}",
+                        "-af", af_str,
                         temp_file
                     ]
                 res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -469,18 +512,18 @@ def compile_segments_helper(segments, output_path, audio_source_path):
                 filter_complex = "".join(f"[{i}:a]" for i in range(len(temp_files)))
                 filter_complex += f"concat=n={len(temp_files)}:v=0:a=1[out]"
             else:
-                # Construct chained acrossfade filters
+                # Construct chained acrossfade filters with quarter-sine curves
                 filter_parts = []
                 current_src = "[0:a]"
                 for i in range(len(temp_files) - 1):
                     cf_dur = crossfades[i]
                     if cf_dur > 0:
-                        fade_opts = f"d={cf_dur}"
+                        fade_opts = f"d={cf_dur:.3f}:c1=qsin:c2=qsin"
                     else:
                         fade_opts = "ns=1"
                     
                     next_dest = f"[a{i+1}]" if i < len(temp_files) - 2 else "[out]"
-                    filter_parts.append(f"{current_src}[{i+1}:a]acrossfade={fade_opts}:c1=tri:c2=tri{next_dest}")
+                    filter_parts.append(f"{current_src}[{i+1}:a]acrossfade={fade_opts}{next_dest}")
                     current_src = f"[a{i+1}]"
                 
                 filter_complex = ";".join(filter_parts)

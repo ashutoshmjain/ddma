@@ -471,34 +471,75 @@ def cut(
                 temp_seg_files.append(t_seg)
                 if seg.get("type") == "music":
                     m_file = os.path.basename(seg.get("music_file", "deepDive-soft-ok.mp3"))
-                    m_dur = seg.get("duration", 5.0)
-                    m_vol = seg.get("volume", 1.0)
+                    raw_dur = float(seg.get("duration", 5.0))
+                    t_start = float(seg.get("trim_start", 0.0))
+                    t_end = float(seg.get("trim_end", 0.0))
+                    eff_dur = max(0.1, raw_dur - t_start - t_end)
+
+                    fade_in = float(seg.get("fade_in", 0.0))
+                    fade_out = float(seg.get("fade_out", 2.0 if "fade_out" not in seg else seg.get("fade_out")))
+                    m_vol = float(seg.get("volume", 1.0))
+                    
                     m_path = os.path.join("music", m_file)
                     if not os.path.exists(m_path):
                         m_path = os.path.join("music", "deepDive-soft-ok.mp3")
                     
-                    cmd_m = [
-                        "ffmpeg", "-y",
+                    filters = []
+                    if fade_in > 0:
+                        fade_in_dur = min(fade_in, eff_dur / 2.0)
+                        filters.append(f"afade=t=in:ss=0:d={fade_in_dur:.3f}:curve=qsin")
+                    if fade_out > 0:
+                        fade_out_dur = min(fade_out, eff_dur)
+                        st_time = max(0.0, eff_dur - fade_out_dur)
+                        filters.append(f"afade=t=out:st={st_time:.3f}:d={fade_out_dur:.3f}:curve=qsin")
+                    filters.append(f"volume={m_vol}")
+                    af_str = ",".join(filters)
+
+                    cmd_m = ["ffmpeg", "-y"]
+                    if t_start > 0:
+                        cmd_m += ["-ss", f"{t_start:.3f}"]
+                    cmd_m += [
                         "-i", m_path,
-                        "-t", str(m_dur),
+                        "-t", f"{eff_dur:.3f}",
                         "-ar", "48000", "-ac", "2",
-                        "-af", f"volume={m_vol}",
+                        "-af", af_str,
                         t_seg
                     ]
                     res_m = subprocess.run(cmd_m, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
                     if res_m.returncode != 0:
                         typer.echo(f"Warning rendering music segment {s_idx} for clip {c['num']}: {res_m.stderr}", err=True)
                 else:
-                    s_start = to_time_str(seg.get("start", c["start"]))
-                    s_end = to_time_str(seg.get("end", c["end"]))
-                    s_vol = seg.get("volume", 1.0)
+                    raw_start = float(seg.get("start", c["start"]))
+                    raw_end = float(seg.get("end", c["end"]))
+                    t_start = float(seg.get("trim_start", 0.0))
+                    t_end = float(seg.get("trim_end", 0.1 if "trim_end" not in seg else seg.get("trim_end")))
+
+                    eff_start = raw_start + t_start
+                    eff_end = max(eff_start + 0.1, raw_end - t_end)
+                    eff_dur = eff_end - eff_start
+
+                    fade_in = float(seg.get("fade_in", 0.0))
+                    fade_out = float(seg.get("fade_out", 0.0))
+                    s_vol = float(seg.get("volume", 1.0))
+
+                    filters = []
+                    if fade_in > 0:
+                        fade_in_dur = min(fade_in, eff_dur / 2.0)
+                        filters.append(f"afade=t=in:ss=0:d={fade_in_dur:.3f}:curve=qsin")
+                    if fade_out > 0:
+                        fade_out_dur = min(fade_out, eff_dur / 2.0)
+                        st_time = max(0.0, eff_dur - fade_out_dur)
+                        filters.append(f"afade=t=out:st={st_time:.3f}:d={fade_out_dur:.3f}:curve=qsin")
+                    filters.append(f"volume={s_vol}")
+                    af_str = ",".join(filters)
+
                     cmd_a = [
                         "ffmpeg", "-y",
-                        "-ss", s_start,
-                        "-to", s_end,
+                        "-ss", f"{eff_start:.3f}",
+                        "-to", f"{eff_end:.3f}",
                         "-i", audio,
                         "-ar", "48000", "-ac", "2",
-                        "-af", f"volume={s_vol}",
+                        "-af", af_str,
                         t_seg
                     ]
                     res_a = subprocess.run(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -513,10 +554,26 @@ def cut(
                 typer.echo(f"Error: No valid segment audio files created for clip {c['num']}", err=True)
                 continue
 
+            # Check for crossfades
+            crossfades = [float(s.get("crossfade", 0.0)) for s in segments[:-1]]
+            has_cf = any(cf > 0 for cf in crossfades)
+
             for tf in valid_seg_files:
                 cmd_cat += ["-i", tf]
-            filter_complex = "".join(f"[{i}:a]" for i in range(len(valid_seg_files)))
-            filter_complex += f"concat=n={len(valid_seg_files)}:v=0:a=1[out]"
+
+            if not has_cf or len(valid_seg_files) <= 1:
+                filter_complex = "".join(f"[{i}:a]" for i in range(len(valid_seg_files)))
+                filter_complex += f"concat=n={len(valid_seg_files)}:v=0:a=1[out]"
+            else:
+                filter_parts = []
+                curr_src = "[0:a]"
+                for i in range(len(valid_seg_files) - 1):
+                    cf_dur = crossfades[i] if i < len(crossfades) else 0.0
+                    fade_opts = f"d={cf_dur:.3f}:c1=qsin:c2=qsin" if cf_dur > 0 else "ns=1"
+                    next_dest = f"[a{i+1}]" if i < len(valid_seg_files) - 2 else "[out]"
+                    filter_parts.append(f"{curr_src}[{i+1}:a]acrossfade={fade_opts}{next_dest}")
+                    curr_src = f"[a{i+1}]"
+                filter_complex = ";".join(filter_parts)
             cmd_cat += ["-filter_complex", filter_complex, "-map", "[out]", temp_concat_wav]
             subprocess.run(cmd_cat, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             
