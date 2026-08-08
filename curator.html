@@ -5485,7 +5485,7 @@
                         }
                         window.fetchCompiledVideosTimeout = setTimeout(() => {
                             if (activeProjectId) {
-                                fetchProjectPlan(activeProjectId, true);
+                                fetchCompiledVideos();
                             }
                         }, 2000);
                     }

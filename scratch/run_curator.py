@@ -3341,7 +3341,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         if "mosaic_run_id" in clip:
                             c_num = clip.get("num")
                             orig_file = os.path.join("clips", f"{ep_num}-{c_num}-original.mp4")
-                            if not os.path.exists(orig_file):
+                            main_file = os.path.join("clips", f"{ep_num}-{c_num}.mp4")
+                            if not os.path.exists(orig_file) and not os.path.exists(main_file):
                                 print(f"[{project_id}][Clip {c_num}] Stale mosaic_run_id {clip['mosaic_run_id']} found without downloaded video file. Cleaning up...")
                                 del clip["mosaic_run_id"]
                                 plan_modified = True
@@ -3407,6 +3408,18 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             except Exception:
                                 pass
                                 
+                    if isinstance(plan_data, list):
+                        for c in plan_data:
+                            c_num = c.get("num")
+                            if c_num and c.get("mosaic_run_id"):
+                                mp4_file = os.path.join(clips_dir, f"{ep_num}-{c_num}.mp4")
+                                if os.path.exists(mp4_file):
+                                    if c_num not in clip_statuses:
+                                        clip_statuses[c_num] = {"has_audio": False, "video_state": "compiled", "has_mosaic_file": True}
+                                    else:
+                                        clip_statuses[c_num]["video_state"] = "compiled"
+                                        clip_statuses[c_num]["has_mosaic_file"] = True
+
                     # Purge stale/auto_compile jobs from mosaic_runs (4 hours / 14400s max)
                     now = time.time()
                     stale_keys = [
