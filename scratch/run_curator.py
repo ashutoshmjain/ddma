@@ -257,17 +257,18 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         final_video_url = None
         
         while attempt < max_attempts:
-            time.sleep(300)  # Poll every 5 minutes (300s)
             attempt += 1
             
             try:
                 res_status = requests.get(f"{base_url}/agent_run/{run_id}", headers=headers)
                 if res_status.status_code != 200:
                     print(f"[{project_id}][Clip {clip_num}] Error checking Mosaic run status: {res_status.text}")
+                    time.sleep(300)
                     continue
                 run_info = res_status.json()
             except Exception as poll_ex:
                 print(f"[{project_id}][Clip {clip_num}] Warning: Connection glitch while polling Mosaic status: {poll_ex}. Retrying in 5 minutes...")
+                time.sleep(300)
                 continue
             
             status = run_info.get("status")
@@ -290,6 +291,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             
             # Update progress incrementally while running (scales from 70 to 90 over 48 attempts)
             mosaic_runs[job_key]["progress"] = min(70 + int(attempt * 0.42), 90)
+            time.sleep(300)
         
         if not final_video_url:
             raise Exception("Mosaic run timed out after 4 hours.")
@@ -3422,9 +3424,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             if job_status in ("starting", "compiling draft video", "requesting upload URL", "uploading media", "finalizing upload", "triggering run", "running", "downloading output", "compiling intro card", "processing", "compiling"):
                                 if job_clip_num not in clip_statuses:
                                     clip_statuses[job_clip_num] = {"has_audio": False, "video_state": "none"}
-                                clip_statuses[job_clip_num]["video_state"] = "processing"
-                                clip_statuses[job_clip_num]["progress"] = job.get("progress", 0)
-                                clip_statuses[job_clip_num]["status"] = job_status
+                                if not clip_statuses[job_clip_num].get("has_mosaic_file"):
+                                    clip_statuses[job_clip_num]["video_state"] = "processing"
+                                    clip_statuses[job_clip_num]["progress"] = job.get("progress", 0)
+                                    clip_statuses[job_clip_num]["status"] = job_status
                                 
                 ingestion_progress = None
                 progress_file = os.path.join(project_dir, "ingestion_progress.json")
