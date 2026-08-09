@@ -109,39 +109,26 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                 except Exception as rm_err:
                     print(f"Warning: could not delete old backup file: {rm_err}")
                     
-            # Compile draft video automatically!
+            # Step 1: Run complete Draft Video pipeline to prepare fresh baseline MP4 (audio + title/outro cards)
             mosaic_runs[job_key]["status"] = "compiling draft video"
             mosaic_runs[job_key]["progress"] = 5
-            print(f"[{project_id}][Clip {clip_num}] Compiling fresh black draft video...")
+            print(f"[{project_id}][Clip {clip_num}] Executing Draft Video pipeline before Mosaic upload...")
             
             os.makedirs("clips", exist_ok=True)
-            temp_audio = f"temp_mosaic_audio_{project_id}_{clip_num}.mp3"
-            try:
-                compile_segments_helper(segments, temp_audio, audio_path)
+            plan_file_path = os.path.join("projects", project_id, "plan.json")
+            
+            # Slice fresh audio clip
+            cut_cmd = [sys.executable, "ddma.py", "cut", "--audio", audio_path, "--plan-file", plan_file_path, "--out-dir", "clips"]
+            res_cut = subprocess.run(cut_cmd, capture_output=True, text=True, cwd=".")
+            if res_cut.returncode != 0:
+                print(f"[{project_id}][Clip {clip_num}] Warning: Audio cut emitted stderr: {res_cut.stderr}")
                 
-                # Mux with a solid black canvas (740x740)
-                cmd = [
-                    "ffmpeg", "-y",
-                    "-f", "lavfi",
-                    "-i", "color=c=black:s=740x740:r=25",
-                    "-i", temp_audio,
-                    "-c:v", "libx264",
-                    "-tune", "stillimage",
-                    "-c:a", "aac",
-                    "-b:a", "192k",
-                    "-pix_fmt", "yuv420p",
-                    "-shortest",
-                    file_path
-                ]
-                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                if res.returncode != 0:
-                    raise Exception(f"FFmpeg automatic video compile failed: {res.stderr.decode('utf-8')}")
-            finally:
-                if os.path.exists(temp_audio):
-                    try:
-                        os.remove(temp_audio)
-                    except:
-                        pass
+            # Compile fresh baseline draft video
+            comp_draft_cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", plan_file_path, "--force-draft"]
+            res_draft = subprocess.run(comp_draft_cmd, capture_output=True, text=True, cwd=".")
+            if res_draft.returncode != 0:
+                raise Exception(f"Failed to prepare baseline draft video for Mosaic: {res_draft.stderr}")
+            print(f"[{project_id}][Clip {clip_num}] Fresh baseline draft video compiled successfully: {file_path}")
             
             # Step 2: Upload S3
             mosaic_runs[job_key]["status"] = "requesting upload URL"
@@ -301,40 +288,34 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         mosaic_runs[job_key]["progress"] = 95
         print(f"[{project_id}][Clip {clip_num}] Downloading rendered video from Mosaic S3...")
         
-        # Clean up existing files to prepare for download and compile-clip backup
+        mosaic_version_path = os.path.join("clips", f"{ep_num}-{clip_num}-mosaic-{run_id}.mp4")
         backup_path = os.path.join("clips", f"{ep_num}-{clip_num}-original.mp4")
-        for p in [file_path, backup_path]:
-            if os.path.exists(p):
+        
+        # Purge older Mosaic render files for this clip (e.g. clips/245-13-mosaic-*.mp4)
+        import glob
+        for f_cand in glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}-mosaic-*.mp4")):
+            if f_cand != mosaic_version_path:
                 try:
-                    os.remove(p)
-                except Exception as rm_err:
-                    print(f"Warning: Failed to clean up file {p} before download: {rm_err}")
+                    os.remove(f_cand)
+                    print(f"[{project_id}][Clip {clip_num}] Purged older Mosaic render: {f_cand}")
+                except Exception as p_err:
+                    print(f"Warning: Could not purge older Mosaic render {f_cand}: {p_err}")
         
         res_download = requests.get(final_video_url, stream=True)
         if res_download.status_code != 200:
             raise Exception(f"Failed to download rendered video from Mosaic: {res_download.status_code}")
             
-        with open(file_path, "wb") as f_out:
+        with open(mosaic_version_path, "wb") as f_out:
             for chunk in res_download.iter_content(chunk_size=8192):
                 f_out.write(chunk)
                 
-        # Automatically compile clip locally to add the intro title card card
+        # Copy to backup_path for backwards compatibility
         try:
-            mosaic_runs[job_key]["status"] = "compiling intro card"
-            print(f"[{project_id}][Clip {clip_num}] Automatically compiling clip to add intro card...")
-            cmd_compile = [
-                sys.executable, "ddma.py", "compile-clip",
-                "--num", str(clip_num),
-                "--plan-file", os.path.join("projects", project_id, "plan.json")
-            ]
-            comp_res = subprocess.run(cmd_compile, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            if comp_res.returncode != 0:
-                raise Exception(f"Auto-compilation failed: {comp_res.stderr.decode('utf-8')}")
-            print(f"[{project_id}][Clip {clip_num}] Auto-compilation completed successfully!")
-        except Exception as comp_err:
-            print(f"[{project_id}][Clip {clip_num}] Warning: Auto-compilation failed: {comp_err}")
+            shutil.copyfile(mosaic_version_path, backup_path)
+        except Exception as copy_ex:
+            print(f"Warning: Could not copy to backup_path: {copy_ex}")
 
-        # ONLY persist mosaic_run_id into plan.json AFTER successful download and compilation verification!
+        # Persist mosaic_run_id into plan.json AFTER successful download!
         try:
             plan_path = os.path.join("projects", project_id, "plan.json")
             if os.path.exists(plan_path):
@@ -351,7 +332,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             print(f"[{project_id}][Clip {clip_num}] Warning: Failed to save mosaic_run_id to plan.json: {pe}")
             
         mosaic_runs[job_key] = {"status": "completed", "progress": 100, "run_id": run_id, "error": None}
-        print(f"[{project_id}][Clip {clip_num}] Mosaic export and auto-compilation completed successfully!")
+        print(f"[{project_id}][Clip {clip_num}] Mosaic download completed successfully! Status set to completed.")
         
     except Exception as ex:
         import traceback
