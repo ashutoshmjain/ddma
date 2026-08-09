@@ -3907,8 +3907,10 @@
         });
 
         function formatTime(secs) {
-            const mins = Math.floor(secs / 60);
-            const remainingSecs = Math.floor(secs % 60);
+            if (isNaN(secs) || secs === null || secs === undefined) return "00:00";
+            const totalSecs = Math.max(0, Math.floor(secs));
+            const mins = Math.floor(totalSecs / 60);
+            const remainingSecs = totalSecs % 60;
             return `${mins.toString().padStart(2, '0')}:${remainingSecs.toString().padStart(2, '0')}`;
         }
 
@@ -4335,13 +4337,13 @@
                 const endVal = endWordIdx !== null ? allWords[endWordIdx].end : allWords[startWordIdx].end;
                 const durationVal = parseFloat((endVal - startVal).toFixed(2));
                 
-                selStart.textContent = startVal.toFixed(2);
-                selEnd.textContent = endVal.toFixed(2);
-                selDuration.textContent = durationVal.toFixed(2);
+                selStart.textContent = formatTime(startVal);
+                selEnd.textContent = formatTime(endVal);
+                selDuration.textContent = formatTime(durationVal);
             } else {
                 selStart.textContent = '--';
                 selEnd.textContent = '--';
-                selDuration.textContent = '0.00';
+                selDuration.textContent = '00:00';
             }
         }
 
@@ -4379,15 +4381,18 @@
                     if (activeRow) {
                         const metaEl = activeRow.querySelector('.segment-meta');
                         const textEl = activeRow.querySelector('.segment-text');
-                        if (metaEl) metaEl.textContent = `🎙 Audio Segment (${durationVal}s)`;
+                        if (metaEl) metaEl.textContent = `🎙 Audio Segment (${formatTime(durationVal)})`;
                         if (textEl) textEl.textContent = `"${selectedText.trim()}"`;
                     }
                     
                     const card = clipListContainer.querySelector(`.clip-card[data-index="${clipIdx}"]`);
                     if (card) {
                         const totalDuration = calculateClipDuration(clips[clipIdx]);
+                        const audioBodyDuration = calculateClipAudioDuration(clips[clipIdx]);
                         const durInput = card.querySelector('.clip-dur-input');
-                        if (durInput) durInput.value = totalDuration.toFixed(2);
+                        if (durInput) durInput.value = formatTime(totalDuration);
+                        const bodyInput = card.querySelector('.clip-audio-body-input');
+                        if (bodyInput) bodyInput.value = formatTime(audioBodyDuration);
                     }
                     
                     updateUsedHighlights();
@@ -4399,7 +4404,7 @@
             } else {
                 selStart.textContent = '--';
                 selEnd.textContent = '--';
-                selDuration.textContent = '0.00';
+                selDuration.textContent = '00:00';
             }
         }
 
@@ -5924,7 +5929,7 @@
                             segmentsHtml += `
                                 <div class="segment-row audio-seg" data-clip="${index}" data-seg="${segIdx}" style="${rowStyle}">
                                     <div class="segment-info">
-                                        <span class="segment-meta audio-meta">🎙 Audio Segment (${seg.duration.toFixed(2)}s)</span>
+                                        <span class="segment-meta audio-meta">🎙 Audio Segment (${formatTime(seg.duration)})</span>
                                         <span class="segment-text">"${seg.text}"</span>
                                         ${audioEditorHtml}
                                     </div>
@@ -5946,7 +5951,7 @@
                             segmentsHtml += `
                                 <div class="segment-row music-seg" data-clip="${index}" data-seg="${segIdx}">
                                     <div class="segment-info">
-                                        <span class="segment-meta music-meta">🎵 Music Segment (${seg.duration}s)</span>
+                                        <span class="segment-meta music-meta">🎵 Music Segment (${formatTime(seg.duration)})</span>
                                         <div class="music-editor-row" style="margin-top: 0.25rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;" onclick="event.stopPropagation();">
                                             <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                                 <label style="font-size: 0.65rem; color: #a78bfa; font-weight: 600;">Sting:</label>
@@ -6099,12 +6104,12 @@
                             <!-- Clip Level Settings (Duration, Volume, Crossfade) -->
                             <div class="music-editor-row" style="margin-top: 0.4rem; padding: 0.3rem 0.5rem; background: rgba(255,255,255,0.02); border-radius: 4px; display: inline-flex; align-self: flex-start;" onclick="event.stopPropagation();">
                                 <div class="music-editor-field">
-                                    <label style="font-size: 0.7rem; color: #06b6d4; font-weight: 700;">Video Dur (s):</label>
+                                    <label style="font-size: 0.7rem; color: #06b6d4; font-weight: 700;">Video Dur:</label>
                                     <input type="text" class="clip-dur-input" style="width: 55px; background: transparent; border: none; color: #06b6d4; font-size: 0.75rem; font-family: var(--font-mono); font-weight: bold; padding: 0;" value="${formatTime(totalDuration)}" disabled title="Full 4-Element Video Duration (Intro 2s + Body + Outro 5s)">
                                 </div>
                                 <div class="music-editor-field">
                                     <label style="font-size: 0.7rem; color: var(--text-muted);">Audio Body:</label>
-                                    <input type="text" style="width: 55px; background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-mono); padding: 0;" value="${formatTime(calculateClipAudioDuration(clip))}" disabled title="Audio Segments Body Duration">
+                                    <input type="text" class="clip-audio-body-input" style="width: 55px; background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-mono); padding: 0;" value="${formatTime(calculateClipAudioDuration(clip))}" disabled title="Audio Segments Body Duration">
                                 </div>
                                 <div class="music-editor-field">
                                     <label style="font-size: 0.7rem;">Volume:</label>
