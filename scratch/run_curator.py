@@ -3333,19 +3333,27 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 import re
                 ep_num_match = re.search(r'\d+', project_id)
 
-                # Self-healing check: ensure clips with mosaic_run_id actually have -original.mp4 file on disk
+                # Self-healing & Auto-Resume check: ensure clips with mosaic_run_id are being polled / downloaded
                 plan_modified = False
                 if ep_num_match and plan_data:
                     ep_num = ep_num_match.group(0)
                     for clip in plan_data:
                         if "mosaic_run_id" in clip:
                             c_num = clip.get("num")
+                            run_id = clip["mosaic_run_id"]
                             orig_file = os.path.join("clips", f"{ep_num}-{c_num}-original.mp4")
                             main_file = os.path.join("clips", f"{ep_num}-{c_num}.mp4")
+                            job_key = (project_id, int(c_num))
                             if not os.path.exists(orig_file) and not os.path.exists(main_file):
-                                print(f"[{project_id}][Clip {c_num}] Stale mosaic_run_id {clip['mosaic_run_id']} found without downloaded video file. Cleaning up...")
-                                del clip["mosaic_run_id"]
-                                plan_modified = True
+                                if job_key not in mosaic_runs or mosaic_runs[job_key].get("status") == "failed":
+                                    print(f"[{project_id}][Clip {c_num}] Auto-resuming Mosaic polling thread for run_id {run_id}...")
+                                    st_data = load_settings()
+                                    t = threading.Thread(
+                                        target=run_mosaic_pipeline,
+                                        args=(project_id, c_num, st_data, "", clip.get("segments", []), os.path.join("audio", f"{ep_num}.mp3"), run_id),
+                                        daemon=True
+                                    )
+                                    t.start()
                     if plan_modified:
                         try:
                             with open(plan_path, "w", encoding="utf-8") as f:
