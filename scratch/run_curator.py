@@ -3322,10 +3322,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         if "mosaic_run_id" in clip:
                             c_num = clip.get("num")
                             run_id = clip["mosaic_run_id"]
+                            versioned_mosaic_file = os.path.join("clips", f"{ep_num}-{c_num}-mosaic-{run_id}.mp4")
                             orig_file = os.path.join("clips", f"{ep_num}-{c_num}-original.mp4")
-                            main_file = os.path.join("clips", f"{ep_num}-{c_num}.mp4")
                             job_key = (project_id, int(c_num))
-                            if not os.path.exists(orig_file) and not os.path.exists(main_file):
+                            if not os.path.exists(versioned_mosaic_file) and not os.path.exists(orig_file):
                                 if job_key not in mosaic_runs or mosaic_runs[job_key].get("status") == "failed":
                                     print(f"[{project_id}][Clip {c_num}] Auto-resuming Mosaic polling thread for run_id {run_id}...")
                                     st_data = load_settings()
@@ -3388,7 +3388,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                     
                                     if file.endswith(".mp3"):
                                         clip_statuses[clip_num]["has_audio"] = True
-                                    elif file.endswith("-original.mp4"):
+                                    elif file.endswith("-original.mp4") or "-mosaic-" in file:
                                         clip_statuses[clip_num]["video_state"] = "compiled"
                                         clip_statuses[clip_num]["has_mosaic_file"] = True
                                     elif file.endswith(".mp4"):
@@ -3401,8 +3401,11 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         for c in plan_data:
                             c_num = c.get("num")
                             if c_num and c.get("mosaic_run_id"):
-                                mp4_file = os.path.join(clips_dir, f"{ep_num}-{c_num}.mp4")
-                                if os.path.exists(mp4_file):
+                                m_run_id = c.get("mosaic_run_id")
+                                v_file = os.path.join(clips_dir, f"{ep_num}-{c_num}-mosaic-{m_run_id}.mp4")
+                                orig_file = os.path.join(clips_dir, f"{ep_num}-{c_num}-original.mp4")
+                                any_mosaics = [f for f in (os.listdir(clips_dir) if os.path.exists(clips_dir) else []) if f.startswith(f"{ep_num}-{c_num}-mosaic-") and f.endswith(".mp4")]
+                                if os.path.exists(v_file) or os.path.exists(orig_file) or len(any_mosaics) > 0:
                                     if c_num not in clip_statuses:
                                         clip_statuses[c_num] = {"has_audio": False, "video_state": "compiled", "has_mosaic_file": True}
                                     else:
