@@ -250,9 +250,9 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         # Resume / Start Step 4: Polling
         mosaic_runs[job_key]["status"] = "running"
         mosaic_runs[job_key]["progress"] = 70
-        print(f"[{project_id}][Clip {clip_num}] Polling Mosaic run {run_id} status every 10 seconds (2 hours max)...")
+        print(f"[{project_id}][Clip {clip_num}] Polling Mosaic run {run_id} status every 60 seconds (4 hours max)...")
         
-        max_attempts = 720  # 2 hours max at 10-second intervals
+        max_attempts = 240  # 4 hours max at 60-second intervals
         attempt = 0
         final_video_url = None
         
@@ -263,12 +263,12 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                 res_status = requests.get(f"{base_url}/agent_run/{run_id}", headers=headers)
                 if res_status.status_code != 200:
                     print(f"[{project_id}][Clip {clip_num}] Error checking Mosaic run status: {res_status.text}")
-                    time.sleep(10)
+                    time.sleep(60)
                     continue
                 run_info = res_status.json()
             except Exception as poll_ex:
-                print(f"[{project_id}][Clip {clip_num}] Warning: Connection glitch while polling Mosaic status: {poll_ex}. Retrying in 10 seconds...")
-                time.sleep(10)
+                print(f"[{project_id}][Clip {clip_num}] Warning: Connection glitch while polling Mosaic status: {poll_ex}. Retrying in 60 seconds...")
+                time.sleep(60)
                 continue
             
             status = run_info.get("status")
@@ -289,9 +289,9 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                     err_msg += f" Detailed errors: {json.dumps(node_errors)}"
                 raise Exception(f"Mosaic run ended with status '{status}': {err_msg}")
             
-            # Update progress incrementally while running (scales from 70 to 95 over attempts)
+            # Update progress incrementally while running
             mosaic_runs[job_key]["progress"] = min(70 + int((attempt / max_attempts) * 25), 95)
-            time.sleep(10)
+            time.sleep(60)
         
         if not final_video_url:
             raise Exception("Mosaic run timed out after 4 hours.")
