@@ -865,7 +865,10 @@ def compile_clip(
         except Exception:
             pass
 
-    backup_path = f"clips/{episode}-{num}-original.mp4"
+    target_clip = next((c for c in plan_data if c.get("num") == num), None)
+    mosaic_run_id = target_clip.get("mosaic_run_id") if target_clip else None
+    
+    backup_path = f"clips/{episode}-{num}-mosaic-{mosaic_run_id}.mp4" if (mosaic_run_id and os.path.exists(f"clips/{episode}-{num}-mosaic-{mosaic_run_id}.mp4")) else f"clips/{episode}-{num}.mp4"
 
     # Check for freshly cut audio clip (e.g. clips/245-1-*.mp3) and remux audio track
     audio_pattern1 = os.path.join(master_dir, f"{episode}-{num}-*.mp3")
@@ -875,7 +878,6 @@ def compile_clip(
         audio_matches = glob.glob(os.path.join(master_dir, f"*-{num}-*.mp3")) + glob.glob(os.path.join(master_dir, f"*-{num}.mp3"))
     
     temp_remux_path = f"temp_remux_{num}.mp4"
-    target_clip = next((c for c in plan_data if c.get("num") == num), None)
     has_mosaic_id = bool(target_clip and target_clip.get("mosaic_run_id"))
     has_mosaic_file = os.path.exists(backup_path)
     
@@ -1173,14 +1175,14 @@ def compile_clip(
                 target_dur = a_dur
                 typer.echo(f"Equalizing master body stream durations to match audio ground truth ({a_dur:.3f}s)...")
                 if v_dur and v_dur < a_dur:
-                    # Video is shorter than audio: extend black canvas video stream to match audio duration exactly
+                    # Video is shorter than audio: extend video stream by cloning last frame to match audio duration exactly
+                    pad_dur = a_dur - v_dur
+                    typer.echo(f"Extending Mosaic video stream with final frame pad ({pad_dur:.3f}s) to match audio duration...")
                     cmd_norm = [
                         "ffmpeg", "-y",
-                        "-f", "lavfi", "-i", f"color=c=black:s={v_width}x{v_height}:r=25:d={target_dur:.3f}",
                         "-i", backup_path,
-                        "-map", "0:v",
-                        "-map", "1:a",
-                        "-c:v", "libx264", "-tune", "stillimage", "-pix_fmt", "yuv420p",
+                        "-vf", f"tpad=stop_mode=clone:stop_duration={pad_dur:.3f}",
+                        "-c:v", "libx264", "-crf", "18", "-preset", "fast", "-pix_fmt", "yuv420p",
                         "-c:a", "aac", "-b:a", "192k",
                         "-ar", ar_str,
                         "-t", f"{target_dur:.3f}",

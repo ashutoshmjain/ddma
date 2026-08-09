@@ -308,12 +308,6 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         with open(mosaic_version_path, "wb") as f_out:
             for chunk in res_download.iter_content(chunk_size=8192):
                 f_out.write(chunk)
-                
-        # Copy to backup_path for backwards compatibility
-        try:
-            shutil.copyfile(mosaic_version_path, backup_path)
-        except Exception as copy_ex:
-            print(f"Warning: Could not copy to backup_path: {copy_ex}")
 
         # Persist mosaic_run_id into plan.json AFTER successful download!
         try:
