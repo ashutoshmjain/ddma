@@ -3260,6 +3260,13 @@
             
             activeProjectId = projectId;
             localStorage.setItem('ddma-active-project', projectId);
+            
+            const editorPreviewLink = combineVideoBtn ? combineVideoBtn.closest('a') : null;
+            if (editorPreviewLink) {
+                const epNum = projectId.replace('episode_', '');
+                editorPreviewLink.href = `/docs/index.html?ep=${epNum}`;
+            }
+
             try {
                 const url = new URL(window.location);
                 url.searchParams.set('project', projectId);
