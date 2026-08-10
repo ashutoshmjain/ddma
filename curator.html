@@ -993,6 +993,22 @@
             color: white !important;
         }
 
+        .btn-mosaic-progress {
+            position: relative;
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.85) var(--progress, 0%), rgba(139, 92, 246, 0.25) var(--progress, 0%)) !important;
+            border: 1px solid rgba(99, 102, 241, 0.6) !important;
+            color: #ffffff !important;
+            font-family: var(--font-mono);
+            box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .btn-status-danger {
+            background-color: #dc2626 !important;
+            color: #ffffff !important;
+            border: 1px solid #ef4444 !important;
+        }
+
         .btn-status-blue {
             background-color: rgba(59, 130, 246, 0.1) !important;
             color: #3b82f6 !important;
@@ -6089,9 +6105,13 @@
                 if (isLocked) {
                     if (statusInfo.video_state === 'processing') {
                         const pct = statusInfo.progress !== undefined ? statusInfo.progress : 0;
-                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-warning" id="mosaicCardBtn_${index}" style="font-weight: 600; opacity: 0.8; cursor: not-allowed;" disabled title="Mosaic generation in progress...">⏳ ${pct}%</button>`;
+                        const stageText = statusInfo.status ? ` - ${statusInfo.status}` : '';
+                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-mosaic-progress" id="mosaicCardBtn_${index}" style="font-weight: 600; --progress: ${pct}%;" title="Mosaic generation in progress (${pct}%${stageText})">⏳ ${pct}%</button>`;
+                    } else if (statusInfo.video_state === 'failed') {
+                        const errTip = statusInfo.error ? statusInfo.error.replace(/"/g, '&quot;') : 'Mosaic render failed';
+                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-danger" id="mosaicCardBtn_${index}" style="font-weight: 600;" data-error="${errTip}" title="Click to view error details & retry: ${errTip}">⚠️ Failed</button>`;
                     } else if (hasMosaicRender) {
-                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-success" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Play 1-click Master Motion Graphics video (Intro 2s + Mosaic Body + Outro 5s)">🌌 Mosaic</button>`;
+                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-success" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Play 1-click Master Motion Graphics video (Intro 2s + Mosaic Body + Outro 5s)">🟢 Mosaic</button>`;
                     } else {
                         mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-purple" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Send draft video to Mosaic API for AI Motion Graphics">🌌 Mosaic</button>`;
                     }
@@ -6341,6 +6361,21 @@
                         mosaicBtnEl.addEventListener('click', function(e) {
                             e.stopPropagation();
                             const btn = this;
+
+                            if (statusInfo.video_state === 'failed') {
+                                const errText = statusInfo.error || "Mosaic render encountered an error during execution.";
+                                const retry = confirm(
+                                    `Mosaic Render Failed for Part ${clip.num} ("${clip.title}")!\n\n` +
+                                    `Error Details:\n${errText}\n\n` +
+                                    `• Click [OK] to Retry the Mosaic Render now.\n` +
+                                    `• Click [Cancel] to dismiss.`
+                                );
+                                if (retry) {
+                                    exportToMosaic(index, btn);
+                                }
+                                return;
+                            }
+
                             const hasMosaic = Boolean(clip.mosaic_run_id);
                             
                             if (hasMosaic) {

@@ -57,6 +57,49 @@ PORT = 8000
 # Keys: (project_id, clip_num), Values: {"status": ..., "progress": ..., "error": ..., "run_id": ...}
 mosaic_runs = {}
 
+def get_mosaic_jobs_file(project_id):
+    proj_dir = os.path.join("projects", project_id)
+    os.makedirs(proj_dir, exist_ok=True)
+    return os.path.join(proj_dir, "mosaic_jobs.json")
+
+def load_mosaic_jobs(project_id):
+    jobs_file = get_mosaic_jobs_file(project_id)
+    if os.path.exists(jobs_file):
+        try:
+            with open(jobs_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                return {int(k): v for k, v in data.items()}
+        except Exception as e:
+            print(f"Warning loading mosaic_jobs for {project_id}: {e}")
+    return {}
+
+def save_mosaic_jobs(project_id, jobs_dict):
+    try:
+        jobs_file = get_mosaic_jobs_file(project_id)
+        serializable = {str(k): v for k, v in jobs_dict.items()}
+        with open(jobs_file, "w", encoding="utf-8") as f:
+            json.dump(serializable, f, indent=2)
+    except Exception as e:
+        print(f"Warning saving mosaic_jobs for {project_id}: {e}")
+
+def update_mosaic_job_state(project_id, clip_num, status, progress, error=None, run_id=None):
+    job_key = (project_id, int(clip_num))
+    existing = mosaic_runs.get(job_key, {})
+    new_job = {
+        "status": status,
+        "progress": progress,
+        "error": error,
+        "run_id": run_id or existing.get("run_id"),
+        "start_time": existing.get("start_time", time.time()),
+        "last_update": time.time()
+    }
+    mosaic_runs[job_key] = new_job
+    
+    # Save to disk for persistence across server restarts
+    proj_jobs = load_mosaic_jobs(project_id)
+    proj_jobs[int(clip_num)] = new_job
+    save_mosaic_jobs(project_id, proj_jobs)
+
 def auto_recompile_clip(project_id, clip_num):
     try:
         ep_num_match = re.search(r'\d+', str(project_id))
@@ -79,7 +122,7 @@ def auto_recompile_clip(project_id, clip_num):
 # Background thread helper for executing the Mosaic API pipeline (upload, run, poll, download)
 def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments, audio_path, run_id=None):
     job_key = (project_id, int(clip_num))
-    mosaic_runs[job_key] = {"status": "starting", "progress": 0, "error": None, "run_id": run_id, "start_time": time.time()}
+    update_mosaic_job_state(project_id, clip_num, "starting", 0, run_id=run_id)
     
     try:
         api_key = settings.get("mosaic_api_key")
@@ -117,8 +160,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                     print(f"Warning: could not delete old backup file: {rm_err}")
                     
             # Step 1: Run complete Draft Video pipeline to prepare fresh baseline MP4 (audio + title/outro cards)
-            mosaic_runs[job_key]["status"] = "compiling draft video"
-            mosaic_runs[job_key]["progress"] = 5
+            update_mosaic_job_state(project_id, clip_num, "compiling draft video", 5, run_id=run_id)
             print(f"[{project_id}][Clip {clip_num}] Executing Draft Video pipeline before Mosaic upload...")
             
             os.makedirs("clips", exist_ok=True)
@@ -138,8 +180,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             print(f"[{project_id}][Clip {clip_num}] Fresh baseline draft video compiled successfully: {file_path}")
             
             # Step 2: Upload S3
-            mosaic_runs[job_key]["status"] = "requesting upload URL"
-            mosaic_runs[job_key]["progress"] = 10
+            update_mosaic_job_state(project_id, clip_num, "requesting upload URL", 10, run_id=run_id)
             print(f"[{project_id}][Clip {clip_num}] Requesting upload URL from Mosaic...")
             
             # Get upload details
@@ -156,8 +197,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                 raise Exception("Failed to retrieve upload parameters from Mosaic.")
             
             # Post file to S3
-            mosaic_runs[job_key]["status"] = "uploading media"
-            mosaic_runs[job_key]["progress"] = 30
+            update_mosaic_job_state(project_id, clip_num, "uploading media", 30, run_id=run_id)
             print(f"[{project_id}][Clip {clip_num}] Uploading {file_path} to Mosaic S3 storage...")
             
             with open(file_path, "rb") as f:
@@ -170,8 +210,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                 raise Exception(f"S3 upload failed: Status code {res_s3.status_code}, response: {res_s3.text}")
             
             # Finalize upload
-            mosaic_runs[job_key]["status"] = "finalizing upload"
-            mosaic_runs[job_key]["progress"] = 50
+            update_mosaic_job_state(project_id, clip_num, "finalizing upload", 50, run_id=run_id)
             print(f"[{project_id}][Clip {clip_num}] Finalizing upload on Mosaic...")
             
             res_finalize = requests.post(
@@ -183,8 +222,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                 raise Exception(f"Mosaic finalize_upload failed: {res_finalize.text}")
             
             # Step 3: Trigger Agent Run
-            mosaic_runs[job_key]["status"] = "triggering run"
-            mosaic_runs[job_key]["progress"] = 60
+            update_mosaic_job_state(project_id, clip_num, "triggering run", 60, run_id=run_id)
             print(f"[{project_id}][Clip {clip_num}] Triggering Mosaic agent run...")
             
             update_params = {}
@@ -223,7 +261,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             if not run_id:
                 raise Exception("Failed to retrieve run ID from Mosaic execution response.")
 
-            mosaic_runs[job_key]["run_id"] = run_id
+            update_mosaic_job_state(project_id, clip_num, "triggering run", 60, run_id=run_id)
 
             # Persist mosaic_run_id to plan.json immediately so interrupt/resumes are 100% recoverable
             try:
@@ -242,8 +280,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                 print(f"[{project_id}][Clip {clip_num}] Warning: Failed to save initial mosaic_run_id to plan.json: {pe}")
 
         # Resume / Start Step 4: Polling
-        mosaic_runs[job_key]["status"] = "running"
-        mosaic_runs[job_key]["progress"] = 70
+        update_mosaic_job_state(project_id, clip_num, "running", 70, run_id=run_id)
         print(f"[{project_id}][Clip {clip_num}] Polling Mosaic run {run_id} status every 60 seconds (4 hours max)...")
         
         max_attempts = 240  # 4 hours max at 60-second intervals
@@ -284,19 +321,18 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                 raise Exception(f"Mosaic run ended with status '{status}': {err_msg}")
             
             # Update progress incrementally while running
-            mosaic_runs[job_key]["progress"] = min(70 + int((attempt / max_attempts) * 25), 95)
+            new_prog = min(70 + int((attempt / max_attempts) * 25), 90)
+            update_mosaic_job_state(project_id, clip_num, f"rendering ({status})", new_prog, run_id=run_id)
             time.sleep(60)
         
         if not final_video_url:
             raise Exception("Mosaic run timed out after 4 hours.")
             
         # Step 5: Download finished video
-        mosaic_runs[job_key]["status"] = "downloading output"
-        mosaic_runs[job_key]["progress"] = 95
+        update_mosaic_job_state(project_id, clip_num, "downloading output", 95, run_id=run_id)
         print(f"[{project_id}][Clip {clip_num}] Downloading rendered video from Mosaic S3...")
         
         mosaic_version_path = os.path.join("clips", f"{ep_num}-{clip_num}-mosaic-{run_id}.mp4")
-        backup_path = os.path.join("clips", f"{ep_num}-{clip_num}-original.mp4")
         
         # Purge older Mosaic render files for this clip (e.g. clips/245-13-mosaic-*.mp4)
         import glob
@@ -332,14 +368,30 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         except Exception as pe:
             print(f"[{project_id}][Clip {clip_num}] Warning: Failed to save mosaic_run_id to plan.json: {pe}")
             
-        mosaic_runs[job_key] = {"status": "completed", "progress": 100, "run_id": run_id, "error": None}
+        update_mosaic_job_state(project_id, clip_num, "completed", 100, run_id=run_id)
         print(f"[{project_id}][Clip {clip_num}] Mosaic download completed successfully! Status set to completed.")
         
     except Exception as ex:
         import traceback
         tb_str = traceback.format_exc()
         print(f"Error in run_mosaic_pipeline for clip {clip_num}: {ex}\n{tb_str}")
-        mosaic_runs[job_key] = {"status": "failed", "error": str(ex), "progress": 0}
+        update_mosaic_job_state(project_id, clip_num, "failed", 0, error=str(ex), run_id=run_id)
+        
+        # If run failed or crashed, clean up any unverified mosaic_run_id in plan.json
+        try:
+            plan_path = os.path.join("projects", project_id, "plan.json")
+            if os.path.exists(plan_path):
+                with open(plan_path, "r", encoding="utf-8") as f:
+                    plan = json.load(f)
+                for c in plan:
+                    if int(c.get("num", -1)) == int(clip_num) and "mosaic_run_id" in c:
+                        del c["mosaic_run_id"]
+                        break
+                with open(plan_path, "w", encoding="utf-8") as f:
+                    json.dump(plan, f, indent=4)
+                print(f"[{project_id}][Clip {clip_num}] Cleaned up unverified mosaic_run_id from plan.json on error")
+        except Exception as pe:
+            print(f"Warning: Failed to clean up mosaic_run_id from plan.json on error: {pe}")
         
         # If run failed or crashed, clean up any unverified mosaic_run_id in plan.json
         try:
@@ -3422,18 +3474,31 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     for k in stale_keys:
                         del mosaic_runs[k]
 
-                    # Scan active background jobs in mosaic_runs to override status to 'processing'
-                    for job_key, job in mosaic_runs.items():
+                    # Scan active background jobs in mosaic_runs & disk jobs to override status to 'processing' or 'failed'
+                    disk_jobs = load_mosaic_jobs(project_id)
+                    for job_key, job in list(mosaic_runs.items()):
                         if job_key[0] == project_id:
-                            job_clip_num = job_key[1]
-                            job_status = job.get("status")
-                            if job_status in ("starting", "compiling draft video", "requesting upload URL", "uploading media", "finalizing upload", "triggering run", "running", "downloading output", "compiling intro card", "processing", "compiling"):
-                                if job_clip_num not in clip_statuses:
-                                    clip_statuses[job_clip_num] = {"has_audio": False, "video_state": "none"}
-                                if not clip_statuses[job_clip_num].get("has_mosaic_file"):
-                                    clip_statuses[job_clip_num]["video_state"] = "processing"
-                                    clip_statuses[job_clip_num]["progress"] = job.get("progress", 0)
-                                    clip_statuses[job_clip_num]["status"] = job_status
+                            disk_jobs[int(job_key[1])] = job
+
+                    for c_num_raw, job in disk_jobs.items():
+                        c_num_int = int(c_num_raw)
+                        j_status = job.get("status")
+                        j_prog = job.get("progress", 0)
+                        j_err = job.get("error")
+                        
+                        if c_num_int not in clip_statuses:
+                            clip_statuses[c_num_int] = {"has_audio": False, "video_state": "none", "has_mosaic_file": False}
+                        
+                        if j_status == "failed" and not clip_statuses[c_num_int].get("has_mosaic_file"):
+                            clip_statuses[c_num_int]["video_state"] = "failed"
+                            clip_statuses[c_num_int]["error"] = j_err or "Mosaic render failed"
+                            clip_statuses[c_num_int]["progress"] = 0
+                            clip_statuses[c_num_int]["status"] = "failed"
+                        elif j_status in ("starting", "compiling draft video", "requesting upload URL", "uploading media", "finalizing upload", "triggering run", "running", "downloading output", "compiling intro card", "processing", "compiling") or (isinstance(j_status, str) and j_status.startswith("rendering")):
+                            if not clip_statuses[c_num_int].get("has_mosaic_file"):
+                                clip_statuses[c_num_int]["video_state"] = "processing"
+                                clip_statuses[c_num_int]["progress"] = j_prog
+                                clip_statuses[c_num_int]["status"] = j_status
                                 
                 ingestion_progress = None
                 progress_file = os.path.join(project_dir, "ingestion_progress.json")
