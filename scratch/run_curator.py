@@ -42,7 +42,14 @@ def configure_gemini(api_key=None):
     if api_key:
         genai.configure(api_key=api_key)
         return True
-    return False
+def load_settings():
+    if os.path.exists("settings.json"):
+        try:
+            with open("settings.json", "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
 
 PORT = 8000
 
