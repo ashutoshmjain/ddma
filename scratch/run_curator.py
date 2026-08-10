@@ -367,7 +367,20 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                 print(f"[{project_id}][Clip {clip_num}] Persisted mosaic_run_id {run_id} to plan.json after successful download!")
         except Exception as pe:
             print(f"[{project_id}][Clip {clip_num}] Warning: Failed to save mosaic_run_id to plan.json: {pe}")
-            
+
+        # Step 6: Automatically stitch Mosaic render into final Master Clip (Intro 2s + Mosaic Body + Outro 5s) & sync to docs/
+        print(f"[{project_id}][Clip {clip_num}] Auto-compiling Master Mosaic video with Intro/Outro cards...")
+        try:
+            plan_file_path = os.path.join("projects", project_id, "plan.json")
+            comp_master_cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", plan_file_path]
+            res_comp = subprocess.run(comp_master_cmd, capture_output=True, text=True, cwd=".")
+            if res_comp.returncode == 0:
+                print(f"[{project_id}][Clip {clip_num}] Successfully compiled and synced Master Mosaic clip!")
+            else:
+                print(f"[{project_id}][Clip {clip_num}] Warning auto-compiling master clip: {res_comp.stderr}")
+        except Exception as comp_err:
+            print(f"[{project_id}][Clip {clip_num}] Warning: Failed auto-compiling master clip: {comp_err}")
+
         update_mosaic_job_state(project_id, clip_num, "completed", 100, run_id=run_id)
         print(f"[{project_id}][Clip {clip_num}] Mosaic download completed successfully! Status set to completed.")
         
