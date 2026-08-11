@@ -3503,15 +3503,19 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             clip_statuses[c_num_int] = {"has_audio": False, "video_state": "none", "has_mosaic_file": False}
                         
                         if j_status == "failed" and not clip_statuses[c_num_int].get("has_mosaic_file"):
-                            clip_statuses[c_num_int]["video_state"] = "failed"
-                            clip_statuses[c_num_int]["error"] = j_err or "Mosaic render failed"
-                            clip_statuses[c_num_int]["progress"] = 0
-                            clip_statuses[c_num_int]["status"] = "failed"
+                            clip_statuses[c_num_int]["mosaic_state"] = "failed"
+                            clip_statuses[c_num_int]["mosaic_error"] = j_err or "Mosaic render failed"
+                            clip_statuses[c_num_int]["mosaic_progress"] = 0
+                            clip_statuses[c_num_int]["mosaic_status"] = "failed"
                         elif j_status in ("starting", "compiling draft video", "requesting upload URL", "uploading media", "finalizing upload", "triggering run", "running", "downloading output", "compiling intro card", "processing", "compiling") or (isinstance(j_status, str) and j_status.startswith("rendering")):
                             if not clip_statuses[c_num_int].get("has_mosaic_file"):
-                                clip_statuses[c_num_int]["video_state"] = "processing"
-                                clip_statuses[c_num_int]["progress"] = j_prog
-                                clip_statuses[c_num_int]["status"] = j_status
+                                clip_statuses[c_num_int]["mosaic_state"] = "processing"
+                                clip_statuses[c_num_int]["mosaic_progress"] = j_prog
+                                clip_statuses[c_num_int]["mosaic_status"] = j_status
+                        elif j_status == "completed":
+                            clip_statuses[c_num_int]["mosaic_state"] = "completed"
+                            clip_statuses[c_num_int]["mosaic_progress"] = 100
+                            clip_statuses[c_num_int]["mosaic_status"] = "completed"
                                 
                 ingestion_progress = None
                 progress_file = os.path.join(project_dir, "ingestion_progress.json")

@@ -6092,25 +6092,23 @@
                 }
                 
                 const hasMosaicRender = Boolean(clip.mosaic_run_id) && Boolean(statusInfo.has_mosaic_file);
-                const mosaicStatusClass = hasMosaicRender ? "btn-status-success" : "btn-status-purple";
+                const mosaicState = statusInfo.mosaic_state || (statusInfo.video_state === 'processing' ? 'processing' : statusInfo.video_state === 'failed' ? 'failed' : (hasMosaicRender ? 'completed' : 'none'));
+                const mosaicProgress = statusInfo.mosaic_progress !== undefined ? statusInfo.mosaic_progress : (statusInfo.progress !== undefined ? statusInfo.progress : 0);
+                const mosaicStatusText = statusInfo.mosaic_status || statusInfo.status || '';
+                const mosaicErrorText = statusInfo.mosaic_error || statusInfo.error || '';
                 
-                let videoBtnHtml = "";
-                if (statusInfo.video_state === 'processing') {
-                    videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-warning" style="font-weight:600; opacity: 0.8; cursor: not-allowed;" disabled title="Draft baseline is currently compiling...">⏳ Processing</button>`;
-                } else {
-                    videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-warning" id="playVideoBtn_${index}" style="font-weight:600;" title="Play 1-click Black Canvas Baseline preview (Intro 2s + Black Canvas Audio Body + Outro 5s)">📹 Draft</button>`;
-                }
+                let videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-warning" id="playVideoBtn_${index}" style="font-weight:600;" title="Play 1-click Black Canvas Baseline preview (Intro 2s + Black Canvas Audio Body + Outro 5s)">📹 Draft</button>`;
                 
                 let mosaicBtnHtml = "";
                 if (isLocked) {
-                    if (statusInfo.video_state === 'processing') {
-                        const pct = statusInfo.progress !== undefined ? statusInfo.progress : 0;
-                        const stageText = statusInfo.status ? ` - ${statusInfo.status}` : '';
+                    if (mosaicState === 'processing') {
+                        const pct = mosaicProgress;
+                        const stageText = mosaicStatusText ? ` - ${mosaicStatusText}` : '';
                         mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-mosaic-progress" id="mosaicCardBtn_${index}" style="font-weight: 600; --progress: ${pct}%;" title="Mosaic generation in progress (${pct}%${stageText})">⏳ ${pct}%</button>`;
-                    } else if (statusInfo.video_state === 'failed') {
-                        const errTip = statusInfo.error ? statusInfo.error.replace(/"/g, '&quot;') : 'Mosaic render failed';
+                    } else if (mosaicState === 'failed') {
+                        const errTip = mosaicErrorText ? mosaicErrorText.replace(/"/g, '&quot;') : 'Mosaic render failed';
                         mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-danger" id="mosaicCardBtn_${index}" style="font-weight: 600;" data-error="${errTip}" title="Click to view error details & retry: ${errTip}">⚠️ Failed</button>`;
-                    } else if (hasMosaicRender) {
+                    } else if (hasMosaicRender || mosaicState === 'completed') {
                         mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-success" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Play 1-click Master Motion Graphics video (Intro 2s + Mosaic Body + Outro 5s)">🟢 Mosaic</button>`;
                     } else {
                         mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-purple" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Send draft video to Mosaic API for AI Motion Graphics">🌌 Mosaic</button>`;
@@ -6362,8 +6360,8 @@
                             e.stopPropagation();
                             const btn = this;
 
-                            if (statusInfo.video_state === 'failed') {
-                                const errText = statusInfo.error || "Mosaic render encountered an error during execution.";
+                            if (mosaicState === 'failed') {
+                                const errText = mosaicErrorText || "Mosaic render encountered an error during execution.";
                                 const retry = confirm(
                                     `Mosaic Render Failed for Part ${clip.num} ("${clip.title}")!\n\n` +
                                     `Error Details:\n${errText}\n\n` +
