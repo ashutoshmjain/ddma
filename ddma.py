@@ -1341,7 +1341,7 @@ def compile_clip(
                 "-ss", f"{start_time:.6f}",
                 "-i", body_video_path,
                 "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo",
-                "-filter_complex", "[1:a][2:a]amix=inputs=2:duration=first[aout]",
+                "-filter_complex", "[1:a][2:a]amix=inputs=2:duration=first,afade=t=out:st=0:d=5.0[aout]",
                 "-map", "0:v",
                 "-map", "[aout]",
                 "-c:v", "libx264",
@@ -1352,11 +1352,12 @@ def compile_clip(
                 "-ac", "2",
                 "-pix_fmt", "yuv420p",
                 "-video_track_timescale", tb_den,
-                "-af", "afade=t=out:st=0:d=5.0",
                 "-t", "5.0",
                 temp_outro_video_path
             ]
-            subprocess.run(cmd_outro, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            res_out = subprocess.run(cmd_outro, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if res_out.returncode != 0:
+                typer.echo(f"Warning generating outro card video: {res_out.stderr}")
 
         scale_filter = f"scale={v_width}:{v_height}:force_original_aspect_ratio=decrease,pad={v_width}:{v_height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=25"
         if not is_last_clip and os.path.exists(temp_outro_video_path):
