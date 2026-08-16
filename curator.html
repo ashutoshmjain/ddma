@@ -995,12 +995,14 @@
 
         .btn-mosaic-progress {
             position: relative;
-            background: linear-gradient(90deg, rgba(59, 130, 246, 0.85) var(--progress, 0%), rgba(139, 92, 246, 0.25) var(--progress, 0%)) !important;
-            border: 1px solid rgba(99, 102, 241, 0.6) !important;
+            background: linear-gradient(90deg, #2563eb var(--progress, 0%), #4338ca var(--progress, 0%), #1e1b4b var(--progress, 0%)) !important;
+            border: 1px solid #6366f1 !important;
             color: #ffffff !important;
             font-family: var(--font-mono);
-            box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+            font-weight: 700 !important;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
             transition: background 0.3s ease, border-color 0.3s ease;
+            overflow: hidden;
         }
 
         .btn-status-danger {
@@ -5211,7 +5213,7 @@
             });
         }
 
-        function exportToMosaic(clipIdx, btnEl) {
+        function exportToMosaic(clipIdx, btnEl, force = false) {
             const clip = clips[clipIdx];
             if (!activeProjectId) return;
             
@@ -5224,9 +5226,8 @@
                 return;
             }
             
-            let force = false;
-            if (clip.mosaic_run_id) {
-                const reuse = confirm(`A previous Mosaic render was detected for Clip ${clip.num}.\n\nClick [OK] to recover/download the previous render instantly (Free / 0 API Cost).\nClick [Cancel] to trigger a new Mosaic AI Motion Graphics render.`);
+            if (!force && clip.mosaic_run_id) {
+                const reuse = confirm(`A previous Mosaic render was detected for Clip ${clip.num}.\n\n• Click [OK] to recover/download the previous render instantly (Free / 0 API Cost).\n• Click [Cancel] to trigger a fresh Mosaic AI Motion Graphics render.`);
                 if (!reuse) {
                     force = true;
                 }
@@ -5234,8 +5235,9 @@
             
             function triggerExport(customPrompt) {
                 btnEl.disabled = true;
-                btnEl.innerHTML = '⏳ Starting...';
-                btnEl.style.backgroundImage = 'linear-gradient(135deg, #4b5563 0%, #374151 100%)';
+                btnEl.classList.add('btn-mosaic-progress');
+                btnEl.style.setProperty('--progress', '5%');
+                btnEl.innerHTML = '⏳ 5% (Starting...)';
                 updateStateBar(`Mosaic: Initializing run for Clip ${clip.num}...`);
                 
                 fetch(`/export-to-mosaic?id=${activeProjectId}&num=${clip.num}&force=${force}`, {
@@ -5256,8 +5258,8 @@
                 })
                 .catch(err => {
                     btnEl.disabled = false;
+                    btnEl.classList.remove('btn-mosaic-progress');
                     btnEl.innerHTML = '🌌 Mosaic';
-                    btnEl.style.backgroundImage = 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)';
                     showDebug("Mosaic failed: " + err.message, true);
                     updateStateBar("Ready (Mosaic start failed)");
                 });
@@ -5277,7 +5279,6 @@
                 .then(data => {
                     btnEl.disabled = false;
                     btnEl.innerHTML = '🌌 Mosaic';
-                    btnEl.style.backgroundImage = 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)';
                     updateStateBar("Ready");
                     
                     if (data.success && data.prompt) {
@@ -5302,7 +5303,6 @@
                 .catch(err => {
                     btnEl.disabled = false;
                     btnEl.innerHTML = '🌌 Mosaic';
-                    btnEl.style.backgroundImage = 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)';
                     updateStateBar("Ready");
                     alert("Error fetching prompt: " + err.message);
                 });
@@ -6441,8 +6441,8 @@
                                         btn.disabled = false;
                                     });
                                 } else {
-                                    // User chose to run a new API call
-                                    exportToMosaic(index, btn);
+                                    // User explicitly chose to run a fresh new API call
+                                    exportToMosaic(index, btn, true);
                                 }
                             } else {
                                 // Direct export to Mosaic API for clips without existing renders
