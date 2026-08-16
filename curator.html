@@ -5482,32 +5482,48 @@
                     compiledVideos = data.compiled_videos || [];
                     const oldStatuses = clipStatuses || {};
                     clipStatuses = data.clip_statuses || {};
+                    
+                    // Sync in-memory plan data so newly saved mosaic_run_id is immediately available in UI
+                    if (data.plan && Array.isArray(data.plan)) {
+                        clips = data.plan;
+                    }
+                    
                     renderClips();
                     
-                    // Track state transitions to play sound when compilation completes
+                    // Track state transitions to play sound when compilation or mosaic completes
                     if (!window.previouslyProcessingClips) {
                         window.previouslyProcessingClips = {};
                     }
                     
                     Object.keys(clipStatuses).forEach(num => {
-                        const state = clipStatuses[num].video_state;
+                        const mState = clipStatuses[num].mosaic_state;
+                        const vState = clipStatuses[num].video_state;
+                        const hasMosaic = Boolean(clipStatuses[num].has_mosaic_file);
+                        const isProcessing = mState === 'processing' || vState === 'processing';
                         const wasProcessing = window.previouslyProcessingClips[num];
-                        if (state === 'processing') {
+                        
+                        if (isProcessing) {
                             window.previouslyProcessingClips[num] = true;
-                        } else if (wasProcessing && state !== 'processing') {
+                        } else if (wasProcessing && !isProcessing) {
                             delete window.previouslyProcessingClips[num];
-                            if (state === 'compiled') {
+                            if (hasMosaic || mState === 'completed' || vState === 'compiled') {
                                 playNotificationSound();
-                                showDebug(`Clip ${num} processing completed successfully!`, false);
-                            } else {
-                                showDebug(`Clip ${num} processing failed or returned to draft state.`, true);
+                                showDebug(`🎉 Part ${num}: Mosaic Video Render downloaded & ready!`, false);
+                                updateStateBar(`Ready - Part ${num} Mosaic Render Downloaded 🟢`);
+                            } else if (mState === 'failed') {
+                                showDebug(`⚠️ Part ${num}: Mosaic processing failed.`, true);
                             }
                         }
                     });
                     
-                    // Auto-poll if any clip is in processing/compiling state
-                    const hasProcessing = Object.values(clipStatuses).some(status => status.video_state === 'processing');
+                    // Adaptive polling: 3s during initial upload (progress <= 40%), 15s during long cloud render (progress > 40%)
+                    const processingStatuses = Object.values(clipStatuses).filter(s => s.mosaic_state === 'processing' || s.video_state === 'processing');
+                    const hasProcessing = processingStatuses.length > 0;
+                    
                     if (hasProcessing) {
+                        const isEarlyPhase = processingStatuses.some(s => (s.mosaic_progress || s.progress || 0) <= 40);
+                        const pollIntervalMs = isEarlyPhase ? 3000 : 15000;
+                        
                         if (window.fetchCompiledVideosTimeout) {
                             clearTimeout(window.fetchCompiledVideosTimeout);
                         }
@@ -5515,7 +5531,12 @@
                             if (activeProjectId) {
                                 fetchCompiledVideos();
                             }
-                        }, 2000);
+                        }, pollIntervalMs);
+                    } else {
+                        if (window.fetchCompiledVideosTimeout) {
+                            clearTimeout(window.fetchCompiledVideosTimeout);
+                            window.fetchCompiledVideosTimeout = null;
+                        }
                     }
                 })
                 .catch(err => {
