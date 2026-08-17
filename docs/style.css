@@ -584,3 +584,134 @@ body {
     color: var(--text-primary);
     box-shadow: 0 0 10px rgba(108, 92, 231, 0.15);
 }
+
+/* Top Nav Link to Curator */
+.top-nav-curator-link {
+    font-size: 0.75rem;
+    color: var(--accent-color);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(108, 92, 231, 0.1);
+    border: 1px solid rgba(108, 92, 231, 0.2);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+.top-nav-curator-link:hover {
+    background: rgba(108, 92, 231, 0.25);
+    color: #ffffff;
+    border-color: rgba(108, 92, 231, 0.5);
+}
+
+/* Master Episode Export Button */
+.btn-export-episode {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+.btn-export-episode:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    transform: translateY(-1px);
+}
+.btn-export-episode:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Clip Transition Settings Strip in Sidebar */
+.clip-transition-strip {
+    margin-top: 8px;
+    padding: 4px 6px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+.transition-strip-label {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.step-input-group {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+.step-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    width: 18px;
+    height: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+}
+.step-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+.trim-input {
+    width: 38px;
+    background: transparent;
+    border: none;
+    color: #38bdf8;
+    font-size: 0.75rem;
+    font-family: monospace;
+    font-weight: bold;
+    text-align: center;
+    padding: 0;
+    -moz-appearance: textfield;
+}
+.trim-input::-webkit-outer-spin-button,
+.trim-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.toggle-intro-btn {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.toggle-intro-btn.active {
+    background: rgba(99, 102, 241, 0.25);
+    border-color: #6366f1;
+    color: #ffffff;
+}
+.toggle-intro-btn:hover {
+    color: #ffffff;
+}

@@ -1092,14 +1092,20 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         print(f"Warning: Failed to load old plan for comparison: {e}")
                 
                 json_data = json.loads(post_data.decode('utf-8'))
+                if isinstance(json_data, dict) and "clips" in json_data:
+                    clips_array = json_data["clips"]
+                elif isinstance(json_data, dict) and "plan" in json_data:
+                    clips_array = json_data["plan"]
+                else:
+                    clips_array = json_data
                 
                 # Save to project's plan.json
                 with open(plan_file_path, 'w', encoding='utf-8') as f:
-                    json.dump(json_data, f, indent=4)
+                    json.dump(clips_array, f, indent=4)
                 
                 # Sync to root plan.json
                 with open('plan.json', 'w', encoding='utf-8') as f:
-                    json.dump(json_data, f, indent=4)
+                    json.dump(clips_array, f, indent=4)
                     
                 # Sync to docs/episodes/EP_NUM/plan.json and docs/episodes.json
                 ep_match = re.search(r'\d+', project_id)

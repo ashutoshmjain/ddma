@@ -142,7 +142,16 @@ async function initEpisodeData() {
         if (!res.ok && planPath !== 'plan.json') {
             res = await fetch('plan.json');
         }
-        plan = await res.json();
+        const rawData = await res.json();
+        if (Array.isArray(rawData)) {
+            plan = rawData;
+        } else if (rawData && Array.isArray(rawData.clips)) {
+            plan = rawData.clips;
+        } else if (rawData && Array.isArray(rawData.plan)) {
+            plan = rawData.plan;
+        } else {
+            plan = [];
+        }
     } catch (err) {
         console.error(`Failed to load plan for Episode ${currentEpisodeId}`, err);
         return;
@@ -218,21 +227,21 @@ async function loadVideoDurations() {
                     duration = baseDur + (currentMode === 'audio' ? 0.0 : 2.0);
                 }
                 
+                item.rawDuration = duration;
                 const isAudioOnly = clipInfo && clipInfo.audio_only === true;
+                const defaultTrim = (i === 0 || isAudioOnly || (clipInfo && clipInfo.num === 1)) ? 0.0 : 2.0;
+                const introTrim = clipInfo && clipInfo.intro_trim !== undefined ? parseFloat(clipInfo.intro_trim) : defaultTrim;
+                
                 if (currentMode === 'audio') {
                     item.playOffset = isAudioOnly ? 0.0 : 2.0;
                     if (!isAudioOnly && !isNaN(duration) && duration > 2.0) {
                         duration = duration - 2.0;
                     }
                 } else {
-                    // Video Mode: Keep Master Title Card on Clip 1 (i == 0), skip Part intro title cards on Clips 2+ (i > 0)
-                    if (i === 0 || isAudioOnly) {
-                        item.playOffset = 0.0;
-                    } else {
-                        item.playOffset = 2.0;
-                        if (!isNaN(duration) && duration > 2.0) {
-                            duration = duration - 2.0;
-                        }
+                    // Video Mode: Use customized intro_trim offset
+                    item.playOffset = introTrim;
+                    if (!isNaN(duration) && duration > introTrim) {
+                        duration = duration - introTrim;
                     }
                 }
                 
@@ -245,11 +254,14 @@ async function loadVideoDurations() {
                 console.warn(`Could not probe duration for ${item.src}, using fallback:`, err);
                 const clipInfo = plan.find(c => c.num === item.clipNum);
                 const isAudioOnly = clipInfo && clipInfo.audio_only === true;
+                const defaultTrim = (i === 0 || isAudioOnly || (clipInfo && clipInfo.num === 1)) ? 0.0 : 2.0;
+                const introTrim = clipInfo && clipInfo.intro_trim !== undefined ? parseFloat(clipInfo.intro_trim) : defaultTrim;
                 
                 const baseDur = calculateClipDuration(clipInfo);
-                if (currentMode === 'video' && i > 0 && !isAudioOnly) {
-                    item.playOffset = 2.0;
-                    item.duration = Math.max(0.1, baseDur);
+                item.rawDuration = baseDur + (currentMode === 'audio' ? 0.0 : 2.0);
+                if (currentMode === 'video' && !isAudioOnly) {
+                    item.playOffset = introTrim;
+                    item.duration = Math.max(0.1, baseDur + 2.0 - introTrim);
                 } else {
                     item.playOffset = 0.0;
                     item.duration = Math.max(0.1, baseDur + (currentMode === 'audio' ? 0.0 : 2.0));
@@ -272,6 +284,46 @@ async function loadVideoDurations() {
     updateTotalDuration();
     renderSidebar();
     seekTo(0);
+}
+
+function recalculateTimelineOffsets() {
+    let runningTime = 0;
+    for (let i = 0; i < timeline.length; i++) {
+        const item = timeline[i];
+        if (item.type === 'video') {
+            const clipInfo = plan.find(c => c.num === item.clipNum);
+            const defaultTrim = (i === 0 || (clipInfo && clipInfo.num === 1)) ? 0.0 : 2.0;
+            const introTrim = clipInfo && clipInfo.intro_trim !== undefined ? parseFloat(clipInfo.intro_trim) : defaultTrim;
+            
+            item.playOffset = introTrim;
+            const rawDur = item.rawDuration || (item.duration + (item.previousTrim !== undefined ? item.previousTrim : defaultTrim));
+            item.rawDuration = rawDur;
+            item.previousTrim = introTrim;
+            item.duration = Math.max(0.1, rawDur - introTrim);
+        }
+        item.startGlobal = runningTime;
+        item.endGlobal = runningTime + item.duration;
+        runningTime += item.duration;
+    }
+    updateTotalDuration();
+    renderSidebar();
+    seekTo(currentGlobalTime);
+}
+
+let savePlanTimer = null;
+function savePlanDebounced() {
+    if (savePlanTimer) clearTimeout(savePlanTimer);
+    savePlanTimer = setTimeout(() => {
+        const epKey = currentEpisodeId ? `episode_${currentEpisodeId}` : 'episode_245';
+        fetch(`/save-project-plan?id=${epKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(plan)
+        })
+        .then(r => r.json())
+        .then(d => console.log('Saved plan assembly settings:', d))
+        .catch(err => console.warn('Could not save plan assembly settings:', err));
+    }, 400);
 }
 
 function getVideoDuration(src) {
@@ -316,23 +368,68 @@ function renderSidebar() {
         return;
     }
 
-    activeClips.forEach(clip => {
+    activeClips.forEach((clip, clipIdx) => {
         const videoItem = timeline.find(item => item.type === 'video' && item.clipNum === clip.num);
         if (!videoItem) return;
         
         const card = document.createElement('div');
-        card.className = 'clip-item';
+        card.className = 'clip-item' + (timeline[activeTimelineIndex] && timeline[activeTimelineIndex].clipNum === clip.num ? ' active' : '');
         card.id = `sidebar-clip-${clip.num}`;
+        
+        const defaultTrim = (clip.num === 1 || clipIdx === 0) ? 0.0 : 2.0;
+        const currentTrim = clip.intro_trim !== undefined ? parseFloat(clip.intro_trim) : defaultTrim;
         
         card.innerHTML = `
             <div class="clip-item-row1">
-                <span>CLIP ${clip.num}</span>
+                <span class="clip-num-label" style="font-weight:700;">CLIP ${clip.num}</span>
                 <span class="clip-duration">${formatTime(videoItem.duration)}</span>
             </div>
             <div class="clip-meta-title">${clip.title || 'Untitled Segment'}</div>
+            <div class="clip-transition-strip" onclick="event.stopPropagation();">
+                <span class="transition-strip-label"><i class="fa-solid fa-scissors"></i> Intro Trim:</span>
+                <div class="step-input-group">
+                    <button class="step-btn step-minus" title="Decrease trim (-0.1s)">-</button>
+                    <input type="number" class="trim-input" value="${currentTrim.toFixed(1)}" step="0.1" min="0" max="10" title="Intro card trim offset in seconds">
+                    <button class="step-btn step-plus" title="Increase trim (+0.1s)">+</button>
+                </div>
+                <button class="toggle-intro-btn ${currentTrim === 0 ? 'active' : ''}" title="${currentTrim === 0 ? 'Intro card preserved' : 'Click to keep full intro card'}">
+                    ${currentTrim === 0 ? '🎬 Keep Intro' : '✂️ Trimmed'}
+                </button>
+            </div>
         `;
         
-        card.onclick = () => {
+        // Event handlers for transition strip
+        const trimInput = card.querySelector('.trim-input');
+        const minusBtn = card.querySelector('.step-minus');
+        const plusBtn = card.querySelector('.step-plus');
+        const toggleBtn = card.querySelector('.toggle-intro-btn');
+        
+        function updateTrim(val) {
+            const clamped = Math.max(0.0, Math.min(10.0, parseFloat(val) || 0.0));
+            clip.intro_trim = parseFloat(clamped.toFixed(1));
+            recalculateTimelineOffsets();
+            savePlanDebounced();
+        }
+        
+        minusBtn.onclick = (e) => {
+            e.stopPropagation();
+            updateTrim(currentTrim - 0.1);
+        };
+        plusBtn.onclick = (e) => {
+            e.stopPropagation();
+            updateTrim(currentTrim + 0.1);
+        };
+        trimInput.onchange = (e) => {
+            e.stopPropagation();
+            updateTrim(e.target.value);
+        };
+        toggleBtn.onclick = (e) => {
+            e.stopPropagation();
+            updateTrim(currentTrim === 0 ? 2.0 : 0.0);
+        };
+        
+        card.onclick = (e) => {
+            if (e.target.closest('.clip-transition-strip')) return;
             seekTo(videoItem.startGlobal);
         };
         
@@ -355,6 +452,41 @@ function initUI() {
     nextBtn.addEventListener('click', playNext);
     skipBackBtn.addEventListener('click', skipBackward);
     skipForwardBtn.addEventListener('click', skipForward);
+    
+    // Master Full Episode Export Button Handler
+    const exportBtn = document.getElementById('exportFullEpisodeBtn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', async () => {
+            const epKey = currentEpisodeId ? `episode_${currentEpisodeId}` : 'episode_245';
+            exportBtn.disabled = true;
+            exportBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Compiling...';
+            
+            try {
+                const res = await fetch(`/combine-project-video?id=${epKey}`, { method: 'POST' });
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || `Export failed with status ${res.status}`);
+                }
+                const data = await res.json();
+                exportBtn.innerHTML = '<i class="fa-solid fa-check"></i> Export Complete!';
+                exportBtn.style.background = 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)';
+                
+                const downloadUrl = data.combined_url || `/previews/combined_${epKey}.mp4`;
+                const promptDownload = confirm(`Master Episode Video Export Complete!\n\nDuration: ${totalTimeLabel.textContent}\n\n• Click [OK] to open/download the full master video file.\n• Click [Cancel] to continue reviewing.`);
+                if (promptDownload) {
+                    window.open(downloadUrl, '_blank');
+                }
+            } catch (err) {
+                alert(`Episode Export Error: ${err.message}`);
+            } finally {
+                setTimeout(() => {
+                    exportBtn.disabled = false;
+                    exportBtn.innerHTML = '<i class="fa-solid fa-film"></i> Export';
+                    exportBtn.style.background = '';
+                }, 3000);
+            }
+        });
+    }
     
     volumeSlider.addEventListener('input', (e) => {
         setVolume(parseFloat(e.target.value));

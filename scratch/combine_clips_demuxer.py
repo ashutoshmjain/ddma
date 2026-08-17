@@ -158,14 +158,22 @@ def main():
     filter_parts = []
     concat_inputs = []
     
+    # Map clip numbers to plan_data entries
+    clip_map = {c.get("num"): c for c in plan_data}
+
     for i, (num, path) in enumerate(clip_files):
         cmd.extend(["-i", path])
-        if i == 0:
+        clip_entry = clip_map.get(num, {})
+        default_trim = 0.0 if (i == 0 or num == 1) else 2.0
+        intro_trim = float(clip_entry.get("intro_trim", default_trim))
+        
+        if intro_trim <= 0.0:
+            # Keep full video from start (t=0.0s)
             v_filter = f"[{i}:v]scale={v_width}:{v_height}:force_original_aspect_ratio=decrease,pad={v_width}:{v_height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,setpts=PTS-STARTPTS[v{i}]"
             a_filter = f"[{i}:a]aformat=sample_rates=48000:channel_layouts=stereo,asetpts=PTS-STARTPTS[a{i}]"
         else:
-            v_filter = f"[{i}:v]trim=start=2.0,setpts=PTS-STARTPTS,scale={v_width}:{v_height}:force_original_aspect_ratio=decrease,pad={v_width}:{v_height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v{i}]"
-            a_filter = f"[{i}:a]atrim=start=2.0,asetpts=PTS-STARTPTS,aformat=sample_rates=48000:channel_layouts=stereo[a{i}]"
+            v_filter = f"[{i}:v]trim=start={intro_trim:.3f},setpts=PTS-STARTPTS,scale={v_width}:{v_height}:force_original_aspect_ratio=decrease,pad={v_width}:{v_height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v{i}]"
+            a_filter = f"[{i}:a]atrim=start={intro_trim:.3f},asetpts=PTS-STARTPTS,aformat=sample_rates=48000:channel_layouts=stereo[a{i}]"
         
         filter_parts.append(v_filter)
         filter_parts.append(a_filter)

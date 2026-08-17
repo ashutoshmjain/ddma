@@ -21,11 +21,19 @@
         <!-- Sidebar Navigation: Clips List -->
         <aside class="sidebar glass">
             <div class="sidebar-header">
-                <h2><i class="fa-solid fa-wand-magic-sparkles"></i> Editor's Preview</h2>
-                <div class="episode-selector-wrapper" style="margin-top: 6px;">
-                    <select id="episodeSelect" class="episode-select" title="Switch Episode">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                    <h2><i class="fa-solid fa-wand-magic-sparkles"></i> Editor's Preview</h2>
+                    <a href="/curator.html" id="backToCuratorBtn" class="top-nav-curator-link" title="Open Curator Studio Workspace">
+                        <i class="fa-solid fa-arrow-left"></i> Curator
+                    </a>
+                </div>
+                <div class="episode-selector-wrapper" style="display: flex; gap: 8px; align-items: center;">
+                    <select id="episodeSelect" class="episode-select" title="Switch Episode" style="flex: 1;">
                         <option value="244">Episode 244: Architecture of Intellectual Demolition</option>
                     </select>
+                    <button id="exportFullEpisodeBtn" class="btn-export-episode" title="Export Combined Master Episode Video">
+                        <i class="fa-solid fa-film"></i> Export
+                    </button>
                 </div>
             </div>
             <div class="mode-toggle-card">
