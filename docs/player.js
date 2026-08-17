@@ -389,7 +389,7 @@ function renderSidebar() {
                 <span class="transition-strip-label"><i class="fa-solid fa-scissors"></i> Intro Trim:</span>
                 <div class="step-input-group">
                     <button class="step-btn step-minus" title="Decrease trim (-0.1s)">-</button>
-                    <input type="number" class="trim-input" value="${currentTrim.toFixed(1)}" step="0.1" min="0" max="10" title="Intro card trim offset in seconds">
+                    <input type="number" class="trim-input" value="${currentTrim.toFixed(1)}" step="0.1" min="0" max="999" title="Intro card trim offset in seconds">
                     <button class="step-btn step-plus" title="Increase trim (+0.1s)">+</button>
                 </div>
                 <button class="toggle-intro-btn ${currentTrim === 0 ? 'active' : ''}" title="${currentTrim === 0 ? 'Intro card preserved' : 'Click to keep full intro card'}">
@@ -405,7 +405,7 @@ function renderSidebar() {
         const toggleBtn = card.querySelector('.toggle-intro-btn');
         
         function updateTrim(val) {
-            const clamped = Math.max(0.0, Math.min(10.0, parseFloat(val) || 0.0));
+            const clamped = Math.max(0.0, Math.min(600.0, parseFloat(val) || 0.0));
             clip.intro_trim = parseFloat(clamped.toFixed(1));
             recalculateTimelineOffsets();
             savePlanDebounced();
