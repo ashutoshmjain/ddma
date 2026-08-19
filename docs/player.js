@@ -65,7 +65,7 @@ async function init() {
 async function loadEpisodesManifest() {
     const episodeSelect = document.getElementById('episodeSelect');
     try {
-        const res = await fetch('episodes.json');
+        const res = await fetch('episodes.json?t=' + Date.now());
         const rawManifest = await res.json();
         const seenIds = new Set();
         episodesManifest = (rawManifest || []).filter(ep => {
@@ -138,9 +138,10 @@ async function initEpisodeData() {
     const planPath = activeEp ? activeEp.planPath : 'plan.json';
 
     try {
-        let res = await fetch(planPath);
+        const cacheBustedPath = planPath + (planPath.includes('?') ? '&' : '?') + 't=' + Date.now();
+        let res = await fetch(cacheBustedPath);
         if (!res.ok && planPath !== 'plan.json') {
-            res = await fetch('plan.json');
+            res = await fetch('plan.json?t=' + Date.now());
         }
         const rawData = await res.json();
         if (Array.isArray(rawData)) {
@@ -422,6 +423,15 @@ function renderSidebar() {
         trimInput.onchange = (e) => {
             e.stopPropagation();
             updateTrim(e.target.value);
+        };
+        trimInput.onblur = (e) => {
+            e.stopPropagation();
+            updateTrim(e.target.value);
+        };
+        trimInput.onkeydown = (e) => {
+            if (e.key === 'Enter') {
+                e.target.blur();
+            }
         };
         toggleBtn.onclick = (e) => {
             e.stopPropagation();
