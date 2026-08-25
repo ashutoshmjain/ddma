@@ -2047,6 +2047,8 @@
                 <a id="downloadVideoBtn" class="btn btn-accent btn-mini" style="text-decoration: none; padding: 0.35rem 0.7rem; font-size: 0.75rem;" download>⬇ Download Video</a>
             </div>
         </div>
+    </div>
+
     <!-- Delete Confirmation Modal -->
     <div class="export-modal-overlay" id="deleteConfirmModalOverlay">
         <div class="export-modal" style="max-width: 500px; padding: 1.5rem; border: 1px solid var(--danger);">
@@ -3497,11 +3499,8 @@
 
             const stages = data.stages && data.stages.length > 0 ? data.stages : [
                 {"index": 1, "name": "Transcription", "icon": "🎙️", "label": "Transcribing Raw Audio"},
-                {"index": 2, "name": "Storyboarding", "icon": "🧠", "label": "Structuring Clip Boundaries"},
-                {"index": 3, "name": "Audio Cutting", "icon": "✂️", "label": "Normalizing Audio Clips"},
-                {"index": 4, "name": "Draft Muxing", "icon": "🎥", "label": "Muxing Black Canvas Videos"},
-                {"index": 5, "name": "Rendering Intros", "icon": "🎬", "label": "Compiling Intros & Outros"},
-                {"index": 6, "name": "Manifest Sync", "icon": "🚀", "label": "Registering Episode Manifest"}
+                {"index": 2, "name": "Storyboarding", "icon": "🧠", "label": "Structuring Clip Boundaries & Bridges"},
+                {"index": 3, "name": "Workspace Sync", "icon": "🚀", "label": "Registering Episode Manifest"}
             ];
 
             let stagesHtml = stages.map(s => {
@@ -3523,10 +3522,10 @@
                     : (isComplete ? 'border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.05);' : 'border: 1px solid var(--border-color); opacity: 0.5;');
 
                 return `
-                    <div class="pipeline-stage-card ${stateClass}" style="flex: 1; min-width: 110px; padding: 0.6rem 0.5rem; border-radius: 8px; text-align: center; transition: all 0.3s ease; ${styleAttr}">
-                        <div style="font-size: 1.2rem; margin-bottom: 0.2rem;">${s.icon}</div>
-                        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-main); white-space: nowrap;">${s.name}</div>
-                        <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.2rem;">${stateBadge} Stage ${s.index}</div>
+                    <div class="pipeline-stage-card ${stateClass}" style="flex: 1; min-width: 140px; padding: 0.8rem 0.6rem; border-radius: 10px; text-align: center; transition: all 0.3s ease; ${styleAttr}">
+                        <div style="font-size: 1.4rem; margin-bottom: 0.3rem;">${s.icon}</div>
+                        <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap;">${s.name}</div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem;">${stateBadge} Stage ${s.index}</div>
                     </div>
                 `;
             }).join('');
@@ -3549,7 +3548,7 @@
                     <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.4rem;">
                         <span style="display:inline-block; animation: spin 2s linear infinite;">⚙️</span> Automated Ingestion Pipeline
                     </h2>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Executing end-to-end media automation: Transcription, Audio Slicing, Draft Muxing, Title Cards, and Outro slides.</p>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Executing high-speed media ingestion: Whisper Word Transcription, Storyboard Structuring, and Workspace Sync.</p>
                 </div>
 
                 <!-- Pipeline Stages Grid -->

@@ -1457,11 +1457,8 @@ def update_ingestion_progress(proj_dir, stage_index, percent, action_text, log_l
     
     stages = [
         {"index": 1, "name": "Transcription", "icon": "🎙️", "label": "Transcribing Raw Audio"},
-        {"index": 2, "name": "Storyboarding", "icon": "🧠", "label": "Structuring Clip Boundaries"},
-        {"index": 3, "name": "Audio Cutting", "icon": "✂️", "label": "Normalizing Audio Clips"},
-        {"index": 4, "name": "Draft Muxing", "icon": "🎥", "label": "Muxing Black Canvas Videos"},
-        {"index": 5, "name": "Rendering Intros", "icon": "🎬", "label": "Compiling Intros & Outros"},
-        {"index": 6, "name": "Manifest Sync", "icon": "🚀", "label": "Registering Episode Manifest"}
+        {"index": 2, "name": "Storyboarding", "icon": "🧠", "label": "Structuring Clip Boundaries & Bridges"},
+        {"index": 3, "name": "Workspace Sync", "icon": "🚀", "label": "Registering Episode Manifest"}
     ]
     
     existing_logs = []
@@ -1552,7 +1549,7 @@ def ingest_episode(
     proj_dir = os.path.join("projects", proj_id)
     os.makedirs(proj_dir, exist_ok=True)
 
-    update_ingestion_progress(proj_dir, 1, 5, "Initializing workspace and copying source audio...", f"Started ingestion pipeline for Episode {episode}: {title} (Mode: {mode})")
+    update_ingestion_progress(proj_dir, 1, 10, "Initializing workspace and copying source audio...", f"Started ingestion pipeline for Episode {episode}: {title} (Mode: {mode})")
 
     ext = os.path.splitext(audio)[1]
     audio_dest_name = f"{episode}{ext}"
@@ -1575,19 +1572,19 @@ def ingest_episode(
     # 2. Transcribe
     trans_path = os.path.join(proj_dir, "transcription.json")
     if not os.path.exists(trans_path):
-        update_ingestion_progress(proj_dir, 1, 15, f"Transcribing {audio_dest_name} via OpenAI Whisper...", "Running Whisper transcription with word timestamps (tiny.en)...")
+        update_ingestion_progress(proj_dir, 1, 30, f"Transcribing {audio_dest_name} via OpenAI Whisper...", "Running Whisper transcription with word timestamps (tiny.en)...")
         typer.echo(f"Transcribing {audio_dest_path} with Whisper...")
         transcribe(audio=audio_dest_path, model_name="tiny.en", out=trans_path, word_timestamps=True)
         if os.path.exists("transcription.json") and not os.path.exists(trans_path):
             shutil.copy2("transcription.json", trans_path)
 
-    update_ingestion_progress(proj_dir, 2, 30, "Whisper transcription ready. Analyzing structural timestamps...", "Transcription complete with word-level timestamps.")
+    update_ingestion_progress(proj_dir, 2, 50, "Whisper transcription ready. Analyzing structural timestamps...", "Transcription complete with word-level timestamps.")
 
     # 3. Generate Plan
     plan_path = os.path.join(proj_dir, "plan.json")
     clips_list = []
     if os.path.exists(trans_path):
-        update_ingestion_progress(proj_dir, 2, 35, f"Structuring audio into {num_clips} ~2-minute topic clips...", f"Dividing timeline into {num_clips} structural segments.")
+        update_ingestion_progress(proj_dir, 2, 70, f"Structuring audio into {num_clips} ~2-minute topic clips...", f"Dividing timeline into {num_clips} structural segments.")
         typer.echo(f"Generating structural plan with {num_clips} clips...")
         with open(trans_path, "r", encoding="utf-8") as tf:
             t_data = json.load(tf)
@@ -1655,7 +1652,7 @@ def ingest_episode(
         with open(plan_path, "w", encoding="utf-8") as pf:
             json.dump(clips_list, pf, indent=2)
 
-    update_ingestion_progress(proj_dir, 3, 40, f"Generated plan.json with {len(clips_list)} clips. Starting audio cuts...", f"Created storyboard plan with {len(clips_list)} clips.")
+    update_ingestion_progress(proj_dir, 3, 85, f"Generated plan.json with {len(clips_list)} clips. Syncing workspace...", f"Created storyboard plan with {len(clips_list)} clips.")
 
     # 4. Sync plan.json to snapshot, root, and docs
     snapshot_path = os.path.join(proj_dir, "plan_snapshot.json")
@@ -1666,7 +1663,7 @@ def ingest_episode(
     shutil.copy2(plan_path, os.path.join(docs_ep_dir, "plan.json"))
 
     # 5. Register in docs/episodes.json
-    update_ingestion_progress(proj_dir, 5, 90, "Syncing episode manifest and preview player assets...", "Updating docs/episodes.json for GitHub Pages routing.")
+    update_ingestion_progress(proj_dir, 3, 95, "Syncing episode manifest and preview player assets...", "Updating docs/episodes.json for GitHub Pages routing.")
     ep_manifest_path = os.path.join("docs", "episodes.json")
     if os.path.exists(ep_manifest_path):
         try:
@@ -1701,7 +1698,7 @@ def ingest_episode(
     with open(os.path.join(proj_dir, "project_info.json"), "w", encoding="utf-8") as f:
         json.dump(info_data, f, indent=2)
 
-    update_ingestion_progress(proj_dir, 6, 100, "Episode ingestion complete! Project ready in Curator.", f"Episode {episode} instant ingestion pipeline completed successfully.")
+    update_ingestion_progress(proj_dir, 3, 100, "Episode ingestion complete! Project ready in Curator.", f"Episode {episode} instant ingestion pipeline completed successfully.")
     typer.echo(f"[SUCCESS] Episode {episode} instant ingestion pipeline complete! Project ready in Curator & Preview Player.")
 
 
