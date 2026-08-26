@@ -24,6 +24,16 @@
     "planPath": "episodes/245/plan.json",
     "clipsDir": "episodes/245/clips",
     "links": {},
+    "isDefault": false
+  },
+  {
+    "id": "246",
+    "number": 246,
+    "title": "Death !",
+    "fullTitle": "Episode 246: Death !",
+    "planPath": "episodes/246/plan.json",
+    "clipsDir": "episodes/246/clips",
+    "links": {},
     "isDefault": true
   }
 ]
