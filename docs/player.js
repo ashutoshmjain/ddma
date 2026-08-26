@@ -169,13 +169,9 @@ function buildTimeline() {
     timeline = [];
     let runningTime = 0;
 
-    // Filter plan based on active mode (unhidden, locked if any are locked)
-    const hasLockedClips = plan.some(c => c.locked && !c.hidden);
+    // Filter plan based on active mode (strictly locked and unhidden clips)
     const filteredPlan = plan.filter(clip => {
-        if (clip.hidden) {
-            return false;
-        }
-        if (hasLockedClips && !clip.locked) {
+        if (!clip.locked || clip.hidden) {
             return false;
         }
         // Video Mode excludes audio-only clips
