@@ -40,7 +40,9 @@ const videoPlayer = document.getElementById('videoPlayer');
 // Setup page resize constraints to preserve square aspect ratio
 function resizeViewport() {
     const parent = viewport.parentElement;
-    const size = Math.min(parent.clientWidth, parent.clientHeight, 740);
+    const parentW = parent ? parent.clientWidth : window.innerWidth;
+    const parentH = parent && parent.clientHeight > 0 ? parent.clientHeight : parentW;
+    const size = Math.min(parentW || 360, parentH || 740, 740);
     viewport.width = size;
     viewport.height = size;
     drawFrame();
@@ -521,6 +523,29 @@ function initUI() {
     
     window.addEventListener('mouseup', () => {
         isDragging = false;
+    });
+
+    // Touch Scrubbing support for mobile devices
+    seekTrack.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        if (e.touches && e.touches[0]) {
+            handleSeekEvent(e.touches[0]);
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+        if (isDragging && e.touches && e.touches[0]) {
+            handleSeekEvent(e.touches[0]);
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+
+    // Tap canvas to toggle play/pause
+    viewport.addEventListener('click', () => {
+        togglePlay();
     });
 
     // YouTube-style seek tooltip tracking

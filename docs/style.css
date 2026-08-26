@@ -718,3 +718,185 @@ body {
 .toggle-intro-btn:hover {
     color: #ffffff;
 }
+
+/* ==========================================================================
+   Mobile Responsive Experience (DDMA Mobile Infographics View)
+   ========================================================================== */
+@media (max-width: 860px) {
+    body {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        height: auto !important;
+        min-height: 100vh !important;
+        display: block !important;
+        padding: 0.6rem 0.6rem 2.5rem !important;
+    }
+
+    .bg-glow {
+        width: 280px !important;
+        height: 280px !important;
+    }
+
+    .app-container {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        height: auto !important;
+        max-width: 520px !important;
+        max-height: none !important;
+        margin: 0 auto !important;
+        gap: 12px !important;
+    }
+
+    /* Workspace on Mobile - Placed FIRST for immediate player view */
+    .workspace {
+        width: 100% !important;
+        gap: 10px !important;
+        order: 1 !important;
+    }
+
+    /* Viewport Card on Mobile */
+    .viewport-card {
+        padding: 8px !important;
+        border-radius: 16px !important;
+        width: 100% !important;
+    }
+
+    .canvas-wrapper {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 1 / 1 !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+    #viewport {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100% !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 12px !important;
+        cursor: pointer;
+    }
+
+    .viewport-overlay-btn {
+        opacity: 0.9 !important;
+        width: 34px !important;
+        height: 34px !important;
+        top: 8px !important;
+        right: 8px !important;
+    }
+
+    .viewport-status {
+        margin-top: 6px !important;
+        font-size: 0.75rem !important;
+    }
+
+    /* Controls Panel on Mobile */
+    .controls-card {
+        padding: 12px 14px !important;
+        border-radius: 16px !important;
+    }
+
+    .seeker-container {
+        gap: 8px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .seek-track {
+        height: 8px !important;
+    }
+
+    .time-label {
+        font-size: 0.75rem !important;
+        min-width: 32px !important;
+    }
+
+    .controls-layout {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 6px !important;
+    }
+
+    .controls-middle {
+        gap: 12px !important;
+    }
+
+    .play-btn {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 1.15rem !important;
+    }
+
+    .control-btn {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* Hide desktop volume slider on mobile, retain mute button */
+    .volume-slider {
+        display: none !important;
+    }
+
+    .volume-container {
+        gap: 0 !important;
+    }
+
+    /* Sidebar on Mobile - Placed SECOND below the controls */
+    .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        border-radius: 16px !important;
+        order: 2 !important;
+    }
+
+    .sidebar-header {
+        padding: 14px !important;
+    }
+
+    .sidebar-header h2 {
+        font-size: 1.15rem !important;
+    }
+
+    .top-nav-curator-link {
+        font-size: 0.72rem !important;
+        padding: 4px 8px !important;
+    }
+
+    .episode-select {
+        padding: 9px 10px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .btn-export-episode {
+        font-size: 0.8rem !important;
+        padding: 8px 12px !important;
+    }
+
+    .mode-toggle-card {
+        padding: 8px 12px !important;
+    }
+
+    .mode-btn {
+        padding: 7px 10px !important;
+        font-size: 0.75rem !important;
+    }
+
+    .clips-list {
+        max-height: 420px !important;
+        padding: 10px !important;
+        gap: 8px !important;
+    }
+
+    .clip-item {
+        padding: 10px 12px !important;
+        border-radius: 10px !important;
+    }
+
+    .clip-meta-title {
+        font-size: 0.85rem !important;
+    }
+}
