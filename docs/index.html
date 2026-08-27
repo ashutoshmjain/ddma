@@ -2,128 +2,152 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDMA Infographics & Editor's Preview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Shutri Infographics &mdash; 740x740 Locked-Clip Visualizer</title>
     <!-- Google Fonts: Outfit for clean, modern look -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
     <!-- FontAwesome for control icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Background visual decorations for rich premium aesthetic -->
+    <!-- Background visual decorations -->
     <div class="bg-glow bg-glow-left"></div>
     <div class="bg-glow bg-glow-right"></div>
 
     <div class="app-container">
-        <!-- Sidebar Navigation: Clips List -->
-        <aside class="sidebar glass">
-            <div class="sidebar-header">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                    <h2><i class="fa-solid fa-wand-magic-sparkles"></i> Infographics</h2>
-                    <a href="https://shutri.com" id="backToShutriBtn" class="top-nav-curator-link" title="Back to Shutri.com">
-                        <i class="fa-solid fa-arrow-left"></i> Shutri
-                    </a>
-                </div>
-                <div class="episode-selector-wrapper">
-                    <select id="episodeSelect" class="episode-select" title="Switch Episode">
-                        <option value="244">Episode 244: Architecture of Intellectual Demolition</option>
-                    </select>
-                </div>
-                <button id="exportFullEpisodeBtn" class="btn-export-episode" title="Export Combined Master Episode Video">
-                    <i class="fa-solid fa-film"></i> 🎬 Export Full Master Episode
+        <!-- Top App Navigation Header -->
+        <header class="infographics-header glass">
+            <div class="header-brand-wrap">
+                <a href="https://shutri.com" class="header-back-btn" title="Back to Shutri Home">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Shutri</span>
+                </a>
+                <h1 class="header-title">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>Infographics</span>
+                </h1>
+            </div>
+            
+            <div class="header-episode-wrap">
+                <select id="episodeSelect" class="episode-select" title="Switch Episode">
+                    <option value="246">Episode 246: Pranayam Science & Respiration</option>
+                    <option value="245">Episode 245: AI Consciousness & Synthetic Peer Review</option>
+                    <option value="244">Episode 244: Architecture of Intellectual Demolition</option>
+                </select>
+                <button id="exportFullEpisodeBtn" class="btn-export-episode desktop-only" title="Export Combined Master Episode Video">
+                    <i class="fa-solid fa-film"></i>
+                    <span>Export Master Video</span>
                 </button>
             </div>
-            <div class="mode-toggle-card">
-                <button class="mode-btn active" id="videoModeBtn"><i class="fa-solid fa-video"></i> Video</button>
-                <button class="mode-btn" id="audioModeBtn"><i class="fa-solid fa-headphones"></i> Audio Preview</button>
-            </div>
-            <div class="clips-list" id="clipsList">
-                <div class="loading-placeholder">
-                    <i class="fa-solid fa-circle-notch fa-spin"></i>
-                    <span>Parsing plan.json...</span>
-                </div>
-            </div>
-        </aside>
+        </header>
 
-        <!-- Main Workspace Area -->
-        <main class="workspace">
-            <!-- Viewport Screen for Video Rendering -->
-            <div class="viewport-card glass">
-                <div class="canvas-wrapper">
-                    <canvas id="viewport" width="740" height="740"></canvas>
-                    <button class="viewport-overlay-btn" id="viewportFullscreenBtn" title="Toggle Fullscreen (F)">
-                        <i class="fa-solid fa-expand"></i>
-                    </button>
-                </div>
-                <div id="viewportStatus" class="viewport-status">
-                    Ready to Play
-                </div>
-            </div>
-
-            <!-- Player Timeline & Controls Panel -->
-            <div class="controls-card glass">
-                <!-- Seeker Bar slider -->
-                <div class="seeker-container">
-                    <span class="time-label" id="currentTimeLabel">0:00</span>
-                    <div class="seek-track" id="seekTrack">
-                        <div class="seek-progress" id="seekProgress"></div>
-                        <div class="seek-handle" id="seekHandle"></div>
-                        <div class="seek-tooltip" id="seekTooltip">0:00</div>
+        <div class="main-content-layout">
+            <!-- Left / Secondary: Clips & Chapters Playlist -->
+            <aside class="sidebar glass" id="sidebarSection">
+                <div class="sidebar-top-bar">
+                    <span class="sidebar-heading">STORYBOARD CHAPTERS</span>
+                    <div class="mode-toggle-card desktop-only">
+                        <button class="mode-btn active" id="videoModeBtn"><i class="fa-solid fa-video"></i> Video</button>
+                        <button class="mode-btn" id="audioModeBtn"><i class="fa-solid fa-headphones"></i> Audio</button>
                     </div>
-                    <span class="time-label" id="totalTimeLabel">0:00</span>
                 </div>
-
-                <!-- Controls Layout -->
-                <div class="controls-layout">
-                    <!-- Left: secondary buttons -->
-                    <div class="controls-left">
-                        <button class="control-btn" id="prevBtn" title="Previous Clip">
-                            <i class="fa-solid fa-backward-step"></i>
-                        </button>
+                <div class="clips-list" id="clipsList">
+                    <div class="loading-placeholder">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i>
+                        <span>Loading Infographics Storyboard...</span>
                     </div>
+                </div>
+            </aside>
 
-                    <!-- Middle: Main Play/Pause (Neon styled) -->
-                    <div class="controls-middle">
-                        <button class="control-btn" id="skipBackBtn" title="Skip Back 15s">
-                            <i class="fa-solid fa-arrow-rotate-left"></i>
-                        </button>
-                        <button class="play-btn" id="playBtn" title="Play / Pause">
-                            <i class="fa-solid fa-play"></i>
-                        </button>
-                        <button class="control-btn" id="skipForwardBtn" title="Skip Forward 15s">
-                            <i class="fa-solid fa-arrow-rotate-right"></i>
-                        </button>
-                    </div>
-
-                    <!-- Right: Volume & Fullscreen -->
-                    <div class="controls-right">
-                        <button class="control-btn" id="nextBtn" title="Next Clip">
-                            <i class="fa-solid fa-forward-step"></i>
-                        </button>
-                        <div class="volume-container">
-                            <button class="control-btn" id="muteBtn" title="Mute/Unmute">
-                                <i class="fa-solid fa-volume-high"></i>
-                            </button>
-                            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="0.8">
-                        </div>
-                        <button class="control-btn" id="fullscreenBtn" title="Toggle Fullscreen (F)">
+            <!-- Main Workspace Area: Player Viewport & Timeline -->
+            <main class="workspace" id="workspaceSection">
+                <!-- Viewport Screen for 740x740 Square Video Rendering -->
+                <div class="viewport-card glass">
+                    <div class="canvas-wrapper">
+                        <canvas id="viewport" width="740" height="740"></canvas>
+                        <button class="viewport-overlay-btn" id="viewportFullscreenBtn" title="Toggle Fullscreen (F)">
                             <i class="fa-solid fa-expand"></i>
                         </button>
                     </div>
+                    <div id="viewportStatus" class="viewport-status">
+                        Tap video or press Play
+                    </div>
                 </div>
+
+                <!-- Player Timeline & Controls Panel -->
+                <div class="controls-card glass">
+                    <!-- Seeker Bar slider -->
+                    <div class="seeker-container">
+                        <span class="time-label" id="currentTimeLabel">0:00</span>
+                        <div class="seek-track" id="seekTrack">
+                            <div class="seek-progress" id="seekProgress"></div>
+                            <div class="seek-handle" id="seekHandle"></div>
+                            <div class="seek-tooltip" id="seekTooltip">0:00</div>
+                        </div>
+                        <span class="time-label" id="totalTimeLabel">0:00</span>
+                    </div>
+
+                    <!-- Controls Layout -->
+                    <div class="controls-layout">
+                        <!-- Left: Prev Clip -->
+                        <div class="controls-left">
+                            <button class="control-btn" id="prevBtn" title="Previous Clip">
+                                <i class="fa-solid fa-backward-step"></i>
+                            </button>
+                        </div>
+
+                        <!-- Middle: Main Controls -->
+                        <div class="controls-middle">
+                            <button class="control-btn" id="skipBackBtn" title="Skip Back 15s">
+                                <i class="fa-solid fa-arrow-rotate-left"></i>
+                            </button>
+                            <button class="play-btn" id="playBtn" title="Play / Pause">
+                                <i class="fa-solid fa-play"></i>
+                            </button>
+                            <button class="control-btn" id="skipForwardBtn" title="Skip Forward 15s">
+                                <i class="fa-solid fa-arrow-rotate-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- Right: Volume & Fullscreen -->
+                        <div class="controls-right">
+                            <button class="control-btn" id="nextBtn" title="Next Clip">
+                                <i class="fa-solid fa-forward-step"></i>
+                            </button>
+                            <div class="volume-container desktop-only">
+                                <button class="control-btn" id="muteBtn" title="Mute/Unmute">
+                                    <i class="fa-solid fa-volume-high"></i>
+                                </button>
+                                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="0.8">
+                            </div>
+                            <button class="control-btn" id="fullscreenBtn" title="Toggle Fullscreen (F)">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Episode Audio & Video Elements -->
+    <audio id="audioElement" preload="auto"></audio>
+    <video id="videoElement" preload="auto" playsinline style="display: none;"></video>
+
+    <!-- Custom Dialog Modal -->
+    <div id="customModal" class="modal-backdrop">
+        <div class="modal-box">
+            <h3 id="modalTitle">Notice</h3>
+            <p id="modalMessage">Message content</p>
+            <div class="modal-actions">
+                <button id="modalConfirmBtn" class="modal-btn">OK</button>
             </div>
-        </main>
+        </div>
     </div>
 
-    <!-- Hidden elements container for video loading/buffering -->
-    <div style="display: none;">
-        <video id="videoPlayer" crossorigin="anonymous" preload="auto" playsinline></video>
-    </div>
-
-    <!-- Scripts -->
     <script src="player.js"></script>
 </body>
 </html>
