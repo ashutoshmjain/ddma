@@ -236,14 +236,16 @@ html, body {
     padding-right: 4px;
 }
 
+/* Vertical Storyboard Card */
 .clip-item {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border-glass);
     border-radius: 12px;
-    padding: 0.75rem 0.85rem;
+    padding: 0.85rem 1rem;
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: stretch;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -259,39 +261,32 @@ html, body {
     border-color: rgba(0, 242, 254, 0.4);
 }
 
-.clip-thumb-box {
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
-    background: rgba(0, 0, 0, 0.4);
+.clip-item-row1 {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.clip-num-label {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     color: var(--accent-cyan);
-    flex-shrink: 0;
+    letter-spacing: 0.05em;
 }
 
-.clip-item-info {
-    flex: 1;
-    overflow: hidden;
+.clip-duration {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
 }
 
-.clip-item-title {
-    font-size: 0.85rem;
+.clip-meta-title {
+    font-size: 0.88rem;
     font-weight: 600;
     color: var(--text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.clip-item-meta {
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
+    line-height: 1.35;
 }
 
 .loading-placeholder {

@@ -35,7 +35,7 @@ const currentTimeLabel = document.getElementById('currentTimeLabel');
 const totalTimeLabel = document.getElementById('totalTimeLabel');
 const viewportStatus = document.getElementById('viewportStatus');
 const clipsList = document.getElementById('clipsList');
-const videoPlayer = document.getElementById('videoPlayer');
+const videoPlayer = document.getElementById('videoPlayer') || document.getElementById('videoElement') || document.createElement('video');
 
 // Setup page resize constraints to preserve square aspect ratio
 function resizeViewport() {
@@ -162,8 +162,8 @@ async function initEpisodeData() {
 
     buildTimeline();
     renderSidebar();
-    await loadVideoDurations();
     seekTo(0);
+    loadVideoDurations().then(() => { updateTotalDuration(); renderSidebar(); }).catch(e => console.warn(e));
 }
 
 // Build timeline structure: Video Clip -> Bridge Slide -> Video Clip
@@ -330,19 +330,35 @@ function savePlanDebounced() {
 }
 
 function getVideoDuration(src) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const tempVideo = document.createElement('video');
-        tempVideo.src = src;
-        tempVideo.preload = 'metadata';
-        
+        let settled = false;
+        const timer = setTimeout(() => {
+            if (!settled) {
+                settled = true;
+                tempVideo.src = '';
+                resolve(NaN);
+            }
+        }, 1200);
+
         tempVideo.onloadedmetadata = () => {
-            resolve(tempVideo.duration);
+            if (!settled) {
+                settled = true;
+                clearTimeout(timer);
+                resolve(tempVideo.duration);
+            }
         };
-        
+
         tempVideo.onerror = () => {
-            reject(new Error(`Failed to load metadata for ${src}`));
+            if (!settled) {
+                settled = true;
+                clearTimeout(timer);
+                resolve(NaN);
+            }
         };
-        
+
+        tempVideo.preload = 'metadata';
+        tempVideo.src = src;
         tempVideo.load();
     });
 }
