@@ -60,29 +60,83 @@ async function runTest() {
         }
         await new Promise(r => setTimeout(r, 2000));
 
-        // 🧪 TEST 0: Verifying Persistent Top-Line Header Bar Elements
-        console.log("\n🧪 TEST 0: Verifying Persistent Top-Line Header Bar & Episode Switcher...");
+        // 🧪 TEST 0: Verifying Decluttered Top-Line Header Bar & SHUTRI DDMA Branding
+        console.log("\n🧪 TEST 0: Verifying Decluttered Top-Line Header Bar & SHUTRI DDMA Branding...");
         const topbarState = await page.evaluate(() => {
             const topbar = document.querySelector('.app-topbar');
+            const wordmark = document.querySelector('.brand-wordmark');
             const select = document.getElementById('topEpisodeSelect');
             const topSettingsBtn = document.getElementById('topSettingsBtn');
             const teamBadge = document.querySelector('.team-badge');
+            const helpBtn = document.getElementById('toggleHelpChatHeaderBtn');
             return {
                 topbarVisible: topbar !== null && window.getComputedStyle(topbar).display !== 'none' && topbar.getBoundingClientRect().height > 0,
+                wordmarkText: wordmark ? wordmark.textContent.replace(/\s+/g, ' ').trim() : '',
                 selectOptionsCount: select ? select.options.length : 0,
                 selectedEpisode: select ? select.value : null,
                 topSettingsBtnVisible: topSettingsBtn !== null && window.getComputedStyle(topSettingsBtn).display !== 'none',
-                teamBadgeText: teamBadge ? teamBadge.textContent.trim() : null
+                teamBadgePresent: teamBadge !== null,
+                helpBtnPresent: helpBtn !== null
             };
         });
 
         console.log(`- Topbar Visible: ${topbarState.topbarVisible}`);
+        console.log(`- Wordmark Text: "${topbarState.wordmarkText}"`);
         console.log(`- Episode Select Options: ${topbarState.selectOptionsCount} (Selected: ${topbarState.selectedEpisode})`);
         console.log(`- Top Settings Button Visible: ${topbarState.topSettingsBtnVisible}`);
-        console.log(`- Team Badge: "${topbarState.teamBadgeText}"`);
+        console.log(`- Team Badge Removed: ${!topbarState.teamBadgePresent}`);
+        console.log(`- Help Chatbot Button Removed: ${!topbarState.helpBtnPresent}`);
 
-        if (!topbarState.topbarVisible || topbarState.selectOptionsCount === 0 || !topbarState.topSettingsBtnVisible) {
-            throw new Error("FAIL: Persistent Top-Line Header Bar elements missing or unpopulated!");
+        if (!topbarState.topbarVisible || !topbarState.wordmarkText.replace(/\s+/g, '').includes('SHUTRIDDMA') || topbarState.selectOptionsCount === 0 || !topbarState.topSettingsBtnVisible) {
+            throw new Error("FAIL: Header Bar elements or SHUTRI DDMA branding missing/invalid!");
+        }
+        if (topbarState.teamBadgePresent || topbarState.helpBtnPresent) {
+            throw new Error("FAIL: Decluttering failed - team badge or help button still present in header!");
+        }
+
+        // 🧪 TEST 0c: Regression Test for Empty State SVG Sizing & Context Menu Hidden
+        console.log("\n🧪 TEST 0c: Verifying Empty State SVG Dimensions & Context Menu Default State...");
+        const elementSizing = await page.evaluate(() => {
+            const emptySvgs = Array.from(document.querySelectorAll('.empty-state svg'));
+            const svgDimensions = emptySvgs.map(s => {
+                const rect = s.getBoundingClientRect();
+                return { width: rect.width, height: rect.height };
+            });
+            const ctxMenu = document.querySelector('.context-menu');
+            const ctxDisplay = ctxMenu ? window.getComputedStyle(ctxMenu).display : 'none';
+            return { svgDimensions, ctxDisplay };
+        });
+
+        console.log(`- Empty State SVGs Count: ${elementSizing.svgDimensions.length}`);
+        elementSizing.svgDimensions.forEach((dim, idx) => {
+            console.log(`  SVG #${idx+1}: ${dim.width.toFixed(1)}px x ${dim.height.toFixed(1)}px`);
+            if (dim.width > 100 || dim.height > 100) {
+                throw new Error(`FAIL: Empty state SVG #${idx+1} is oversized (${dim.width}x${dim.height}px)!`);
+            }
+        });
+        console.log(`- Context Menu Default Display: "${elementSizing.ctxDisplay}" (Expected: none)`);
+        if (elementSizing.ctxDisplay !== 'none') {
+            throw new Error("FAIL: Context menu is not hidden by default!");
+        }
+
+        // 🧪 TEST 0d: Regression Test for Project Details Loading & Null Property Safety (Snapshot Button Bug)
+        console.log("\n🧪 TEST 0d: Regression Test for Project Details Loading & Null Property Safety...");
+        const initialErrorsCount = capturedErrors.length;
+        
+        await page.evaluate(async () => {
+            await selectProject('episode_245');
+        });
+        await new Promise(r => setTimeout(r, 1500));
+
+        await page.evaluate(async () => {
+            await selectProject('episode_244');
+        });
+        await new Promise(r => setTimeout(r, 1500));
+
+        const projectLoadErrors = capturedErrors.slice(initialErrorsCount);
+        console.log(`- Project switching completed with ${projectLoadErrors.length} captured error(s).`);
+        if (projectLoadErrors.length > 0) {
+            throw new Error(`FAIL: Project switching threw browser exceptions:\n${projectLoadErrors.join('\n')}`);
         }
 
         // 🧪 TEST 0b: Verifying Ingestion Dashboard Placement in Main Window

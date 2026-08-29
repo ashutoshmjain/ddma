@@ -3,85 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDMA Clip Curator (Word Accurate)</title>
+    <title>SHUTRI DDMA &bull; Media Automation Cockpit (Shutri Pillar 3)</title>
+    <!-- Fonts matching Shutri.com / MdIngest -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Global typography & elements styling */
+        /* ==========================================================================
+           Shutri.com Minimalist Editorial Cockpit (Anthropic Warm Sand Palette)
+           ========================================================================== */
         :root {
-            --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --font-mono: 'Space Grotesk', Consolas, Monaco, "Lucida Console", "Liberation Mono", monospace;
+            --bg-light: #fbf9f5;
+            --bg-color: #fbf9f5;
+            --card-bg: #ffffff;
+            --panel-bg: #ffffff;
+            --panel-bg-darker: #f5f5f4;
+            --card-locked-bg: rgba(245, 245, 244, 0.85);
+
+            --border-light: #e7e5e4;
+            --border-color: #e7e5e4;
+            --border-light-hover: #d6d3d1;
+            --border-color-hover: #d6d3d1;
+
+            --text-dark-primary: #1c1917;
+            --text-main: #1c1917;
+            --text-heading: #1c1917;
+            --text-dark-secondary: #44403c;
+            --text-dark-muted: #78716c;
+            --text-muted: #78716c;
+
+            --accent-amber: #d97706;
+            --accent-amber-dark: #b45309;
+            --primary: #d97706;
+            --primary-hover: #b45309;
+
+            --accent-emerald: #059669;
+            --accent-emerald-dark: #047857;
+            --accent: #059669;
+            --accent-hover: #047857;
+
+            --accent-indigo: #4f46e5;
+            --accent-indigo-hover: #4338ca;
+
+            --danger: #dc2626;
+            --danger-hover: #b91c1c;
+
+            --tag-bg: #f5f5f4;
+            --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-mono: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         }
 
-        /* Global Theme-Aware Custom Scrollbars */
+        /* Global Custom Scrollbars */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
         }
-
         ::-webkit-scrollbar-track {
             background: transparent;
         }
-
         ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 10px;
+            background: var(--border-light-hover);
+            border-radius: 6px;
         }
-
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
-        }
-
-        /* Midnight Neon Theme (Default) */
-        :root, :root.theme-midnight {
-            --bg-color: #0d0e12;
-            --card-bg: #161822;
-            --border-color: #242838;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --accent: #10b981;
-            --accent-hover: #059669;
-            --danger: #ef4444;
-            --danger-hover: #dc2626;
-            --panel-bg-darker: #0b0c0e;
-            --card-locked-bg: rgba(13, 14, 20, 0.7);
-        }
-
-        /* Cyberpunk Cyber Theme */
-        :root.theme-cyberpunk {
-            --bg-color: #050508;
-            --card-bg: #0d0e16;
-            --border-color: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #64748b;
-            --primary: #06b6d4; /* cyan */
-            --primary-hover: #0891b2;
-            --accent: #d946ef; /* magenta */
-            --accent-hover: #c084fc;
-            --danger: #f43f5e;
-            --danger-hover: #e11d48;
-            --panel-bg-darker: #020204;
-            --card-locked-bg: rgba(5, 5, 8, 0.7);
-        }
-
-        /* Nordic Breeze Light Theme */
-        :root.theme-light {
-            --bg-color: #f1f5f9;
-            --card-bg: #ffffff;
-            --border-color: #cbd5e1;
-            --text-main: #0f172a;
-            --text-muted: #475569;
-            --primary: #4f46e5; /* indigo */
-            --primary-hover: #3730a3;
-            --accent: #0f766e; /* teal */
-            --accent-hover: #115e59;
-            --danger: #dc2626;
-            --danger-hover: #b91c1c;
-            --panel-bg-darker: #e2e8f0;
-            --card-locked-bg: rgba(226, 232, 240, 0.85);
+            background: var(--text-dark-muted);
         }
 
         * {
@@ -587,7 +573,7 @@
         }
 
         .clip-card:hover {
-            border-color: #3b4260;
+            border-color: var(--border-color);
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
@@ -671,8 +657,8 @@
         }
 
         .segment-row {
-            background-color: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background-color: var(--bg-light);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 0.5rem 0.6rem;
             display: flex;
@@ -684,7 +670,7 @@
         }
 
         .segment-row:hover {
-            border-color: #3b4260;
+            border-color: var(--border-color);
             background-color: rgba(255,255,255,0.04);
         }
         
@@ -694,7 +680,7 @@
         
         .clip-card.locked .segment-row:hover {
             border-color: rgba(255, 255, 255, 0.05);
-            background-color: rgba(255, 255, 255, 0.02);
+            background-color: var(--bg-light);
         }
 
         .segment-info {
@@ -832,8 +818,8 @@
         }
 
         .btn:hover:not(:disabled) {
-            background-color: rgba(255, 255, 255, 0.05);
-            border-color: #3b4260;
+            background-color: var(--bg-light);
+            border-color: var(--border-color);
         }
 
         .btn:active:not(:disabled) {
@@ -851,14 +837,14 @@
         }
 
         .btn-secondary {
-            background-color: rgba(255, 255, 255, 0.02);
+            background-color: var(--bg-light);
             border: 1px solid var(--border-color);
             color: var(--text-main);
         }
 
         .btn-secondary:hover:not(:disabled) {
             background-color: rgba(255, 255, 255, 0.06);
-            border-color: #3b4260;
+            border-color: var(--border-color);
         }
 
         .btn-accent {
@@ -1150,19 +1136,19 @@
 
         .context-menu {
             position: absolute;
-            background: rgba(22, 24, 34, 0.95);
+            background: #ffffff; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             padding: 0.4rem;
             z-index: 1000;
             display: none;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(4px);
         }
         .context-menu-item {
             padding: 0.5rem 1rem;
             font-size: 0.85rem;
-            color: #d1d5db;
+            color: var(--text-dark-secondary);
             cursor: pointer;
             border-radius: 4px;
             transition: all 0.15s ease;
@@ -1186,7 +1172,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(0,0,0,0.85);
+            background-color: rgba(28, 25, 23, 0.4);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -1457,86 +1443,34 @@
 </head>
 <body>
 
-    <header class="app-topbar" style="padding: 0.35rem 1rem; height: 42px; display: flex; justify-content: space-between; align-items: center; background-color: var(--panel-bg-darker); border-bottom: 1px solid var(--border-color); flex-shrink: 0; z-index: 100;">
-        <!-- Left: DDMA App Name + Team Badge + Episode Quick Switcher -->
-        <div style="display: flex; align-items: center; gap: 0.8rem;">
-            <h1 style="font-size: 1rem; font-weight: 800; font-family: var(--font-mono); background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; white-space: nowrap;">DDMA</h1>
-            
-            <div class="team-badge" style="display: flex; align-items: center; gap: 0.35rem; padding: 0.15rem 0.5rem; background: var(--bg-color); border-radius: 12px; border: 1px solid var(--border-color); font-size: 0.72rem;">
-                <span style="font-size: 0.85rem;">👤</span>
-                <span style="font-weight: 600; color: var(--text-main);">Ashutosh</span>
-                <span style="font-size: 0.6rem; color: var(--primary); background: rgba(99,102,241,0.15); padding: 0.05rem 0.35rem; border-radius: 8px; font-weight: 700;">Creator</span>
-            </div>
+    <header class="app-topbar" style="padding: 0.4rem 1.25rem; height: 48px; display: flex; justify-content: space-between; align-items: center; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); flex-shrink: 0; z-index: 100;">
+        <!-- Left: Brand Wordmark + Episode Switcher -->
+        <div style="display: flex; align-items: center; gap: 1.25rem;">
+            <a href="https://deepdive.shutri.com" target="_blank" class="brand-wordmark" style="font-family: var(--font-sans); font-size: 1.15rem; font-weight: 800; letter-spacing: 0.3em; color: var(--text-dark-primary); text-transform: uppercase; text-decoration: none;">S H U T R I &nbsp;DDMA</a>
 
-            <div style="display: flex; align-items: center; gap: 0.4rem; background: var(--bg-color); padding: 0.15rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-color);">
-                <label for="topEpisodeSelect" style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); font-family: var(--font-mono);">EPISODE:</label>
-                <select id="topEpisodeSelect" style="background: transparent; border: none; color: var(--text-main); font-size: 0.78rem; font-weight: 700; outline: none; cursor: pointer; padding-right: 0.4rem;">
+            <div style="display: flex; align-items: center; gap: 0.4rem; background: var(--bg-light); padding: 0.2rem 0.6rem; border-radius: 6px; border: 1px solid var(--border-light);">
+                <label for="topEpisodeSelect" style="font-size: 0.72rem; font-weight: 700; color: var(--accent-amber-dark); font-family: var(--font-mono);">EPISODE:</label>
+                <select id="topEpisodeSelect" style="background: transparent; border: none; color: var(--text-dark-primary); font-size: 0.78rem; font-weight: 700; outline: none; cursor: pointer; padding-right: 0.4rem; font-family: var(--font-mono);">
                     <!-- Populated dynamically -->
                 </select>
-                <button class="btn btn-primary btn-mini" id="topNewProjectBtn" style="padding: 0.15rem 0.45rem; font-size: 0.68rem; font-weight: 600;" title="Ingest new audio recording into DDMA pipeline">➕ Ingest New</button>
             </div>
         </div>
 
-        <!-- Right: Theme Selector + Docs + Help + Settings -->
+        <!-- Right: Docs + Settings -->
         <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <select id="headerThemeSelector" style="background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.4rem; border-radius: 6px; outline: none; cursor: pointer;">
-                <option value="midnight">🎨 Midnight Neon</option>
-                <option value="cyberpunk">⚡ Cyberpunk</option>
-                <option value="light">❄️ Nordic Breeze</option>
-            </select>
-
             <a href="/docs/documentation.html" target="_blank" style="text-decoration: none;">
-                <button class="btn btn-secondary btn-mini" style="font-weight: 600; padding: 0.2rem 0.5rem; display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem;" title="Open documentation">
+                <button class="btn btn-secondary btn-mini" style="font-weight: 600; padding: 0.25rem 0.65rem; display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem;" title="Open documentation">
                     <span>📖</span> Docs
                 </button>
             </a>
-            
-            <button id="toggleHelpChatHeaderBtn" class="btn btn-primary btn-mini" style="background-image: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%); font-weight: 600; padding: 0.2rem 0.5rem; display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem;" title="Toggle Help Split Screen">
-                <span>💡</span> Help
-            </button>
 
-            <button class="btn btn-secondary btn-mini" id="topSettingsBtn" style="padding: 0.2rem 0.55rem; font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem;" title="Open Studio System Settings">
+            <button class="btn btn-secondary btn-mini" id="topSettingsBtn" style="padding: 0.25rem 0.65rem; font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem;" title="Open Studio System Settings">
                 ⚙️ Settings
             </button>
         </div>
     </header>
 
-    <!-- Panel 4: Embedded Help Chatbot as Top Horizontal Split -->
-    <div class="help-chat-panel collapsed" id="helpChatPanel">
-        <div class="help-chat-body" id="helpChatBody" style="display: none;">
-            <!-- Column 1: Welcome message & suggestion chips -->
-            <div class="help-chat-sidebar">
-                <div style="display: flex; align-items: center; gap: 0.4rem; color: var(--text-main); font-weight: 700; font-size: 0.8rem;">
-                    <svg class="sidebar-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41M12 7a5 5 0 0 1 5 5c0 2.5-1.5 3.5-2.5 4.5h-5C8.5 15.5 7 14.5 7 12a5 5 0 0 1 5-5z"></path>
-                        <path d="M9 20h6"></path>
-                    </svg>
-                    <span>HELP PANEL</span>
-                </div>
-                <div class="help-chat-welcome">
-                    Ask me anything about Whisper transcription, crossfades, music stings, video resolutions, or settings!
-                </div>
-                <div class="help-chat-chips">
-                    <button class="chat-chip" data-text="Explain segment vs clip crossfades.">🎛️ Crossfades</button>
-                    <button class="chat-chip" data-text="How does sting volume mapping work?">🔊 Music Vol</button>
-                    <button class="chat-chip" data-text="How does Whisper transcription work?">🎙️ Whisper</button>
-                </div>
-            </div>
-            
-            <!-- Column 2: Chat messages and input bar -->
-            <div class="help-chat-main">
-                <div class="help-chat-messages" id="helpChatMessages">
-                    <div class="msg msg-model">Hi! I am your DDMA Help chatbot. How can I help you refine your episode storyboard today?</div>
-                </div>
-                <div class="help-chat-input-row">
-                    <input type="text" id="helpChatInput" placeholder="Ask Help...">
-                    <button class="btn btn-primary btn-mini" id="sendHelpChatBtn" style="padding: 0.35rem 0.8rem; font-size: 0.7rem;">Send Question</button>
-                </div>
-            </div>
-        </div>
-        <!-- Vim-style drag resize handle -->
-        <div class="help-chat-resizer" id="helpChatResizer" title="Drag to resize Help panel height"></div>
-    </div>
+    
 
     <div class="main-container">
         <!-- Left Collapsed Tab Indicator (Projects Switcher) -->
@@ -1560,23 +1494,13 @@
             </div>
             
             <!-- Sidebar Footer (Placeholder Settings/Profile) -->
-            <div class="sidebar-footer">
-                <div class="sidebar-footer-item" id="settingsBtn">
-                    <svg class="sidebar-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <div class="sidebar-footer" style="justify-content: center;">
+                <div class="sidebar-footer-item" id="settingsBtn" style="cursor: pointer; width: 100%; justify-content: center;">
+                    <svg class="sidebar-icon" viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="3"></circle>
                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                     </svg>
-                    <span>Settings</span>
-                </div>
-                <div class="sidebar-footer-item profile-item">
-                    <svg class="sidebar-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                    <div class="profile-info">
-                        <span class="profile-name">Ashutosh</span>
-                        <span class="profile-role">Creator</span>
-                    </div>
+                    <span>System Settings</span>
                 </div>
             </div>
         </div>
@@ -1584,34 +1508,29 @@
         <!-- Panel 2: Middle Pane (Curated Clips) -->
         <div class="left-panel" style="width: auto; flex: 1;">
             <!-- Utility Toolbar for All Actions -->
-            <div class="clips-toolbar" id="clipsToolbar" style="display: none; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border-color); background-color: var(--panel-bg-darker); align-items: center; justify-content: space-between; gap: 0.5rem;">
+            <div class="clips-toolbar" id="clipsToolbar" style="display: none; padding: 0.4rem 0.75rem; border-bottom: 1px solid var(--border-color); background-color: var(--panel-bg-darker); align-items: center; justify-content: space-between; gap: 0.6rem;">
                 <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-                    <!-- Group 1: Core Operations -->
-                    <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
-                        <button class="btn btn-secondary btn-mini" id="newClipBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;">➕ New Clip</button>
+                    <!-- Group 1: Creation & AI -->
+                    <div style="display: flex; gap: 0.35rem; align-items: center; border-right: 1px solid var(--border-color); padding-right: 0.5rem;">
+                        <button class="btn btn-primary btn-mini" id="newClipBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;">➕ New Clip</button>
+                        <button class="btn btn-secondary btn-mini" id="episodeAiAutoPlanBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;" title="Use Gemini AI to analyze raw transcript and discover semantic topic clips">🌌 AI Auto-Plan</button>
+                        <button class="btn btn-secondary btn-mini" id="reviewBridgesBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;" title="Use Gemini AI to review and align transition curiosity questions">✨ AI Bridges</button>
+                    </div>
+                    <!-- Group 2: Output & Playback -->
+                    <div style="display: flex; gap: 0.35rem; align-items: center; border-right: 1px solid var(--border-color); padding-right: 0.5rem;">
                         <a href="/docs/index.html" target="_blank" style="text-decoration: none;">
-                            <button class="btn btn-primary btn-mini" id="combineVideoBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600; cursor: pointer;" title="Open real-time Editor's Preview player to review compiled clips">🎬 Editor's Preview</button>
+                            <button class="btn btn-secondary btn-mini" id="combineVideoBtn" style="padding: 0.25rem 0.55rem; font-weight: 600; cursor: pointer;" title="Open real-time Editor's Preview player to review compiled clips">🎬 Editor's Preview</button>
                         </a>
-                        <button class="btn btn-secondary btn-mini" id="openExportModalBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Export combined audio (MP3), combined video (MP4), or plan metadata (JSON)">📥 Export</button>
-                        <button class="btn btn-secondary btn-mini" id="reviewBridgesBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600; background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(99,102,241,0.2)); border: 1px solid rgba(168,85,247,0.4);" title="Use Gemini AI to review and align curiosity question bridge cards across the entire episode">✨ AI Review Bridges</button>
-                        <button class="btn btn-secondary btn-mini" id="episodeAiAutoPlanBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600; background: linear-gradient(135deg, rgba(99,102,241,0.25), rgba(168,85,247,0.25)); border: 1px solid rgba(99,102,241,0.5);" title="Use Gemini AI to analyze raw transcript and discover 12-18 semantic topic clips for an unstructured episode">🌌 Episode AI Auto-Plan</button>
-                    </div>
-                    <!-- Group 2: History & Preview -->
-                    <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
-                        <button class="btn btn-secondary btn-mini" id="undoBtn" disabled style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">↩️ Undo</button>
+                        <button class="btn btn-secondary btn-mini" id="openExportModalBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;" title="Export combined audio (MP3), video (MP4), or plan metadata (JSON)">📥 Export</button>
+                        <button class="btn btn-secondary btn-mini" id="playLockedBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;">▶ Play Locked</button>
+                        <button class="btn btn-secondary btn-mini" id="undoBtn" disabled style="padding: 0.25rem 0.55rem; font-weight: 600;">↩️ Undo</button>
                         <span style="font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono);" id="undoCountLabel"></span>
-                        <button class="btn btn-secondary btn-mini" id="playLockedBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">▶ Play Locked</button>
                     </div>
-                    <!-- Group: Collapse Toggles -->
-                    <div style="display: flex; gap: 0.4rem; align-items: center; border-right: 1px solid rgba(255,255,255,0.08); padding-right: 0.5rem;">
-                        <button class="btn btn-secondary btn-mini" id="collapseAllBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem;" title="Collapse all clip cards">📁 Collapse All</button>
-                        <button class="btn btn-secondary btn-mini" id="expandAllBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem;" title="Expand all clip cards">📂 Expand All</button>
-                        <button class="btn btn-secondary btn-mini" id="toggleShowHiddenBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; font-weight: 600;" title="Show or hide clips that are marked as hidden">👁️ Show Hidden</button>
-                    </div>
-                    <!-- Group 3: Snapshot System -->
-                    <div style="display: flex; gap: 0.4rem; align-items: center;">
-                        <button class="btn btn-secondary btn-mini" id="saveSnapshotBtn" style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">📸 Take Snapshot</button>
-                        <button class="btn btn-secondary btn-mini" id="restoreSnapshotBtn" disabled style="padding: 0.2rem 0.4rem; font-size: 0.7rem; display: flex; align-items: center; gap: 0.2rem;">⏪ Restore Snapshot</button>
+                    <!-- Group 3: View Toggles -->
+                    <div style="display: flex; gap: 0.35rem; align-items: center;">
+                        <button class="btn btn-secondary btn-mini" id="collapseAllBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;" title="Collapse all clip cards">📁 Collapse All</button>
+                        <button class="btn btn-secondary btn-mini" id="expandAllBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;" title="Expand all clip cards">📂 Expand All</button>
+                        <button class="btn btn-secondary btn-mini" id="toggleShowHiddenBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;" title="Show or hide clips that are marked as hidden">👁️ Show Hidden</button>
                     </div>
                 </div>
                 <!-- Group 4: Panel Toggles -->
@@ -1774,17 +1693,7 @@
                 
                 <!-- TAB 1: General & Export -->
                 <div class="settings-tab-content active" id="tab-general" style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.8rem;">
-                        <!-- Theme & Color Palette -->
-                        <div style="background: var(--panel-bg-darker); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color);">
-                            <label style="font-size: 0.82rem; font-weight: 700; margin-bottom: 0.8rem; display: block; color: var(--text-main);">COLOR THEME & STYLING</label>
-                            <select id="themeSelector" style="width: 100%; padding: 0.6rem; font-size: 0.85rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;">
-                                <option value="midnight">🌌 Midnight Neon (Dark)</option>
-                                <option value="cyberpunk">⚡ Cyberpunk Cyber (Cyan/Purple)</option>
-                                <option value="light">☀️ Nordic Breeze (Light)</option>
-                            </select>
-                        </div>
-
+                    <div style="display: grid; display: flex; flex-direction: column; gap: 1.2rem;">
                         <!-- Export Settings -->
                         <div style="background: var(--panel-bg-darker); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color);">
                             <label style="font-size: 0.82rem; font-weight: 700; margin-bottom: 0.8rem; display: block; color: var(--text-main);">EXPORT FORMAT & CANVAS</label>
@@ -1934,7 +1843,7 @@
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
                     Review and modify the full prompt being sent to the Mosaic API for this clip. You can add special instructions or customize rules:
                 </p>
-                <textarea id="mosaicPromptTextarea" style="width: 100%; height: 380px; background: #1f2937; color: #f3f4f6; border: 1px solid #374151; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.8rem; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+                <textarea id="mosaicPromptTextarea" style="width: 100%; height: 380px; background: #fcfbf9; color: #1c1917; border: 1px solid var(--border-light); font-family: var(--font-mono); border: 1px solid #374151; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.8rem; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
                 <button class="btn btn-secondary" id="cancelMosaicPromptBtn">Cancel</button>
@@ -1954,7 +1863,7 @@
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
                     Review and modify the full prompt being sent to Gemini AI for this clip. You can add specific steering directives, recast rules, or audio constraints:
                 </p>
-                <textarea id="geminiPromptTextarea" style="width: 100%; height: 380px; background: #1f2937; color: #f3f4f6; border: 1px solid #374151; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.8rem; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+                <textarea id="geminiPromptTextarea" style="width: 100%; height: 380px; background: #fcfbf9; color: #1c1917; border: 1px solid var(--border-light); font-family: var(--font-mono); border: 1px solid #374151; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.8rem; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
                 <button class="btn btn-secondary" id="cancelGeminiPromptBtn">Cancel</button>
@@ -1974,7 +1883,7 @@
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
                     Inspect or customize the prompt sent to Gemini AI to review and align transition curiosity question cards across all clips in the episode:
                 </p>
-                <textarea id="bridgeReviewPromptTextarea" style="width: 100%; height: 420px; background: #1f2937; color: #f3f4f6; border: 1px solid #374151; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.8rem; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+                <textarea id="bridgeReviewPromptTextarea" style="width: 100%; height: 420px; background: #fcfbf9; color: #1c1917; border: 1px solid var(--border-light); font-family: var(--font-mono); border: 1px solid #374151; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.8rem; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
                 <button class="btn btn-secondary" id="cancelBridgeReviewModalBtn">Cancel</button>
@@ -2245,20 +2154,14 @@
         const rightCollapsedTab = document.getElementById('rightCollapsedTab');
 
         // Help Chat Elements
-        const helpChatPanel = document.getElementById('helpChatPanel');
-        const toggleHelpChatBtn = document.getElementById('toggleHelpChatBtn');
-        const helpChatToggleArrow = document.getElementById('helpChatToggleArrow');
-        const helpChatBody = document.getElementById('helpChatBody');
-        const helpChatMessages = document.getElementById('helpChatMessages');
-        const helpChatInput = document.getElementById('helpChatInput');
-        const sendHelpChatBtn = document.getElementById('sendHelpChatBtn');
+        // Help chat declarations removed
 
         // Settings Elements
         const settingsBtn = document.getElementById('settingsBtn');
         const settingsModalOverlay = document.getElementById('settingsModalOverlay');
         const closeSettingsModalBtn = document.getElementById('closeSettingsModalBtn');
         const saveSettingsBtn = document.getElementById('saveSettingsBtn');
-        const themeSelector = document.getElementById('themeSelector');
+        const themeSelector = null;
         
         const importMusicBtn = document.getElementById('importMusicBtn');
         const musicUploadInput = document.getElementById('musicUploadInput');
@@ -2353,7 +2256,7 @@
                 // Apply loaded theme preference on load
                 const savedTheme = localStorage.getItem('ddma-theme') || 'midnight';
                 applyTheme(savedTheme, false); // pass false so we don't save back immediately
-                themeSelector.value = savedTheme;
+                // themeSelector removed for unified theme
 
                 // Load saved export settings
                 const savedFormat = localStorage.getItem('ddma-export-format') || 'audio';
@@ -2400,7 +2303,7 @@
                 setupSidebarCollapse();
                 setupTranscriptCollapse();
                 setupSettingsModal();
-                setupHelpChat();
+                // setupHelpChat removed for decluttering
             };
 
             if (window.location.protocol.startsWith('http')) {
@@ -2435,16 +2338,9 @@
             }
         });
 
-        // Theme applier logic
-        function applyTheme(themeName, save = true) {
+        // Standard Unified Theme (Anthropic Warm Sand Editorial)
+        function applyTheme(themeName, save = false) {
             document.documentElement.className = '';
-            if (themeName !== 'midnight') {
-                document.documentElement.classList.add(`theme-${themeName}`);
-            }
-            localStorage.setItem('ddma-theme', themeName);
-            if (save) {
-                saveSettingsToServer();
-            }
         }
 
         function openSettingsModal() {
@@ -2562,8 +2458,7 @@
             }
 
             saveSettingsBtn.addEventListener('click', () => {
-                const selectedTheme = themeSelector.value;
-                applyTheme(selectedTheme);
+                // Standard unified theme active
 
                 const format = exportFormatSelector.value;
                 localStorage.setItem('ddma-export-format', format);
@@ -2606,20 +2501,13 @@
 
             const topNewProjectBtn = document.getElementById('topNewProjectBtn');
             if (topNewProjectBtn) {
-                topNewProjectBtn.addEventListener('click', () => {
+                if (topNewProjectBtn) topNewProjectBtn.addEventListener('click', () => {
                     const newProjectBtn = document.getElementById('newProjectBtn');
                     if (newProjectBtn) newProjectBtn.click();
                 });
             }
 
-            const headerThemeSelector = document.getElementById('headerThemeSelector');
-            if (headerThemeSelector) {
-                const currentTheme = localStorage.getItem('ddma-theme') || 'midnight';
-                headerThemeSelector.value = currentTheme;
-                headerThemeSelector.addEventListener('change', function() {
-                    applyTheme(this.value);
-                });
-            }
+            // Header theme selector removed for unified style
             
             // Music Upload triggers
             importMusicBtn.addEventListener('click', () => {
@@ -2809,181 +2697,6 @@
                 resizer.style.display = 'block';
                 rightCollapsedTab.style.display = 'none';
             });
-        }
-
-        // Help Chatbot logic (Co-Pilot)
-        let helpChatHistory = [];
-        function setupHelpChat() {
-            const helpChatPanel = document.getElementById('helpChatPanel');
-            const helpChatBody = document.getElementById('helpChatBody');
-            const helpChatMessages = document.getElementById('helpChatMessages');
-            const helpChatInput = document.getElementById('helpChatInput');
-            const sendHelpChatBtn = document.getElementById('sendHelpChatBtn');
-            const toggleHelpChatHeaderBtn = document.getElementById('toggleHelpChatHeaderBtn');
-            const helpChatResizer = document.getElementById('helpChatResizer');
-
-            // Load saved custom height
-            let customHeight = parseInt(localStorage.getItem('ddma-copilot-height')) || 250;
-
-            // Toggle collapse state via header button
-            if (toggleHelpChatHeaderBtn) {
-                toggleHelpChatHeaderBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const isCollapsed = helpChatPanel.classList.contains('collapsed');
-                    if (isCollapsed) {
-                        helpChatPanel.classList.remove('collapsed');
-                        helpChatPanel.style.height = `${customHeight}px`;
-                        helpChatBody.style.display = 'flex';
-                        toggleHelpChatHeaderBtn.style.backgroundImage = 'linear-gradient(135deg, #a855f7 0%, var(--primary) 100%)';
-                        setTimeout(() => {
-                            helpChatMessages.scrollTop = helpChatMessages.scrollHeight;
-                        }, 50);
-                    } else {
-                        helpChatPanel.classList.add('collapsed');
-                        helpChatPanel.style.height = '0px';
-                        helpChatBody.style.display = 'none';
-                        toggleHelpChatHeaderBtn.style.backgroundImage = 'linear-gradient(135deg, var(--primary) 0%, #a855f7 100%)';
-                    }
-                });
-            }
-
-            // Resizer drag logic
-            if (helpChatResizer) {
-                helpChatResizer.addEventListener('mousedown', function(e) {
-                    e.preventDefault();
-                    helpChatResizer.classList.add('dragging');
-                    document.body.style.cursor = 'ns-resize';
-                    document.body.style.userSelect = 'none';
-
-                    const startY = e.clientY;
-                    const startHeight = helpChatPanel.offsetHeight;
-
-                    function onMouseMove(moveEvent) {
-                        const deltaY = moveEvent.clientY - startY;
-                        let newHeight = startHeight + deltaY;
-
-                        // Constraints: min 150px, max 70% of viewport height
-                        const minHeight = 150;
-                        const maxHeight = window.innerHeight * 0.7;
-                        if (newHeight < minHeight) newHeight = minHeight;
-                        if (newHeight > maxHeight) newHeight = maxHeight;
-
-                        customHeight = newHeight;
-                        helpChatPanel.style.height = `${newHeight}px`;
-                    }
-
-                    function onMouseUp() {
-                        helpChatResizer.classList.remove('dragging');
-                        document.body.style.cursor = '';
-                        document.body.style.userSelect = '';
-                        localStorage.setItem('ddma-copilot-height', customHeight);
-
-                        window.removeEventListener('mousemove', onMouseMove);
-                        window.removeEventListener('mouseup', onMouseUp);
-                    }
-
-                    window.addEventListener('mousemove', onMouseMove);
-                    window.addEventListener('mouseup', onMouseUp);
-                });
-            }
-            
-            // Suggestion chips: remove on click to free up screen real estate
-            document.querySelectorAll('.chat-chip').forEach(chip => {
-                chip.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const text = this.getAttribute('data-text');
-                    
-                    // Animate and remove clicked chip
-                    this.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
-                    this.style.opacity = '0';
-                    this.style.transform = 'scale(0.8)';
-                    setTimeout(() => {
-                        const parent = this.parentElement;
-                        this.remove();
-                        if (parent && parent.children.length === 0) {
-                            parent.style.display = 'none';
-                        }
-                    }, 200);
-
-                    if (text) {
-                        helpChatInput.value = text;
-                        sendHelpChatMessage();
-                    }
-                });
-            });
-            
-            // Send button
-            if (sendHelpChatBtn) {
-                sendHelpChatBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    sendHelpChatMessage();
-                });
-            }
-            
-            // Enter key
-            if (helpChatInput) {
-                helpChatInput.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        sendHelpChatMessage();
-                    }
-                });
-            }
-        }
-        
-        function sendHelpChatMessage() {
-            const text = helpChatInput.value.trim();
-            if (!text) return;
-            
-            helpChatInput.value = '';
-            
-            appendChatMessage("user", text);
-            const typingIndicator = appendChatMessage("model", "⏳ Co-Pilot is thinking...");
-            
-            fetch('/help-bot', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: text,
-                    history: helpChatHistory
-                })
-            })
-            .then(res => {
-                if (!res.ok) throw new Error("Server error");
-                return res.json();
-            })
-            .then(data => {
-                typingIndicator.remove();
-                appendChatMessage("model", data.reply);
-                
-                helpChatHistory.push({ role: "user", text: text });
-                helpChatHistory.push({ role: "model", text: data.reply });
-            })
-            .catch(err => {
-                typingIndicator.remove();
-                appendChatMessage("model", "❌ Error: Could not connect to Co-Pilot server.");
-            });
-        }
-        
-        function appendChatMessage(role, text) {
-            const msgEl = document.createElement('div');
-            if (role === 'model' && (text.startsWith('Co-Pilot Error:') || text.startsWith('❌'))) {
-                msgEl.className = 'msg msg-model msg-error';
-            } else {
-                msgEl.className = `msg msg-${role}`;
-            }
-            
-            let parsedText = text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/\n/g, "<br>")
-                .replace(/`([^`]+)`/g, "<code>$1</code>");
-                
-            msgEl.innerHTML = parsedText;
-            helpChatMessages.appendChild(msgEl);
-            helpChatMessages.scrollTop = helpChatMessages.scrollHeight;
-            return msgEl;
         }
 
         // Project management helpers
@@ -3352,7 +3065,7 @@
                     
                     // Show clips utility toolbar and configure snapshot button
                     clipsToolbar.style.display = 'flex';
-                    restoreSnapshotBtn.disabled = !data.has_snapshot;
+                    if (restoreSnapshotBtn) restoreSnapshotBtn.disabled = !data.has_snapshot;
                     
                     const projName = projectInfo.name || projectInfo.id || 'Project';
                     const epTitle = projectInfo.title || projName;
@@ -5678,9 +5391,9 @@
         });
 
         // Take Snapshot button listener
-        saveSnapshotBtn.addEventListener('click', () => {
+        if (saveSnapshotBtn) saveSnapshotBtn.addEventListener('click', () => {
             if (!activeProjectId) return;
-            saveSnapshotBtn.disabled = true;
+            if (saveSnapshotBtn) saveSnapshotBtn.disabled = true;
             saveSnapshotBtn.innerHTML = '⏳ Saving...';
             
             fetch(`/save-project-snapshot?id=${activeProjectId}`, { method: 'POST' })
@@ -5689,14 +5402,14 @@
                     return r.json();
                 })
                 .then(data => {
-                    saveSnapshotBtn.disabled = false;
+                    if (saveSnapshotBtn) saveSnapshotBtn.disabled = false;
                     saveSnapshotBtn.innerHTML = '📸 Take Snapshot';
-                    restoreSnapshotBtn.disabled = false;
+                    if (restoreSnapshotBtn) restoreSnapshotBtn.disabled = false;
                     updateStateBar("Snapshot saved successfully!");
                     showDebug("Snapshot saved in projects/" + activeProjectId + "/plan_snapshot.json", false);
                 })
                 .catch(err => {
-                    saveSnapshotBtn.disabled = false;
+                    if (saveSnapshotBtn) saveSnapshotBtn.disabled = false;
                     saveSnapshotBtn.innerHTML = '📸 Take Snapshot';
                     updateStateBar("Snapshot failed");
                     showDebug("Snapshot failed: " + err.message);
@@ -5704,11 +5417,11 @@
         });
 
         // Restore Snapshot button listener
-        restoreSnapshotBtn.addEventListener('click', () => {
+        if (restoreSnapshotBtn) restoreSnapshotBtn.addEventListener('click', () => {
             if (!activeProjectId) return;
             if (!confirm("Are you sure you want to restore the snapshot? This will overwrite your current active plan. (You will still be able to Undo this restore).")) return;
             
-            restoreSnapshotBtn.disabled = true;
+            if (restoreSnapshotBtn) restoreSnapshotBtn.disabled = true;
             restoreSnapshotBtn.innerHTML = '⏳ Restoring...';
             
             // Push current state to undo stack before overwriting
@@ -5724,7 +5437,7 @@
                     return r.json();
                 })
                 .then(data => {
-                    restoreSnapshotBtn.disabled = false;
+                    if (restoreSnapshotBtn) restoreSnapshotBtn.disabled = false;
                     restoreSnapshotBtn.innerHTML = '⏪ Restore Snapshot';
                     
                     clips = data.plan || [];
@@ -5736,7 +5449,7 @@
                     showDebug("Restored from plan_snapshot.json", false);
                 })
                 .catch(err => {
-                    restoreSnapshotBtn.disabled = false;
+                    if (restoreSnapshotBtn) restoreSnapshotBtn.disabled = false;
                     restoreSnapshotBtn.innerHTML = '⏪ Restore Snapshot';
                     updateStateBar("Restore snapshot failed");
                     showDebug("Restore snapshot failed: " + err.message);
