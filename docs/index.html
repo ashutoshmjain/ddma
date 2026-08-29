@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- FontAwesome for control icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=20260829_2">
+    <link rel="stylesheet" href="style.css?v=20260829_3">
     <style>
 /* ==========================================================================
    SHUTRI DDMA Infographics & Editor's Preview (Anthropic Warm Sand Editorial)
@@ -697,7 +697,9 @@ html, body {
         gap: 0.85rem;
     }
 
+    /* Video Viewport & Controls on TOP for mobile */
     .workspace {
+        order: 1;
         width: 100%;
         gap: 0.85rem;
     }
@@ -729,15 +731,19 @@ html, body {
         font-size: 0.85rem;
     }
 
+    /* Storyboard Chapters below the Video Player with natural page scrolling */
     .sidebar {
+        order: 2;
         width: 100%;
-        max-height: 440px;
+        max-height: none;
         border-radius: 10px;
         padding: 0.85rem;
     }
 
     .clips-list {
-        max-height: 340px;
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
     }
 }
     </style>

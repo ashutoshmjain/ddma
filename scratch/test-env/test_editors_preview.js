@@ -136,30 +136,44 @@ async function runEditorsPreviewTests() {
             const layoutFlex = window.getComputedStyle(layout).flexDirection;
             const volumeContainer = document.querySelector('.volume-container');
             const modeToggle = document.querySelector('.mode-toggle-card');
+            const workspace = document.querySelector('.workspace');
+            const sidebar = document.querySelector('.sidebar');
             const canvasWrapper = document.querySelector('.canvas-wrapper');
             const canvasRect = canvasWrapper ? canvasWrapper.getBoundingClientRect() : null;
             const controlsCard = document.querySelector('.controls-card');
-            const sidebar = document.querySelector('.sidebar');
+            const clipsList = document.querySelector('.clips-list');
+
+            const workspaceOrder = window.getComputedStyle(workspace).order;
+            const sidebarOrder = window.getComputedStyle(sidebar).order;
+            const workspaceRect = workspace.getBoundingClientRect();
+            const sidebarRect = sidebar.getBoundingClientRect();
 
             return {
                 layoutFlex,
+                workspaceOrder,
+                sidebarOrder,
+                videoIsAboveSidebar: workspaceRect.top < sidebarRect.top,
                 volumeHidden: volumeContainer ? window.getComputedStyle(volumeContainer).display === 'none' : true,
                 modeToggleHidden: modeToggle ? window.getComputedStyle(modeToggle).display === 'none' : true,
                 canvasWidth: canvasRect ? canvasRect.width : 0,
                 canvasHeight: canvasRect ? canvasRect.height : 0,
                 controlsVisible: controlsCard !== null && window.getComputedStyle(controlsCard).display !== 'none',
-                sidebarVisible: sidebar !== null && window.getComputedStyle(sidebar).display !== 'none'
+                sidebarVisible: sidebar !== null && window.getComputedStyle(sidebar).display !== 'none',
+                nestedScrollRemoved: clipsList ? window.getComputedStyle(clipsList).maxHeight === 'none' : true
             };
         });
 
         console.log(`- Mobile Layout Direction: ${mobileState.layoutFlex} (Expected: column)`);
+        console.log(`- Video Workspace Order: ${mobileState.workspaceOrder} (Sidebar Order: ${mobileState.sidebarOrder})`);
+        console.log(`- Video Pane Physically on TOP of Storyboard: ${mobileState.videoIsAboveSidebar}`);
+        console.log(`- Nested Scrollbar Trap Eliminated on Mobile: ${mobileState.nestedScrollRemoved}`);
         console.log(`- Volume Slider Hidden on Mobile: ${mobileState.volumeHidden} (Expected: true)`);
         console.log(`- Mode Toggle Hidden on Mobile: ${mobileState.modeToggleHidden} (Expected: true)`);
         console.log(`- Viewport Canvas Size: ${mobileState.canvasWidth.toFixed(1)}px x ${mobileState.canvasHeight.toFixed(1)}px (Square 1:1)`);
         console.log(`- Thumb-friendly Controls Visible: ${mobileState.controlsVisible}`);
         console.log(`- Storyboard Playlist Below Controls: ${mobileState.sidebarVisible}`);
 
-        if (mobileState.layoutFlex !== 'column' || !mobileState.volumeHidden || !mobileState.controlsVisible) {
+        if (mobileState.layoutFlex !== 'column' || !mobileState.videoIsAboveSidebar || !mobileState.nestedScrollRemoved || !mobileState.volumeHidden || !mobileState.controlsVisible) {
             throw new Error("FAIL: Mobile layout adaptations failed!");
         }
 

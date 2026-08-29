@@ -683,7 +683,9 @@ html, body {
         gap: 0.85rem;
     }
 
+    /* Video Viewport & Controls on TOP for mobile */
     .workspace {
+        order: 1;
         width: 100%;
         gap: 0.85rem;
     }
@@ -715,14 +717,18 @@ html, body {
         font-size: 0.85rem;
     }
 
+    /* Storyboard Chapters below the Video Player with natural page scrolling */
     .sidebar {
+        order: 2;
         width: 100%;
-        max-height: 440px;
+        max-height: none;
         border-radius: 10px;
         padding: 0.85rem;
     }
 
     .clips-list {
-        max-height: 340px;
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
     }
 }
