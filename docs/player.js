@@ -874,36 +874,41 @@ function onTimelineItemChanged() {
     }
     
     if (item.type === 'video') {
-        const localTime = currentGlobalTime - item.startGlobal;
+        const localTime = Math.max(0, currentGlobalTime - item.startGlobal);
         const playOffset = item.playOffset || 0.0;
-        
         const targetTime = localTime + playOffset;
+        
         if (videoPlayer.getAttribute('data-src') !== item.src) {
             videoPlayer.setAttribute('data-src', item.src);
             videoPlayer.src = item.src;
             videoPlayer.muted = false;
-            videoPlayer.volume = currentVolume;
+            videoPlayer.volume = isMuted ? 0 : currentVolume;
             
-            const startPlay = () => {
-                videoPlayer.currentTime = targetTime;
-                if (isPlaying) {
-                    videoPlayer.muted = false;
-                    const p = videoPlayer.play();
-                    if (p) p.catch(err => console.log('Playback deferred:', err));
+            const onMeta = () => {
+                if (targetTime > 0) {
+                    try { videoPlayer.currentTime = targetTime; } catch(e) {}
                 }
-            };
-            
-            videoPlayer.onloadedmetadata = startPlay;
-            videoPlayer.oncanplay = () => {
-                if (isPlaying && videoPlayer.paused) {
+                if (isPlaying) {
                     videoPlayer.muted = false;
                     const p = videoPlayer.play();
                     if (p) p.catch(() => {});
                 }
             };
-            videoPlayer.load();
+            
+            if (videoPlayer.readyState >= 1) {
+                onMeta();
+            } else {
+                videoPlayer.addEventListener('loadedmetadata', onMeta, { once: true });
+            }
+            
+            if (isPlaying) {
+                const p = videoPlayer.play();
+                if (p) p.catch(() => {});
+            }
         } else {
-            videoPlayer.currentTime = targetTime;
+            if (Math.abs(videoPlayer.currentTime - targetTime) > 0.5) {
+                try { videoPlayer.currentTime = targetTime; } catch(e) {}
+            }
             if (isPlaying && videoPlayer.paused) {
                 videoPlayer.muted = false;
                 const p = videoPlayer.play();
@@ -916,16 +921,15 @@ function onTimelineItemChanged() {
         
         if (prevVideoItem) {
             const baseDur = prevVideoItem.duration;
-            videoPlayer.currentTime = Math.max(0, baseDur - 5.0) + elapsed;
+            try { videoPlayer.currentTime = Math.max(0, baseDur - 5.0) + elapsed; } catch(e) {}
             if (isPlaying && videoPlayer.paused) {
-                videoPlayer.muted = (useWebAudio) ? false : isMuted;
+                videoPlayer.muted = false;
                 videoPlayer.play().catch(() => {});
             }
         }
     }
 }
 
-// Keep volume nodes synced and handle crossfades/fades
 function syncVolumeAndFade() {
     const item = timeline[activeTimelineIndex];
     if (!item) return;

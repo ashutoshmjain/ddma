@@ -45,7 +45,7 @@
         </header>
 
         <div class="main-content-layout">
-            <!-- Left / Secondary: Clips & Chapters Playlist -->
+            <!-- Left / Secondary: Storyboard Chapters Playlist -->
             <aside class="sidebar glass" id="sidebarSection">
                 <div class="sidebar-top-bar">
                     <span class="sidebar-heading">STORYBOARD CHAPTERS</span>
@@ -133,9 +133,9 @@
         </div>
     </div>
 
-    <!-- Episode Audio & Video Elements -->
+    <!-- Episode Audio & Video Elements (Kept active in DOM with opacity for mobile Chrome background playback) -->
     <audio id="audioPlayer" preload="auto"></audio>
-    <video id="videoPlayer" preload="auto" playsinline style="display: none;"></video>
+    <video id="videoPlayer" preload="auto" playsinline webkit-playsinline style="position: fixed; top: 0; left: 0; width: 1px; height: 1px; opacity: 0.001; pointer-events: none; z-index: -1;"></video>
 
     <!-- Custom Dialog Modal -->
     <div id="customModal" class="modal-backdrop">
