@@ -94,7 +94,8 @@
                 "volume": 1
             }
         ],
-        "locked": true
+        "locked": true,
+        "mosaic_run_id": "773beace-f471-496f-9c52-fe92f2583414"
     },
     {
         "num": 3,
@@ -103,22 +104,22 @@
         "end": 319.34,
         "duration": 105.26,
         "bridge_text": [
-            "So how does the exhaust fan break in our bodies?"
+            "What is Type II Failure !"
         ],
         "segments": [
             {
                 "type": "music",
-                "music_file": "Demilitarized Zone (Sting) - Ethan Meixsell.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 5.5,
-                "crossfade": 1.3,
+                "crossfade": 0,
                 "volume": 1
             },
             {
                 "type": "audio",
-                "start": 214.08,
+                "start": 215.44,
                 "end": 236.9,
-                "duration": 22.82,
-                "text": "That's actually a brilliant way to conceptualize it. Type one, which we clinically call hypoxemic failure. Right. It's fundamentally a failure of the oxygen barrier. It occurs when the alveolar capillary barrier gets flooded or severely inflamed. And that barrier is what exactly it's an incredibly delicate, microscopically thin bridge where oxygen actually enters the blood from your lungs."
+                "duration": 21.46,
+                "text": "conceptualize  it.  Type  one,  which  we  clinically  call  hypoxemic  failure.  Right.  It's  fundamentally  a  failure  of  the  oxygen  barrier.  It  occurs  when  the  alveolar  capillary  barrier  gets  flooded  or  severely  inflamed.  And  that  barrier  is  what  exactly  it's  an  incredibly  delicate,  microscopically  thin  bridge  where  oxygen  actually  enters  the  blood  from  your  lungs."
             },
             {
                 "type": "music",
@@ -129,34 +130,35 @@
             },
             {
                 "type": "audio",
-                "start": 236.98,
-                "end": 319.34,
-                "duration": 82.36,
-                "text": "So the physical mechanics of breeding might be perfectly fine. Right. You are pulling air in, but the transfer process is just broken. Just precisely in the clinical literature, this is described as a VQ mismatch. VQ. Yeah. Ventilation, profusion, inequality. To spare you the complex gas equations, it basically boils down to a massive logistical failure. Like the delivery trucks. Exactly. Either blood is flowing to areas of the lung that aren't getting any air or air is reaching areas of the lung that have absolutely no blood flow. So going back to the supermarket visual, it is a flooded loading dock where these delivery trucks, your red blood cells, they just drive right past the dock without picking up any cargo. Right. The oxygen is right there, but the water just totally prevents the hand off. And when that hand off fails completely, say an area of the lung, collapses or floods entirely. It creates what we call a true inter pulmonary shunt. What happens then? At that stage, a doctor could put a mask on you and pump you full of 100 % supplemental oxygen, and it literally wouldn't make a difference. Wait, really? None at all. None. The gas physically cannot reach those unventilated loading docks. It's blocked. Wow. Okay. So type one is this catastrophic failure of oxygen transfer, but what if the lungs are dry, but the actual mechanical muscles of your chest? Just, I don't know, give up. Well, that brings us to type two. Okay."
+                "start": 237.28,
+                "end": 319.68,
+                "duration": 82.4,
+                "text": "So  the  physical  mechanics  of  breeding  might  be  perfectly  fine.  Right.  You  are  pulling  air  in,  but  the  transfer  process  is  just  broken.  Just  precisely  in  the  clinical  literature,  this  is  described  as  a  VQ  mismatch.  VQ.  Yeah.  Ventilation,  profusion,  inequality.  To  spare  you  the  complex  gas  equations,  it  basically  boils  down  to  a  massive  logistical  failure.  Like  the  delivery  trucks.  Exactly.  Either  blood  is  flowing  to  areas  of  the  lung  that  aren't  getting  any  air  or  air  is  reaching  areas  of  the  lung  that  have  absolutely  no  blood  flow.  So  going  back  to  the  supermarket  visual,  it  is  a  flooded  loading  dock  where  these  delivery  trucks,  your  red  blood  cells,  they  just  drive  right  past  the  dock  without  picking  up  any  cargo.  Right.  The  oxygen  is  right  there,  but  the  water  just  totally  prevents  the  hand  off.  And  when  that  hand  off  fails  completely,  say  an  area  of  the  lung,  collapses  or  floods  entirely.  It  creates  what  we  call  a  true  inter  pulmonary  shunt.  What  happens  then?  At  that  stage,  a  doctor  could  put  a  mask  on  you  and  pump  you  full  of  100 %  supplemental  oxygen,  and  it  literally  wouldn't  make  a  difference.  Wait,  really?  None  at  all.  None.  The  gas  physically  cannot  reach  those  unventilated  loading  docks.  It's  blocked.  Wow.  Okay.  So  type  one  is  this  catastrophic  failure  of  oxygen  transfer,  but  what  if  the  lungs  are  dry,  but  the  actual  mechanical  muscles  of  your  chest?  Just,  I  don't  know,  give  up.  Well,  that  brings  us  to  type  two.  Okay."
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-                "duration": 4.5,
+                "music_file": "deepDive-title-music.mp3",
+                "duration": 5.5,
                 "crossfade": 0.3,
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "b035086f-6b7f-41db-8303-77e17849f22b"
     },
     {
         "num": 4,
-        "title": "Oh, That Sounds Bad",
+        "title": "Hypercapnic Failure",
         "start": 319.34,
         "end": 423.3,
         "duration": 103.96,
         "bridge_text": [
-            "That exact same thing is happening to the microscopic tissues in our lungs, isn't it?"
+            "How does this (slow motion) crisis sets in ?"
         ],
         "segments": [
             {
                 "type": "music",
-                "music_file": "Double Helix (Sting) - Ethan Meixsell.mp3",
+                "music_file": "deepDive-title-music.mp3",
                 "duration": 5.5,
                 "crossfade": 1.3,
                 "volume": 1
@@ -184,22 +186,23 @@
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "e2fc61f9-2a3c-456e-b74d-cc173e79c678"
     },
     {
         "num": 5,
-        "title": "Like Over Decades",
+        "title": "Pulmonary Senescence",
         "start": 424.14,
         "end": 532.42,
         "duration": 108.28,
         "bridge_text": [
-            "Coming up in Part 6: And it Progresses \u2014 What is the deeper secret?"
+            "Loss of volume is called ATLECTRAUMA !"
         ],
         "segments": [
             {
@@ -232,37 +235,38 @@
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "deepDive-title-music.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "c47c27fe-981e-43c9-ac82-bc5371582a28"
     },
     {
         "num": 6,
-        "title": "And it Progresses",
+        "title": "Atlectrauma !",
         "start": 533.28,
         "end": 635.22,
         "duration": 101.94,
         "bridge_text": [
-            "Coming up in Part 7: To Make Matters Worse, As We Age, Our Hearts Often Stiffen \u2014 What is the deeper secret?"
+            "Where does Pranyama fits in in modern Pulmonary Science ?"
         ],
         "segments": [
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "deepDive-title-music.mp3",
                 "duration": 5.5,
                 "crossfade": 1.3,
                 "volume": 1
             },
             {
                 "type": "audio",
-                "start": 533.28,
+                "start": 521.3,
                 "end": 555.82,
-                "duration": 22.54,
-                "text": "And it progresses. By the time you reach age 65 to 70, those dependent airways at the very base of your lungs collapse during a normal exhal, even when you're sitting straight up in a chair. I want to make sure I'm really grasping the gravity of this. If I'm a healthy 70 year old just sitting in a chair reading a book, parts of my lungs are physically crushing shut every single time I breathe out. Every single exhal."
+                "duration": 34.52,
+                "text": "by  44,  your  closing  capacity  has  shifted  so  much  that  those  tiny  airways  begin  collapsing  just  by  lying  down  flat  on  your  back.  So  parts  of  your  lungs  are  collapsing  just  because  you  lay  down  to  go  to  sleep.   And  it  progresses.  By  the  time  you  reach  age  65  to  70,  those  dependent  airways  at  the  very  base  of  your  lungs  collapse  during  a  normal  exhal,  even  when  you're  sitting  straight  up  in  a  chair.  I  want  to  make  sure  I'm  really  grasping  the  gravity  of  this.  If  I'm  a  healthy  70  year  old  just  sitting  in  a  chair  reading  a  book,  parts  of  my  lungs  are  physically  crushing  shut  every  single  time  I  breathe  out.  Every  single  exhal."
             },
             {
                 "type": "music",
@@ -273,44 +277,52 @@
             },
             {
                 "type": "audio",
-                "start": 555.9,
+                "start": 556.3,
+                "end": 579.3,
+                "duration": 23,
+                "text": "And  this  constant  snapping  shut  and  peeling  open  again  with  every  breath,  it  causes  immense  mechanical  shear  stress  on  the  tissue.  Wow.  Clinically,  we  refer  to  it  as  atlectrama.  And  what  the  research  shows  is  that  this  cyclical  collapsing  and  reopening  at  the  base  of  the  lungs,  it  isn't  just  an  irritating  site.  It's  quite  effective  getting  older.  No.  It  actually  triggers  a  dangerous  microscopic  chain  reaction."
+            },
+            {
+                "type": "audio",
+                "start": 583,
                 "end": 635.22,
-                "duration": 79.32,
-                "text": "And this constant snapping shut and peeling open again with every breath, it causes immense mechanical shear stress on the tissue. Wow. Clinically, we refer to it as atlectrama. And what the research shows is that this cyclical collapsing and reopening at the base of the lungs, it isn't just an irritating site. It's quite effective getting older. No. It actually triggers a dangerous microscopic chain reaction. Physically turns off the lungs natural waterproofing. This is exactly where the structural loss of aging translates into that internal drowning we discussed at the top of the show. When those tiny lung sacs collapse and stay collapsed, the pressure dynamics inside them spike radically. The pressure pulse fluid from your bloodstream directly into your lungs. That's the drowning. We call this the fluid transudation cascade. See that again. Fluid transudation cascade. It's governed by a set of physiological rules known as starling forces. Now, we don't need to get into the mathematical equations here, but starling forces describe a delicate tug of war of pressures between your blood vessels and your lung tissue. I was picturing this like a weeping sponge. If you squeeze a wet sponge, water comes out, but if you let it decompress, it sucks water in. Right. Because those tiny airways are collapsed, the surface tension inside them goes through the roof. That high tension acts precisely like a microscopic vacuum."
+                "duration": 52.22,
+                "text": "This  is  exactly  where  the  structural  loss  of  aging  translates  into  that  internal  drowning  we  discussed  at  the  top  of  the  show.  When  those  tiny  lung  sacs  collapse  and  stay  collapsed,  the  pressure  dynamics  inside  them  spike  radically.  The  pressure  pulse  fluid  from  your  bloodstream  directly  into  your  lungs.  That's  the  drowning.  We  call  this  the  fluid  transudation  cascade.  See  that  again.  Fluid  transudation  cascade.  It's  governed  by  a  set  of  physiological  rules  known  as  starling  forces.  Now,  we  don't  need  to  get  into  the  mathematical  equations  here,  but  starling  forces  describe  a  delicate  tug  of  war  of  pressures  between  your  blood  vessels  and  your  lung  tissue.  I  was  picturing  this  like  a  weeping  sponge.  If  you  squeeze  a  wet  sponge,  water  comes  out,  but  if  you  let  it  decompress,  it  sucks  water  in.  Right.  Because  those  tiny  airways  are  collapsed,  the  surface  tension  inside  them  goes  through  the  roof.  That  high  tension  acts  precisely  like  a  microscopic  vacuum."
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "7ecacee4-ed65-40d3-939c-c406c604d718"
     },
     {
         "num": 7,
-        "title": "To Make Matters Worse, As We Age, Our Hearts Often Stiffen",
+        "title": "Mechanics of Pranayama",
         "start": 635.66,
         "end": 744.1,
         "duration": 108.44,
         "bridge_text": [
-            "Then that is what?"
+            "How does Pranayama helps to build Pulmonary Surfactant ?"
         ],
         "segments": [
             {
                 "type": "music",
-                "music_file": "Demilitarized Zone (Sting) - Ethan Meixsell.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 5.5,
                 "crossfade": 1.3,
                 "volume": 1
             },
             {
                 "type": "audio",
-                "start": 635.66,
+                "start": 646.52,
                 "end": 657.82,
-                "duration": 22.16,
-                "text": "It creates a suction for so powerful that it physically pulls the watery fluid out of the surrounding blood capillaries straight through the cellular walls and into the air sacs. So the loading dock is officially flooding. The water is rising. To make matters worse, as we age, our hearts often stiffen. This pushes blood back into the lungs with slightly higher pressure. So you have a perfect storm."
+                "duration": 11.3,
+                "text": "So  the  loading  dock  is  officially  flooding.  The  water  is  rising.  To  make  matters  worse,  as  we  age,  our  hearts  often  stiffen.  This  pushes  blood  back  into  the  lungs  with  slightly  higher  pressure.  So  you  have  a  perfect  storm."
             },
             {
                 "type": "music",
@@ -328,17 +340,17 @@
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "deepDive-title-music.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true
     },
     {
         "num": 8,
-        "title": "The Link is Right on Our Deep Dive Landing Page",
+        "title": "Pulmonary Surfactant",
         "start": 744.4,
         "end": 852.16,
         "duration": 107.76,
@@ -348,7 +360,7 @@
         "segments": [
             {
                 "type": "music",
-                "music_file": "Double Helix (Sting) - Ethan Meixsell.mp3",
+                "music_file": "deepDive-title-music.mp3",
                 "duration": 5.5,
                 "crossfade": 1.3,
                 "volume": 1
@@ -376,7 +388,7 @@
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
                 "volume": 1

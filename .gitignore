@@ -55,4 +55,4 @@ node_modules/
 
 # Public Web Assets
 !docs/assets/**
-
+!docs/episodes/**
