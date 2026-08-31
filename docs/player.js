@@ -1068,70 +1068,100 @@ function drawAudioVisualizerScreen(item) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
-    // Top header (relative font size and position)
+    // Top header
     const headerFontSize = Math.max(16, Math.floor(viewport.width * 0.035));
     ctx.font = `800 ${headerFontSize}px Outfit`;
-    ctx.fillText('🎧 AUDIO PREVIEW MODE', viewport.width / 2, viewport.height * 0.15);
+    ctx.fillStyle = '#00f2fe';
+    ctx.fillText('🎧 SLOPCAST AUDIO PREVIEW', viewport.width / 2, viewport.height * 0.15);
     
-    // Middle title (wrapped, relative position)
+    // Middle clip title
     const titleFontSize = Math.max(18, Math.floor(viewport.width * 0.04));
     ctx.font = `600 ${titleFontSize}px Outfit`;
-    ctx.fillStyle = '#a29bfe';
+    ctx.fillStyle = '#ffffff';
     
     const titleText = `Clip ${item.clipNum}: ${item.title}`;
-    const titleLines = wrapText(ctx, titleText, viewport.width - 60);
+    const titleLines = wrapText(ctx, titleText, viewport.width - 80);
     const titleLineHeight = titleFontSize + 8;
-    const titleStartY = (viewport.height * 0.38) - ((titleLines.length - 1) * titleLineHeight / 2);
+    const titleStartY = (viewport.height * 0.35) - ((titleLines.length - 1) * titleLineHeight / 2);
     
     titleLines.forEach((line, idx) => {
         ctx.fillText(line, viewport.width / 2, titleStartY + (idx * titleLineHeight));
     });
     
-    const centerY = viewport.height * 0.6;
-    if (analyser && isPlaying) {
-        analyser.getByteTimeDomainData(dataArray);
-        
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = 'rgba(162, 155, 254, 0.85)';
-        ctx.shadowColor = '#6c5ce7';
-        ctx.shadowBlur = 20;
+    const centerY = viewport.height * 0.62;
+
+    if (isPlaying) {
+        ctx.lineWidth = 3.5;
+        ctx.strokeStyle = 'rgba(0, 242, 254, 0.9)';
+        ctx.shadowColor = '#00f2fe';
+        ctx.shadowBlur = 18;
         
         ctx.beginPath();
-        const sliceWidth = viewport.width / bufferLength;
-        let x = 0;
-        
-        for (let i = 0; i < bufferLength; i++) {
-            const v = dataArray[i] / 128.0;
-            const y = (v - 1.0) * (viewport.height * 0.2) + centerY;
-            
-            if (i === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
+        const numPoints = 80;
+        const sliceWidth = viewport.width / numPoints;
+        const timeVal = Date.now() / 250;
+
+        let hasFft = false;
+        if (analyser && dataArray) {
+            try {
+                analyser.getByteTimeDomainData(dataArray);
+                hasFft = true;
+            } catch (e) {
+                hasFft = false;
             }
-            x += sliceWidth;
         }
-        
-        ctx.lineTo(viewport.width, centerY);
+
+        for (let i = 0; i <= numPoints; i++) {
+            let amp = 0;
+            if (hasFft && dataArray && dataArray.length > 0) {
+                const sampleIdx = Math.floor((i / numPoints) * dataArray.length);
+                amp = (dataArray[sampleIdx] - 128) / 128.0;
+            } else {
+                // Procedural rhythmic wave fallback
+                amp = Math.sin(i * 0.25 + timeVal) * 0.35 + Math.sin(i * 0.12 - timeVal * 1.5) * 0.2;
+            }
+            const y = centerY + amp * (viewport.height * 0.18);
+            const x = i * sliceWidth;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
         ctx.stroke();
         ctx.shadowBlur = 0;
-        
-        analyser.getByteFrequencyData(dataArray);
-        const barWidth = (viewport.width / bufferLength) * 1.5;
-        let barX = 0;
-        ctx.fillStyle = 'rgba(108, 92, 231, 0.12)';
-        
-        const maxBarHeight = viewport.height * 0.15;
-        for (let i = 0; i < bufferLength; i++) {
-            const barHeight = (dataArray[i] / 255.0) * maxBarHeight;
-            ctx.fillRect(barX, viewport.height - barHeight - 20, barWidth - 2, barHeight);
-            barX += barWidth;
+
+        // Equalizer Frequency Bars at the bottom
+        const numBars = 32;
+        const barWidth = viewport.width / numBars;
+        ctx.fillStyle = 'rgba(79, 172, 254, 0.25)';
+        for (let i = 0; i < numBars; i++) {
+            let hRatio = 0.3;
+            if (hasFft && dataArray) {
+                const fIdx = Math.floor((i / numBars) * (dataArray.length / 2));
+                hRatio = (dataArray[fIdx] || 50) / 255.0;
+            } else {
+                hRatio = (Math.sin(i * 0.5 + timeVal * 2) * 0.3 + 0.45);
+            }
+            const barH = Math.max(4, hRatio * (viewport.height * 0.14));
+            ctx.fillRect(i * barWidth + 2, viewport.height - barH - 24, barWidth - 4, barH);
         }
     } else {
-        const statusFontSize = Math.max(14, Math.floor(viewport.width * 0.028));
+        // Paused state: Subtle resting glow wave
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
+        ctx.beginPath();
+        const numPoints = 60;
+        const sliceWidth = viewport.width / numPoints;
+        for (let i = 0; i <= numPoints; i++) {
+            const y = centerY + Math.sin(i * 0.15) * 6;
+            const x = i * sliceWidth;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        const statusFontSize = Math.max(13, Math.floor(viewport.width * 0.026));
         ctx.font = `500 ${statusFontSize}px Outfit`;
-        ctx.fillStyle = '#636e72';
-        ctx.fillText(isPlaying ? 'Initializing visualizer...' : 'Press Play to start visualizer', viewport.width / 2, viewport.height * 0.78);
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('▶ Press Play to listen to continuous audio track', viewport.width / 2, viewport.height * 0.78);
     }
 }
 
