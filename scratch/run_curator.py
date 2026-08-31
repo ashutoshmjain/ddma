@@ -747,7 +747,7 @@ def migrate_legacy_files():
                 print(f"Warning: Failed to migrate legacy files: {e}")
 
     # Auto-seed published episodes from docs/episodes/ for fresh git clones
-    for ep in ["244", "245"]:
+    for ep in ["244", "245", "246"]:
         ep_dir = os.path.join("projects", f"episode_{ep}")
         docs_plan = os.path.join("docs", "episodes", ep, "plan.json")
         if not os.path.exists(ep_dir) and os.path.exists(docs_plan):
