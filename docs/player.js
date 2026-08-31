@@ -93,6 +93,19 @@ async function loadEpisodesManifest() {
 
     // Parse URL parameter ?ep=244 or ?episode=244
     const urlParams = new URLSearchParams(window.location.search);
+    // Parse URL parameter ?mode=audio or ?mode=slopcast
+    const urlParamsMode = new URLSearchParams(window.location.search);
+    const paramMode = urlParamsMode.get('mode') || urlParamsMode.get('type');
+    if (paramMode === 'audio' || paramMode === 'slopcast') {
+        currentMode = 'audio';
+        const vBtn = document.getElementById('videoModeBtn');
+        const aBtn = document.getElementById('audioModeBtn');
+        if (vBtn && aBtn) {
+            vBtn.classList.remove('active');
+            aBtn.classList.add('active');
+        }
+    }
+
     const paramEp = urlParams.get('ep') || urlParams.get('episode');
     if (paramEp && episodesManifest.some(e => e.id === paramEp || String(e.number) === paramEp)) {
         const found = episodesManifest.find(e => e.id === paramEp || String(e.number) === paramEp);
