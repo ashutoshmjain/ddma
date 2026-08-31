@@ -1001,6 +1001,28 @@ function drawFrame() {
 }
 
 function drawIntroScreen() {
+    if (currentMode === 'audio') {
+        const gradient = ctx.createRadialGradient(viewport.width/2, viewport.height/2, 50, viewport.width/2, viewport.height/2, viewport.width/2);
+        gradient.addColorStop(0, '#111424');
+        gradient.addColorStop(1, '#07090e');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, viewport.width, viewport.height);
+
+        ctx.fillStyle = '#f1f3f9';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const titleSize = Math.max(22, Math.floor(viewport.width * 0.045));
+        ctx.font = `800 ${titleSize}px Outfit`;
+        ctx.fillText("🎧 Slopcast Audio Preview", viewport.width / 2, viewport.height / 2 - 25);
+
+        const subtitleSize = Math.max(14, Math.floor(viewport.width * 0.025));
+        ctx.font = `400 ${subtitleSize}px Outfit`;
+        ctx.fillStyle = '#a29bfe';
+        ctx.fillText("Click play to listen to audio timeline segments", viewport.width / 2, viewport.height / 2 + 25);
+        return;
+    }
+
     ctx.fillStyle = '#f1f3f9';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
