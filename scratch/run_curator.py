@@ -2967,11 +2967,14 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     raise Exception(f"Clip number {clip_num} not found in plan.")
                 
                 # Concatenate segment texts to get complete script
-                speech_texts = []
-                for seg in target_clip.get("segments", []):
-                    if seg.get("type") == "audio" and seg.get("text"):
-                        speech_texts.append(seg.get("text").strip())
-                transcript = " ".join(speech_texts)
+                if target_clip.get("text") and target_clip.get("text").strip():
+                    transcript = target_clip.get("text").strip()
+                else:
+                    speech_texts = []
+                    for seg in target_clip.get("segments", []):
+                        if seg.get("type") == "audio" and seg.get("text"):
+                            speech_texts.append(seg.get("text").strip())
+                    transcript = " ".join(speech_texts)
                 
                 # Generate custom prompt with user's baseline guidelines
                 title = target_clip.get("title", f"Clip {clip_num}")
@@ -3245,11 +3248,14 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not target_clip:
                     raise Exception(f"Clip number {clip_num} not found in plan.")
                 
-                speech_texts = []
-                for seg in target_clip.get("segments", []):
-                    if seg.get("type") == "audio" and seg.get("text"):
-                        speech_texts.append(seg.get("text").strip())
-                transcript = " ".join(speech_texts)
+                if target_clip.get("text") and target_clip.get("text").strip():
+                    transcript = target_clip.get("text").strip()
+                else:
+                    speech_texts = []
+                    for seg in target_clip.get("segments", []):
+                        if seg.get("type") == "audio" and seg.get("text"):
+                            speech_texts.append(seg.get("text").strip())
+                    transcript = " ".join(speech_texts)
                 
                 title = target_clip.get("title", f"Clip {clip_num}")
                 mogr_base_rules = get_mosaic_default_prompt()

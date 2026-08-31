@@ -267,6 +267,65 @@ async function runTest() {
             throw new Error(`FAIL: Captured ${capturedErrors.length} unhandled browser error(s):\n` + capturedErrors.join('\n'));
         }
 
+        // 🧪 TEST 2c: Clip Spoken Text & Social Caption Editor Modal Verification
+        console.log("\n🧪 TEST 2c: Testing '📝 Text' Button, Modal Editing, and Persistence...");
+        const textBtnSelector = '#textCardBtn_0';
+        await page.waitForSelector(textBtnSelector);
+        
+        console.log("Clicking '📝 Text' button on Clip 1...");
+        await page.click(textBtnSelector);
+        await new Promise(r => setTimeout(r, 600));
+
+        const textModalState = await page.evaluate(() => {
+            const modal = document.getElementById('clipTextModalOverlay');
+            const input = document.getElementById('clipTextInput');
+            const title = document.getElementById('clipTextModalTitle');
+            const count = document.getElementById('clipTextWordCount');
+            return {
+                modalVisible: modal !== null && window.getComputedStyle(modal).display !== 'none',
+                inputValue: input ? input.value : '',
+                titleText: title ? title.textContent : '',
+                countText: count ? count.textContent : ''
+            };
+        });
+
+        console.log(`- Clip Text Modal Visible: ${textModalState.modalVisible}`);
+        console.log(`- Modal Title: "${textModalState.titleText}"`);
+        console.log(`- Populated Spoken Text Length: ${textModalState.inputValue.length} chars (${textModalState.countText})`);
+
+        if (!textModalState.modalVisible || !textModalState.inputValue) {
+            throw new Error("FAIL: Clip Text Modal failed to open or was not populated with spoken text!");
+        }
+
+        // Test editing the text and saving
+        await page.evaluate(() => {
+            const input = document.getElementById('clipTextInput');
+            if (input) {
+                input.value = input.value + " [Verified Clean Text]";
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        });
+        await new Promise(r => setTimeout(r, 300));
+
+        console.log("Saving persisted clip text...");
+        await page.click('#saveClipTextBtn');
+        await new Promise(r => setTimeout(r, 800));
+
+        const savedState = await page.evaluate(() => {
+            const modal = document.getElementById('clipTextModalOverlay');
+            return {
+                modalClosed: modal ? window.getComputedStyle(modal).display === 'none' : true,
+                persistedClipText: clips[0] ? clips[0].text : null
+            };
+        });
+
+        console.log(`- Modal Closed After Save: ${savedState.modalClosed}`);
+        console.log(`- Persisted clip.text in memory: "${savedState.persistedClipText ? savedState.persistedClipText.slice(-30) : ''}"`);
+
+        if (!savedState.modalClosed || !savedState.persistedClipText || !savedState.persistedClipText.includes('[Verified Clean Text]')) {
+            throw new Error("FAIL: Clip text was not properly persisted in clip object after save!");
+        }
+
         // 🧪 TEST 3: Modal Open/Close Verification Test
         console.log("\n🧪 TEST 3: Running Modal Open/Close Verification Test...");
         await page.evaluate(() => {

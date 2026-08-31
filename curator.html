@@ -1594,6 +1594,47 @@
         </div>
     </div>
 
+    
+    <!-- Clip Text & Social Caption Modal -->
+    <div class="modal-overlay" id="clipTextModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(28, 25, 23, 0.5); backdrop-filter: blur(4px); z-index: 1100; align-items: center; justify-content: center;">
+        <div class="modal-card" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; max-width: 680px; width: 92%; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.15); overflow: hidden;">
+            <!-- Modal Header -->
+            <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: var(--bg-light);">
+                <div>
+                    <h3 id="clipTextModalTitle" style="font-family: var(--font-sans); font-size: 1.05rem; font-weight: 700; color: var(--text-dark-primary); margin: 0;">CLIP 1: Spoken Text &amp; Social Caption</h3>
+                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; font-family: var(--font-mono);" id="clipTextModalSubtitle">Edit and correct spellings for Mosaic AI prompts &amp; Instagram/X/LinkedIn captions</div>
+                </div>
+                <button class="icon-btn" id="closeClipTextModalBtn" style="font-size: 1rem; cursor: pointer;">✖</button>
+            </div>
+
+            <!-- Modal Body -->
+            <div style="padding: 1.25rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; flex-grow: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label for="clipTextInput" style="font-size: 0.75rem; font-weight: 700; color: var(--text-dark-primary); font-family: var(--font-mono); text-transform: uppercase;">
+                        Spoken Script / Caption:
+                    </label>
+                    <div style="display: flex; gap: 0.4rem; align-items: center;">
+                        <span id="clipTextWordCount" style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">0 words • 0 chars</span>
+                        <button class="btn btn-secondary btn-mini" id="resetClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;" title="Reset to raw Whisper transcription">↺ Reset to Raw</button>
+                        <button class="btn btn-secondary btn-mini" id="copyClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; font-weight: 600;" title="Copy to clipboard for Instagram, X, LinkedIn, or Nostr">📋 Copy Caption</button>
+                    </div>
+                </div>
+
+                <textarea id="clipTextInput" rows="12" spellcheck="true" style="width: 100%; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.85rem; font-family: var(--font-sans); font-size: 0.88rem; line-height: 1.6; color: var(--text-dark-primary); background: #fcfbf9; outline: none; resize: vertical; min-height: 220px;" placeholder="Edit and refine the spoken script text for this clip..."></textarea>
+
+                <div style="font-size: 0.72rem; color: var(--text-muted); background: var(--bg-light); padding: 0.6rem 0.8rem; border-radius: 6px; border: 1px solid var(--border-light); line-height: 1.4;">
+                    💡 <strong>Persistent Sync:</strong> Saved text is stored in <code>plan.json</code> under this clip. It will automatically populate the Mosaic AI Prompt Editor and serve as ready-to-use captions for your Instagram, X (Twitter), LinkedIn, and Nostr post uploads.
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div style="padding: 0.85rem 1.25rem; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 0.6rem; background: var(--bg-light);">
+                <button class="btn btn-secondary btn-mini" id="cancelClipTextBtn" style="padding: 0.35rem 0.85rem; font-size: 0.78rem;">Cancel</button>
+                <button class="btn btn-primary btn-mini" id="saveClipTextBtn" style="padding: 0.35rem 1rem; font-size: 0.78rem; font-weight: 600;">Save &amp; Persist</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Audio Player Bar -->
     <div class="player-bar">
         <div class="player-info">
@@ -2342,6 +2383,143 @@
         function applyTheme(themeName, save = false) {
             document.documentElement.className = '';
         }
+
+        
+        // =========================================================================
+        // Clip Spoken Text & Social Caption Editor Logic
+        // =========================================================================
+        let activeTextClipIndex = null;
+
+        function getClipRawWhisperText(clip) {
+            const speechTexts = [];
+            if (clip && clip.segments) {
+                clip.segments.forEach(seg => {
+                    if (seg.type === 'audio' && seg.text) {
+                        speechTexts.push(seg.text.trim());
+                    }
+                });
+            }
+            return speechTexts.join(' ');
+        }
+
+        function getClipSpokenText(clip) {
+            if (clip && clip.text !== undefined && clip.text !== null && clip.text.trim()) {
+                return clip.text.trim();
+            }
+            return getClipRawWhisperText(clip);
+        }
+
+        function updateClipTextWordCount() {
+            const input = document.getElementById('clipTextInput');
+            const countLabel = document.getElementById('clipTextWordCount');
+            if (!input || !countLabel) return;
+            const text = input.value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            const chars = text.length;
+            countLabel.textContent = `${words} words • ${chars} chars`;
+        }
+
+        function openClipTextModal(clipIndex) {
+            if (clipIndex === undefined || clipIndex === null || !clips[clipIndex]) return;
+            activeTextClipIndex = clipIndex;
+            const clip = clips[clipIndex];
+            const episodeNum = (projectInfo && projectInfo.name) ? (projectInfo.name.match(/\d+/)?.[0] || projectInfo.name) : "244";
+
+            const modal = document.getElementById('clipTextModalOverlay');
+            const titleEl = document.getElementById('clipTextModalTitle');
+            const subtitleEl = document.getElementById('clipTextModalSubtitle');
+            const inputEl = document.getElementById('clipTextInput');
+
+            if (titleEl) {
+                titleEl.textContent = `CLIP ${clip.num}: ${clip.title || 'Spoken Text'}`;
+            }
+            if (subtitleEl) {
+                subtitleEl.textContent = `Episode ${episodeNum} • Part ${clip.num} | Spoken transcript & social caption`;
+            }
+            if (inputEl) {
+                inputEl.value = getClipSpokenText(clip);
+                updateClipTextWordCount();
+            }
+
+            if (modal) {
+                modal.style.display = 'flex';
+                setTimeout(() => {
+                    inputEl?.focus();
+                }, 50);
+            }
+        }
+
+        function closeClipTextModal() {
+            const modal = document.getElementById('clipTextModalOverlay');
+            if (modal) modal.style.display = 'none';
+            activeTextClipIndex = null;
+        }
+
+        // Setup Event Listeners for Clip Text Modal
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('clipTextModalOverlay');
+            const closeBtn = document.getElementById('closeClipTextModalBtn');
+            const cancelBtn = document.getElementById('cancelClipTextBtn');
+            const saveBtn = document.getElementById('saveClipTextBtn');
+            const copyBtn = document.getElementById('copyClipTextBtn');
+            const resetBtn = document.getElementById('resetClipTextBtn');
+            const inputEl = document.getElementById('clipTextInput');
+
+            if (closeBtn) closeBtn.addEventListener('click', closeClipTextModal);
+            if (cancelBtn) cancelBtn.addEventListener('click', closeClipTextModal);
+            
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeClipTextModal();
+                });
+            }
+
+            if (inputEl) {
+                inputEl.addEventListener('input', updateClipTextWordCount);
+            }
+
+            if (copyBtn) {
+                copyBtn.addEventListener('click', () => {
+                    if (!inputEl) return;
+                    navigator.clipboard.writeText(inputEl.value).then(() => {
+                        const originalText = copyBtn.innerHTML;
+                        copyBtn.innerHTML = '✅ Copied!';
+                        updateStateBar('📋 Copied clip text to clipboard for Instagram / X / LinkedIn!');
+                        setTimeout(() => {
+                            copyBtn.innerHTML = originalText;
+                        }, 1800);
+                    }).catch(err => {
+                        alert('Could not copy to clipboard: ' + err);
+                    });
+                });
+            }
+
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    if (activeTextClipIndex === null || !clips[activeTextClipIndex]) return;
+                    const rawText = getClipRawWhisperText(clips[activeTextClipIndex]);
+                    if (inputEl) {
+                        inputEl.value = rawText;
+                        updateClipTextWordCount();
+                    }
+                    updateStateBar('↺ Reset text to raw Whisper transcript.');
+                });
+            }
+
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => {
+                    if (activeTextClipIndex === null || !clips[activeTextClipIndex]) {
+                        closeClipTextModal();
+                        return;
+                    }
+                    const textVal = inputEl ? inputEl.value.trim() : '';
+                    clips[activeTextClipIndex].text = textVal;
+                    savePlanToServer();
+                    updateStateBar(`💾 Saved & persisted text for Clip ${clips[activeTextClipIndex].num}!`);
+                    closeClipTextModal();
+                });
+            }
+        });
 
         function openSettingsModal() {
             const savedFormat = localStorage.getItem('ddma-export-format') || 'audio';
@@ -5892,6 +6070,7 @@
                             
                             <div class="actions-separator"></div>
                             
+                            <button class="btn btn-secondary btn-mini btn-card-text" id="textCardBtn_${index}" data-index="${index}" style="font-weight:600;" title="View, edit, and copy persistent spoken transcript & social caption for this clip">📝 Text</button>
                             ${mosaicBtnHtml}
                             <button class="btn btn-mini btn-card-remix btn-status-purple" id="remixCardBtn_${index}" style="font-weight:600;" ${isLocked ? '' : 'disabled style="opacity: 0.4; cursor: not-allowed;" title="Lock clip first to enable Gemini Remix"'} title="Recast this clip using Creative AI based on preceding locked clips">🔄 Remix</button>
                             <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600;">${lockBtnIcon}</button>
@@ -5953,6 +6132,11 @@
                         savePlanToServer();
                     });
                 }
+
+                card.querySelector(`#textCardBtn_${index}`)?.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    openClipTextModal(index);
+                });
 
                 card.querySelector(`#lockCardBtn_${index}`).addEventListener('click', function(e) {
                     toggleClipLock(index, e);
