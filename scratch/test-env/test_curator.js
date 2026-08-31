@@ -297,6 +297,36 @@ async function runTest() {
             throw new Error("FAIL: Clip Text Modal failed to open or was not populated with spoken text!");
         }
 
+        // Test Smart Formatting (Capitalization, Punctuation Spacing, Paragraphs)
+        console.log("Testing '✨ Smart Format' button...");
+        await page.evaluate(() => {
+            const input = document.getElementById('clipTextInput');
+            if (input) {
+                // Prepend a lowercase sentence without paragraph breaks to test smart formatting
+                input.value = "just testing smart formatting here. so we ensure proper capitalization and paragraphs. " + input.value;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        });
+        await page.click('#smartFormatClipTextBtn');
+        await new Promise(r => setTimeout(r, 400));
+
+        const formattedState = await page.evaluate(() => {
+            const input = document.getElementById('clipTextInput');
+            const val = input ? input.value : '';
+            return {
+                startsWithCapital: val.startsWith('Just testing'),
+                hasParagraphs: val.includes('\n\n'),
+                value: val
+            };
+        });
+
+        console.log(`- First Word Capitalized: ${formattedState.startsWithCapital}`);
+        console.log(`- Structured into Clean Paragraphs: ${formattedState.hasParagraphs}`);
+
+        if (!formattedState.startsWithCapital || !formattedState.hasParagraphs) {
+            throw new Error("FAIL: Smart Format did not capitalize first letter or create paragraphs!");
+        }
+
         // Test editing the text and saving
         await page.evaluate(() => {
             const input = document.getElementById('clipTextInput');

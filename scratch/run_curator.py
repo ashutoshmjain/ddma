@@ -1,3 +1,38 @@
+
+def smart_format_transcript_py(raw_text):
+    if not raw_text:
+        return ""
+    text = raw_text.strip()
+    text = re.sub(r'\s+', ' ', text)
+    text = re.sub(r'\s+([,.:;?!])', r'\1', text)
+    text = re.sub(r'([,.:;?!])(?=[^\s\d])', r'\1 ', text)
+    text = re.sub(r'\bi\b', 'I', text)
+    text = re.sub(r'\bi\'m\b', "I'm", text, flags=re.IGNORECASE)
+    text = re.sub(r'\bi\'ve\b', "I've", text, flags=re.IGNORECASE)
+    text = re.sub(r'\bi\'ll\b', "I'll", text, flags=re.IGNORECASE)
+    text = re.sub(r'\bi\'d\b', "I'd", text, flags=re.IGNORECASE)
+    if text:
+        text = text[0].upper() + text[1:]
+    text = re.sub(r'([.!?]\s+)([a-z])', lambda m: m.group(1) + m.group(2).upper(), text)
+    
+    sentence_regex = re.compile(r'[^.!?]+[.!?]+(?:\s+|$)')
+    sentences = sentence_regex.findall(text)
+    if not sentences:
+        sentences = [text]
+    
+    paragraphs = []
+    current_para = []
+    for idx, s in enumerate(sentences):
+        s_clean = s.strip()
+        current_para.append(s_clean)
+        is_transition = bool(re.match(r'^(However|Moreover|Furthermore|In addition|Therefore|Clinically|When|So|Now|And|In fact|Specifically|That said|Interestingly|If |By the time|This is )', s_clean, re.IGNORECASE))
+        if len(current_para) >= 3 or (len(current_para) >= 2 and is_transition and idx > 0) or idx == len(sentences) - 1:
+            paragraphs.append(' '.join(current_para))
+            current_para = []
+    if current_para:
+        paragraphs.append(' '.join(current_para))
+    return '\n\n'.join(paragraphs)
+
 import http.server
 import socketserver
 import webbrowser
@@ -2908,6 +2943,71 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             except Exception as e:
                 self.send_error(500, str(e))
                 return
+
+        
+        elif parsed_url.path == '/polish-clip-text':
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = {}
+            if content_length > 0:
+                body = self.rfile.read(content_length).decode('utf-8')
+                try:
+                    post_data = json.loads(body)
+                except Exception:
+                    pass
+            
+            raw_text = post_data.get('text', '').strip()
+            title = post_data.get('title', '')
+            
+            if not raw_text:
+                self.send_response(400)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": "No text provided"}).encode('utf-8'))
+                return
+            
+            polished_text = None
+            settings_path = "settings.json"
+            settings = {}
+            if os.path.exists(settings_path):
+                with open(settings_path, "r", encoding="utf-8") as f:
+                    settings = json.load(f)
+            
+            api_key = settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
+            if configure_gemini(api_key):
+                try:
+                    prompt = (
+                        "You are an expert editorial copywriter for a high-end science and philosophy podcast.\n"
+                        "Review the following spoken transcript for a short video clip. Fix all phonetic spelling mistakes, "
+                        "transcription errors (e.g. Sanskrit breathwork terms like Pranayama, Kumbhaka, Rechaka, Anulom-Vilom, or medical pulmonology terms like atelectrauma, exhale, etc.), "
+                        "capitalize first letters of sentences and the first word, fix punctuation, and format the text into clean, readable paragraphs for social media captions (Instagram, LinkedIn, X/Twitter).\n"
+                        "DO NOT add conversational filler or alter the speaker's original meaning. Return ONLY the polished, formatted text.\n\n"
+                        f"Clip Title: {title}\n"
+                        f"Spoken Transcript:\n{raw_text}"
+                    )
+                    model = None
+                    for m_name in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"]:
+                        try:
+                            model = genai.GenerativeModel(m_name)
+                            break
+                        except Exception:
+                            continue
+                    if model:
+                        response = model.generate_content(prompt)
+                        if response and response.text:
+                            polished_text = response.text.strip()
+                except Exception as ge:
+                    print(f"[AI Polish] Gemini error: {ge}")
+            
+            if not polished_text:
+                polished_text = smart_format_transcript_py(raw_text)
+            
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps({"success": True, "polished_text": polished_text}).encode('utf-8'))
+            return
 
         elif parsed_url.path == '/export-to-mosaic':
             project_id = params.get('id', [None])[0]

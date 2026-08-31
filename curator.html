@@ -1613,10 +1613,12 @@
                     <label for="clipTextInput" style="font-size: 0.75rem; font-weight: 700; color: var(--text-dark-primary); font-family: var(--font-mono); text-transform: uppercase;">
                         Spoken Script / Caption:
                     </label>
-                    <div style="display: flex; gap: 0.4rem; align-items: center;">
-                        <span id="clipTextWordCount" style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">0 words • 0 chars</span>
-                        <button class="btn btn-secondary btn-mini" id="resetClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.5rem;" title="Reset to raw Whisper transcription">↺ Reset to Raw</button>
-                        <button class="btn btn-secondary btn-mini" id="copyClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; font-weight: 600;" title="Copy to clipboard for Instagram, X, LinkedIn, or Nostr">📋 Copy Caption</button>
+                    <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                        <span id="clipTextWordCount" style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono); margin-right: 0.2rem;">0 words • 0 chars</span>
+                        <button class="btn btn-secondary btn-mini" id="smartFormatClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; font-weight: 600;" title="Instantly capitalize sentences, fix punctuation spacing, and structure into clean paragraphs">✨ Smart Format</button>
+                        <button class="btn btn-secondary btn-mini" id="aiPolishClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; font-weight: 600; background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15)); border: 1px solid rgba(168,85,247,0.3);" title="Use AI to correct phonetic spelling typos (e.g. Sanskrit/medical terms) and format paragraphs">🤖 AI Polish</button>
+                        <button class="btn btn-secondary btn-mini" id="resetClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.45rem;" title="Reset to raw Whisper transcription">↺ Reset</button>
+                        <button class="btn btn-primary btn-mini" id="copyClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.55rem; font-weight: 600;" title="Copy to clipboard for Instagram, X, LinkedIn, or Nostr">📋 Copy Caption</button>
                     </div>
                 </div>
 
@@ -2419,6 +2421,59 @@
             countLabel.textContent = `${words} words • ${chars} chars`;
         }
 
+        
+        function smartFormatTranscript(rawText) {
+            if (!rawText) return "";
+            let text = rawText.trim();
+
+            // 1. Normalize spaces
+            text = text.replace(/\s+/g, ' ');
+
+            // 2. Fix spacing around punctuation
+            text = text.replace(/\s+([,.:;?!])/g, '$1');
+            text = text.replace(/([,.:;?!])(?=[^\s\d])/g, '$1 ');
+
+            // 3. Fix common contractions and standalone 'i'
+            text = text.replace(/\bi\b/g, 'I');
+            text = text.replace(/\bi'm\b/gi, "I'm");
+            text = text.replace(/\bi've\b/gi, "I've");
+            text = text.replace(/\bi'll\b/gi, "I'll");
+            text = text.replace(/\bi'd\b/gi, "I'd");
+
+            // 4. Ensure capitalization at the very start
+            if (text.length > 0) {
+                text = text.charAt(0).toUpperCase() + text.slice(1);
+            }
+
+            // 5. Ensure capitalization after sentence terminators (. ! ?)
+            text = text.replace(/([.!?]\s+)([a-z])/g, (match, punct, char) => punct + char.toUpperCase());
+
+            // 6. Split into sentences and group into natural paragraphs (every 2-3 sentences)
+            const sentenceRegex = /[^.!?]+[.!?]+(?:\s+|$)/g;
+            const sentences = text.match(sentenceRegex) || [text];
+
+            if (sentences.length > 1) {
+                const paragraphs = [];
+                let currentPara = [];
+                
+                sentences.forEach((s, idx) => {
+                    const sClean = s.trim();
+                    currentPara.push(sClean);
+                    const isTransition = /^(However|Moreover|Furthermore|In addition|Therefore|Clinically|When|So|Now|And|In fact|Specifically|That said|Interestingly|If |By the time|This is )/i.test(sClean);
+                    if (currentPara.length >= 3 || (currentPara.length >= 2 && isTransition && idx > 0) || idx === sentences.length - 1) {
+                        paragraphs.push(currentPara.join(' '));
+                        currentPara = [];
+                    }
+                });
+                if (currentPara.length > 0) {
+                    paragraphs.push(currentPara.join(' '));
+                }
+                text = paragraphs.join('\n\n');
+            }
+
+            return text;
+        }
+
         function openClipTextModal(clipIndex) {
             if (clipIndex === undefined || clipIndex === null || !clips[clipIndex]) return;
             activeTextClipIndex = clipIndex;
@@ -2490,6 +2545,59 @@
                         }, 1800);
                     }).catch(err => {
                         alert('Could not copy to clipboard: ' + err);
+                    });
+                });
+            }
+
+            const smartFormatBtn = document.getElementById('smartFormatClipTextBtn');
+            const aiPolishBtn = document.getElementById('aiPolishClipTextBtn');
+
+            if (smartFormatBtn) {
+                smartFormatBtn.addEventListener('click', () => {
+                    if (!inputEl) return;
+                    inputEl.value = smartFormatTranscript(inputEl.value);
+                    updateClipTextWordCount();
+                    updateStateBar('✨ Formatted punctuation, capitalization, and paragraphs!');
+                });
+            }
+
+            if (aiPolishBtn) {
+                aiPolishBtn.addEventListener('click', () => {
+                    if (!inputEl || activeTextClipIndex === null || !clips[activeTextClipIndex]) return;
+                    const originalBtnHtml = aiPolishBtn.innerHTML;
+                    aiPolishBtn.innerHTML = '⏳ Polishing...';
+                    aiPolishBtn.disabled = true;
+                    updateStateBar('🤖 AI is polishing spellings and paragraph structures...');
+
+                    const clipTitle = clips[activeTextClipIndex].title || `Clip ${clips[activeTextClipIndex].num}`;
+
+                    fetch('/polish-clip-text', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            text: inputEl.value.trim(),
+                            title: clipTitle
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.polished_text) {
+                            inputEl.value = data.polished_text;
+                            updateClipTextWordCount();
+                            updateStateBar('✨ AI polish complete! Review and click Save & Persist.');
+                        } else {
+                            throw new Error(data.error || 'Server polish failed');
+                        }
+                    })
+                    .catch(err => {
+                        // Fallback to client-side smart format
+                        inputEl.value = smartFormatTranscript(inputEl.value);
+                        updateClipTextWordCount();
+                        updateStateBar('✨ Applied smart punctuation, capitalization, and paragraph formatting.');
+                    })
+                    .finally(() => {
+                        aiPolishBtn.innerHTML = originalBtnHtml;
+                        aiPolishBtn.disabled = false;
                     });
                 });
             }
