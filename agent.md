@@ -1,30 +1,33 @@
-# Architecture Guide & Canonical Asset Source Directory
+# Configuration Management & Canonical Asset Architecture
 
-## 📁 Source of Truth for Video and Audio Assets
+## 📁 Source of Truth for Video & Audio Assets on GitHub
 
-All media assets (video, audio, infographics, and interactive cockpits) in this repository must reside **strictly under the src/ directory**.
+All media assets in this repository reside strictly under the src/ tree with **ZERO duplication**:
 
-### 1. Infographics Carousel Videos (src/vid/)
-- **Path**: src/vid/
-- **Purpose**: Canonical home for all standalone 740×740 square infographics MP4 videos embedded within mdBook publication chapters (e.g. src/vid/241-1-intro.mp4, src/vid/242-1-The-Tom-Cruise-Glitch.mp4, etc.).
-- **Build Behavior**: mdbook build automatically compiles src/vid/ into ook/vid/ on every CI deployment.
+### 1. Legacy Episodes (Episodes 220 – 243) &rarr; src/vid/
+- **Location**: src/vid/
+- **Scope**: Contains the legacy video files generated **before** the adoption of the DDMA architecture (e.g., src/vid/220-qualia.mp4, src/vid/241-1-intro.mp4, src/vid/242-*.mp4, src/vid/243-*.mp4).
+- **Usage**: Referenced directly in markdown text for legacy mdBook chapter pages.
 
-### 2. DDMA Editor's Preview & Slopcast Audio Clips (src/ddma/docs/episodes/)
-- **Path**: src/ddma/docs/episodes/<episode_number>/clips/
-- **Purpose**: Stores the compiled MP4 segments and audio tracks for the DDMA visualizer and Slopcast audio player (e.g. src/ddma/docs/episodes/246/clips/246-1.mp4, 246-2.mp4, etc.).
-- **Episode Plan Files**: src/ddma/docs/episodes/<episode_number>/plan.json
-- **Episode Manifest**: src/ddma/docs/episodes.json
-
-### 3. Static Web Build Pipeline
-- **Command**: 
-pm run build:pwa
-  1. Compiles markdown & assets via mdbook build (src/ → ook/).
-  2. Injects PWA service worker and copies src/ddma/docs/ to ook/ddma/docs/.
-  3. Uploads ./book as the single unified web artifact to GitHub Pages (deepdive.shutri.com).
+### 2. Modern DDMA Episodes (Episodes 244+ & Future) &rarr; src/ddma/docs/episodes/<ep>/clips/
+- **Location**: src/ddma/docs/episodes/<episode_number>/clips/
+- **Scope**: **All new and future episodes** generated using the DDMA architecture.
+- **Structure**:
+  - src/ddma/docs/episodes/<ep>/plan.json (Storyboard metadata, script, timestamps, trims)
+  - src/ddma/docs/episodes/<ep>/clips/<ep>-<clip_num>.mp4 (740×740 locked video/audio segments)
+- **Usage**: Powers the Infographics Player, Slopcast Audio Player, and chapter video carousels on deepdive.shutri.com.
 
 ---
 
-## 🚫 Rules for Agents & Developers
-1. **NO Duplicate Asset Folders**: Never create or track duplicate media files in uild_temp/, ddma/docs/episodes/, ddma/clips/, or temporary root directories.
-2. **Single Source of Truth**: When creating or updating any video or audio asset, write directly to src/vid/ or src/ddma/docs/episodes/.
-3. **Git Tracking**: Ensure .gitignore ignores temporary build outputs (ook/, uild_temp/, ddma/scratch/) while explicitly preserving !src/ddma/docs/episodes/** and !src/vid/**.
+## 🚫 Asset Management Rules for AI Agents & Developers
+1. **Zero Duplication**:
+   - There is **no overlap** between src/vid/ and src/ddma/docs/episodes/.
+   - Never duplicate files between src/vid/ and src/ddma/docs/episodes/.
+   - Never create or track media in root ddma/clips/, ddma/docs/episodes/, uild_temp/, or scratch directories.
+2. **New Episodes Standard**:
+   - All new episodes MUST be placed in src/ddma/docs/episodes/<ep>/ with their plan.json and clips/ folder.
+   - Do NOT add new episodes to src/vid/.
+3. **Build Pipeline**:
+   - 
+pm run build:pwa compiles src/ &rarr; ook/ directly via mdbook build.
+   - GitHub Pages serves directly from ./book.
