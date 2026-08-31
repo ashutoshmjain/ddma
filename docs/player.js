@@ -413,7 +413,7 @@ function renderSidebar() {
         
         card.innerHTML = `
             <div class="clip-item-row1">
-                <span class="clip-num-label" style="font-weight:700;">CLIP ${clip.num}</span>
+                <span class="clip-num-label" style="font-weight:700;">CHAPTER ${clip.num}</span>
                 <span class="clip-duration">${formatTime(videoItem.duration)}</span>
             </div>
             <div class="clip-meta-title">${clip.title || 'Untitled Segment'}</div>
@@ -472,6 +472,13 @@ function renderSidebar() {
         card.onclick = (e) => {
             if (e.target.closest('.clip-transition-strip')) return;
             seekTo(videoItem.startGlobal);
+            if (!isPlaying) {
+                play();
+            } else {
+                videoPlayer.muted = false;
+                const p = videoPlayer.play();
+                if (p) p.catch(() => {});
+            }
         };
         
         clipsList.appendChild(card);
@@ -727,7 +734,19 @@ function loop() {
     const dt = (now - lastTime) / 1000;
     lastTime = now;
     
-    currentGlobalTime += dt;
+    const item = timeline[activeTimelineIndex];
+    if (item && item.type === 'video' && !videoPlayer.paused && !videoPlayer.seeking && !isUserSeeking) {
+        const playOffset = item.playOffset || 0.0;
+        const currentMediaLocal = Math.max(0, videoPlayer.currentTime - playOffset);
+        if (!isNaN(currentMediaLocal) && currentMediaLocal > 0) {
+            currentGlobalTime = Math.min(totalDuration, item.startGlobal + currentMediaLocal);
+        } else {
+            currentGlobalTime += dt;
+        }
+    } else {
+        currentGlobalTime += dt;
+    }
+    
     if (currentGlobalTime >= totalDuration) {
         currentGlobalTime = 0;
         seekTo(0);
@@ -858,24 +877,37 @@ function onTimelineItemChanged() {
         const localTime = currentGlobalTime - item.startGlobal;
         const playOffset = item.playOffset || 0.0;
         
+        const targetTime = localTime + playOffset;
         if (videoPlayer.getAttribute('data-src') !== item.src) {
-            videoPlayer.onloadedmetadata = null;
             videoPlayer.setAttribute('data-src', item.src);
-            videoPlayer.src = item.src + (item.src.includes('?') ? '&' : '?') + 't=' + Date.now();
-            videoPlayer.load();
+            videoPlayer.src = item.src;
+            videoPlayer.muted = false;
+            videoPlayer.volume = currentVolume;
             
-            videoPlayer.onloadedmetadata = () => {
-                videoPlayer.currentTime = localTime + playOffset;
+            const startPlay = () => {
+                videoPlayer.currentTime = targetTime;
                 if (isPlaying) {
-                    videoPlayer.muted = (useWebAudio) ? false : isMuted;
-                    videoPlayer.play().catch(() => {});
+                    videoPlayer.muted = false;
+                    const p = videoPlayer.play();
+                    if (p) p.catch(err => console.log('Playback deferred:', err));
                 }
             };
+            
+            videoPlayer.onloadedmetadata = startPlay;
+            videoPlayer.oncanplay = () => {
+                if (isPlaying && videoPlayer.paused) {
+                    videoPlayer.muted = false;
+                    const p = videoPlayer.play();
+                    if (p) p.catch(() => {});
+                }
+            };
+            videoPlayer.load();
         } else {
-            videoPlayer.currentTime = localTime + playOffset;
+            videoPlayer.currentTime = targetTime;
             if (isPlaying && videoPlayer.paused) {
-                videoPlayer.muted = (useWebAudio) ? false : isMuted;
-                videoPlayer.play().catch(() => {});
+                videoPlayer.muted = false;
+                const p = videoPlayer.play();
+                if (p) p.catch(() => {});
             }
         }
     } else if (item.type === 'bridge') {
@@ -1079,7 +1111,7 @@ function drawAudioVisualizerScreen(item) {
     ctx.font = `600 ${titleFontSize}px Outfit`;
     ctx.fillStyle = '#ffffff';
     
-    const titleText = `Clip ${item.clipNum}: ${item.title}`;
+    const titleText = `Chapter ${item.clipNum}: ${item.title}`;
     const titleLines = wrapText(ctx, titleText, viewport.width - 80);
     const titleLineHeight = titleFontSize + 8;
     const titleStartY = (viewport.height * 0.35) - ((titleLines.length - 1) * titleLineHeight / 2);
