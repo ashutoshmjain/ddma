@@ -1615,6 +1615,8 @@
                     </label>
                     <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
                         <span id="clipTextWordCount" style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono); margin-right: 0.2rem;">0 words • 0 chars</span>
+                        <button class="btn btn-secondary btn-mini" id="openExternalEditorBtn" style="font-size: 0.7rem; padding: 0.2rem 0.55rem; font-weight: 700; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;" title="Open in your system editor (gVim, Vim, Notepad) like git commit comments and auto-save on close">💻 Edit in Vim / Notepad</button>
+                        <button class="btn btn-secondary btn-mini" id="syncFromDiskBtn" style="font-size: 0.7rem; padding: 0.2rem 0.45rem;" title="Sync text changes from file on disk if you saved in external editor (:w)">🔄 Sync Disk</button>
                         <button class="btn btn-secondary btn-mini" id="smartFormatClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; font-weight: 600;" title="Instantly capitalize sentences, fix punctuation spacing, and structure into clean paragraphs">✨ Smart Format</button>
                         <button class="btn btn-secondary btn-mini" id="aiPolishClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; font-weight: 600; background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15)); border: 1px solid rgba(168,85,247,0.3);" title="Use AI to correct phonetic spelling typos (e.g. Sanskrit/medical terms) and format paragraphs">🤖 AI Polish</button>
                         <button class="btn btn-secondary btn-mini" id="resetClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.45rem;" title="Reset to raw Whisper transcription">↺ Reset</button>
@@ -1884,7 +1886,10 @@
             </div>
             <div style="margin-top: 1rem;">
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
-                    Review and modify the full prompt being sent to the Mosaic API for this clip. You can add special instructions or customize rules:
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Review and modify the prompt sent to Mosaic. Edit custom instructions or fix underlying clip text below:</span>
+                <button class="btn btn-secondary btn-mini" id="mosaicEditClipTextShortcutBtn" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; font-weight: 600; white-space: nowrap;" title="Edit underlying clip spoken transcript in Vim/Notepad or modal">✏️ Edit Clip Text</button>
+            </div>
                 </p>
                 <textarea id="mosaicPromptTextarea" style="width: 100%; height: 380px; background: #fcfbf9; color: #1c1917; border: 1px solid var(--border-light); font-family: var(--font-mono); border: 1px solid #374151; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.8rem; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
             </div>
@@ -2546,6 +2551,82 @@
                     }).catch(err => {
                         alert('Could not copy to clipboard: ' + err);
                     });
+                });
+            }
+
+            const openExternalEditorBtn = document.getElementById('openExternalEditorBtn');
+            const syncFromDiskBtn = document.getElementById('syncFromDiskBtn');
+            const mosaicEditShortcutBtn = document.getElementById('mosaicEditClipTextShortcutBtn');
+
+            if (openExternalEditorBtn) {
+                openExternalEditorBtn.addEventListener('click', () => {
+                    if (activeTextClipIndex === null || !clips[activeTextClipIndex] || !activeProjectId) return;
+                    const originalHtml = openExternalEditorBtn.innerHTML;
+                    openExternalEditorBtn.innerHTML = '⏳ Waiting for Editor...';
+                    openExternalEditorBtn.disabled = true;
+                    updateStateBar(`Opening Clip ${clips[activeTextClipIndex].num} transcript in external editor (Vim/Notepad)...`);
+
+                    fetch(`/open-in-external-editor?id=${activeProjectId}&num=${clips[activeTextClipIndex].num}`, {
+                        method: 'POST'
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.text !== undefined) {
+                            if (inputEl) {
+                                inputEl.value = data.text;
+                                updateClipTextWordCount();
+                            }
+                            clips[activeTextClipIndex].text = data.text;
+                            savePlanToServer();
+                            updateStateBar(`✅ Synced and persisted Clip ${clips[activeTextClipIndex].num} text from external editor!`);
+                        } else {
+                            throw new Error(data.error || 'External editor returned error');
+                        }
+                    })
+                    .catch(err => {
+                        alert('Could not launch external editor: ' + err.message + '\n\nTip: You can set your preferred editor (e.g. gvim, notepad, code) in Settings.');
+                        updateStateBar('Ready');
+                    })
+                    .finally(() => {
+                        openExternalEditorBtn.innerHTML = originalHtml;
+                        openExternalEditorBtn.disabled = false;
+                    });
+                });
+            }
+
+            if (syncFromDiskBtn) {
+                syncFromDiskBtn.addEventListener('click', () => {
+                    if (activeTextClipIndex === null || !clips[activeTextClipIndex] || !activeProjectId) return;
+                    fetch(`/sync-clip-file?id=${activeProjectId}&num=${clips[activeTextClipIndex].num}`, {
+                        method: 'POST'
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success && data.text !== undefined) {
+                            if (inputEl) {
+                                inputEl.value = data.text;
+                                updateClipTextWordCount();
+                            }
+                            clips[activeTextClipIndex].text = data.text;
+                            savePlanToServer();
+                            updateStateBar(`🔄 Synced Clip ${clips[activeTextClipIndex].num} text from disk!`);
+                        } else {
+                            throw new Error(data.error || 'Failed to sync file from disk');
+                        }
+                    })
+                    .catch(err => {
+                        alert('Sync error: ' + err.message);
+                    });
+                });
+            }
+
+            if (mosaicEditShortcutBtn) {
+                mosaicEditShortcutBtn.addEventListener('click', () => {
+                    const mosaicOverlay = document.getElementById('mosaicPromptModalOverlay');
+                    if (mosaicOverlay) mosaicOverlay.classList.remove('active');
+                    if (activeTextClipIndex !== null) {
+                        openClipTextModal(activeTextClipIndex);
+                    }
                 });
             }
 

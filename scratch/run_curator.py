@@ -3009,6 +3009,151 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps({"success": True, "polished_text": polished_text}).encode('utf-8'))
             return
 
+        
+        elif parsed_url.path == '/open-in-external-editor':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            try:
+                if not project_id or not clip_num:
+                    raise Exception("Missing project id or clip number.")
+                
+                project_dir = os.path.join("projects", project_id)
+                plan_path = os.path.join(project_dir, "plan.json")
+                if not os.path.exists(plan_path):
+                    raise Exception(f"plan.json for project {project_id} not found.")
+                
+                with open(plan_path, "r", encoding="utf-8") as f:
+                    plan = json.load(f)
+                
+                target_clip = None
+                for clip in plan:
+                    if int(clip.get("num", -1)) == int(clip_num):
+                        target_clip = clip
+                        break
+                
+                if not target_clip:
+                    raise Exception(f"Clip {clip_num} not found in plan.")
+                
+                # Get current text
+                if target_clip.get("text") and target_clip.get("text").strip():
+                    text_content = target_clip.get("text").strip()
+                else:
+                    speech_texts = []
+                    for seg in target_clip.get("segments", []):
+                        if seg.get("type") == "audio" and seg.get("text"):
+                            speech_texts.append(seg.get("text").strip())
+                    text_content = " ".join(speech_texts)
+                
+                # Write to temporary file in project directory
+                temp_filename = f"clip_{clip_num}_transcript.txt"
+                temp_filepath = os.path.abspath(os.path.join(project_dir, temp_filename))
+                
+                with open(temp_filepath, "w", encoding="utf-8") as tf:
+                    tf.write(text_content)
+                
+                # Determine editor command
+                settings_path = "settings.json"
+                settings = {}
+                if os.path.exists(settings_path):
+                    with open(settings_path, "r", encoding="utf-8") as sf:
+                        settings = json.load(sf)
+                
+                editor_cmd = settings.get("external_editor") or os.environ.get("VISUAL") or os.environ.get("EDITOR") or "notepad"
+                
+                import shlex
+                try:
+                    cmd_args = shlex.split(editor_cmd, posix=(os.name != 'nt'))
+                except Exception:
+                    cmd_args = [editor_cmd]
+                
+                # If gvim on windows without -f, append -f so it waits
+                if any('gvim' in arg.lower() for arg in cmd_args) and '-f' not in cmd_args:
+                    cmd_args.append('-f')
+                
+                cmd_args.append(temp_filepath)
+                print(f"[{project_id}][Clip {clip_num}] Launching external editor: {cmd_args}")
+                
+                # Execute external editor and wait for user to save and exit
+                try:
+                    subprocess.run(cmd_args, check=True)
+                except Exception as sub_e:
+                    # Fallback to notepad if specified editor command fails
+                    print(f"Specified editor {editor_cmd} failed ({sub_e}), falling back to notepad.exe")
+                    subprocess.run(["notepad.exe", temp_filepath], check=True)
+                
+                # Read back modified file
+                if os.path.exists(temp_filepath):
+                    with open(temp_filepath, "r", encoding="utf-8") as tf:
+                        updated_text = tf.read().strip()
+                    
+                    target_clip["text"] = updated_text
+                    with open(plan_path, "w", encoding="utf-8") as f:
+                        json.dump(plan, f, indent=2, ensure_ascii=False)
+                    
+                    print(f"[{project_id}][Clip {clip_num}] Successfully synced text from external editor ({len(updated_text)} chars)")
+                    
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        "success": True, 
+                        "text": updated_text,
+                        "filepath": temp_filepath,
+                        "message": f"Successfully synced Clip {clip_num} text from external editor."
+                    }).encode('utf-8'))
+                    return
+                else:
+                    raise Exception("Temporary file was deleted before reading.")
+                    
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                return
+
+        elif parsed_url.path == '/sync-clip-file':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            try:
+                project_dir = os.path.join("projects", project_id)
+                temp_filename = f"clip_{clip_num}_transcript.txt"
+                temp_filepath = os.path.join(project_dir, temp_filename)
+                plan_path = os.path.join(project_dir, "plan.json")
+                
+                if not os.path.exists(temp_filepath):
+                    raise Exception(f"File {temp_filename} not found on disk. Open in external editor first.")
+                
+                with open(temp_filepath, "r", encoding="utf-8") as tf:
+                    updated_text = tf.read().strip()
+                
+                with open(plan_path, "r", encoding="utf-8") as f:
+                    plan = json.load(f)
+                
+                for clip in plan:
+                    if int(clip.get("num", -1)) == int(clip_num):
+                        clip["text"] = updated_text
+                        break
+                
+                with open(plan_path, "w", encoding="utf-8") as f:
+                    json.dump(plan, f, indent=2, ensure_ascii=False)
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "text": updated_text}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                return
+
         elif parsed_url.path == '/export-to-mosaic':
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
