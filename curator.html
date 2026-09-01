@@ -2558,65 +2558,64 @@
             const syncFromDiskBtn = document.getElementById('syncFromDiskBtn');
             const mosaicEditShortcutBtn = document.getElementById('mosaicEditClipTextShortcutBtn');
 
+            function syncTranscriptFromDisk(silent = false) {
+                if (activeTextClipIndex === null || !clips[activeTextClipIndex] || !activeProjectId) return;
+                const modal = document.getElementById('clipTextModalOverlay');
+                if (!modal || modal.style.display === 'none') return;
+
+                fetch(`/sync-clip-file?id=${activeProjectId}&num=${clips[activeTextClipIndex].num}`, {
+                    method: 'POST'
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.text !== undefined) {
+                        if (inputEl && inputEl.value !== data.text) {
+                            inputEl.value = data.text;
+                            updateClipTextWordCount();
+                            clips[activeTextClipIndex].text = data.text;
+                            savePlanToServer();
+                            updateStateBar(`🔄 Synced Clip ${clips[activeTextClipIndex].num} text from disk (:w)!`);
+                        } else if (!silent) {
+                            updateStateBar(`🔄 Text on disk is up to date.`);
+                        }
+                    }
+                })
+                .catch(err => {
+                    if (!silent) console.warn('Sync error: ', err.message);
+                });
+            }
+
             if (openExternalEditorBtn) {
                 openExternalEditorBtn.addEventListener('click', () => {
                     if (activeTextClipIndex === null || !clips[activeTextClipIndex] || !activeProjectId) return;
-                    const originalHtml = openExternalEditorBtn.innerHTML;
-                    openExternalEditorBtn.innerHTML = '⏳ Waiting for Editor...';
-                    openExternalEditorBtn.disabled = true;
-                    updateStateBar(`Opening Clip ${clips[activeTextClipIndex].num} transcript in external editor (Vim/Notepad)...`);
+                    updateStateBar(`Opening Clip ${clips[activeTextClipIndex].num} transcript in gVim / external editor...`);
 
                     fetch(`/open-in-external-editor?id=${activeProjectId}&num=${clips[activeTextClipIndex].num}`, {
                         method: 'POST'
                     })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.success && data.text !== undefined) {
-                            if (inputEl) {
-                                inputEl.value = data.text;
-                                updateClipTextWordCount();
-                            }
-                            clips[activeTextClipIndex].text = data.text;
-                            savePlanToServer();
-                            updateStateBar(`✅ Synced and persisted Clip ${clips[activeTextClipIndex].num} text from external editor!`);
+                        if (data.success) {
+                            updateStateBar(`📂 Opened ${data.filename || 'file'} in editor. Type :w in Vim and switch back to tab (auto-syncs) or click Sync Disk.`);
                         } else {
-                            throw new Error(data.error || 'External editor returned error');
+                            throw new Error(data.error || 'Failed to open editor');
                         }
                     })
                     .catch(err => {
-                        alert('Could not launch external editor: ' + err.message + '\n\nTip: You can set your preferred editor (e.g. gvim, notepad, code) in Settings.');
+                        alert('Could not launch external editor: ' + err.message);
                         updateStateBar('Ready');
-                    })
-                    .finally(() => {
-                        openExternalEditorBtn.innerHTML = originalHtml;
-                        openExternalEditorBtn.disabled = false;
                     });
                 });
             }
 
+            // Auto-sync when user switches back from Vim window into the browser tab
+            window.addEventListener('focus', () => {
+                syncTranscriptFromDisk(true);
+            });
+
             if (syncFromDiskBtn) {
                 syncFromDiskBtn.addEventListener('click', () => {
-                    if (activeTextClipIndex === null || !clips[activeTextClipIndex] || !activeProjectId) return;
-                    fetch(`/sync-clip-file?id=${activeProjectId}&num=${clips[activeTextClipIndex].num}`, {
-                        method: 'POST'
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success && data.text !== undefined) {
-                            if (inputEl) {
-                                inputEl.value = data.text;
-                                updateClipTextWordCount();
-                            }
-                            clips[activeTextClipIndex].text = data.text;
-                            savePlanToServer();
-                            updateStateBar(`🔄 Synced Clip ${clips[activeTextClipIndex].num} text from disk!`);
-                        } else {
-                            throw new Error(data.error || 'Failed to sync file from disk');
-                        }
-                    })
-                    .catch(err => {
-                        alert('Sync error: ' + err.message);
-                    });
+                    syncTranscriptFromDisk(false);
                 });
             }
 

@@ -383,6 +383,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         if res_download.status_code != 200:
             raise Exception(f"Failed to download rendered video from Mosaic: {res_download.status_code}")
             
+        os.makedirs(os.path.dirname(mosaic_version_path) or "clips", exist_ok=True)
         with open(mosaic_version_path, "wb") as f_out:
             for chunk in res_download.iter_content(chunk_size=8192):
                 f_out.write(chunk)
@@ -3076,45 +3077,27 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     elif 'vim' in cmd_args[0].lower() and os.path.exists(local_vim):
                         cmd_args[0] = local_vim
 
-                # If gvim on windows without -f, append -f so it waits for user to save & exit
-                if any('gvim' in arg.lower() for arg in cmd_args) and '-f' not in cmd_args:
-                    cmd_args.append('-f')
-                
                 cmd_args.append(temp_filepath)
-                print(f"[{project_id}][Clip {clip_num}] Launching external editor: {cmd_args}")
+                print(f"[{project_id}][Clip {clip_num}] Launching external editor (non-blocking): {cmd_args}")
                 
-                # Execute external editor and wait for user to save and exit
+                # Execute external editor asynchronously so browser is never stuck
                 try:
-                    subprocess.run(cmd_args, check=True)
+                    subprocess.Popen(cmd_args)
                 except Exception as sub_e:
-                    # Fallback to notepad if specified editor command fails
                     print(f"Specified editor {editor_cmd} failed ({sub_e}), falling back to notepad.exe")
-                    subprocess.run(["notepad.exe", temp_filepath], check=True)
+                    subprocess.Popen(["notepad.exe", temp_filepath])
                 
-                # Read back modified file
-                if os.path.exists(temp_filepath):
-                    with open(temp_filepath, "r", encoding="utf-8") as tf:
-                        updated_text = tf.read().strip()
-                    
-                    target_clip["text"] = updated_text
-                    with open(plan_path, "w", encoding="utf-8") as f:
-                        json.dump(plan, f, indent=2, ensure_ascii=False)
-                    
-                    print(f"[{project_id}][Clip {clip_num}] Successfully synced text from external editor ({len(updated_text)} chars)")
-                    
-                    self.send_response(200)
-                    self.send_header('Content-type', 'application/json')
-                    self.send_header('Access-Control-Allow-Origin', '*')
-                    self.end_headers()
-                    self.wfile.write(json.dumps({
-                        "success": True, 
-                        "text": updated_text,
-                        "filepath": temp_filepath,
-                        "message": f"Successfully synced Clip {clip_num} text from external editor."
-                    }).encode('utf-8'))
-                    return
-                else:
-                    raise Exception("Temporary file was deleted before reading.")
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "success": True, 
+                    "filepath": temp_filepath,
+                    "filename": temp_filename,
+                    "message": f"Opened {temp_filename} in external editor. Save with :w and click Sync Disk (or switch back to tab)."
+                }).encode('utf-8'))
+                return
                     
             except Exception as e:
                 self.send_response(500)
