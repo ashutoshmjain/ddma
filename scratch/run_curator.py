@@ -1,3 +1,6 @@
+import os
+os.makedirs("clips", exist_ok=True)
+os.makedirs("previews", exist_ok=True)
 
 def smart_format_transcript_py(raw_text):
     if not raw_text:
@@ -201,6 +204,20 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             os.makedirs("clips", exist_ok=True)
             plan_file_path = os.path.join("projects", project_id, "plan.json")
             
+            # Ensure audio path exists with fallback searches
+            if not os.path.exists(audio_path):
+                possible_candidates = [
+                    os.path.join("projects", project_id, f"{ep_num}.m4a"),
+                    os.path.join("projects", project_id, f"{ep_num}.mp3"),
+                    os.path.join("..", "deepDive", "ddma", "projects", project_id, f"{ep_num}.m4a"),
+                    os.path.join("..", "deepDive", "ddma", "projects", project_id, f"{ep_num}.mp3")
+                ]
+                for cand in possible_candidates:
+                    if os.path.exists(cand):
+                        audio_path = cand
+                        print(f"[{project_id}][Clip {clip_num}] Resolved audio source via fallback: {audio_path}")
+                        break
+
             # Slice fresh audio clip
             cut_cmd = [sys.executable, "ddma.py", "cut", "--audio", audio_path, "--plan-file", plan_file_path, "--out-dir", "clips"]
             res_cut = subprocess.run(cut_cmd, capture_output=True, text=True, cwd=".")
@@ -426,21 +443,24 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         print(f"Error in run_mosaic_pipeline for clip {clip_num}: {ex}\n{tb_str}")
         update_mosaic_job_state(project_id, clip_num, "failed", 0, error=str(ex), run_id=run_id)
         
-        # If run failed or crashed, clean up any unverified mosaic_run_id in plan.json
-        try:
-            plan_path = os.path.join("projects", project_id, "plan.json")
-            if os.path.exists(plan_path):
-                with open(plan_path, "r", encoding="utf-8") as f:
-                    plan = json.load(f)
-                for c in plan:
-                    if int(c.get("num", -1)) == int(clip_num) and "mosaic_run_id" in c:
-                        del c["mosaic_run_id"]
-                        break
-                with open(plan_path, "w", encoding="utf-8") as f:
-                    json.dump(plan, f, indent=4)
-                print(f"[{project_id}][Clip {clip_num}] Cleaned up unverified mosaic_run_id from plan.json on error")
-        except Exception as pe:
-            print(f"Warning: Failed to clean up mosaic_run_id from plan.json on error: {pe}")
+        # CRITICAL SEV-1 GUARD: Only delete mosaic_run_id from plan.json if the cloud API explicitly
+        # reported the run as permanently cancelled or failed. NEVER delete run_id on local network or disk blips!
+        is_cloud_terminal_failure = run_id and any(term in str(ex).lower() for term in ["ended with status 'failed'", "ended with status 'cancelled'", "not found", "404"])
+        if is_cloud_terminal_failure:
+            try:
+                plan_path = os.path.join("projects", project_id, "plan.json")
+                if os.path.exists(plan_path):
+                    with open(plan_path, "r", encoding="utf-8") as f:
+                        plan = json.load(f)
+                    for c in plan:
+                        if int(c.get("num", -1)) == int(clip_num) and "mosaic_run_id" in c:
+                            del c["mosaic_run_id"]
+                            break
+                    with open(plan_path, "w", encoding="utf-8") as f:
+                        json.dump(plan, f, indent=4)
+                    print(f"[{project_id}][Clip {clip_num}] Cleaned up terminal failed mosaic_run_id from plan.json")
+            except Exception as pe:
+                print(f"Warning: Failed to clean up mosaic_run_id from plan.json on error: {pe}")
         
         # If run failed or crashed, clean up any unverified mosaic_run_id in plan.json
         try:
