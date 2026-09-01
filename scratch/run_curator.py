@@ -3066,7 +3066,17 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 except Exception:
                     cmd_args = [editor_cmd]
                 
-                # If gvim on windows without -f, append -f so it waits
+                # Resolve gvim/vim path directly if needed
+                import shutil
+                if shutil.which(cmd_args[0]) is None:
+                    local_gvim = os.path.expandvars(r'%LOCALAPPDATA%\Programs\Vim\gvim.exe')
+                    local_vim = os.path.expandvars(r'%LOCALAPPDATA%\Programs\Vim\vim.exe')
+                    if 'gvim' in cmd_args[0].lower() and os.path.exists(local_gvim):
+                        cmd_args[0] = local_gvim
+                    elif 'vim' in cmd_args[0].lower() and os.path.exists(local_vim):
+                        cmd_args[0] = local_vim
+
+                # If gvim on windows without -f, append -f so it waits for user to save & exit
                 if any('gvim' in arg.lower() for arg in cmd_args) and '-f' not in cmd_args:
                     cmd_args.append('-f')
                 
