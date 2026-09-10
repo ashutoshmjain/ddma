@@ -3097,15 +3097,27 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     elif 'vim' in cmd_args[0].lower() and os.path.exists(local_vim):
                         cmd_args[0] = local_vim
 
+                # Filter out -f or --nofork to allow proper GUI detachment
+                cmd_args = [arg for arg in cmd_args if arg not in ('-f', '--nofork')]
                 cmd_args.append(temp_filepath)
                 print(f"[{project_id}][Clip {clip_num}] Launching external editor (non-blocking): {cmd_args}")
                 
                 # Execute external editor asynchronously so browser is never stuck
                 try:
-                    subprocess.Popen(cmd_args)
+                    if os.name == 'nt':
+                        # Use PowerShell Start-Process so it attaches to the interactive user desktop
+                        editor_exe = cmd_args[0]
+                        remaining_args = " ".join([f'\"{a}\"' for a in cmd_args[1:]])
+                        ps_cmd = f"Start-Process -FilePath '{editor_exe}' -ArgumentList '{remaining_args}'"
+                        subprocess.Popen(["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", ps_cmd])
+                    else:
+                        subprocess.Popen(cmd_args)
                 except Exception as sub_e:
                     print(f"Specified editor {editor_cmd} failed ({sub_e}), falling back to notepad.exe")
-                    subprocess.Popen(["notepad.exe", temp_filepath])
+                    if os.name == 'nt':
+                        subprocess.Popen(["cmd.exe", "/c", "start", "", "notepad.exe", temp_filepath], shell=True)
+                    else:
+                        subprocess.Popen(["notepad", temp_filepath])
                 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
