@@ -3225,14 +3225,22 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     raise Exception(f"Clip number {clip_num} not found in plan.")
                 
                 # Concatenate segment texts to get complete script
+                raw_segment_texts = []
+                for seg in target_clip.get("segments", []):
+                    if seg.get("type") == "audio" and seg.get("text"):
+                        raw_segment_texts.append(seg.get("text").strip())
+                raw_transcript = " ".join(raw_segment_texts)
+
                 if target_clip.get("text") and target_clip.get("text").strip():
-                    transcript = target_clip.get("text").strip()
+                    saved_text = target_clip.get("text").strip()
+                    raw_words = len(raw_transcript.split())
+                    saved_words = len(saved_text.split())
+                    if raw_words > 0 and abs(saved_words - raw_words) / max(raw_words, saved_words) > 0.15:
+                        transcript = raw_transcript
+                    else:
+                        transcript = saved_text
                 else:
-                    speech_texts = []
-                    for seg in target_clip.get("segments", []):
-                        if seg.get("type") == "audio" and seg.get("text"):
-                            speech_texts.append(seg.get("text").strip())
-                    transcript = " ".join(speech_texts)
+                    transcript = raw_transcript
                 
                 # Generate custom prompt with user's baseline guidelines
                 title = target_clip.get("title", f"Clip {clip_num}")
@@ -3506,14 +3514,22 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not target_clip:
                     raise Exception(f"Clip number {clip_num} not found in plan.")
                 
+                raw_segment_texts = []
+                for seg in target_clip.get("segments", []):
+                    if seg.get("type") == "audio" and seg.get("text"):
+                        raw_segment_texts.append(seg.get("text").strip())
+                raw_transcript = " ".join(raw_segment_texts)
+
                 if target_clip.get("text") and target_clip.get("text").strip():
-                    transcript = target_clip.get("text").strip()
+                    saved_text = target_clip.get("text").strip()
+                    raw_words = len(raw_transcript.split())
+                    saved_words = len(saved_text.split())
+                    if raw_words > 0 and abs(saved_words - raw_words) / max(raw_words, saved_words) > 0.15:
+                        transcript = raw_transcript
+                    else:
+                        transcript = saved_text
                 else:
-                    speech_texts = []
-                    for seg in target_clip.get("segments", []):
-                        if seg.get("type") == "audio" and seg.get("text"):
-                            speech_texts.append(seg.get("text").strip())
-                    transcript = " ".join(speech_texts)
+                    transcript = raw_transcript
                 
                 title = target_clip.get("title", f"Clip {clip_num}")
                 mogr_base_rules = get_mosaic_default_prompt()

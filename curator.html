@@ -2410,10 +2410,18 @@
         }
 
         function getClipSpokenText(clip) {
+            const rawText = getClipRawWhisperText(clip);
             if (clip && clip.text !== undefined && clip.text !== null && clip.text.trim()) {
+                const rawWords = rawText.trim().split(/\s+/).filter(Boolean).length;
+                const savedWords = clip.text.trim().split(/\s+/).filter(Boolean).length;
+                // If audio segments were altered/trimmed (words differ by > 15%),
+                // automatically synchronize with the current audio segments!
+                if (rawWords > 0 && Math.abs(savedWords - rawWords) / Math.max(rawWords, savedWords) > 0.15) {
+                    return smartFormatTranscript(rawText);
+                }
                 return clip.text.trim();
             }
-            return getClipRawWhisperText(clip);
+            return smartFormatTranscript(rawText);
         }
 
         function updateClipTextWordCount() {
@@ -4479,6 +4487,9 @@
                     clips[clipIdx].segments[segIdx].end = parseFloat(endVal.toFixed(2));
                     clips[clipIdx].segments[segIdx].duration = durationVal;
                     clips[clipIdx].segments[segIdx].text = selectedText.trim();
+                    // Audio segment bounds changed: invalidate stale clip.text & stale mosaic_run_id
+                    delete clips[clipIdx].text;
+                    if (clips[clipIdx].mosaic_run_id) delete clips[clipIdx].mosaic_run_id;
                     
                     const activeRow = document.querySelector(`.segment-row[data-clip="${clipIdx}"][data-seg="${segIdx}"]`);
                     if (activeRow) {
@@ -4685,6 +4696,8 @@
                 duration: durVal,
                 text: selectedText.trim()
             });
+            delete clips[clipIdx].text;
+            if (clips[clipIdx].mosaic_run_id) delete clips[clipIdx].mosaic_run_id;
             
             startWordIdx = null;
             endWordIdx = null;
@@ -4714,6 +4727,8 @@
             if (clips[clipIdx].locked) return;
             
             clips[clipIdx].segments.splice(segIdx, 1);
+            delete clips[clipIdx].text;
+            if (clips[clipIdx].mosaic_run_id) delete clips[clipIdx].mosaic_run_id;
             editingSegmentRef = null;
             startWordIdx = null;
             endWordIdx = null;
