@@ -1267,11 +1267,28 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     except Exception as me:
                         print(f"[{project_id}][Clip {clip_num}] Model {model_name} failed: {me}")
                         last_err = me
+                        err_str = str(me)
+                        if "401" in err_str or "unauthenticated" in err_str.lower() or "invalid authentication" in err_str.lower() or "access_token_type_unsupported" in err_str.lower():
+                            raise Exception(
+                                "Gemini Authentication Failed (401): The configured Gemini API key is invalid or expired.\n\n"
+                                "To fix this:\n"
+                                "1. Obtain an active Gemini API key from Google AI Studio (https://aistudio.google.com/app/apikey).\n"
+                                "2. In DDMA Cockpit, click '⚙️ Settings' (top right) -> '🤖 Gemini Co-Pilot Prompts' tab.\n"
+                                "3. Paste your new API key into 'GEMINI API CREDENTIALS' and click 'Save Settings'."
+                            )
                 
                 if not response or not response.text:
                     err_str = str(last_err)
                     if "429" in err_str or "quota" in err_str.lower():
                         raise Exception("Gemini API Quota Exceeded (429). Please set your personal Gemini API Key in ⚙️ Settings -> Co-Pilot Integration, or wait a minute for your quota to reset.")
+                    if "401" in err_str or "unauthenticated" in err_str.lower() or "invalid authentication" in err_str.lower() or "access_token_type_unsupported" in err_str.lower():
+                        raise Exception(
+                            "Gemini Authentication Failed (401): The configured Gemini API key is invalid or expired.\n\n"
+                            "To fix this:\n"
+                            "1. Obtain an active Gemini API key from Google AI Studio (https://aistudio.google.com/app/apikey).\n"
+                            "2. In DDMA Cockpit, click '⚙️ Settings' (top right) -> '🤖 Gemini Co-Pilot Prompts' tab.\n"
+                            "3. Paste your new API key into 'GEMINI API CREDENTIALS' and click 'Save Settings'."
+                        )
                     raise last_err or Exception("All Gemini models failed to generate content.")
                 
                 def clean_and_parse_json(text):

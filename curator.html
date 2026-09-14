@@ -2044,9 +2044,181 @@
         </div>
     </div>
 
+    <!-- Custom System Alert & Message Dialog Modal (Bigger Window + Copy Support) -->
+    <div class="export-modal-overlay" id="customAlertModalOverlay" style="z-index: 100000; background-color: rgba(15, 13, 11, 0.65); backdrop-filter: blur(4px);">
+        <div class="export-modal" id="customAlertModal" style="max-width: 760px; width: 92vw; max-height: 85vh; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; border-radius: 12px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid var(--border-color); background: var(--panel-bg);">
+            <div class="export-modal-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                <h3 id="customAlertTitle" style="margin: 0; font-size: 1.05rem; font-weight: 700; font-family: var(--font-mono); display: flex; align-items: center; gap: 0.5rem; color: var(--primary);">
+                    <span id="customAlertIcon">⚠️</span> <span id="customAlertTitleText">System Notice</span>
+                </h3>
+                <button class="icon-btn" id="closeCustomAlertBtn" title="Close (Esc)" style="font-size: 1.2rem; cursor: pointer; background: transparent; border: none; color: var(--text-muted);">✖</button>
+            </div>
+            
+            <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                <div id="customAlertMessage" style="max-height: 52vh; overflow-y: auto; background: var(--panel-bg-darker); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; font-family: var(--font-mono); font-size: 0.84rem; line-height: 1.55; white-space: pre-wrap; word-break: break-word; color: var(--text-main); user-select: text;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.85rem; margin-top: 0.2rem;">
+                <button type="button" class="btn btn-secondary" id="copyCustomAlertBtn" style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.82rem; font-weight: 600; padding: 0.5rem 1rem; cursor: pointer;">
+                    <span>📋</span> <span id="copyCustomAlertBtnText">Copy Message</span>
+                </button>
+                <div style="display: flex; gap: 0.6rem;">
+                    <button type="button" class="btn btn-primary" id="okCustomAlertBtn" style="min-width: 80px; font-size: 0.85rem; font-weight: 700; padding: 0.5rem 1.4rem; cursor: pointer;">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <audio id="audioElement"></audio>
 
     <script>
+        // =========================================================================
+        // Custom Styled Alert Modal with Copy Message Support
+        // =========================================================================
+        let _customAlertResolve = null;
+
+        function fallbackCopyText(text, callback) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.top = '-9999px';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                if (callback) callback();
+            } catch (err) {
+                console.error("Fallback clipboard copy failed:", err);
+            }
+            document.body.removeChild(ta);
+        }
+
+        function copyAlertMessageToClipboard() {
+            const msgEl = document.getElementById('customAlertMessage');
+            const copyBtn = document.getElementById('copyCustomAlertBtn');
+            const copyBtnText = document.getElementById('copyCustomAlertBtnText');
+            if (!msgEl) return;
+            const text = msgEl.textContent || '';
+            const onCopied = () => {
+                if (copyBtnText) copyBtnText.textContent = "Copied to Clipboard! ✓";
+                if (copyBtn) {
+                    copyBtn.style.borderColor = "var(--accent-emerald)";
+                    copyBtn.style.color = "var(--accent-emerald)";
+                }
+                setTimeout(() => {
+                    if (copyBtnText) copyBtnText.textContent = "Copy Message";
+                    if (copyBtn) {
+                        copyBtn.style.borderColor = "";
+                        copyBtn.style.color = "";
+                    }
+                }, 2500);
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(onCopied).catch(() => fallbackCopyText(text, onCopied));
+            } else {
+                fallbackCopyText(text, onCopied);
+            }
+        }
+
+        function showCustomAlert(message, title = "System Notice") {
+            const overlay = document.getElementById('customAlertModalOverlay');
+            const msgEl = document.getElementById('customAlertMessage');
+            const titleEl = document.getElementById('customAlertTitleText');
+            const iconEl = document.getElementById('customAlertIcon');
+            const copyBtnText = document.getElementById('copyCustomAlertBtnText');
+            const okBtn = document.getElementById('okCustomAlertBtn');
+
+            const strMsg = (typeof message === 'object' && message !== null)
+                ? JSON.stringify(message, null, 2)
+                : String(message != null ? message : '');
+
+            if (!overlay || !msgEl) {
+                console.warn("Custom alert elements not found, using fallback:", strMsg);
+                if (window._nativeAlert) window._nativeAlert(strMsg);
+                return Promise.resolve();
+            }
+
+            const lower = strMsg.toLowerCase();
+            if (lower.includes('error') || lower.includes('failed') || lower.includes('exception') || lower.includes('401') || lower.includes('500') || lower.includes('429')) {
+                if (iconEl) iconEl.textContent = '❌';
+                if (titleEl) titleEl.textContent = (title === "System Notice") ? "Operation Failed" : title;
+            } else if (lower.includes('warning') || lower.includes('caution') || lower.includes('please lock')) {
+                if (iconEl) iconEl.textContent = '⚠️';
+                if (titleEl) titleEl.textContent = (title === "System Notice") ? "Notice" : title;
+            } else if (lower.includes('success') || lower.includes('saved')) {
+                if (iconEl) iconEl.textContent = '✅';
+                if (titleEl) titleEl.textContent = (title === "System Notice") ? "Success" : title;
+            } else {
+                if (iconEl) iconEl.textContent = 'ℹ️';
+                if (titleEl) titleEl.textContent = title;
+            }
+
+            msgEl.textContent = strMsg;
+            if (copyBtnText) copyBtnText.textContent = "Copy Message";
+
+            overlay.classList.add('active');
+            if (okBtn) {
+                setTimeout(() => okBtn.focus(), 50);
+            }
+
+            return new Promise((resolve) => {
+                _customAlertResolve = resolve;
+            });
+        }
+
+        function closeCustomAlert() {
+            const overlay = document.getElementById('customAlertModalOverlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+            if (_customAlertResolve) {
+                const res = _customAlertResolve;
+                _customAlertResolve = null;
+                res();
+            }
+        }
+
+        // Install global window.alert hook
+        if (!window._nativeAlert) {
+            window._nativeAlert = window.alert;
+            window.alert = function(message) {
+                showCustomAlert(message);
+            };
+            window.showCustomAlert = showCustomAlert;
+            window.closeCustomAlert = closeCustomAlert;
+        }
+
+        function setupCustomAlertModal() {
+            const overlay = document.getElementById('customAlertModalOverlay');
+            const closeBtn = document.getElementById('closeCustomAlertBtn');
+            const okBtn = document.getElementById('okCustomAlertBtn');
+            const copyBtn = document.getElementById('copyCustomAlertBtn');
+
+            if (closeBtn) closeBtn.addEventListener('click', closeCustomAlert);
+            if (okBtn) okBtn.addEventListener('click', closeCustomAlert);
+            if (copyBtn) copyBtn.addEventListener('click', copyAlertMessageToClipboard);
+
+            if (overlay) {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        closeCustomAlert();
+                    }
+                });
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (overlay && overlay.classList.contains('active')) {
+                    if (e.key === 'Escape' || e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        closeCustomAlert();
+                    }
+                }
+            });
+        }
+
         // State variables
         let activeProjectId = null;
         let projectInfo = null;
@@ -2351,6 +2523,7 @@
                 setupSidebarCollapse();
                 setupTranscriptCollapse();
                 setupSettingsModal();
+                setupCustomAlertModal();
                 // setupHelpChat removed for decluttering
             };
 
@@ -5536,7 +5709,11 @@
             .catch(err => {
                 showDebug(`Remix error: ${err.message}`, true);
                 updateStateBar("Ready (remix failed)");
-                alert("Remix failed: " + err.message);
+                let msg = err.message || "Unknown error";
+                if (msg.includes("401") || msg.includes("ACCESS_TOKEN_TYPE_UNSUPPORTED") || msg.includes("invalid authentication") || msg.includes("UNAUTHENTICATED")) {
+                    msg += "\n\n💡 How to resolve:\n1. Your Gemini API Key is invalid or expired.\n2. Obtain an active API key from Google AI Studio:\n   https://aistudio.google.com/app/apikey\n3. Click '⚙️ Settings' (top-right of DDMA Cockpit) -> '🤖 Gemini Co-Pilot Prompts' tab.\n4. Paste your key into 'GEMINI API CREDENTIALS' and click 'Save Settings'.";
+                }
+                alert("Remix failed:\n\n" + msg);
             })
             .finally(() => {
                 if (btnEl) {
