@@ -457,10 +457,21 @@ def cut(
             s = secs % 60
             return f"{h:02d}:{m:02d}:{s:06.3f}"
 
-        start_str = to_time_str(c["start"])
-        end_str = to_time_str(c["end"])
-
+        # Derive start and end times safely
+        start_val = c.get("start")
+        end_val = c.get("end")
         segments = c.get("segments", [])
+        if start_val is None or end_val is None:
+            audio_segs = [s for s in segments if s.get("type") == "audio" and "start" in s and "end" in s]
+            if audio_segs:
+                start_val = audio_segs[0]["start"]
+                end_val = audio_segs[-1]["end"]
+            else:
+                start_val = 0.0
+                end_val = 0.0
+        start_str = to_time_str(start_val)
+        end_str = to_time_str(end_val)
+
         has_music_seg = any(s.get("type") == "music" for s in segments)
 
         if has_music_seg and len(segments) > 0:
@@ -509,8 +520,8 @@ def cut(
                     if res_m.returncode != 0:
                         typer.echo(f"Warning rendering music segment {s_idx} for clip {c['num']}: {res_m.stderr}", err=True)
                 else:
-                    raw_start = float(seg.get("start", c["start"]))
-                    raw_end = float(seg.get("end", c["end"]))
+                    raw_start = float(seg.get("start", start_val))
+                    raw_end = float(seg.get("end", end_val))
                     t_start = float(seg.get("trim_start", 0.0))
                     t_end = float(seg.get("trim_end", 0.1 if "trim_end" not in seg else seg.get("trim_end")))
 
@@ -694,6 +705,7 @@ def mux_clip(
         if len(parts) > 1:
             ep_prefix = parts[1].split("/")[0].split("\\")[0]
 
+    clean_title = re.sub(r'[:\\/*?<>|"]', '', clip.get("title", ""))
     if ep_prefix:
         search_pattern1 = os.path.join(audio_dir, f"{ep_prefix}-{num}.mp3")
         search_pattern2 = os.path.join(audio_dir, f"{ep_prefix}-{num}-*.mp3")
@@ -710,7 +722,17 @@ def mux_clip(
         typer.echo(f"Error: No audio file found in {audio_dir} for clip {num}.", err=True)
         raise typer.Exit(code=1)
     
-    audio_path = audio_files[0]
+    exact_match = None
+    if ep_prefix and clean_title:
+        candidate_exact = os.path.join(audio_dir, f"{ep_prefix}-{num}-{clean_title}.mp3")
+        if os.path.exists(candidate_exact):
+            exact_match = candidate_exact
+
+    if exact_match:
+        audio_path = exact_match
+    else:
+        audio_files.sort(key=os.path.getmtime, reverse=True)
+        audio_path = audio_files[0]
     base_name = os.path.splitext(os.path.basename(audio_path))[0]
     episode = ep_prefix if ep_prefix else base_name.split("-")[0]
 

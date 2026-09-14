@@ -196,6 +196,13 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                     os.remove(backup_path)
                 except Exception as rm_err:
                     print(f"Warning: could not delete old backup file: {rm_err}")
+
+            import glob
+            for old_audio in glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}*.mp3")):
+                try:
+                    os.remove(old_audio)
+                except Exception:
+                    pass
                     
             # Step 1: Run complete Draft Video pipeline to prepare fresh baseline MP4 (audio + title/outro cards)
             update_mosaic_job_state(project_id, clip_num, "compiling draft video", 5, run_id=run_id)
@@ -222,7 +229,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             cut_cmd = [sys.executable, "ddma.py", "cut", "--audio", audio_path, "--plan-file", plan_file_path, "--out-dir", "clips"]
             res_cut = subprocess.run(cut_cmd, capture_output=True, text=True, cwd=".")
             if res_cut.returncode != 0:
-                print(f"[{project_id}][Clip {clip_num}] Warning: Audio cut emitted stderr: {res_cut.stderr}")
+                raise Exception(f"Audio cut failed for Clip {clip_num}: {res_cut.stderr}")
                 
             # Compile fresh baseline draft video
             comp_draft_cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", plan_file_path, "--force-draft"]
@@ -1332,12 +1339,30 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     raise Exception(f"Failed to parse Gemini response as JSON: {je}\nResponse was:\n{response.text}")
                 
                 recasted_clip["locked"] = False
-                
+                recasted_clip.pop("mosaic_run_id", None)
+
+                # Derive start, end, duration from segments if missing
+                audio_segs = [s for s in recasted_clip.get("segments", []) if s.get("type") == "audio" and "start" in s and "end" in s]
+                if audio_segs:
+                    if "start" not in recasted_clip or recasted_clip["start"] is None:
+                        recasted_clip["start"] = audio_segs[0]["start"]
+                    if "end" not in recasted_clip or recasted_clip["end"] is None:
+                        recasted_clip["end"] = audio_segs[-1]["end"]
+                    recasted_clip["duration"] = round(recasted_clip["end"] - recasted_clip["start"], 2)
+
                 if recasted_clip.get("title"):
                     raw_title = recasted_clip["title"]
                     clean_title = re.sub(r'[:\\/*?<>|"]', ' - ', raw_title)
                     clean_title = re.sub(r'\s+-\s+-', ' -', clean_title)
                     recasted_clip["title"] = re.sub(r'\s+', ' ', clean_title).strip(" -")
+
+                # Remove any obsolete cut audio and video files for this clip
+                import glob
+                for old_f in glob.glob(os.path.join("clips", f"*-{clip_num}*")):
+                    try:
+                        os.remove(old_f)
+                    except Exception:
+                        pass
                 
                 # Update plan_data
                 with open(plan_path, 'r', encoding='utf-8') as f:
