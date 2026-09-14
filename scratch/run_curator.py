@@ -203,6 +203,14 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                     os.remove(old_audio)
                 except Exception:
                     pass
+
+            for old_mosaic in glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}-mosaic-*.mp4")):
+                # If this is a fresh run (run_id is not the one in the filename), clean it up
+                if not run_id or run_id not in old_mosaic:
+                    try:
+                        os.remove(old_mosaic)
+                    except Exception:
+                        pass
                     
             # Step 1: Run complete Draft Video pipeline to prepare fresh baseline MP4 (audio + title/outro cards)
             update_mosaic_job_state(project_id, clip_num, "compiling draft video", 5, run_id=run_id)
@@ -3848,10 +3856,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             clip_statuses[c_num_int]["mosaic_progress"] = 0
                             clip_statuses[c_num_int]["mosaic_status"] = "failed"
                         elif j_status in ("starting", "compiling draft video", "requesting upload URL", "uploading media", "finalizing upload", "triggering run", "running", "downloading output", "compiling intro card", "processing", "compiling") or (isinstance(j_status, str) and j_status.startswith("rendering")):
-                            if not clip_statuses[c_num_int].get("has_mosaic_file"):
-                                clip_statuses[c_num_int]["mosaic_state"] = "processing"
-                                clip_statuses[c_num_int]["mosaic_progress"] = j_prog
-                                clip_statuses[c_num_int]["mosaic_status"] = j_status
+                            clip_statuses[c_num_int]["mosaic_state"] = "processing"
+                            clip_statuses[c_num_int]["mosaic_progress"] = j_prog
+                            clip_statuses[c_num_int]["mosaic_status"] = j_status
+                            clip_statuses[c_num_int]["has_mosaic_file"] = False
                         elif j_status == "completed":
                             clip_statuses[c_num_int]["mosaic_state"] = "completed"
                             clip_statuses[c_num_int]["mosaic_progress"] = 100
