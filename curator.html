@@ -6551,9 +6551,14 @@
                     }
                 }
                 
-                if (!isLocked) {
-                    card.querySelector(`#remixCardBtn_${index}`).addEventListener('click', function(e) {
+                const remixBtnEl = card.querySelector(`#remixCardBtn_${index}`);
+                if (remixBtnEl) {
+                    remixBtnEl.addEventListener('click', function(e) {
                         e.stopPropagation();
+                        if (!isLocked) {
+                            alert("Please lock this clip first to enable Gemini Remix based on preceding story context.");
+                            return;
+                        }
                         remixClip(index, this);
                     });
                 }
