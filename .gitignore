@@ -47,6 +47,8 @@ projects/*
 gemini-creds*
 *-creds*
 *credentials*
+settings.json
+*settings*.json
 *.bak
 
 # Node dependencies

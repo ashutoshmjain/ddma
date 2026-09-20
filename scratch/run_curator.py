@@ -3487,6 +3487,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         params = parse_qs(parsed_url.query)
         
+        if parsed_url.path in ('/', ''):
+            self.path = '/curator.html'
+            return super().do_GET()
+
         if parsed_url.path == '/list-projects':
             projects_list = []
             projects_dir = "projects"

@@ -3507,7 +3507,17 @@
                     const savedProj = localStorage.getItem('ddma-active-project');
                     const initialTarget = urlProj || savedProj;
 
-                    if (!activeProjectId && projects.length > 0) {
+                    if (urlProj && projects.some(p => p.id === urlProj)) {
+                        console.log("[DEBUG] Explicit URL target project found:", urlProj);
+                        if (activeProjectId !== urlProj) {
+                            selectProject(urlProj);
+                        } else {
+                            const currProj = projects.find(p => p.id === activeProjectId);
+                            if (currProj && ((currProj.status === 'transcribing' || currProj.status === 'ingesting') && !pollingInterval || (currProj.status === 'ready' && (!transcriptionData || !Array.isArray(transcriptionData.segments) || transcriptionData.segments.length === 0)))) {
+                                selectProject(activeProjectId);
+                            }
+                        }
+                    } else if (!activeProjectId && projects.length > 0) {
                         const targetMatch = initialTarget ? projects.find(p => p.id === initialTarget) : null;
                         const projToSelect = targetMatch ? targetMatch.id : (projects.find(p => p.status === 'ready') ? projects.find(p => p.status === 'ready').id : projects[0].id);
                         console.log("[DEBUG] Auto-selecting project:", projToSelect);
