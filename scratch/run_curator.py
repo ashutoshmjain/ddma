@@ -303,12 +303,27 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                     "only_generate_full_screen_graphics": True
                 }
             if captions_node_id:
-                update_params[captions_node_id] = {
+                default_captions_config = {
                     "font1": "Montserrat",
                     "font2": "Besley",
-                    "animation_style": "cinematic",
-                    "caption_position": "bottom"
+                    "color_override": None,
+                    "text_bg_enabled": False,
+                    "text_bg_color": "#000000",
+                    "text_bg_opacity": 0.6,
+                    "text_bg_roundness": 6,
+                    "animation_style": "fade",
+                    "stroke_enabled": True,
+                    "stroke_color": "#000000",
+                    "stroke_width": 2,
+                    "uniform_word_size": False,
+                    "single_line": False,
+                    "caption_position": "auto",
+                    "shadow_enabled": False,
+                    "shadow_blur": 10,
+                    "shadow_color": "#000000",
+                    "shadow_opacity": 0.5
                 }
+                update_params[captions_node_id] = settings.get("mosaic_captions_config") or default_captions_config
             
             run_body = {
                 "video_ids": [video_id]
