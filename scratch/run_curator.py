@@ -837,19 +837,48 @@ def get_mosaic_default_prompt():
             print(f"Warning: Failed to load settings.json for prompt: {se}")
             
     return (
-        "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - around 150 to 180 seconds long)\n\n"
-        "- Cover the full timeline of the video with Dan Koe–style motion graphics. Entire length of Video must be covered with no blanks\n\n"
-        "- Plan around 13 to 15 segments of roughly ~ 16 seconds each. Each segment renders a graphic with changing visuals and multiple text reveals.\n\n"
-        "- 'front load more aggressive infographics to engage the viewer right up front' or 'use bold Koe style shapes in the first 10 seconds').\n\n"
-        "- Assume background video is a blank black glossy screen - so you must keep persistent visuals (animation or text) through out the segments and segments must merge into each other like a relay race.\n\n"
-        "--------------------------------------------------\n"
-        "PACING & ANIMATION RULES\n"
-        "--------------------------------------------------\n"
-        "- No static holds beyond 6 seconds. Introduce visual changes every 2–4 seconds.\n"
-        "- Use only basic transforms: opacity, position, scale. Keep animations single-property per element.\n"
-        "- Prefer step-based reveals over continuous motion. Avoid preset/template animations.\n"
-        "- No gaps in infographic coverage. No dependency on external assets."
+        "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - 150 to 180 seconds long)\n\n"
+        "ROLE & OBJECTIVE:\n"
+        "- Generate continuous, minimalist Dan Koe / Vox-style conceptual infographics and blueprint visual models across the entire timeline.\n"
+        "- Pure black background (#000000). The entire video must be visually covered with zero blank moments.\n"
+        "- Plan 13 to 15 continuous segments (~16 seconds each) that flow seamlessly into one another like a relay race.\n\n"
+        "CRITICAL TEXT & SUBTITLE RULES:\n"
+        "- STRICTLY NO SPOKEN DIALOGUE TEXT, NO SUBTITLE SENTENCES, NO TRANSCRIPT QUOTE CARDS.\n"
+        "- Dialogue captions are handled automatically by a separate Cinematic Captions layer.\n"
+        "- Motion graphics must focus 100% on diagrammatic and conceptual visuals: flowcharts, relational nodes, concentric radar rings, comparison metrics, progress meters, conceptual icons, and abstract geometry.\n"
+        "- If labeling is required for diagrams, use only concise 1-2 word node labels (e.g., \"Input\", \"Output\", \"Signal\", \"Noise\"). Never print spoken sentences.\n\n"
+        "VISUAL STRUCTURE & HOOK:\n"
+        "- Hook: Front-load bold, aggressive blueprint geometry in the first 5-10 seconds to immediately hook viewer retention.\n"
+        "- Relay Race Transitions: When one diagram concludes, morph or transition smoothly into the next conceptual model without hard black cuts.\n\n"
+        "PACING & CONSERVATIVE RENDERING RULES (MANDATORY FOR EXPORT STABILITY):\n"
+        "- Introduce subtle visual changes or step reveals every 2 to 4 seconds. No static holds beyond 5 seconds.\n"
+        "- Lightweight transforms only: opacity, position, scale. Keep animations strictly single-property per element.\n"
+        "- Prefer discrete step-based reveals over complex physics, particle engines, or 3D meshes to ensure fast, reliable rendering without timeouts.\n"
+        "- Zero external asset dependencies: all shapes, icons, and diagrams must be natively drawn vector/CSS geometry."
     )
+
+
+def build_mosaic_prompt_with_context(title, transcript=None, custom_instructions=None):
+    mogr_base_rules = get_mosaic_default_prompt()
+    prompt_content = (
+        f"{mogr_base_rules}\n\n"
+        "--------------------------------------------------\n"
+        "DYNAMIC CLIP CONTEXT\n"
+        "--------------------------------------------------\n"
+        f"- Visual Theme / Topic: {title}"
+    )
+    if transcript:
+        clean_transcript = transcript.strip()
+        if len(clean_transcript) > 1200:
+            clean_transcript = clean_transcript[:1197] + "..."
+        prompt_content += (
+            f"\n- Audio Content Context (for visual inspiration ONLY - DO NOT print spoken text on screen): {clean_transcript}\n"
+            "- Reminder: Subtitles are rendered on a separate layer. Do not duplicate speech as on-screen text."
+        )
+    if custom_instructions:
+        prompt_content += f"\n- SPECIAL MOTION GRAPHICS INSTRUCTIONS: {custom_instructions}"
+        
+    return prompt_content
 
 
 def get_gemini_default_prompt():
@@ -3321,20 +3350,14 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 # Generate custom prompt with user's baseline guidelines
                 title = target_clip.get("title", f"Clip {clip_num}")
-                mogr_base_rules = get_mosaic_default_prompt()
-                
                 if custom_prompt:
                     prompt_content = custom_prompt
                 else:
-                    # Append clip context to base guidelines
-                    prompt_content = f"{mogr_base_rules}\n\n--------------------------------------------------\nDYNAMIC CLIP CONTEXT\n--------------------------------------------------\n- Animate visuals to explain this Clip Title: {title}"
-                    if transcript:
-                        prompt_content += f"\n- Spoken Transcript Text: {transcript}"
-                    if custom_instructions:
-                        prompt_content += f"\n- SPECIAL MOTION GRAPHICS INSTRUCTIONS: {custom_instructions}"
-                    
-                    if len(prompt_content) > 1200:
-                        prompt_content = prompt_content[:1197] + "..."
+                    prompt_content = build_mosaic_prompt_with_context(
+                        title=title,
+                        transcript=transcript,
+                        custom_instructions=custom_instructions
+                    )
                 
                 # Check if already running
                 job_key = (project_id, int(clip_num))
@@ -3613,11 +3636,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     transcript = raw_transcript
                 
                 title = target_clip.get("title", f"Clip {clip_num}")
-                mogr_base_rules = get_mosaic_default_prompt()
-                
-                prompt_content = f"{mogr_base_rules}\n\n--------------------------------------------------\nDYNAMIC CLIP CONTEXT\n--------------------------------------------------\n- Animate visuals to explain this Clip Title: {title}"
-                if transcript:
-                    prompt_content += f"\n- Spoken Transcript Text: {transcript}"
+                prompt_content = build_mosaic_prompt_with_context(
+                    title=title,
+                    transcript=transcript
+                )
                 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
@@ -4028,12 +4050,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                 speech_texts.append(seg.get("text").strip())
                         transcript = " ".join(speech_texts)
                         
-                        mogr_base_rules = get_mosaic_default_prompt()
-                        prompt_content = f"{mogr_base_rules}\n\n--------------------------------------------------\nDYNAMIC CLIP CONTEXT\n--------------------------------------------------\n- Animate visuals to explain this Clip Title: {title}"
-                        if transcript:
-                            prompt_content += f"\n- Spoken Transcript Text: {transcript}"
-                        if len(prompt_content) > 1200:
-                            prompt_content = prompt_content[:1197] + "..."
+                        prompt_content = build_mosaic_prompt_with_context(
+                            title=title,
+                            transcript=transcript
+                        )
                         
                         # Spawn background thread to resume polling/download
                         t = threading.Thread(
