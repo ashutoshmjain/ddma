@@ -46,6 +46,7 @@ import os
 import re
 import json
 import shutil
+import shlex
 import subprocess
 import requests
 from urllib.parse import urlparse, parse_qs
@@ -3173,14 +3174,12 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 editor_cmd = settings.get("external_editor") or os.environ.get("VISUAL") or os.environ.get("EDITOR") or "notepad"
                 
-                import shlex
                 try:
                     cmd_args = shlex.split(editor_cmd, posix=(os.name != 'nt'))
                 except Exception:
                     cmd_args = [editor_cmd]
                 
                 # Resolve gvim/vim path directly if needed
-                import shutil
                 if shutil.which(cmd_args[0]) is None:
                     local_gvim = os.path.expandvars(r'%LOCALAPPDATA%\Programs\Vim\gvim.exe')
                     local_vim = os.path.expandvars(r'%LOCALAPPDATA%\Programs\Vim\vim.exe')
