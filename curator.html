@@ -2569,6 +2569,9 @@
         // Clip Spoken Text & Social Caption Editor Logic
         // =========================================================================
         let activeTextClipIndex = null;
+        let activeMosaicClipIndex = null;
+        let activeMosaicBtnEl = null;
+        let returnToMosaicAfterTextSave = false;
 
         function getClipRawWhisperText(clip) {
             const speechTexts = [];
@@ -2693,6 +2696,11 @@
         function closeClipTextModal() {
             const modal = document.getElementById('clipTextModalOverlay');
             if (modal) modal.style.display = 'none';
+            if (returnToMosaicAfterTextSave && activeMosaicClipIndex !== null) {
+                returnToMosaicAfterTextSave = false;
+                const mosaicOverlay = document.getElementById('mosaicPromptModalOverlay');
+                if (mosaicOverlay) mosaicOverlay.classList.add('active');
+            }
             activeTextClipIndex = null;
         }
 
@@ -2802,10 +2810,14 @@
 
             if (mosaicEditShortcutBtn) {
                 mosaicEditShortcutBtn.addEventListener('click', () => {
-                    const mosaicOverlay = document.getElementById('mosaicPromptModalOverlay');
-                    if (mosaicOverlay) mosaicOverlay.classList.remove('active');
-                    if (activeTextClipIndex !== null) {
-                        openClipTextModal(activeTextClipIndex);
+                    const targetIdx = activeMosaicClipIndex !== null ? activeMosaicClipIndex : activeTextClipIndex;
+                    if (targetIdx !== null && clips[targetIdx]) {
+                        const mosaicOverlay = document.getElementById('mosaicPromptModalOverlay');
+                        if (mosaicOverlay) mosaicOverlay.classList.remove('active');
+                        returnToMosaicAfterTextSave = true;
+                        openClipTextModal(targetIdx);
+                    } else {
+                        alert("Could not identify clip to edit.");
                     }
                 });
             }
@@ -2885,7 +2897,14 @@
                     clips[activeTextClipIndex].text = textVal;
                     savePlanToServer();
                     updateStateBar(`💾 Saved & persisted text for Clip ${clips[activeTextClipIndex].num}!`);
+                    const savedClipIdx = activeTextClipIndex;
+                    const shouldReturnToMosaic = returnToMosaicAfterTextSave && activeMosaicClipIndex !== null && activeMosaicBtnEl;
                     closeClipTextModal();
+
+                    if (shouldReturnToMosaic) {
+                        returnToMosaicAfterTextSave = false;
+                        exportToMosaic(savedClipIdx, activeMosaicBtnEl, true);
+                    }
                 });
             }
         });
@@ -5558,6 +5577,9 @@
                     updateStateBar("Ready");
                     
                     if (data.success && data.prompt) {
+                        activeMosaicClipIndex = clipIdx;
+                        activeMosaicBtnEl = btnEl;
+                        activeTextClipIndex = clipIdx;
                         mosaicPromptTextarea.value = data.prompt;
                         mosaicPromptModalOverlay.classList.add('active');
                         
@@ -7384,15 +7406,18 @@
             }
         });
 
-        closeMosaicPromptModalBtn.addEventListener('click', function() {
+        function closeMosaicPromptModal() {
             mosaicPromptModalOverlay.classList.remove('active');
-        });
-        cancelMosaicPromptBtn.addEventListener('click', function() {
-            mosaicPromptModalOverlay.classList.remove('active');
-        });
+            activeMosaicClipIndex = null;
+            activeMosaicBtnEl = null;
+            returnToMosaicAfterTextSave = false;
+        }
+
+        closeMosaicPromptModalBtn.addEventListener('click', closeMosaicPromptModal);
+        cancelMosaicPromptBtn.addEventListener('click', closeMosaicPromptModal);
         mosaicPromptModalOverlay.addEventListener('click', function(e) {
             if (e.target === mosaicPromptModalOverlay) {
-                mosaicPromptModalOverlay.classList.remove('active');
+                closeMosaicPromptModal();
             }
         });
 

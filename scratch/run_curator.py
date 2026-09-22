@@ -869,8 +869,6 @@ def build_mosaic_prompt_with_context(title, transcript=None, custom_instructions
     )
     if transcript:
         clean_transcript = transcript.strip()
-        if len(clean_transcript) > 1200:
-            clean_transcript = clean_transcript[:1197] + "..."
         prompt_content += (
             f"\n- Audio Content Context (for visual inspiration ONLY - DO NOT print spoken text on screen): {clean_transcript}\n"
             "- Reminder: Subtitles are rendered on a separate layer. Do not duplicate speech as on-screen text."
