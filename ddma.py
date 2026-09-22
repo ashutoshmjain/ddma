@@ -743,20 +743,49 @@ def mux_clip(
     typer.echo(f"Found audio: {audio_path}")
     typer.echo(f"Muxing into black square draft: {out_path}...")
 
-    # Mux using FFmpeg color source filter to generate a 740x740 black video dynamically
-    cmd = [
-        "ffmpeg", "-y",
-        "-f", "lavfi",
-        "-i", "color=c=black:s=740x740:r=25",
-        "-i", audio_path,
-        "-c:v", "libx264",
-        "-tune", "stillimage",
-        "-c:a", "aac",
-        "-b:a", "192k",
-        "-pix_fmt", "yuv420p",
-        "-shortest",
-        out_path
-    ]
+    # Probe audio duration to guarantee canvas strictly matches audio duration
+    a_dur = None
+    try:
+        p_a = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", audio_path],
+            capture_output=True, text=True
+        )
+        if p_a.returncode == 0 and p_a.stdout.strip():
+            a_dur = float(p_a.stdout.strip())
+    except Exception:
+        pass
+
+    # Mux using FFmpeg color source filter to generate a 740x740 black video dynamically at standard 30fps
+    if a_dur:
+        cmd = [
+            "ffmpeg", "-y",
+            "-f", "lavfi",
+            "-i", f"color=c=black:s=740x740:r=30:d={a_dur:.3f}",
+            "-i", audio_path,
+            "-r", "30",
+            "-c:v", "libx264",
+            "-tune", "stillimage",
+            "-c:a", "aac",
+            "-b:a", "192k",
+            "-pix_fmt", "yuv420p",
+            "-t", f"{a_dur:.3f}",
+            out_path
+        ]
+    else:
+        cmd = [
+            "ffmpeg", "-y",
+            "-f", "lavfi",
+            "-i", "color=c=black:s=740x740:r=30",
+            "-i", audio_path,
+            "-r", "30",
+            "-c:v", "libx264",
+            "-tune", "stillimage",
+            "-c:a", "aac",
+            "-b:a", "192k",
+            "-pix_fmt", "yuv420p",
+            "-shortest",
+            out_path
+        ]
 
     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
@@ -900,6 +929,7 @@ def compile_clip(
         audio_matches = glob.glob(os.path.join(master_dir, f"*-{num}-*.mp3")) + glob.glob(os.path.join(master_dir, f"*-{num}.mp3"))
     
     temp_remux_path = f"temp_remux_{num}.mp4"
+    temp_body_path = f"temp_body_{num}.mp4"
     has_mosaic_id = bool(target_clip and target_clip.get("mosaic_run_id"))
     has_mosaic_file = os.path.exists(backup_path)
     
@@ -961,7 +991,8 @@ def compile_clip(
             ]
             res_remux = subprocess.run(cmd_remux, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if res_remux.returncode == 0:
-                shutil.move(temp_remux_path, backup_path)
+                body_video_path = temp_remux_path
+            else:
                 body_video_path = backup_path
 
     # 3. Get title
@@ -1191,8 +1222,8 @@ def compile_clip(
             else:
                 body_video_path = master_path
         else:
-            body_video_path = backup_path
-            temp_body_path = f"temp_body_{num}.mp4"
+            input_body_path = temp_remux_path if os.path.exists(temp_remux_path) else backup_path
+            body_video_path = input_body_path
             if a_dur is not None and (v_dur is None or abs(v_dur - a_dur) > 0.05):
                 target_dur = a_dur
                 typer.echo(f"Equalizing master body stream durations to match audio ground truth ({a_dur:.3f}s)...")
@@ -1202,7 +1233,7 @@ def compile_clip(
                     typer.echo(f"Extending Mosaic video stream with final frame pad ({pad_dur:.3f}s) to match audio duration...")
                     cmd_norm = [
                         "ffmpeg", "-y",
-                        "-i", backup_path,
+                        "-i", input_body_path,
                         "-vf", f"tpad=stop_mode=clone:stop_duration={pad_dur:.3f}",
                         "-c:v", "libx264", "-crf", "18", "-preset", "fast", "-pix_fmt", "yuv420p",
                         "-c:a", "aac", "-b:a", "192k",
@@ -1214,7 +1245,7 @@ def compile_clip(
                     # Trim video stream down to match audio duration
                     cmd_norm = [
                         "ffmpeg", "-y",
-                        "-i", backup_path,
+                        "-i", input_body_path,
                         "-ss", "0",
                         "-t", f"{target_dur:.3f}",
                         "-c:v", "libx264",
@@ -1231,7 +1262,7 @@ def compile_clip(
                     body_video_path = temp_body_path
                     typer.echo(f"Master body successfully equalized to {target_dur:.3f}s.")
                 else:
-                    typer.echo(f"Warning: Failed to equalize master body, using original backup path. Error: {res_norm.stderr}")
+                    typer.echo(f"Warning: Failed to equalize master body, using input body path. Error: {res_norm.stderr}")
 
         # 7. Render intro
         typer.echo(f"Rendering 2-second intro (FPS: {fps_str}, Sample Rate: {ar_str}Hz, Timescale: {tb_den})...")
@@ -1464,7 +1495,8 @@ def compile_clip(
         # Clean up temp files
         temp_files_to_remove = [
             temp_img_path, intro_video_path, concat_txt_path, temp_body_path, 
-            temp_extracted_frame, temp_img_outro_path, temp_outro_video_path
+            temp_extracted_frame, temp_img_outro_path, temp_outro_video_path,
+            temp_remux_path
         ]
         for temp_f in temp_files_to_remove:
             if os.path.exists(temp_f):

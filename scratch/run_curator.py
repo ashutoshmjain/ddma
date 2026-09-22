@@ -212,9 +212,9 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                     except Exception:
                         pass
                     
-            # Step 1: Run complete Draft Video pipeline to prepare fresh baseline MP4 (audio + title/outro cards)
-            update_mosaic_job_state(project_id, clip_num, "compiling draft video", 5, run_id=run_id)
-            print(f"[{project_id}][Clip {clip_num}] Executing Draft Video pipeline before Mosaic upload...")
+            # Step 1: Prepare fresh baseline body draft MP4 (audio + black canvas body, NO intro/outro cards)
+            update_mosaic_job_state(project_id, clip_num, "muxing draft body", 5, run_id=run_id)
+            print(f"[{project_id}][Clip {clip_num}] Muxing baseline body draft before Mosaic upload...")
             
             os.makedirs("clips", exist_ok=True)
             plan_file_path = os.path.join("projects", project_id, "plan.json")
@@ -239,12 +239,12 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             if res_cut.returncode != 0:
                 raise Exception(f"Audio cut failed for Clip {clip_num}: {res_cut.stderr}")
                 
-            # Compile fresh baseline draft video
-            comp_draft_cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", plan_file_path, "--force-draft"]
-            res_draft = subprocess.run(comp_draft_cmd, capture_output=True, text=True, cwd=".")
+            # Mux clean solid black canvas draft body video (exact audio duration, NO intro/outro cards)
+            mux_draft_cmd = [sys.executable, "ddma.py", "mux-clip", "--num", str(clip_num), "--plan-file", plan_file_path, "--out-dir", "clips"]
+            res_draft = subprocess.run(mux_draft_cmd, capture_output=True, text=True, cwd=".")
             if res_draft.returncode != 0:
-                raise Exception(f"Failed to prepare baseline draft video for Mosaic: {res_draft.stderr}")
-            print(f"[{project_id}][Clip {clip_num}] Fresh baseline draft video compiled successfully: {file_path}")
+                raise Exception(f"Failed to prepare baseline draft body video for Mosaic: {res_draft.stderr}")
+            print(f"[{project_id}][Clip {clip_num}] Fresh baseline draft body video muxed successfully: {file_path}")
             
             # Step 2: Upload S3
             update_mosaic_job_state(project_id, clip_num, "requesting upload URL", 10, run_id=run_id)
