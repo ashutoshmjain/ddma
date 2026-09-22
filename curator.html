@@ -5535,6 +5535,14 @@
                 btnEl.innerHTML = '⏳ 5% (Starting...)';
                 updateStateBar(`Mosaic: Initializing run for Clip ${clip.num}...`);
                 
+                if (!clipStatuses[clip.num]) {
+                    clipStatuses[clip.num] = {};
+                }
+                clipStatuses[clip.num].mosaic_state = 'processing';
+                clipStatuses[clip.num].mosaic_progress = 5;
+                clipStatuses[clip.num].mosaic_status = 'starting';
+                clipStatuses[clip.num].has_mosaic_file = false;
+                
                 fetch(`/export-to-mosaic?id=${activeProjectId}&num=${clip.num}&force=${force}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

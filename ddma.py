@@ -419,11 +419,26 @@ def plan(
 def cut(
     audio: str = typer.Option(..., help="Path to input audio file"),
     plan_file: str = typer.Option("plan.json", help="Path to plan JSON file"),
-    out_dir: str = typer.Option(".", help="Output directory for clips")
+    out_dir: str = typer.Option(".", help="Output directory for clips"),
+    num: Optional[int] = typer.Option(None, "--num", "-n", help="Specific clip number to cut (cuts all clips if omitted)")
 ):
     """
     Cut audio file into clips based on the plan using sample-accurate re-encoding.
     """
+    if hasattr(audio, 'default'):
+        audio = str(audio.default)
+    if hasattr(plan_file, 'default'):
+        plan_file = str(plan_file.default)
+    if hasattr(out_dir, 'default'):
+        out_dir = str(out_dir.default)
+    if hasattr(num, 'default'):
+        num = num.default
+    if num is not None:
+        try:
+            num = int(num)
+        except Exception:
+            num = None
+
     if not os.path.exists(audio):
         typer.echo(f"Error: Audio file {audio} not found.", err=True)
         raise typer.Exit(code=1)
@@ -438,9 +453,14 @@ def cut(
         plan_data = json.load(f)
 
     base_name = os.path.splitext(os.path.basename(audio))[0]
-    typer.echo(f"Splitting {audio} into {len(plan_data)} clips...")
+    if num is not None:
+        typer.echo(f"Cutting Clip {num} from {audio}...")
+    else:
+        typer.echo(f"Splitting {audio} into {len(plan_data)} clips...")
 
     for c in plan_data:
+        if num is not None and int(c.get("num", -1)) != num:
+            continue
         # Naming: e.g. 242-1.mp3 or 242-1-title.mp3
         title = c.get("title", "")
         if title:

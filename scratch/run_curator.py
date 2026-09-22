@@ -234,8 +234,8 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                         print(f"[{project_id}][Clip {clip_num}] Resolved audio source via fallback: {audio_path}")
                         break
 
-            # Slice fresh audio clip
-            cut_cmd = [sys.executable, "ddma.py", "cut", "--audio", audio_path, "--plan-file", plan_file_path, "--out-dir", "clips"]
+            # Slice fresh audio clip for this specific clip
+            cut_cmd = [sys.executable, "ddma.py", "cut", "--audio", audio_path, "--plan-file", plan_file_path, "--out-dir", "clips", "--num", str(clip_num)]
             res_cut = subprocess.run(cut_cmd, capture_output=True, text=True, cwd=".")
             if res_cut.returncode != 0:
                 raise Exception(f"Audio cut failed for Clip {clip_num}: {res_cut.stderr}")
@@ -3888,20 +3888,21 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         if c_num_int not in clip_statuses:
                             clip_statuses[c_num_int] = {"has_audio": False, "video_state": "none", "has_mosaic_file": False}
                         
-                        if j_status == "failed" and not clip_statuses[c_num_int].get("has_mosaic_file"):
+                        if j_status == "completed":
+                            clip_statuses[c_num_int]["mosaic_state"] = "completed"
+                            clip_statuses[c_num_int]["mosaic_progress"] = 100
+                            clip_statuses[c_num_int]["mosaic_status"] = "completed"
+                        elif j_status == "failed":
                             clip_statuses[c_num_int]["mosaic_state"] = "failed"
                             clip_statuses[c_num_int]["mosaic_error"] = j_err or "Mosaic render failed"
                             clip_statuses[c_num_int]["mosaic_progress"] = 0
                             clip_statuses[c_num_int]["mosaic_status"] = "failed"
-                        elif j_status in ("starting", "compiling draft video", "requesting upload URL", "uploading media", "finalizing upload", "triggering run", "running", "downloading output", "compiling intro card", "processing", "compiling") or (isinstance(j_status, str) and j_status.startswith("rendering")):
+                        elif j_status:
+                            # Any active in-progress state (starting, muxing draft body, uploading, rendering, downloading)
                             clip_statuses[c_num_int]["mosaic_state"] = "processing"
                             clip_statuses[c_num_int]["mosaic_progress"] = j_prog
                             clip_statuses[c_num_int]["mosaic_status"] = j_status
                             clip_statuses[c_num_int]["has_mosaic_file"] = False
-                        elif j_status == "completed":
-                            clip_statuses[c_num_int]["mosaic_state"] = "completed"
-                            clip_statuses[c_num_int]["mosaic_progress"] = 100
-                            clip_statuses[c_num_int]["mosaic_status"] = "completed"
                                 
                 ingestion_progress = None
                 progress_file = os.path.join(project_dir, "ingestion_progress.json")
