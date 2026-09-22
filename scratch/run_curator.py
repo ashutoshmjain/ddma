@@ -96,6 +96,29 @@ PORT = 8000
 # Keys: (project_id, clip_num), Values: {"status": ..., "progress": ..., "error": ..., "run_id": ...}
 mosaic_runs = {}
 
+plan_file_lock = threading.Lock()
+
+def safe_load_json(file_path, retries=10, delay=0.05):
+    for i in range(retries):
+        try:
+            with plan_file_lock:
+                if os.path.exists(file_path):
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        return json.load(f)
+        except (PermissionError, json.JSONDecodeError, OSError):
+            time.sleep(delay)
+    with plan_file_lock:
+        with open(file_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+def safe_save_json(file_path, data):
+    with plan_file_lock:
+        temp_path = f"{file_path}.tmp.{os.getpid()}.{threading.get_ident()}"
+        os.makedirs(os.path.dirname(os.path.abspath(file_path)), exist_ok=True)
+        with open(temp_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4)
+        os.replace(temp_path, file_path)
+
 def get_mosaic_jobs_file(project_id):
     proj_dir = os.path.join("projects", project_id)
     os.makedirs(proj_dir, exist_ok=True)
@@ -1213,13 +1236,11 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     clips_array = json_data
                 
-                # Save to project's plan.json
-                with open(plan_file_path, 'w', encoding='utf-8') as f:
-                    json.dump(clips_array, f, indent=4)
+                # Save to project's plan.json atomically
+                safe_save_json(plan_file_path, clips_array)
                 
-                # Sync to root plan.json
-                with open('plan.json', 'w', encoding='utf-8') as f:
-                    json.dump(clips_array, f, indent=4)
+                # Sync to root plan.json atomically
+                safe_save_json('plan.json', clips_array)
                     
                 # Sync to docs/episodes/EP_NUM/plan.json and docs/episodes.json
                 ep_match = re.search(r'\d+', project_id)
@@ -3603,8 +3624,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not os.path.exists(plan_path):
                     raise Exception(f"plan.json for project {project_id} not found.")
                 
-                with open(plan_path, "r", encoding="utf-8") as f:
-                    plan = json.load(f)
+                plan = safe_load_json(plan_path)
                 
                 target_clip = None
                 for clip in plan:

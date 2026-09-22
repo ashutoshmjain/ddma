@@ -2888,17 +2888,31 @@
             }
 
             if (saveBtn) {
-                saveBtn.addEventListener('click', () => {
+                saveBtn.addEventListener('click', async () => {
                     if (activeTextClipIndex === null || !clips[activeTextClipIndex]) {
                         closeClipTextModal();
                         return;
                     }
                     const textVal = inputEl ? inputEl.value.trim() : '';
                     clips[activeTextClipIndex].text = textVal;
-                    savePlanToServer();
-                    updateStateBar(`💾 Saved & persisted text for Clip ${clips[activeTextClipIndex].num}!`);
                     const savedClipIdx = activeTextClipIndex;
                     const shouldReturnToMosaic = returnToMosaicAfterTextSave && activeMosaicClipIndex !== null && activeMosaicBtnEl;
+                    
+                    const origBtnText = saveBtn.innerHTML;
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '⏳ Saving...';
+                    updateStateBar(`💾 Saving & persisting text for Clip ${clips[activeTextClipIndex].num}...`);
+                    
+                    try {
+                        await savePlanToServer();
+                    } catch (saveErr) {
+                        console.error("Failed to save plan to server:", saveErr);
+                    } finally {
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = origBtnText;
+                    }
+
+                    updateStateBar(`💾 Saved & persisted text for Clip ${clips[savedClipIdx].num}!`);
                     closeClipTextModal();
 
                     if (shouldReturnToMosaic) {
@@ -5575,8 +5589,11 @@
                 updateStateBar(`Mosaic: Generating base prompt for Clip ${clip.num}...`);
                 
                 fetch(`/get-mosaic-prompt?id=${activeProjectId}&num=${clip.num}`)
-                .then(res => {
-                    if (!res.ok) throw new Error("Failed to get base prompt.");
+                .then(async res => {
+                    if (!res.ok) {
+                        const errData = await res.json().catch(() => ({}));
+                        throw new Error(errData.error || `Server error (${res.status})`);
+                    }
                     return res.json();
                 })
                 .then(data => {
@@ -5875,7 +5892,7 @@
         }
 
         function savePlanToServer(isUndoable = true) {
-            if (!activeProjectId) return;
+            if (!activeProjectId) return Promise.resolve();
             
             const currentPlanStr = JSON.stringify(clips);
             if (currentPlanStr !== lastSavedStateString) {
@@ -5891,7 +5908,7 @@
             }
 
             updateStateBar("Saving plan...");
-            fetch(`/save-project-plan?id=${activeProjectId}`, {
+            return fetch(`/save-project-plan?id=${activeProjectId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(clips, null, 4)
@@ -5899,9 +5916,11 @@
             .then(res => {
                 if (!res.ok) console.error("Auto-save failed");
                 updateStateBar("Plan saved.");
+                return res;
             })
             .catch(err => {
                 console.warn("Auto-save failed: ", err.message);
+                throw err;
             });
         }
 
