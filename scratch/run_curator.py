@@ -326,7 +326,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                     "reference_links": "",
                     "only_generate_full_screen_graphics": True
                 }
-            if captions_node_id:
+            if captions_node_id and str(captions_node_id).strip():
                 default_captions_config = {
                     "font1": "Montserrat",
                     "font2": "Besley",
@@ -861,24 +861,18 @@ def get_mosaic_default_prompt():
             print(f"Warning: Failed to load settings.json for prompt: {se}")
             
     return (
-        "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - 150 to 180 seconds long)\n\n"
-        "ROLE & OBJECTIVE:\n"
-        "- Generate continuous, minimalist Dan Koe / Vox-style conceptual infographics and blueprint visual models across the entire timeline.\n"
-        "- Pure black background (#000000). The entire video must be visually covered with zero blank moments.\n"
-        "- Plan 13 to 15 continuous segments (~16 seconds each) that flow seamlessly into one another like a relay race.\n\n"
-        "CRITICAL TEXT & SUBTITLE RULES:\n"
-        "- STRICTLY NO SPOKEN DIALOGUE TEXT, NO SUBTITLE SENTENCES, NO TRANSCRIPT QUOTE CARDS.\n"
-        "- Dialogue captions are handled automatically by a separate Cinematic Captions layer.\n"
-        "- Motion graphics must focus 100% on diagrammatic and conceptual visuals: flowcharts, relational nodes, concentric radar rings, comparison metrics, progress meters, conceptual icons, and abstract geometry.\n"
-        "- If labeling is required for diagrams, use only concise 1-2 word node labels (e.g., \"Input\", \"Output\", \"Signal\", \"Noise\"). Never print spoken sentences.\n\n"
-        "VISUAL STRUCTURE & HOOK:\n"
-        "- Hook: Front-load bold, aggressive blueprint geometry in the first 5-10 seconds to immediately hook viewer retention.\n"
-        "- Relay Race Transitions: When one diagram concludes, morph or transition smoothly into the next conceptual model without hard black cuts.\n\n"
-        "PACING & CONSERVATIVE RENDERING RULES (MANDATORY FOR EXPORT STABILITY):\n"
-        "- Introduce subtle visual changes or step reveals every 2 to 4 seconds. No static holds beyond 5 seconds.\n"
-        "- Lightweight transforms only: opacity, position, scale. Keep animations strictly single-property per element.\n"
-        "- Prefer discrete step-based reveals over complex physics, particle engines, or 3D meshes to ensure fast, reliable rendering without timeouts.\n"
-        "- Zero external asset dependencies: all shapes, icons, and diagrams must be natively drawn vector/CSS geometry."
+        "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - around 150 to 180 seconds long)\n\n"
+        "- Cover the full timeline of the video with Dan Koe–style motion graphics. Entire length of Video must be covered with no blanks\n\n"
+        "- Plan around 13 to 15 segments of roughly ~ 16 seconds each. Each segment renders a graphic with changing visuals and multiple text reveals.\n\n"
+        "- 'front load more aggressive infographics to engage the viewer right up front' or 'use bold Koe style shapes in the first 10 seconds').\n\n"
+        "- Assume background video is a blank black glossy screen - so you must keep persistent visuals (animation or text) through out the segments and segments must merge into each other like a relay race.\n\n"
+        "--------------------------------------------------\n"
+        "PACING & ANIMATION RULES\n"
+        "--------------------------------------------------\n"
+        "- No static holds beyond 6 seconds. Introduce visual changes every 2–4 seconds.\n"
+        "- Use only basic transforms: opacity, position, scale. Keep animations single-property per element.\n"
+        "- Prefer step-based reveals over continuous motion. Avoid preset/template animations.\n"
+        "- No gaps in infographic coverage. No dependency on external assets."
     )
 
 
@@ -894,8 +888,7 @@ def build_mosaic_prompt_with_context(title, transcript=None, custom_instructions
     if transcript:
         clean_transcript = transcript.strip()
         prompt_content += (
-            f"\n- Audio Content Context (for visual inspiration ONLY - DO NOT print spoken text on screen): {clean_transcript}\n"
-            "- Reminder: Subtitles are rendered on a separate layer. Do not duplicate speech as on-screen text."
+            f"\n- Audio Content Context (for visual inspiration and Dan Koe text reveals): {clean_transcript}"
         )
     if custom_instructions:
         prompt_content += f"\n- SPECIAL MOTION GRAPHICS INSTRUCTIONS: {custom_instructions}"
