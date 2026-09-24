@@ -2589,6 +2589,9 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     "-r", "30",
                     "-i", temp_png,
                     "-i", music_file,
+                    "-filter_complex", "[1:a]afade=t=out:st=1.3:d=0.2[a]",
+                    "-map", "0:v",
+                    "-map", "[a]",
                     "-c:v", "libx264",
                     "-tune", "stillimage",
                     "-c:a", "aac",
@@ -2596,7 +2599,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     "-ar", "48000",
                     "-ac", "2",
                     "-pix_fmt", "yuv420p",
-                    "-t", "2.0",
+                    "-t", "1.5",
                     out_path
                 ]
                 res_ffmpeg = subprocess.run(cmd_ffmpeg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

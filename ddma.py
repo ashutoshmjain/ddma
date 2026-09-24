@@ -188,15 +188,15 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
                 formatted[0] = formatted[0].capitalize()
             clip_title = " ".join(formatted)
 
-    seg_list = [
-        {
+    seg_list = []
+    if clip_num < 4:
+        seg_list.append({
             "type": "music",
             "music_file": intro_music,
             "duration": 5.5,
             "crossfade": 1.3,
             "volume": 1.0
-        }
-    ]
+        })
     if hook_segment:
         seg_list.append(hook_segment)
         seg_list.append({
@@ -1285,13 +1285,17 @@ def compile_clip(
                     typer.echo(f"Warning: Failed to equalize master body, using input body path. Error: {res_norm.stderr}")
 
         # 7. Render intro
-        typer.echo(f"Rendering 2-second intro (FPS: {fps_str}, Sample Rate: {ar_str}Hz, Timescale: {tb_den})...")
+        intro_duration = 1.5
+        typer.echo(f"Rendering {intro_duration}-second intro (FPS: {fps_str}, Sample Rate: {ar_str}Hz, Timescale: {tb_den})...")
         cmd_intro = [
             "ffmpeg", "-y",
             "-loop", "1",
             "-r", fps_str,
             "-i", temp_img_path,
             "-i", music,
+            "-filter_complex", f"[1:a]afade=t=out:st={intro_duration - 0.2:.3f}:d=0.2[a]",
+            "-map", "0:v",
+            "-map", "[a]",
             "-c:v", "libx264",
             "-tune", "stillimage",
             "-c:a", "aac",
@@ -1300,7 +1304,7 @@ def compile_clip(
             "-ac", "2",
             "-pix_fmt", "yuv420p",
             "-video_track_timescale", tb_den,
-            "-t", "2.0",
+            "-t", f"{intro_duration:.3f}",
             intro_video_path
         ]
         res_intro = subprocess.run(cmd_intro, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -1446,7 +1450,7 @@ def compile_clip(
                 f"[2:v]{scale_filter},settb=1/90000[v2];"
                 "[v0][v1]concat=n=2:v=1:a=0[v01];"
                 "[v01]fps=25,settb=1/90000[v01tb];"
-                f"[v01tb][v2]xfade=transition=fade:duration=1.0:offset={2.0 + body_duration - 1.0:.3f}[v];"
+                f"[v01tb][v2]xfade=transition=fade:duration=1.0:offset={intro_duration + body_duration - 1.0:.3f}[v];"
                 "[0:a][1:a]concat=n=2:v=0:a=1[a0];"
                 "[a0][2:a]acrossfade=d=1.0:c1=tri:c2=tri[a]",
                 "-map", "[v]",
