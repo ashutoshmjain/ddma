@@ -450,14 +450,34 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                 except Exception as p_err:
                     print(f"Warning: Could not purge older Mosaic render {f_cand}: {p_err}")
         
-        res_download = requests.get(final_video_url, stream=True)
-        if res_download.status_code != 200:
-            raise Exception(f"Failed to download rendered video from Mosaic: {res_download.status_code}")
-            
-        os.makedirs(os.path.dirname(mosaic_version_path) or "clips", exist_ok=True)
-        with open(mosaic_version_path, "wb") as f_out:
-            for chunk in res_download.iter_content(chunk_size=8192):
-                f_out.write(chunk)
+        # Step 5: Download rendered video with robust multi-attempt retry (protects against socket blips/IncompleteRead)
+        download_success = False
+        last_dl_err = None
+        for attempt in range(1, 6):
+            try:
+                print(f"[{project_id}][Clip {clip_num}] Downloading rendered video from Mosaic S3 (attempt {attempt}/5)...")
+                res_download = requests.get(final_video_url, stream=True, timeout=60)
+                if res_download.status_code != 200:
+                    raise Exception(f"Failed to download rendered video from Mosaic: HTTP {res_download.status_code}")
+                    
+                os.makedirs(os.path.dirname(mosaic_version_path) or "clips", exist_ok=True)
+                with open(mosaic_version_path, "wb") as f_out:
+                    for chunk in res_download.iter_content(chunk_size=65536):
+                        if chunk:
+                            f_out.write(chunk)
+                
+                if os.path.exists(mosaic_version_path) and os.path.getsize(mosaic_version_path) > 1024:
+                    download_success = True
+                    break
+                else:
+                    raise Exception("Downloaded file is empty or corrupted.")
+            except Exception as dl_ex:
+                last_dl_err = dl_ex
+                print(f"[{project_id}][Clip {clip_num}] Download attempt {attempt} failed: {dl_ex}. Retrying in 5s...")
+                time.sleep(5)
+                
+        if not download_success:
+            raise Exception(f"Failed to download rendered video after 5 attempts: {last_dl_err}")
 
         # Persist mosaic_run_id into plan.json AFTER successful download!
         try:
@@ -516,23 +536,6 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             except Exception as pe:
                 print(f"Warning: Failed to clean up mosaic_run_id from plan.json on error: {pe}")
         
-        # If run failed or crashed, clean up any unverified mosaic_run_id in plan.json
-        try:
-            plan_path = os.path.join("projects", project_id, "plan.json")
-            if os.path.exists(plan_path):
-                with open(plan_path, "r", encoding="utf-8") as f:
-                    plan = json.load(f)
-                for c in plan:
-                    if int(c.get("num", -1)) == int(clip_num) and "mosaic_run_id" in c:
-                        del c["mosaic_run_id"]
-                        break
-                with open(plan_path, "w", encoding="utf-8") as f:
-                    json.dump(plan, f, indent=4)
-                print(f"[{project_id}][Clip {clip_num}] Cleaned up unverified mosaic_run_id from plan.json on error")
-        except Exception as pe:
-            print(f"Warning: Failed to clean up mosaic_run_id from plan.json on error: {pe}")
-
-# Helper function to slice and concatenate audio/music segments using FFmpeg (identical to compile_segments)
 def compile_segments_helper(segments, output_path, audio_source_path):
     temp_files = []
     try:
