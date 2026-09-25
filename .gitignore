@@ -55,6 +55,12 @@ settings.json
 node_modules/
 **/node_modules/
 
-# Public Web Assets
+# Public Web Assets (HTML, JSON, scripts only - no media/assets)
 !docs/assets/**
 !docs/episodes/**
+docs/**/clips/
+docs/**/*.mp4
+docs/**/*.mp3
+docs/**/*.m4a
+docs/**/*.wav
+**/__pycache__/

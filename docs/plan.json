@@ -1,1013 +1,1014 @@
 [
-  {
-    "num": 1,
-    "title": "Meta Muse - deepDive",
-    "start": 0,
-    "end": 92.76,
-    "duration": 92.76,
-    "bridge_text": [
-      "What happens when intelligence expands ?"
-    ],
-    "segments": [
-      {
-        "type": "music",
-        "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
-        "duration": 5.5,
-        "crossfade": 1.3,
-        "volume": 1
-      },
-      {
-        "type": "audio",
+    {
+        "num": 1,
+        "title": "Meta Muse - deepDive",
         "start": 0,
-        "end": 43.4,
-        "duration": 43.4,
-        "text": "Imagine  waking  up  tomorrow,  you  know,  grabbing  your  phone,  checking  your  WhatsApp.  But  instead  of  just  seeing  messages  from  your  friends,  you  see  a  message  from,  well,  a  digital  intern,  right?  Like  an  actual  assistant.  Yeah.  Exactly.  And  it  casually  informs  you  that  while  you  were  sleeping,  it  harvested  your  tax  losses,  rebalanced  your  retirement  portfolio  to  hedge  again,  some  sudden  market  dip  drafted  a  legal  response  to  a  parking  ticket.  And  oh,  yeah,  successfully  negotiated  a  20 %  discount  on  your  internet  bill.  All  in  the  background.  Right.  It  didn't  give  you  advice  on  how  to  do  these  things.  It  just,  it  just  did  them.  It's  basically  the  difference  between  asking  for  directions  and  having  a  chauffeur  literally  drive  you  to  the  destination.  Exactly."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 7.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 43.8,
-        "end": 128.18,
-        "duration": 84.38,
-        "text": "And  that  transition,  I  mean,  it  is  completely  upending  the  technological  world  as  we  know  it  today.  Welcome  to  the  deep  dive.  And,  you  know,  before  we  really  plunge  into  the  mechanics  of  all  this,  I  want  to  invite  you,  the  listener,  to  do  something  a  little  different  right  off  the  bat  here.  Yeah.  We  want  to  set  a  very  specific  tone  today.  Right.  So  just  settle  in,  take  a  breath  and  intentionally  slow  down  with  us.  We  are  dropping  the  pace  immediately  to  establish  a  very  calm  step  by  step  educational  journey.  Because  the  concepts  we're  tackling  are  massive.  They  really  are.  You  see,  this  audio  track  you're  listening  to  right  now  is  actually  designed  to  be  the  baseline  for  a  future  video  production.  We're  putting  together.  Yeah.  So  because  of  that,  we  are  really  taking  our  time.  There's,  you  know,  there's  no  rush  here.  None  at  all.  Our  primary  goal  today  is  pure  communication  of  the  message.  We  want  to  ensure  these  huge  concepts  are  just  crystal  clear.  Absolutely.  And  I  want  to  ask  you  the  listener  to  continuously  evaluate  if  these  ideas  actually  make  sense  as  we  go.  If  they're  complex,  we're  going  to  pause.  If  we  need  to  repeat  something,  we  will.  Yeah.  If  we  need  to  reframe  an  idea  entirely,  we'll  do  that  too.  Exactly.  Because  the  landscape  we're  traversing  today  is  incredibly  dense.  And  it  really  deserves  a  measured,  deliberate  approach.  So  let's  set  the  context  for  this  journey.  We  are  exploring  a  technological  event  that  is  causing  an  absolute  earthquake  in  the  AI  industry  right  now.  We're  talking  about  metas  mues,"
-      },
-      {
-        "type": "music",
-        "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": true,
-    "hidden": false,
-    "mosaic_run_id": "4fc190b0-4abe-44e1-9ebd-916ffac6f70b"
-  },
-  {
-    "num": 2,
-    "title": "We Want to Ensure These Huge Concepts Are Just Crystal Clear",
-    "start": 92.76,
-    "end": 245.66,
-    "duration": 152.9,
-    "bridge_text": [
-      "What happens when intelligence expands in Part 4?"
-    ],
-    "segments": [
-      {
-        "type": "music",
-        "music_file": "Demilitarized Zone (Sting) - Ethan Meixsell.mp3",
-        "duration": 5.5,
-        "crossfade": 1.3,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 93.46,
-        "end": 115.22,
-        "duration": 21.76,
-        "text": "We want to ensure these huge concepts are just crystal clear. Absolutely. And I want to ask you the listener to continuously evaluate if these ideas actually make sense as we go. If they're complex, we're going to pause. If we need to repeat something, we will. Yeah. If we need to reframe an idea entirely, we'll do that too. Exactly. Because the landscape we're traversing today is incredibly dense."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 115.3,
+        "end": 92.76,
+        "duration": 92.76,
+        "bridge_text": [
+            "What happens when intelligence expands ?"
+        ],
+        "segments": [
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 5.5,
+                "crossfade": 1.3,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 0,
+                "end": 43.4,
+                "duration": 43.4,
+                "text": "Imagine  waking  up  tomorrow,  you  know,  grabbing  your  phone,  checking  your  WhatsApp.  But  instead  of  just  seeing  messages  from  your  friends,  you  see  a  message  from,  well,  a  digital  intern,  right?  Like  an  actual  assistant.  Yeah.  Exactly.  And  it  casually  informs  you  that  while  you  were  sleeping,  it  harvested  your  tax  losses,  rebalanced  your  retirement  portfolio  to  hedge  again,  some  sudden  market  dip  drafted  a  legal  response  to  a  parking  ticket.  And  oh,  yeah,  successfully  negotiated  a  20 %  discount  on  your  internet  bill.  All  in  the  background.  Right.  It  didn't  give  you  advice  on  how  to  do  these  things.  It  just,  it  just  did  them.  It's  basically  the  difference  between  asking  for  directions  and  having  a  chauffeur  literally  drive  you  to  the  destination.  Exactly."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 7.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 43.8,
+                "end": 128.18,
+                "duration": 84.38,
+                "text": "And  that  transition,  I  mean,  it  is  completely  upending  the  technological  world  as  we  know  it  today.  Welcome  to  the  deep  dive.  And,  you  know,  before  we  really  plunge  into  the  mechanics  of  all  this,  I  want  to  invite  you,  the  listener,  to  do  something  a  little  different  right  off  the  bat  here.  Yeah.  We  want  to  set  a  very  specific  tone  today.  Right.  So  just  settle  in,  take  a  breath  and  intentionally  slow  down  with  us.  We  are  dropping  the  pace  immediately  to  establish  a  very  calm  step  by  step  educational  journey.  Because  the  concepts  we're  tackling  are  massive.  They  really  are.  You  see,  this  audio  track  you're  listening  to  right  now  is  actually  designed  to  be  the  baseline  for  a  future  video  production.  We're  putting  together.  Yeah.  So  because  of  that,  we  are  really  taking  our  time.  There's,  you  know,  there's  no  rush  here.  None  at  all.  Our  primary  goal  today  is  pure  communication  of  the  message.  We  want  to  ensure  these  huge  concepts  are  just  crystal  clear.  Absolutely.  And  I  want  to  ask  you  the  listener  to  continuously  evaluate  if  these  ideas  actually  make  sense  as  we  go.  If  they're  complex,  we're  going  to  pause.  If  we  need  to  repeat  something,  we  will.  Yeah.  If  we  need  to  reframe  an  idea  entirely,  we'll  do  that  too.  Exactly.  Because  the  landscape  we're  traversing  today  is  incredibly  dense.  And  it  really  deserves  a  measured,  deliberate  approach.  So  let's  set  the  context  for  this  journey.  We  are  exploring  a  technological  event  that  is  causing  an  absolute  earthquake  in  the  AI  industry  right  now.  We're  talking  about  metas  mues,"
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": true,
+        "hidden": false,
+        "mosaic_run_id": "4fc190b0-4abe-44e1-9ebd-916ffac6f70b"
+    },
+    {
+        "num": 2,
+        "title": "We Want to Ensure These Huge Concepts Are Just Crystal Clear",
+        "start": 92.76,
         "end": 245.66,
-        "duration": 130.36,
-        "text": "And it really deserves a measured, deliberate approach. So let's set the context for this journey. We are exploring a technological event that is causing an absolute earthquake in the AI industry right now. We're talking about metas mues, which if you follow the tech sector, even casually, you've definitely felt the tremors of this. Oh, for sure. So today, we are going to tease apart two key discoveries from the research. First, we're going to look at the fundamental shift from AI that simply talks to you to AI that actually does things for you. What the industry calls the agentic paradigm. Right. And second, we are going to examine the absolutely bizarre political and corporate alliances that are forming as a direct result of this shift. Yeah. This part is fascinating. It really is. We're going to look at why on earth figures like Elon Musk and Sam Altman are suddenly, you know, joining hands. And why tech billionaires are unexpectedly resonating with Senator Bernie Sanders' pitches on data center moratoriums. It honestly sounds like a geopolitical thriller. It does, but it's pure strategic reality. So by the end of this deep dive, you are going to understand the unseen, economic and technological forces that are really shaping the future of the internet. And ideally, you'll be motivated to look at the apps you use every single day. What's app Instagram, Facebook, completely differently? Yeah. So let's unpack this. We are diving into a comprehensive piece of research today, specifically a strategic analysis of Metamuse. And to start, I think we need to completely discard our current definition of AI, right? That is the perfect place to begin, honestly. For the past few years, the public has been really conditioned to think of artificial intelligence as a very smart, very articulate chatbot. Right. Like a Q &A machine. Exactly. You type of prompt, it generates text, it's entirely reactive. You ask it for a recipe, it gives you a recipe. But the commercial deployment of Metamuse marks a fundamental transition away from that reactive text generation model. Right. So it's a shift to an economist action oriented system, an agent. But I want to really define what Metamuse actually is under the hood. Because this isn't just like a slight software update."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false,
-    "hidden": true
-  },
-  {
-    "num": 3,
-    "title": "Meta Super Intelligence Labs",
-    "start": 245.66,
-    "end": 407.62,
-    "duration": 161.96,
-    "bridge_text": [
-      "What is a headless Browser ?"
-    ],
-    "segments": [
-      {
-        "type": "music",
-        "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
-        "duration": 5.5,
-        "crossfade": 1.3,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 247.54,
-        "end": 268.12,
-        "duration": 20.58,
-        "text": "Muse  was  developed  by  MSL  met  a  super  intelligence  lab.  Right.  Meta  super  intelligence  labs.  And  this  is  a  massive  division  that  was  spun  up  after  met  a  poured  billions  of  dollars  into  a  strategic  partnership  with  scale  AI,  bring  in  heavy  hitters,  you  know,  like  Alexander  Wang  and  that  Friedman.  Yeah.  And  what  they  built  is  just  the  completely  different  species  of  software."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 269.5,
+        "duration": 152.9,
+        "bridge_text": [
+            "What happens when intelligence expands in Part 4?"
+        ],
+        "segments": [
+            {
+                "type": "music",
+                "music_file": "Demilitarized Zone (Sting) - Ethan Meixsell.mp3",
+                "duration": 5.5,
+                "crossfade": 1.3,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 93.46,
+                "end": 115.22,
+                "duration": 21.76,
+                "text": "We want to ensure these huge concepts are just crystal clear. Absolutely. And I want to ask you the listener to continuously evaluate if these ideas actually make sense as we go. If they're complex, we're going to pause. If we need to repeat something, we will. Yeah. If we need to reframe an idea entirely, we'll do that too. Exactly. Because the landscape we're traversing today is incredibly dense."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 115.3,
+                "end": 245.66,
+                "duration": 130.36,
+                "text": "And it really deserves a measured, deliberate approach. So let's set the context for this journey. We are exploring a technological event that is causing an absolute earthquake in the AI industry right now. We're talking about metas mues, which if you follow the tech sector, even casually, you've definitely felt the tremors of this. Oh, for sure. So today, we are going to tease apart two key discoveries from the research. First, we're going to look at the fundamental shift from AI that simply talks to you to AI that actually does things for you. What the industry calls the agentic paradigm. Right. And second, we are going to examine the absolutely bizarre political and corporate alliances that are forming as a direct result of this shift. Yeah. This part is fascinating. It really is. We're going to look at why on earth figures like Elon Musk and Sam Altman are suddenly, you know, joining hands. And why tech billionaires are unexpectedly resonating with Senator Bernie Sanders' pitches on data center moratoriums. It honestly sounds like a geopolitical thriller. It does, but it's pure strategic reality. So by the end of this deep dive, you are going to understand the unseen, economic and technological forces that are really shaping the future of the internet. And ideally, you'll be motivated to look at the apps you use every single day. What's app Instagram, Facebook, completely differently? Yeah. So let's unpack this. We are diving into a comprehensive piece of research today, specifically a strategic analysis of Metamuse. And to start, I think we need to completely discard our current definition of AI, right? That is the perfect place to begin, honestly. For the past few years, the public has been really conditioned to think of artificial intelligence as a very smart, very articulate chatbot. Right. Like a Q &A machine. Exactly. You type of prompt, it generates text, it's entirely reactive. You ask it for a recipe, it gives you a recipe. But the commercial deployment of Metamuse marks a fundamental transition away from that reactive text generation model. Right. So it's a shift to an economist action oriented system, an agent. But I want to really define what Metamuse actually is under the hood. Because this isn't just like a slight software update."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false,
+        "hidden": true
+    },
+    {
+        "num": 3,
+        "title": "Meta Super Intelligence Labs",
+        "start": 245.66,
         "end": 407.62,
-        "duration": 138.12,
-        "text": "The  core  engine  driving  this  is  the  Muse  Spark  1 .3  foundation  model.  And  what's  fascinating  here  is  that  this  model  was  not  trained  simply  to  predict  the  next  word  in  a  sentence,  which  is  how  traditional  chat  bots  work.  Right.  It  was  designed  specifically  for  multi -step  reasoning,  tool  coordination  and  scaling  compute  during  the  actual  execution  phase.  Okay.  Wow.  And  the  research  highlights  that  it  operates  on  what  is  called  a  Pareto  efficient  cost  frontier.  Okay.  Let's  pause  and  translate  Pareto  efficient  cost  frontier.  Because  my  immediate  thought  when  I  hear  that  is  just,  oh,  it's  cheap.  It's  a  bit  more  nuanced  than  that.  Right.  It  means  they  found  the  absolute  mathematical  sweet  spot  where  they  are  getting  extreme  high  end  performance  without  like  burning  a  hole  in  their  server  budget.  Is  the  optimal  balance?  Yes.  In  economics  and  engineering,  a  Pareto  efficient  state  basically  means  you  cannot  make  one  variable  better  without  making  another  variable  worse.  Okay.  I  fall.  So  in  this  context,  they  have  pushed  the  capability  of  the  AI  to  the  absolute  maximum  limit  before  the  computational  cost  just  skyrocket  exponentially.  And  the  research  really  backs  us  up  with  some  heavy  benchmarks.  It  notes  that  mu  spark  1 .3  is  beating  other  massive  frontier  models  on  incredibly  complex  tasks.  They  specifically  cite  the  Toth  Rebench  banking  evaluations.  And  the  GDP  value  of  you  to  test.  Right.  Let's  contextualize  those  benchmarks  for  a  second  because  they  perfectly  illustrate  the  difference  between  talking  and  doing.  We  do.  The  Toth  Rebench  banking  evaluation  isn't  a  test  of  whether  the  AI  can,  you  know,  write  a  good  essay  about  banking.  Obviously  not.  Right.  It  tests  whether  the  AI  can  securely  interface  with  a  simulated  banking  API  query  a  massive  database  of  transaction  histories,  flag  anomalous  spending  patterns  and  then  generate  a  formatted  compliance  report.  Wow.  And  it  does  all  of  this  without  human  intervention.  And  it  does  all  of  that  with  much  lower  token  generation  expenses  than  its  competitors.  Yeah.  Which  means  it's  smarter,  but  it's  fundamentally  cheaper  to  run.  Exactly.  Which  is  why  they  can  deploy  it  to  billions  of  people.  Right.  But  let's  get  into  the  actual  mechanics  of  how  it  navigates  the  web.  Because  the  research  says  Muse  drives  headless  browsers  and  parses  the  dog.  The  document  object  model.  Yeah.  Now  I  know  what  a  web  browser  is  obviously.  But  how  is  an  AI  driving  a  headless  one?  What  does  that  even  mean?"
-      },
-      {
-        "type": "music",
-        "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": true,
-    "text": "Muse was developed by MSL met a super intelligence lab. Right. Meta super intelligence labs.\n\nAnd this is a massive division that was spun up after met a poured billions of dollars into a strategic partnership with scale AI, bring in heavy hitters, you know, like Alexander Wang and that Friedman. Yeah. And what they built is just the completely different species of software.\n\n3 foundation model. And what's fascinating here is that this model was not trained simply to predict the next word in a sentence, which is how traditional chat bots work.\n\nRight. It was designed specifically for multi -step reasoning, tool coordination and scaling compute during the actual execution phase. Okay.\n\nWow. And the research highlights that it operates on what is called a Pareto efficient cost frontier.\n\nOkay. Let's pause and translate Pareto efficient cost frontier. Because my immediate thought when I hear that is just, oh, it's cheap.\n\nIt's a bit more nuanced than that. Right. It means they found the absolute mathematical sweet spot where they are getting extreme high end performance without like burning a hole in their server budget.\n\nIs the optimal balance? Yes. In economics and engineering, a Pareto efficient state basically means you cannot make one variable better without making another variable worse.\n\nOkay. I fall. So in this context, they have pushed the capability of the AI to the absolute maximum limit before the computational cost just skyrocket exponentially.\n\nAnd the research really backs us up with some heavy benchmarks. 3 is beating other massive frontier models on incredibly complex tasks. They specifically cite the Toth Rebench banking evaluations.\n\nAnd the GDP value of you to test. Right. Let's contextualize those benchmarks for a second because they perfectly illustrate the difference between talking and doing.\n\nWe do. The Toth Rebench banking evaluation isn't a test of whether the AI can, you know, write a good essay about banking. Obviously not.\n\nRight. It tests whether the AI can securely interface with a simulated banking API query a massive database of transaction histories, flag anomalous spending patterns and then generate a formatted compliance report. Wow.\n\nAnd it does all of this without human intervention. And it does all of that with much lower token generation expenses than its competitors.\n\nYeah. Which means it's smarter, but it's fundamentally cheaper to run. Exactly.\n\nWhich is why they can deploy it to billions of people. Right. But let's get into the actual mechanics of how it navigates the web.\n\nBecause the research says Muse drives headless browsers and parses the dog. The document object model. Yeah.\n\nNow I know what a web browser is obviously. But how is an AI driving a headless one? What does that even mean !",
-    "mosaic_run_id": "68348348-b670-4f35-bcfa-d5687f0c27d9"
-  },
-  {
-    "num": 4,
-    "title": "Headless Browser",
-    "start": 408.14,
-    "end": 564.06,
-    "duration": 164.84,
-    "bridge_text": [
-      "What is a Secure Virtual Machine ?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 161.96,
+        "bridge_text": [
+            "What is a headless Browser ?"
+        ],
+        "segments": [
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 5.5,
+                "crossfade": 1.3,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 247.54,
+                "end": 268.12,
+                "duration": 20.58,
+                "text": "Muse  was  developed  by  MSL  met  a  super  intelligence  lab.  Right.  Meta  super  intelligence  labs.  And  this  is  a  massive  division  that  was  spun  up  after  met  a  poured  billions  of  dollars  into  a  strategic  partnership  with  scale  AI,  bring  in  heavy  hitters,  you  know,  like  Alexander  Wang  and  that  Friedman.  Yeah.  And  what  they  built  is  just  the  completely  different  species  of  software."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 269.5,
+                "end": 407.62,
+                "duration": 138.12,
+                "text": "The  core  engine  driving  this  is  the  Muse  Spark  1 .3  foundation  model.  And  what's  fascinating  here  is  that  this  model  was  not  trained  simply  to  predict  the  next  word  in  a  sentence,  which  is  how  traditional  chat  bots  work.  Right.  It  was  designed  specifically  for  multi -step  reasoning,  tool  coordination  and  scaling  compute  during  the  actual  execution  phase.  Okay.  Wow.  And  the  research  highlights  that  it  operates  on  what  is  called  a  Pareto  efficient  cost  frontier.  Okay.  Let's  pause  and  translate  Pareto  efficient  cost  frontier.  Because  my  immediate  thought  when  I  hear  that  is  just,  oh,  it's  cheap.  It's  a  bit  more  nuanced  than  that.  Right.  It  means  they  found  the  absolute  mathematical  sweet  spot  where  they  are  getting  extreme  high  end  performance  without  like  burning  a  hole  in  their  server  budget.  Is  the  optimal  balance?  Yes.  In  economics  and  engineering,  a  Pareto  efficient  state  basically  means  you  cannot  make  one  variable  better  without  making  another  variable  worse.  Okay.  I  fall.  So  in  this  context,  they  have  pushed  the  capability  of  the  AI  to  the  absolute  maximum  limit  before  the  computational  cost  just  skyrocket  exponentially.  And  the  research  really  backs  us  up  with  some  heavy  benchmarks.  It  notes  that  mu  spark  1 .3  is  beating  other  massive  frontier  models  on  incredibly  complex  tasks.  They  specifically  cite  the  Toth  Rebench  banking  evaluations.  And  the  GDP  value  of  you  to  test.  Right.  Let's  contextualize  those  benchmarks  for  a  second  because  they  perfectly  illustrate  the  difference  between  talking  and  doing.  We  do.  The  Toth  Rebench  banking  evaluation  isn't  a  test  of  whether  the  AI  can,  you  know,  write  a  good  essay  about  banking.  Obviously  not.  Right.  It  tests  whether  the  AI  can  securely  interface  with  a  simulated  banking  API  query  a  massive  database  of  transaction  histories,  flag  anomalous  spending  patterns  and  then  generate  a  formatted  compliance  report.  Wow.  And  it  does  all  of  this  without  human  intervention.  And  it  does  all  of  that  with  much  lower  token  generation  expenses  than  its  competitors.  Yeah.  Which  means  it's  smarter,  but  it's  fundamentally  cheaper  to  run.  Exactly.  Which  is  why  they  can  deploy  it  to  billions  of  people.  Right.  But  let's  get  into  the  actual  mechanics  of  how  it  navigates  the  web.  Because  the  research  says  Muse  drives  headless  browsers  and  parses  the  dog.  The  document  object  model.  Yeah.  Now  I  know  what  a  web  browser  is  obviously.  But  how  is  an  AI  driving  a  headless  one?  What  does  that  even  mean?"
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": true,
+        "text": "Muse was developed by MSL met a super intelligence lab. Right. Meta super intelligence labs.\n\nAnd this is a massive division that was spun up after met a poured billions of dollars into a strategic partnership with scale AI, bring in heavy hitters, you know, like Alexander Wang and that Friedman. Yeah. And what they built is just the completely different species of software.\n\n3 foundation model. And what's fascinating here is that this model was not trained simply to predict the next word in a sentence, which is how traditional chat bots work.\n\nRight. It was designed specifically for multi -step reasoning, tool coordination and scaling compute during the actual execution phase. Okay.\n\nWow. And the research highlights that it operates on what is called a Pareto efficient cost frontier.\n\nOkay. Let's pause and translate Pareto efficient cost frontier. Because my immediate thought when I hear that is just, oh, it's cheap.\n\nIt's a bit more nuanced than that. Right. It means they found the absolute mathematical sweet spot where they are getting extreme high end performance without like burning a hole in their server budget.\n\nIs the optimal balance? Yes. In economics and engineering, a Pareto efficient state basically means you cannot make one variable better without making another variable worse.\n\nOkay. I fall. So in this context, they have pushed the capability of the AI to the absolute maximum limit before the computational cost just skyrocket exponentially.\n\nAnd the research really backs us up with some heavy benchmarks. 3 is beating other massive frontier models on incredibly complex tasks. They specifically cite the Toth Rebench banking evaluations.\n\nAnd the GDP value of you to test. Right. Let's contextualize those benchmarks for a second because they perfectly illustrate the difference between talking and doing.\n\nWe do. The Toth Rebench banking evaluation isn't a test of whether the AI can, you know, write a good essay about banking. Obviously not.\n\nRight. It tests whether the AI can securely interface with a simulated banking API query a massive database of transaction histories, flag anomalous spending patterns and then generate a formatted compliance report. Wow.\n\nAnd it does all of this without human intervention. And it does all of that with much lower token generation expenses than its competitors.\n\nYeah. Which means it's smarter, but it's fundamentally cheaper to run. Exactly.\n\nWhich is why they can deploy it to billions of people. Right. But let's get into the actual mechanics of how it navigates the web.\n\nBecause the research says Muse drives headless browsers and parses the dog. The document object model. Yeah.\n\nNow I know what a web browser is obviously. But how is an AI driving a headless one? What does that even mean !",
+        "mosaic_run_id": "68348348-b670-4f35-bcfa-d5687f0c27d9"
+    },
+    {
+        "num": 4,
+        "title": "Headless Browser",
         "start": 408.14,
-        "end": 429.98,
-        "duration": 21.84,
-        "text": "Well, when you or I use the internet, we use a visual browser, right? Like Chrome or Safari. We actually see buttons and images and text. Right. The stuff on the screen. Yeah. A headless browser is a web browser without that graphical user interface. It is purely code. So when Muse accesses a website, it doesn't look at the screen the way we do. It ingests the DOM, the underlying structural code of the website."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 430.06,
         "end": 564.06,
-        "duration": 134,
-        "text": "So it's essentially like it's reading the matrix. It sees the raw code that makes up the submit button and mathematically triggers it. Rather than like moving it digital mouse and clicking it. Exactly. And by parsing the DOM, Muse can navigate really complex web forms, extract data from communication logs, negotiate transactions and complete payments across entirely disconnected digital services. At machines beat. Yes. At machines beat. Okay, let me try to put a real world analogy on this just to make sure we are all visualizing the scale of this shift. I think that's a great idea. So the transition from a conversational AI to an agentic AI is like the difference between a dictionary and a highly capable employee. Okay, I like where this is going. A conversational AI, the chat bots we've used for the last few years, is like a really, really smart digital dictionary. You ask it a question, it gives you brilliant answer, and then it goes to sleep. Right. It waits for your next prompt. Exactly. But an agentic AI like Metamuse, that is like hiring a digital intern, handing them a corporate credit card and saying, Hey, go sort out my life, book my flights, handle my emails and negotiate my bills while I sleep. That is an incredibly accurate way to frame it. And the while I sleep part, that is the crucial differentiator here. The autonomy. Exactly. It's asynchronous. It does not need you staring at the screen, holding its hand for it to function. It operates on a continuous timeline. But wait, this brings up a massive red flag for me. Oh, I'm sure it does. If this digital intern is just running off by itself on the open internet, parsing code, filling out forms and holding onto my credit card, I mean, how does it not break everything? It's a very valid concern. Right. Like what happens if it accidentally clicks a malicious link in a headless browser? How does it not accidentally rack up a massive bill or download malware that compromises my entire network? That is the exact right question to ask. And honestly, it is the primary engineering hurdle for agentic AI. But what is fascinating here is how meta actually isolated that vulnerability. How so? Well, MUSE is not running on your smartphone's processor. And it's not running in a shared web tab on your laptop, where it could access your local files. It runs in something called a dedicated MUSE secure VM. VM meaning virtual machine. Correct."
-      },
-      {
-        "type": "music",
-        "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": true,
-    "mosaic_run_id": "ef06a047-1bd4-4c35-a4a5-486c8442500a"
-  },
-  {
-    "num": 5,
-    "title": "But How Secure Are We Talking",
-    "start": 564.6,
-    "end": 693.48,
-    "duration": 137.8,
-    "bridge_text": [
-      "What happens when intelligence expands in Part 10?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 164.84,
+        "bridge_text": [
+            "What is a Secure Virtual Machine ?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 408.14,
+                "end": 429.98,
+                "duration": 21.84,
+                "text": "Well, when you or I use the internet, we use a visual browser, right? Like Chrome or Safari. We actually see buttons and images and text. Right. The stuff on the screen. Yeah. A headless browser is a web browser without that graphical user interface. It is purely code. So when Muse accesses a website, it doesn't look at the screen the way we do. It ingests the DOM, the underlying structural code of the website."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 430.06,
+                "end": 564.06,
+                "duration": 134,
+                "text": "So it's essentially like it's reading the matrix. It sees the raw code that makes up the submit button and mathematically triggers it. Rather than like moving it digital mouse and clicking it. Exactly. And by parsing the DOM, Muse can navigate really complex web forms, extract data from communication logs, negotiate transactions and complete payments across entirely disconnected digital services. At machines beat. Yes. At machines beat. Okay, let me try to put a real world analogy on this just to make sure we are all visualizing the scale of this shift. I think that's a great idea. So the transition from a conversational AI to an agentic AI is like the difference between a dictionary and a highly capable employee. Okay, I like where this is going. A conversational AI, the chat bots we've used for the last few years, is like a really, really smart digital dictionary. You ask it a question, it gives you brilliant answer, and then it goes to sleep. Right. It waits for your next prompt. Exactly. But an agentic AI like Metamuse, that is like hiring a digital intern, handing them a corporate credit card and saying, Hey, go sort out my life, book my flights, handle my emails and negotiate my bills while I sleep. That is an incredibly accurate way to frame it. And the while I sleep part, that is the crucial differentiator here. The autonomy. Exactly. It's asynchronous. It does not need you staring at the screen, holding its hand for it to function. It operates on a continuous timeline. But wait, this brings up a massive red flag for me. Oh, I'm sure it does. If this digital intern is just running off by itself on the open internet, parsing code, filling out forms and holding onto my credit card, I mean, how does it not break everything? It's a very valid concern. Right. Like what happens if it accidentally clicks a malicious link in a headless browser? How does it not accidentally rack up a massive bill or download malware that compromises my entire network? That is the exact right question to ask. And honestly, it is the primary engineering hurdle for agentic AI. But what is fascinating here is how meta actually isolated that vulnerability. How so? Well, MUSE is not running on your smartphone's processor. And it's not running in a shared web tab on your laptop, where it could access your local files. It runs in something called a dedicated MUSE secure VM. VM meaning virtual machine. Correct."
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": true,
+        "mosaic_run_id": "f575f247-e384-45ab-aec9-1660d7a16fcd"
+    },
+    {
+        "num": 5,
+        "title": "Muse Sentinel",
         "start": 564.6,
-        "end": 583.7,
-        "duration": 19.1,
-        "text": "But how secure are we talking? Because if I get a virus on a virtual machine on my desktop, it can still ruin my day. It is entirely separated from your personal hardware. The research details that it is a Debian system and spawn cloud container. Okay, you're going to have to unpack system dense bond for us because that sounds like alphabet soup. Fair enough."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 583.78,
         "end": 693.48,
-        "duration": 109.7,
-        "text": "Think of it as a highly isolated windowless vault, located deep inside a meta data center. Okay, a vault. Yeah, system dense bond is a virtualization tool that creates a namespace container. It basically tricks the AI into thinking it has an entire computer all to itself. Oh, interesting. But in reality, it is locked inside a heavily partitioned segment of a single server. It cannot see outside its container. It cannot access the underlying server architecture. And it's completely separated from every other user's AI container. So it's basically like a secure digital apartment, built exclusively for your specific digital intern precisely. And it is heavily police police. Yes, the research describes a supervisor process called Sentinel that actively watches this container. Okay, so Sentinel is like the security guard. Right. Sentinel acts as the only door in or out of that secure room. And it uses kernel level tracking, specifically something called EBPF tracing to monitor every single action the AI takes. Okay, I've actually seen EBPF mentioned inside of security research before. Oh, you have. Yeah, but how does that actually work in this specific context? Because if the AI is moving at machine speed, parsing doms and milliseconds, how does the security guard catch a bad command before it happens? It's brilliant. Actually extended Berkeley packet filter or EBPF is revolutionary because it operates directly inside the operating systems kernel. The kernel being the absolute core of the system. Exactly. The very core usually security software sits in what we call user space, meaning an application has to ask the kernel for permission to do something. The kernel does it and then the security software tries to catch it after the fact. Okay, so user space security is sort of like a security guard reviewing the camera footage after a bank robbery already happened. That's a perfect analogy."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 6,
-    "title": "That's Incredible",
-    "start": 694.12,
-    "end": 856.62,
-    "duration": 171.42,
-    "bridge_text": [
-      "What happens when intelligence expands in Part 12?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 137.8,
+        "bridge_text": [
+            "What exactly is EBPF"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 564.6,
+                "end": 583.7,
+                "duration": 19.1,
+                "text": "But how secure are we talking? Because if I get a virus on a virtual machine on my desktop, it can still ruin my day. It is entirely separated from your personal hardware. The research details that it is a Debian system and spawn cloud container. Okay, you're going to have to unpack system dense bond for us because that sounds like alphabet soup. Fair enough."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 583.78,
+                "end": 693.48,
+                "duration": 109.7,
+                "text": "Think of it as a highly isolated windowless vault, located deep inside a meta data center. Okay, a vault. Yeah, system dense bond is a virtualization tool that creates a namespace container. It basically tricks the AI into thinking it has an entire computer all to itself. Oh, interesting. But in reality, it is locked inside a heavily partitioned segment of a single server. It cannot see outside its container. It cannot access the underlying server architecture. And it's completely separated from every other user's AI container. So it's basically like a secure digital apartment, built exclusively for your specific digital intern precisely. And it is heavily police police. Yes, the research describes a supervisor process called Sentinel that actively watches this container. Okay, so Sentinel is like the security guard. Right. Sentinel acts as the only door in or out of that secure room. And it uses kernel level tracking, specifically something called EBPF tracing to monitor every single action the AI takes. Okay, I've actually seen EBPF mentioned inside of security research before. Oh, you have. Yeah, but how does that actually work in this specific context? Because if the AI is moving at machine speed, parsing doms and milliseconds, how does the security guard catch a bad command before it happens? It's brilliant. Actually extended Berkeley packet filter or EBPF is revolutionary because it operates directly inside the operating systems kernel. The kernel being the absolute core of the system. Exactly. The very core usually security software sits in what we call user space, meaning an application has to ask the kernel for permission to do something. The kernel does it and then the security software tries to catch it after the fact. Okay, so user space security is sort of like a security guard reviewing the camera footage after a bank robbery already happened. That's a perfect analogy."
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": true,
+        "mosaic_run_id": "83577e26-9fe4-436f-9377-a15408b546c8"
+    },
+    {
+        "num": 6,
+        "title": "Linux EBPF",
         "start": 694.12,
-        "end": 712.3,
-        "duration": 18.18,
-        "text": "But EBPF allows Sentinel to attach micro programs directly to the kernel's network sockets and system calls without changing the kernel source code or rebooting the server. Wow. So it means Sentinel is inspecting the AI's commands at the exact micro second they hit the hardware layer. That's incredible."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 712.38,
         "end": 856.62,
-        "duration": 144.24,
-        "text": "If the AI tries to execute an unauthorized command or attempts to navigate to a known malicious IP address, Sentinel drops the network packet and blocks the action at the root level before it even executes. If like having a security guard who can literally freeze time the millisecond, the intern reaches for the wrong door handle. Exactly. Which, you know, when you're talking about delegating incredibly complex multi -step digital workflows is absolutely necessary. 100%. You know, speaking of delegating complex multi -step digital workflows, but actually naturally makes me think about how we handle the intensely complex workflows required to produce these very deep dyes for you. It really is a rigorous process, very much mirroring a multi -step agentic workflow itself. Wouldn't you say it totally does. And I want to pull back the curtain for a second on how this show actually comes to life because it relies on the same kind of autonomous systems we're talking about today. We couldn't do it without them. Right. It starts with you, the listeners. You send us open research through our open review platform at SHU TII dot com. That's SHU TRI dot com. Once we get that research, we absolutely obsess over it. We map out the raw data, find the hidden themes, the connections. And then we unleash Gemini Pro to go full internet detective. We have it autonomously chase down citations, parse complex documents and pull comparative data. But just like Muse needs a Sentinel supervisor, we have to tame those AI tangents with very active, precise prompting. Right. We act as a Sentinel. We validate everything across thousands of signals to ensure absolute accuracy. And then comes the human element. We handcraft and polish the research, painfully refining every single word until we can compress it into the tight no fluff audio you're hearing right now. But that is just the audio side. Yeah. For the video side, we designed the sound, the mood, the visual atmosphere. We were building motion graphics with minimalist, clean, high contrast typography. We use simple geometric accents, subtle kinetic text reveals and calm, premium pacing. We focus entirely on strong visual hierarchy and white space to let the information really breathe. And to execute all of that, we use Mosaic. Mosaic is an absolute game changer when it comes to video editing. It allows us to take these massive, complex workflows and turn them into something beautiful, calm and totally distraction free. It's a layered process, much like the layered execution environments. Muse relies upon exactly."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 7,
-    "title": "So Bringing This Back to Meta Muse",
-    "start": 857.62,
-    "end": 1015.64,
-    "duration": 166.94,
-    "bridge_text": [
-      "What happens when intelligence expands in Part 14?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 171.42,
+        "bridge_text": [
+            "What happens when intelligence expands in Part 12?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 694.12,
+                "end": 712.3,
+                "duration": 18.18,
+                "text": "But EBPF allows Sentinel to attach micro programs directly to the kernel's network sockets and system calls without changing the kernel source code or rebooting the server. Wow. So it means Sentinel is inspecting the AI's commands at the exact micro second they hit the hardware layer. That's incredible."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 712.38,
+                "end": 856.62,
+                "duration": 144.24,
+                "text": "If the AI tries to execute an unauthorized command or attempts to navigate to a known malicious IP address, Sentinel drops the network packet and blocks the action at the root level before it even executes. If like having a security guard who can literally freeze time the millisecond, the intern reaches for the wrong door handle. Exactly. Which, you know, when you're talking about delegating incredibly complex multi -step digital workflows is absolutely necessary. 100%. You know, speaking of delegating complex multi -step digital workflows, but actually naturally makes me think about how we handle the intensely complex workflows required to produce these very deep dyes for you. It really is a rigorous process, very much mirroring a multi -step agentic workflow itself. Wouldn't you say it totally does. And I want to pull back the curtain for a second on how this show actually comes to life because it relies on the same kind of autonomous systems we're talking about today. We couldn't do it without them. Right. It starts with you, the listeners. You send us open research through our open review platform at SHU TII dot com. That's SHU TRI dot com. Once we get that research, we absolutely obsess over it. We map out the raw data, find the hidden themes, the connections. And then we unleash Gemini Pro to go full internet detective. We have it autonomously chase down citations, parse complex documents and pull comparative data. But just like Muse needs a Sentinel supervisor, we have to tame those AI tangents with very active, precise prompting. Right. We act as a Sentinel. We validate everything across thousands of signals to ensure absolute accuracy. And then comes the human element. We handcraft and polish the research, painfully refining every single word until we can compress it into the tight no fluff audio you're hearing right now. But that is just the audio side. Yeah. For the video side, we designed the sound, the mood, the visual atmosphere. We were building motion graphics with minimalist, clean, high contrast typography. We use simple geometric accents, subtle kinetic text reveals and calm, premium pacing. We focus entirely on strong visual hierarchy and white space to let the information really breathe. And to execute all of that, we use Mosaic. Mosaic is an absolute game changer when it comes to video editing. It allows us to take these massive, complex workflows and turn them into something beautiful, calm and totally distraction free. It's a layered process, much like the layered execution environments. Muse relies upon exactly."
+            },
+            {
+                "type": "music",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 7,
+        "title": "So Bringing This Back to Meta Muse",
         "start": 857.62,
-        "end": 877.2,
-        "duration": 19.58,
-        "text": "So bringing this back to Meta Muse. Now that we understand the architecture that Muse is this isolated digital worker living in a secure, kernel monitored cloud container. Let's move to the actual execution. What is it actually doing? Right. What is it doing for the average person? Because the research highlights some extremely high consequence workflows."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 877.28,
         "end": 1015.64,
-        "duration": 138.36,
-        "text": "We aren't talking about asking an AI to summarize a PDF or write a polite email to a coworker anymore. No, we are far beyond that. We are talking about heavy duty tasks involving money and media. Let's examine the financial application first. Okay. So the research details, a dominant use case called autonomous quantitative portfolio management, which sounds very intense. It is. Muse is fully capable of acting as your personal quantitative hedge fund manager. You can securely connect it to your brokerage account via encrypted APIs, provide it with seed capital and basically instruct it to build a dynamically balanced tax -efficient portfolio. And it isn't just like throwing darts at a board or picking stocks based on Reddit trends, right? Not at all. The research mentions it can focus on the NASDAQ 100 based on very specific real -time quantitative metrics. Yes. It continuously monitors securities and exchange commission filings, real -time analyst revisions, global supply chain disruptions and market movements. It just ingest all of it. All of it. It parses this data to evaluate metrics like the peg ratio, which we will actually analyze in depth a little later to autonomously rebalance your portfolio. Okay. It will systematically underweight stocks that its models deem overvalued and overweight stocks that show sustainable growth projections. And it does this entirely inside a secure VM executing trades via API. And the tax loss harvesting capability absolutely blew my mind when I read this. It's incredibly sophisticated. For those who don't know, tax loss harvesting is a strategy usually reserved for wealthy individuals with dedicated financial advisors. How is the AI actually executing this? Mechanically, the agent monitors your capital gains and losses across your entire portfolio on a continuous basis. When a specific asset dips in value, mues autonomously sells that asset to realize the loss. Okay, to get the deduction right. It then immediately reinvest that capital into a smimler, but not identical asset to maintain your portfolio's overall market exposure without violating the IRS watch sale rules. So it's basically creating a paper loss that you can use to offset your actual tax burden at the end of the year, saving you real money. And it does it at the exact mathematical peak of efficiency with zero human intervention required. And here's the wildest parts of me."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 8,
-    "title": "I Love That Term",
-    "start": 1016.34,
-    "end": 1164.28,
-    "duration": 156.86,
-    "bridge_text": [
-      "What happens when intelligence expands in Part 16?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 166.94,
+        "bridge_text": [
+            "What happens when intelligence expands in Part 14?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 857.62,
+                "end": 877.2,
+                "duration": 19.58,
+                "text": "So bringing this back to Meta Muse. Now that we understand the architecture that Muse is this isolated digital worker living in a secure, kernel monitored cloud container. Let's move to the actual execution. What is it actually doing? Right. What is it doing for the average person? Because the research highlights some extremely high consequence workflows."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 877.28,
+                "end": 1015.64,
+                "duration": 138.36,
+                "text": "We aren't talking about asking an AI to summarize a PDF or write a polite email to a coworker anymore. No, we are far beyond that. We are talking about heavy duty tasks involving money and media. Let's examine the financial application first. Okay. So the research details, a dominant use case called autonomous quantitative portfolio management, which sounds very intense. It is. Muse is fully capable of acting as your personal quantitative hedge fund manager. You can securely connect it to your brokerage account via encrypted APIs, provide it with seed capital and basically instruct it to build a dynamically balanced tax -efficient portfolio. And it isn't just like throwing darts at a board or picking stocks based on Reddit trends, right? Not at all. The research mentions it can focus on the NASDAQ 100 based on very specific real -time quantitative metrics. Yes. It continuously monitors securities and exchange commission filings, real -time analyst revisions, global supply chain disruptions and market movements. It just ingest all of it. All of it. It parses this data to evaluate metrics like the peg ratio, which we will actually analyze in depth a little later to autonomously rebalance your portfolio. Okay. It will systematically underweight stocks that its models deem overvalued and overweight stocks that show sustainable growth projections. And it does this entirely inside a secure VM executing trades via API. And the tax loss harvesting capability absolutely blew my mind when I read this. It's incredibly sophisticated. For those who don't know, tax loss harvesting is a strategy usually reserved for wealthy individuals with dedicated financial advisors. How is the AI actually executing this? Mechanically, the agent monitors your capital gains and losses across your entire portfolio on a continuous basis. When a specific asset dips in value, mues autonomously sells that asset to realize the loss. Okay, to get the deduction right. It then immediately reinvest that capital into a smimler, but not identical asset to maintain your portfolio's overall market exposure without violating the IRS watch sale rules. So it's basically creating a paper loss that you can use to offset your actual tax burden at the end of the year, saving you real money. And it does it at the exact mathematical peak of efficiency with zero human intervention required. And here's the wildest parts of me."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 8,
+        "title": "I Love That Term",
         "start": 1016.34,
-        "end": 1039.02,
-        "duration": 22.68,
-        "text": "It doesn't force you to log into some clunky obscure financial portal to see what it did. No, it utilizes what the research calls ambient feed reporting ambient feed reporting. I love that term. The AI synthesizes its actions and drops unobtrusive highly visual performance updates directly into your WhatsApp direct messages or your Instagram feed. Exactly where your attention already is precisely."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 1039.1,
         "end": 1164.28,
-        "duration": 125.18,
-        "text": "It comes to you, but it's not just finances it. The research also highlights the cross platform creative use case, which I think is going to fundamentally change the entire creator economy. This is where mues interfaces with the social layer. The agent can be granted permission to access your raw, unedited footage residing in your Facebook or Instagram cloud albums. So just to be clear, if I go on vacation and shoot a hundred random shaky clips on my phone, they just sing to the cloud. What does mues actually do with them? Mues parses the visual DOM of those video files. It understands the context. It identifies the aesthetic highlights and autonomously sends that raw footage to creative processing platforms like mosaic, for instance. Exactly. It can synthesize B -roll, generate contextual infographics, apply trending audio tracks, and then natively schedule and publish that Polish content across YouTube shorts, Instagram reels and TikTok. And it optimizes the posting times for a maximum algorithmic engagement too. Yes, all autonomously. It's literally a full time video editor and social media manager living inside your phone. But this brings me to a massive point of friction. I can guess what it is. I can almost hear you, the listener saying exactly what I said when I first read this. I completely get letting an AI edit my vacation videos. If it messes up a TikTok transition, who cares? Right. Low stakes. But letting a bot harvest tax losses and trade stocks, would you honestly give a piece of software the keys to your retirement account? A hallucination or a bad line of code could wipe out your entire life savings? That is the natural human friction point with autonomous agents. Trust is not simply given. It must be structurally earned. And the research addresses this directly with a deployment strategy called progressive capital allocation, progressive capital allocation. Let's break that down because I imagine it's the only way people will actually adopt this kind of tech. The system is designed to build trust incrementally over an extended period. You do not hand over your life savings or your primary 401k on day one. Obviously not. The model encourages users to seed the agent with a micro portfolio, say, $500."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 9,
-    "title": "You Treat it Like a Probationary Hire",
-    "start": 1164.96,
-    "end": 1323.34,
-    "duration": 167.3,
-    "bridge_text": [
-      "What happens when intelligence expands in Part 18?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 156.86,
+        "bridge_text": [
+            "What happens when intelligence expands in Part 16?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 1016.34,
+                "end": 1039.02,
+                "duration": 22.68,
+                "text": "It doesn't force you to log into some clunky obscure financial portal to see what it did. No, it utilizes what the research calls ambient feed reporting ambient feed reporting. I love that term. The AI synthesizes its actions and drops unobtrusive highly visual performance updates directly into your WhatsApp direct messages or your Instagram feed. Exactly where your attention already is precisely."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 1039.1,
+                "end": 1164.28,
+                "duration": 125.18,
+                "text": "It comes to you, but it's not just finances it. The research also highlights the cross platform creative use case, which I think is going to fundamentally change the entire creator economy. This is where mues interfaces with the social layer. The agent can be granted permission to access your raw, unedited footage residing in your Facebook or Instagram cloud albums. So just to be clear, if I go on vacation and shoot a hundred random shaky clips on my phone, they just sing to the cloud. What does mues actually do with them? Mues parses the visual DOM of those video files. It understands the context. It identifies the aesthetic highlights and autonomously sends that raw footage to creative processing platforms like mosaic, for instance. Exactly. It can synthesize B -roll, generate contextual infographics, apply trending audio tracks, and then natively schedule and publish that Polish content across YouTube shorts, Instagram reels and TikTok. And it optimizes the posting times for a maximum algorithmic engagement too. Yes, all autonomously. It's literally a full time video editor and social media manager living inside your phone. But this brings me to a massive point of friction. I can guess what it is. I can almost hear you, the listener saying exactly what I said when I first read this. I completely get letting an AI edit my vacation videos. If it messes up a TikTok transition, who cares? Right. Low stakes. But letting a bot harvest tax losses and trade stocks, would you honestly give a piece of software the keys to your retirement account? A hallucination or a bad line of code could wipe out your entire life savings? That is the natural human friction point with autonomous agents. Trust is not simply given. It must be structurally earned. And the research addresses this directly with a deployment strategy called progressive capital allocation, progressive capital allocation. Let's break that down because I imagine it's the only way people will actually adopt this kind of tech. The system is designed to build trust incrementally over an extended period. You do not hand over your life savings or your primary 401k on day one. Obviously not. The model encourages users to seed the agent with a micro portfolio, say, $500."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 9,
+        "title": "You Treat it Like a Probationary Hire",
         "start": 1164.96,
-        "end": 1185.26,
-        "duration": 20.3,
-        "text": "You give it this modest discretionary capital and then you simply observe it. You treat it like a probationary hire. You don't give the new guy the million dollar enterprise account on his first day. You give him the small account and see if he panics when the market drops. That's a perfect way to put it. You evaluate its rebalancing decisions over several financial quarters."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 1185.34,
         "end": 1323.34,
-        "duration": 138,
-        "text": "You watch how it executes tax loss harvesting during a market correction. You test its metal. Right. The system requires the AI to explicitly prove its execution discipline and risk management to you. Only after a sustained track record of success do users typically authorize increased capital allocation. OK, that makes total sense for trading stocks inside a closed broker, deco system. But what about when it actually buys things on the open web like retail transactions? Yeah, like if it's negotiating my internet bill or buying a flight on Delta. If it's parsing doms and filling out checkout forms, how is that secure? I am not letting an AI type my actual physical credit card number into a hundred different random websites. And you wouldn't have to the research highlights met as deep infrastructural integration with stripe link for exactly this purpose. OK, how does that work? When Muse needs to settle a real world transaction, it does not pass your physical credit card number around the web. It utilizes the stripe API to provision single use merchant scoped virtual credit cards. Merchant scoped. What does that actually mean in practice? It means if Muse decides to book a flight on Delta Airlines, it generates a unique 16 digit credit card number that is mathematically locked to two specific conditions. OK. First, it can only be charged for the exact amount of the flight. Second, it can only be successfully processed by Delta specific merchant ID. Oh, wow. So even if the AI gets confused and types the number into the wrong website or if a hacker somehow intercepts the headless browser session, the card is completely useless to anyone else. Precisely. It will decline everywhere else. And furthermore, it comes with built in automated buyer protections like chargebacks. Yes. If the AI purchases a physical item and the tracking API registers a package loss, the AI can autonomously initiate a chargeback protocol. It creates a hermetically sealed financial loop where the user is entirely insulated from fraud. I really want to ask you the listener to pause and think about how this changes your fundamental relationship with software. For the last 30 years, computing is meant you going to a screen, logging into a dashboard, navigating menus and pulling all the levers yourself a very manual process. Right. With this agentic paradigm, you aren't logging into a dashboard anymore."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 10,
-    "title": "It is a Complete Inversion of the User Interface",
-    "start": 1323.96,
-    "end": 1448.08,
-    "duration": 133.04,
-    "bridge_text": [
-      "What happens when intelligence expands in Part 20?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 167.3,
+        "bridge_text": [
+            "What happens when intelligence expands in Part 18?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 1164.96,
+                "end": 1185.26,
+                "duration": 20.3,
+                "text": "You give it this modest discretionary capital and then you simply observe it. You treat it like a probationary hire. You don't give the new guy the million dollar enterprise account on his first day. You give him the small account and see if he panics when the market drops. That's a perfect way to put it. You evaluate its rebalancing decisions over several financial quarters."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 1185.34,
+                "end": 1323.34,
+                "duration": 138,
+                "text": "You watch how it executes tax loss harvesting during a market correction. You test its metal. Right. The system requires the AI to explicitly prove its execution discipline and risk management to you. Only after a sustained track record of success do users typically authorize increased capital allocation. OK, that makes total sense for trading stocks inside a closed broker, deco system. But what about when it actually buys things on the open web like retail transactions? Yeah, like if it's negotiating my internet bill or buying a flight on Delta. If it's parsing doms and filling out checkout forms, how is that secure? I am not letting an AI type my actual physical credit card number into a hundred different random websites. And you wouldn't have to the research highlights met as deep infrastructural integration with stripe link for exactly this purpose. OK, how does that work? When Muse needs to settle a real world transaction, it does not pass your physical credit card number around the web. It utilizes the stripe API to provision single use merchant scoped virtual credit cards. Merchant scoped. What does that actually mean in practice? It means if Muse decides to book a flight on Delta Airlines, it generates a unique 16 digit credit card number that is mathematically locked to two specific conditions. OK. First, it can only be charged for the exact amount of the flight. Second, it can only be successfully processed by Delta specific merchant ID. Oh, wow. So even if the AI gets confused and types the number into the wrong website or if a hacker somehow intercepts the headless browser session, the card is completely useless to anyone else. Precisely. It will decline everywhere else. And furthermore, it comes with built in automated buyer protections like chargebacks. Yes. If the AI purchases a physical item and the tracking API registers a package loss, the AI can autonomously initiate a chargeback protocol. It creates a hermetically sealed financial loop where the user is entirely insulated from fraud. I really want to ask you the listener to pause and think about how this changes your fundamental relationship with software. For the last 30 years, computing is meant you going to a screen, logging into a dashboard, navigating menus and pulling all the levers yourself a very manual process. Right. With this agentic paradigm, you aren't logging into a dashboard anymore."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 10,
+        "title": "It is a Complete Inversion of the User Interface",
         "start": 1323.96,
-        "end": 1346.64,
-        "duration": 22.68,
-        "text": "The software is doing the chores in the background, totally at a site and simply reporting its successes to you in a casual text message. It is a complete inversion of the user interface. It is a profound paradigm shift. But as you astutely pointed out earlier, giving an AI a virtual credit card, access to your brokerage and access to your social media archives requires immense structural trust."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 1346.72,
         "end": 1448.08,
-        "duration": 101.36,
-        "text": "Absolutely. And how different tech companies are choosing to build that architecture of trust is creating a massive ideological divide in the industry right now. Yeah, the research really gets into this. It contrasts metas approach with two radically different philosophies. Apple and perplexity. Let's start with perplexity because their approach is very distinct. In the research, they detail perplexity computer, which kind of pioneered this agentic idea earlier in 2026. But it is fundamentally a different beast than metamuse, right? It is entirely divergent in both architecture and target demographic. Perplexity structured its environment around what we call multi model orchestrations. Okay, what does that mean? Instead of relying on one single brain, it dynamically routes tasks across 20 different frontier models, various versions of Claude, Gemini and GPT, inside an isolated Linux sandbox. But the economics are what really separated them, I think. The research points out that perplexity max charges around $200 a month and they use what the paper calls a femoral Linux runtimes. An femoral runtime means the environment is temporary. It's fleeting, right? Perplexity is building an enterprise workstation for technical professionals, software engineers, quantitative researchers, data scientists. You log in, you instruct the AI to execute a highly complex, compute intensive data pipeline task. And the moment the task is finished and the output is delivered, the Linux environment essentially self -destructs. It just vanishes. It vanishes. There's no ongoing state. So perplexity is a high -end, expensive, specialized tool for coders who need brute force for a few hours. Contrast that with meta, meta is targeting the global consumer base. Every day user. Exactly."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 11,
-    "title": "They're Giving Users 100 Million Free Weekly Tokens",
-    "start": 1448.72,
-    "end": 1599.54,
-    "duration": 159.74,
-    "bridge_text": [
-      "What happens when intelligence expands in Part 22?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 133.04,
+        "bridge_text": [
+            "What happens when intelligence expands in Part 20?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 1323.96,
+                "end": 1346.64,
+                "duration": 22.68,
+                "text": "The software is doing the chores in the background, totally at a site and simply reporting its successes to you in a casual text message. It is a complete inversion of the user interface. It is a profound paradigm shift. But as you astutely pointed out earlier, giving an AI a virtual credit card, access to your brokerage and access to your social media archives requires immense structural trust."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 1346.72,
+                "end": 1448.08,
+                "duration": 101.36,
+                "text": "Absolutely. And how different tech companies are choosing to build that architecture of trust is creating a massive ideological divide in the industry right now. Yeah, the research really gets into this. It contrasts metas approach with two radically different philosophies. Apple and perplexity. Let's start with perplexity because their approach is very distinct. In the research, they detail perplexity computer, which kind of pioneered this agentic idea earlier in 2026. But it is fundamentally a different beast than metamuse, right? It is entirely divergent in both architecture and target demographic. Perplexity structured its environment around what we call multi model orchestrations. Okay, what does that mean? Instead of relying on one single brain, it dynamically routes tasks across 20 different frontier models, various versions of Claude, Gemini and GPT, inside an isolated Linux sandbox. But the economics are what really separated them, I think. The research points out that perplexity max charges around $200 a month and they use what the paper calls a femoral Linux runtimes. An femoral runtime means the environment is temporary. It's fleeting, right? Perplexity is building an enterprise workstation for technical professionals, software engineers, quantitative researchers, data scientists. You log in, you instruct the AI to execute a highly complex, compute intensive data pipeline task. And the moment the task is finished and the output is delivered, the Linux environment essentially self -destructs. It just vanishes. It vanishes. There's no ongoing state. So perplexity is a high -end, expensive, specialized tool for coders who need brute force for a few hours. Contrast that with meta, meta is targeting the global consumer base. Every day user. Exactly."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 11,
+        "title": "They're Giving Users 100 Million Free Weekly Tokens",
         "start": 1448.72,
-        "end": 1469.74,
-        "duration": 21.02,
-        "text": "Instead of charging $200 a month, meta is subsidizing the cost entirely through its advertising cash flows. They're giving users 100 million free weekly tokens. And instead of routing to third party models and paying API fees, meta relies entirely on its vertically integrated proprietary models, like new Spark. Meta is aiming for total ubiquity while perplexity is aiming for enterprise specialization."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 1469.82,
         "end": 1599.54,
-        "duration": 129.72,
-        "text": "But the much more significant architectural clash detailed in the research is actually between meta and Apple. Oh, man, yeah, we have to look closely at Apple's private cloud compute or PCC. This is where the privacy debate gets really intense. The research highlights that Apple and Meta have taken entirely different paths regarding execution persistence. Apple's private cloud compute is fundamentally stateless. What does stateless mean when we're talking about artificial intelligence? A stateless architecture means the system has absolutely no permanent memory of the event or the user after the transaction is complete. Okay. When you ask your iPhone a complex query that exceeds the processing power of the local device, Apple encrypts the prompt and sends it to a custom Apple silicon server in their data center. Right. The server evaluates the response sends it back to your phone and then instantly cryptographically wipes its memory footprint. So it literally forgets you exist the second it answers you. Exactly. There is no local disc persistence. The data is never written to a permanent hard drive. So using an analogy, Apple PCC is like a highly secure, self -destructing message. You ask it to do a math problem. It writes the answer on a piece of paper, hands the paper to you and then immediately burns the paper and the desk it was sitting at. That's exactly it. It achieves incredibly strong cryptographic guarantees for privacy, which obviously aligns perfectly with Apple's corporate brand. Right. But because it is stateless, it is structurally incapable of true autonomy. Apple PCC cannot run a background task for three weeks. It cannot monitor the stock market for a specific dip and proactively initiate a complex web transaction on a Tuesday while your phone is turned off and sitting in your pocket. Because the moment the immediate synchronous task is done, the room disappears. It can't wait around for Tuesday. Precisely. Meta Muse, on the other hand, is stateful and persistent. It operates a continuous background virtual machine. So sticking with the analogy, if Apple is burning the paper, Meta is building a permanent, highly surveilled bank vault where your digital worker lives full time. They have a desk, they have file cabinets, they remember what you told them last week."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 12,
-    "title": "And They Can Wait Until Tuesday to Execute a Trade",
-    "start": 1600.1,
-    "end": 1694.74,
-    "duration": 103.56,
-    "bridge_text": [
-      "What happens when intelligence expands in Part 24?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 159.74,
+        "bridge_text": [
+            "What happens when intelligence expands in Part 22?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 1448.72,
+                "end": 1469.74,
+                "duration": 21.02,
+                "text": "Instead of charging $200 a month, meta is subsidizing the cost entirely through its advertising cash flows. They're giving users 100 million free weekly tokens. And instead of routing to third party models and paying API fees, meta relies entirely on its vertically integrated proprietary models, like new Spark. Meta is aiming for total ubiquity while perplexity is aiming for enterprise specialization."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 1469.82,
+                "end": 1599.54,
+                "duration": 129.72,
+                "text": "But the much more significant architectural clash detailed in the research is actually between meta and Apple. Oh, man, yeah, we have to look closely at Apple's private cloud compute or PCC. This is where the privacy debate gets really intense. The research highlights that Apple and Meta have taken entirely different paths regarding execution persistence. Apple's private cloud compute is fundamentally stateless. What does stateless mean when we're talking about artificial intelligence? A stateless architecture means the system has absolutely no permanent memory of the event or the user after the transaction is complete. Okay. When you ask your iPhone a complex query that exceeds the processing power of the local device, Apple encrypts the prompt and sends it to a custom Apple silicon server in their data center. Right. The server evaluates the response sends it back to your phone and then instantly cryptographically wipes its memory footprint. So it literally forgets you exist the second it answers you. Exactly. There is no local disc persistence. The data is never written to a permanent hard drive. So using an analogy, Apple PCC is like a highly secure, self -destructing message. You ask it to do a math problem. It writes the answer on a piece of paper, hands the paper to you and then immediately burns the paper and the desk it was sitting at. That's exactly it. It achieves incredibly strong cryptographic guarantees for privacy, which obviously aligns perfectly with Apple's corporate brand. Right. But because it is stateless, it is structurally incapable of true autonomy. Apple PCC cannot run a background task for three weeks. It cannot monitor the stock market for a specific dip and proactively initiate a complex web transaction on a Tuesday while your phone is turned off and sitting in your pocket. Because the moment the immediate synchronous task is done, the room disappears. It can't wait around for Tuesday. Precisely. Meta Muse, on the other hand, is stateful and persistent. It operates a continuous background virtual machine. So sticking with the analogy, if Apple is burning the paper, Meta is building a permanent, highly surveilled bank vault where your digital worker lives full time. They have a desk, they have file cabinets, they remember what you told them last week."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 12,
+        "title": "And They Can Wait Until Tuesday to Execute a Trade",
         "start": 1600.1,
-        "end": 1622.32,
-        "duration": 22.22,
-        "text": "And they can wait until Tuesday to execute a trade. That is the fundamental trade off of the agentic era to have a true agent that can manage your life asynchronously. You require statefulness, but statefulness inherently introduces a much larger attack surface for security threats and privacy violations. And this is exactly where my alarm bells start ringing again."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 1622.4,
         "end": 1694.74,
-        "duration": 72.34,
-        "text": "Let's be real here. If Meta has a persistent permanent virtual room where my AI is tracking my investments, looking at my raw video footage, reading my WhatsApp's, and negotiating my bills, isn't Meta just going to harvest all of this incredibly rich workflow data to serve me more targeted ads? It's the obvious question. I mean, programmatic advertising is their core business model. That is how they make hundreds of billions of dollars. This raises a critical question and it is the absolute crux of the modern privacy debate. How does a massive advertising company secure a persistent state without violating user trust or facing massive regulatory backlash? How do they? The research points to a multi -layered cryptographic approach. First, they decouple the user identity from the model context. What does decoupling identity actually mean in practice? It means your authentication tokens, your actual passwords and your core identity are held in a completely separate security demon isolated from the AI model itself. Okay, so they're kept apart. Yes. When the AI goes out to the open internet to execute a task, surrogate credentials are dynamically swapped at the network boundary. Okay, so the AI is basically wearing a mask when it leaves the vault."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 13,
-    "title": "Confidential Vm",
-    "start": 1695.56,
-    "end": 1816.88,
-    "duration": 130.24,
-    "bridge_text": [
-      "What happens when intelligence expands in Part 26?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 103.56,
+        "bridge_text": [
+            "What happens when intelligence expands in Part 24?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 1600.1,
+                "end": 1622.32,
+                "duration": 22.22,
+                "text": "And they can wait until Tuesday to execute a trade. That is the fundamental trade off of the agentic era to have a true agent that can manage your life asynchronously. You require statefulness, but statefulness inherently introduces a much larger attack surface for security threats and privacy violations. And this is exactly where my alarm bells start ringing again."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 1622.4,
+                "end": 1694.74,
+                "duration": 72.34,
+                "text": "Let's be real here. If Meta has a persistent permanent virtual room where my AI is tracking my investments, looking at my raw video footage, reading my WhatsApp's, and negotiating my bills, isn't Meta just going to harvest all of this incredibly rich workflow data to serve me more targeted ads? It's the obvious question. I mean, programmatic advertising is their core business model. That is how they make hundreds of billions of dollars. This raises a critical question and it is the absolute crux of the modern privacy debate. How does a massive advertising company secure a persistent state without violating user trust or facing massive regulatory backlash? How do they? The research points to a multi -layered cryptographic approach. First, they decouple the user identity from the model context. What does decoupling identity actually mean in practice? It means your authentication tokens, your actual passwords and your core identity are held in a completely separate security demon isolated from the AI model itself. Okay, so they're kept apart. Yes. When the AI goes out to the open internet to execute a task, surrogate credentials are dynamically swapped at the network boundary. Okay, so the AI is basically wearing a mask when it leaves the vault."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 13,
+        "title": "Confidential Vm",
         "start": 1695.56,
-        "end": 1717.78,
-        "duration": 22.22,
-        "text": "The AI model itself never actually sees or ingests your real passwords. It just holds a temporary token that basically says, Hey, I have permission to do this. Exactly. Yes. But the long term structural solution mentioned in the research is the deployment of the forthcoming Mew's confidential VM. Confidential VM. Right. This architecture will utilize hardware -enforced trusted execution environments or teas."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 1717.86,
         "end": 1816.88,
-        "duration": 99.02,
-        "text": "Teas? We need to explain how this works at the hardware level because it honestly sounds like a magic bullet. A trusted execution environment is a secure area of the main processor. It guarantees that the code and data loaded inside it are protected with respect to confidentiality and integrity. Okay. In a true tea setup, the encryption keys used to scramble the data inside the virtual machine are held exclusively by the client, meaning you, the user on your local device. Wait, really? So the data is processed on Meta's server, but Meta doesn't have the key to unlock the data. Exactly. Even if a rogue meta engineer wanted to look inside your virtual machine, or if they're advertising algorithm attempted to scrape your session data, they physically and mathematically cannot. The hardware won't let them right. The silicon hardware itself enforces the encryption. Meta is technically and cryptographically barred from accessing internal session states or leveraging those workflow logs for programmatic advertising. So they are building a highly capable bank vault on their property, but not even the bank manager has the physical key to open the door. That's a great way to summarize it. In a speaking of privacy, hardware level encryption and fundamentally avoiding ad tracking as exactly the philosophy behind our independent research platform. It is a core value of how we believe information should be distributed in this era. Absolutely. If you want to secure enclave of your own to read this Meta Mew strategic analysis for yourself, you can go to our research hub at deepdive .shootree .com that is shutri .com. Highly recommend checking it out. The key points of our platform aligned directly with the privacy standards we just discussed."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 14,
-    "title": "There Are No Trackers",
-    "start": 1817.66,
-    "end": 1963.1,
-    "duration": 154.36,
-    "bridge_text": [
-      "What is the deeper secret behind Part 27?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 130.24,
+        "bridge_text": [
+            "What happens when intelligence expands in Part 26?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 1695.56,
+                "end": 1717.78,
+                "duration": 22.22,
+                "text": "The AI model itself never actually sees or ingests your real passwords. It just holds a temporary token that basically says, Hey, I have permission to do this. Exactly. Yes. But the long term structural solution mentioned in the research is the deployment of the forthcoming Mew's confidential VM. Confidential VM. Right. This architecture will utilize hardware -enforced trusted execution environments or teas."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 1717.86,
+                "end": 1816.88,
+                "duration": 99.02,
+                "text": "Teas? We need to explain how this works at the hardware level because it honestly sounds like a magic bullet. A trusted execution environment is a secure area of the main processor. It guarantees that the code and data loaded inside it are protected with respect to confidentiality and integrity. Okay. In a true tea setup, the encryption keys used to scramble the data inside the virtual machine are held exclusively by the client, meaning you, the user on your local device. Wait, really? So the data is processed on Meta's server, but Meta doesn't have the key to unlock the data. Exactly. Even if a rogue meta engineer wanted to look inside your virtual machine, or if they're advertising algorithm attempted to scrape your session data, they physically and mathematically cannot. The hardware won't let them right. The silicon hardware itself enforces the encryption. Meta is technically and cryptographically barred from accessing internal session states or leveraging those workflow logs for programmatic advertising. So they are building a highly capable bank vault on their property, but not even the bank manager has the physical key to open the door. That's a great way to summarize it. In a speaking of privacy, hardware level encryption and fundamentally avoiding ad tracking as exactly the philosophy behind our independent research platform. It is a core value of how we believe information should be distributed in this era. Absolutely. If you want to secure enclave of your own to read this Meta Mew strategic analysis for yourself, you can go to our research hub at deepdive .shootree .com that is shutri .com. Highly recommend checking it out. The key points of our platform aligned directly with the privacy standards we just discussed."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 14,
+        "title": "There Are No Trackers",
         "start": 1817.66,
-        "end": 1838.54,
-        "duration": 20.88,
-        "text": "There are no trackers. There are absolutely no cookies and there is no login required. It is a pure, unadulterated reading experience exactly the way the Internet was originally supposed to be. The link is in the description. And we have implemented a significant technical upgrade to the platform recently to further that mission. Have a way. We have and it's fantastic. Yes. And this is the best part."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 1838.62,
         "end": 1963.1,
-        "duration": 124.48,
-        "text": "You can now access all of the research offline. Thanks to some incredible tech updates. The deep dive website is now a progressive web app where a PWA which changes everything for accessibility. It really does. What that means is you can install it essentially as a native app directly from your web browser. You can put it on your PC, your tablet or your smartphone. You can load it up, go sit on a beach or get on a flight and read these massive deep dives without having to pay for terrible airplane Wi -Fi or burn through your mobile data. It is a frictionless privacy first way to engage with complex material. So getting back to the competitive landscape of the AI industry. We've established that perplexity is too niche and too expensive for the global consumer market. Right. And we've established that Apple because of its dedication to a stateless self -destructing architecture is structurally incapable of hosting persistent asynchronous agents right now. Also correct. So who is left? Who can actually fight meta in this space? According to the research, there is only one contender with the scaled infrastructure parity to truly challenge meta on a global level. And that is Alphabet, the parent company of Google. Google, it always has back to Google, doesn't it? It really does. Let's list their weapons here because on paper, they look completely unstoppable. The research points out they have full stack silicon independence. Yes. They aren't totally reliant on buying hardware from Nvidia. They have their own custom chips, the TPU V5P and the incredibly powerful new Trillium chips. Their hardware stack is truly formidable and they possess unified frontier intelligence. Their DeepMind Division maintains the Gemini series, which consistently matches or exceeds news spark in many benchmarks. Right. Gemini is particularly notable for having massive context windows of one to million tokens, meaning it can hold a massive amount of information in a short term memory. It can parse a thousand page legal document and execute complex multi -step reasoning across the entire text without forgetting what was on page two. Exactly."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 15,
-    "title": "Better Than Almost Anyone",
-    "start": 1963.78,
-    "end": 2111.5,
-    "duration": 156.64,
-    "bridge_text": [
-      "What is the deeper secret behind Part 29?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 154.36,
+        "bridge_text": [
+            "What is the deeper secret behind Part 27?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 1817.66,
+                "end": 1838.54,
+                "duration": 20.88,
+                "text": "There are no trackers. There are absolutely no cookies and there is no login required. It is a pure, unadulterated reading experience exactly the way the Internet was originally supposed to be. The link is in the description. And we have implemented a significant technical upgrade to the platform recently to further that mission. Have a way. We have and it's fantastic. Yes. And this is the best part."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 1838.62,
+                "end": 1963.1,
+                "duration": 124.48,
+                "text": "You can now access all of the research offline. Thanks to some incredible tech updates. The deep dive website is now a progressive web app where a PWA which changes everything for accessibility. It really does. What that means is you can install it essentially as a native app directly from your web browser. You can put it on your PC, your tablet or your smartphone. You can load it up, go sit on a beach or get on a flight and read these massive deep dives without having to pay for terrible airplane Wi -Fi or burn through your mobile data. It is a frictionless privacy first way to engage with complex material. So getting back to the competitive landscape of the AI industry. We've established that perplexity is too niche and too expensive for the global consumer market. Right. And we've established that Apple because of its dedication to a stateless self -destructing architecture is structurally incapable of hosting persistent asynchronous agents right now. Also correct. So who is left? Who can actually fight meta in this space? According to the research, there is only one contender with the scaled infrastructure parity to truly challenge meta on a global level. And that is Alphabet, the parent company of Google. Google, it always has back to Google, doesn't it? It really does. Let's list their weapons here because on paper, they look completely unstoppable. The research points out they have full stack silicon independence. Yes. They aren't totally reliant on buying hardware from Nvidia. They have their own custom chips, the TPU V5P and the incredibly powerful new Trillium chips. Their hardware stack is truly formidable and they possess unified frontier intelligence. Their DeepMind Division maintains the Gemini series, which consistently matches or exceeds news spark in many benchmarks. Right. Gemini is particularly notable for having massive context windows of one to million tokens, meaning it can hold a massive amount of information in a short term memory. It can parse a thousand page legal document and execute complex multi -step reasoning across the entire text without forgetting what was on page two. Exactly."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 15,
+        "title": "Better Than Almost Anyone",
         "start": 1963.78,
-        "end": 1985.14,
-        "duration": 21.36,
-        "text": "Furthermore, they own the consumer virtualization space through Google cloud platform. They know how to run millions of secure virtual machines at scale. Better than almost anyone. And crucially, their distribution is completely ubiquitous. They own Android, Chrome, Gmail, Google Docs, YouTube. They are integrated into the absolute fabric of the Internet. Okay. So let me take a picture here."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 1985.22,
         "end": 2111.5,
-        "duration": 126.28,
-        "text": "Google has the perfect army. They have the most advanced weapons. They have infinite supply lines through their data centers. And they hold the absolute high ground with billions of daily active users. That's the reality. So why aren't they winning the agent war easily? Why is Google hesitating while meta is the one causing the earthquake? If we connect this to the bigger macro economic picture, we see a textbook business school case study unfolding in real time. Google is paralyzed by the innovators dilemma. The innovators dilemma. Wait, if Google makes 75 % of its money on search ads, building an agent that bypasses search is essentially corporate suicide. Is that why they're hesitating? Let's explore the mechanics of this dilemma. You have identified the exact friction point over 75 % of Alphabet's operating profit originates from search advertising queries. Right. The Google search bar. Think about how the fundamental mechanics of search work today. You type in a query, say, best flights to London. Google gives you a list of blue links and crucially a list of sponsored advertisements. Yeah, the ones at the very top when you click that ad, the airline pays Google a cost per click fee. That is the engine of their empire. Right. It relies entirely on me, the human looking at a screen and clicking a specific link. But an autonomous agent doesn't need to look at search end results. If you tell metamuse to buy a flight to London, it does not open Google search. Of course not. It goes directly to the airline's database via an API queries the availability and executes the transaction. It doesn't see the travel agency ad and it certainly doesn't click it. Wow. An agent that just does the task for you entirely bypasses the search engine result page. It completely destroys the cost per click advertising model. Wow. So if Google releases a perfect, frictionless agent that does everything for you in the background, they are effectively burning down their own 75 % profit engine. They are trapped by their own success. But it's not just the business model holding the back. Is it the research mentions they are fighting a massive war on a completely different front right now? Yes. Google is currently bogged down in existential due district scrutiny."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 16,
-    "title": "Yes, a Massive Legal Victory",
-    "start": 2112.12,
-    "end": 2225.52,
-    "duration": 122.32,
-    "bridge_text": [
-      "What is the deeper secret behind Part 31?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 156.64,
+        "bridge_text": [
+            "What is the deeper secret behind Part 29?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 1963.78,
+                "end": 1985.14,
+                "duration": 21.36,
+                "text": "Furthermore, they own the consumer virtualization space through Google cloud platform. They know how to run millions of secure virtual machines at scale. Better than almost anyone. And crucially, their distribution is completely ubiquitous. They own Android, Chrome, Gmail, Google Docs, YouTube. They are integrated into the absolute fabric of the Internet. Okay. So let me take a picture here."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 1985.22,
+                "end": 2111.5,
+                "duration": 126.28,
+                "text": "Google has the perfect army. They have the most advanced weapons. They have infinite supply lines through their data centers. And they hold the absolute high ground with billions of daily active users. That's the reality. So why aren't they winning the agent war easily? Why is Google hesitating while meta is the one causing the earthquake? If we connect this to the bigger macro economic picture, we see a textbook business school case study unfolding in real time. Google is paralyzed by the innovators dilemma. The innovators dilemma. Wait, if Google makes 75 % of its money on search ads, building an agent that bypasses search is essentially corporate suicide. Is that why they're hesitating? Let's explore the mechanics of this dilemma. You have identified the exact friction point over 75 % of Alphabet's operating profit originates from search advertising queries. Right. The Google search bar. Think about how the fundamental mechanics of search work today. You type in a query, say, best flights to London. Google gives you a list of blue links and crucially a list of sponsored advertisements. Yeah, the ones at the very top when you click that ad, the airline pays Google a cost per click fee. That is the engine of their empire. Right. It relies entirely on me, the human looking at a screen and clicking a specific link. But an autonomous agent doesn't need to look at search end results. If you tell metamuse to buy a flight to London, it does not open Google search. Of course not. It goes directly to the airline's database via an API queries the availability and executes the transaction. It doesn't see the travel agency ad and it certainly doesn't click it. Wow. An agent that just does the task for you entirely bypasses the search engine result page. It completely destroys the cost per click advertising model. Wow. So if Google releases a perfect, frictionless agent that does everything for you in the background, they are effectively burning down their own 75 % profit engine. They are trapped by their own success. But it's not just the business model holding the back. Is it the research mentions they are fighting a massive war on a completely different front right now? Yes. Google is currently bogged down in existential due district scrutiny."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 16,
+        "title": "Yes, a Massive Legal Victory",
         "start": 2112.12,
-        "end": 2129.5,
-        "duration": 17.38,
-        "text": "Federal courts recently declared Google's default search distribution contracts the billions they pay to be the default search engine on devices like the iPhone to be an unlawful monopoly. It's huge. They are literally fighting for their corporate structure in court, facing the genuine threat of being broken up by the government."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 2129.58,
         "end": 2225.52,
-        "duration": 95.94,
-        "text": "While meta on the other hand is completely free of that specific burden, the research notes meta just won its massive FTC antitrust case a few years ago. The courts ruled they don't have an unlawful monopoly, meaning they get to keep Instagram and WhatsApp integrated. Yes, a massive legal victory. So meta doesn't have a massive search engine cash cow to protect. And they don't have the Department of Justice actively trying to break them up right now. They're free to just run wild, burn the boats and deploy this agentic tech. And this brings us to a fascinating inflection point. Because the competitors, whether it's Google trapped by its business model or Apple trapped by its stateless architecture or the smaller frontier labs trapped by their massive compute costs cannot beat meta on the technology or distribution front right now. They are turning to a completely different battlefield. And this brings us to the bizarre context we teased at the very beginning of the show. If you can't beat them in the code base, you beat them in the courtroom. Precisely. They are turning to the government. We are entering the realm of what the research calls regulatory real politics. Yes. We are witnessing an unprecedented convergence competing AI executives who traditionally fight tooth and nail for market share are suddenly aligning with policy makers to advocate for aggressive regulatory slowdowns. Let's lay out the timeline and the facts from the research in September 2026. Dario Amade, the CEO of Anthropic releases a sweeping essay titled We Must Paste the Frontier. A very influential piece in it. He calls for a deliberate deceleration of AI capabilities."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 17,
-    "title": "The Risks He Outlines Are Not Entirely Science Fiction",
-    "start": 2226.3,
-    "end": 2374.5,
-    "duration": 157.12,
-    "bridge_text": [
-      "What is the deeper secret behind Part 33?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 122.32,
+        "bridge_text": [
+            "What is the deeper secret behind Part 31?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2112.12,
+                "end": 2129.5,
+                "duration": 17.38,
+                "text": "Federal courts recently declared Google's default search distribution contracts the billions they pay to be the default search engine on devices like the iPhone to be an unlawful monopoly. It's huge. They are literally fighting for their corporate structure in court, facing the genuine threat of being broken up by the government."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 2129.58,
+                "end": 2225.52,
+                "duration": 95.94,
+                "text": "While meta on the other hand is completely free of that specific burden, the research notes meta just won its massive FTC antitrust case a few years ago. The courts ruled they don't have an unlawful monopoly, meaning they get to keep Instagram and WhatsApp integrated. Yes, a massive legal victory. So meta doesn't have a massive search engine cash cow to protect. And they don't have the Department of Justice actively trying to break them up right now. They're free to just run wild, burn the boats and deploy this agentic tech. And this brings us to a fascinating inflection point. Because the competitors, whether it's Google trapped by its business model or Apple trapped by its stateless architecture or the smaller frontier labs trapped by their massive compute costs cannot beat meta on the technology or distribution front right now. They are turning to a completely different battlefield. And this brings us to the bizarre context we teased at the very beginning of the show. If you can't beat them in the code base, you beat them in the courtroom. Precisely. They are turning to the government. We are entering the realm of what the research calls regulatory real politics. Yes. We are witnessing an unprecedented convergence competing AI executives who traditionally fight tooth and nail for market share are suddenly aligning with policy makers to advocate for aggressive regulatory slowdowns. Let's lay out the timeline and the facts from the research in September 2026. Dario Amade, the CEO of Anthropic releases a sweeping essay titled We Must Paste the Frontier. A very influential piece in it. He calls for a deliberate deceleration of AI capabilities."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 17,
+        "title": "The Risks He Outlines Are Not Entirely Science Fiction",
         "start": 2226.3,
-        "end": 2249,
-        "duration": 22.7,
-        "text": "He warns about the existential dangers of autonomous warms and says we need mandatory third party oversight to permanently monitor these training pipelines. And we must treat those safety arguments with the valid weight they deserve. The risks he outlines are not entirely science fiction. Right. Let's actually look at the genuine risks of agents. What is an autonomous swarm and why is it terrifying?"
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 2249.08,
         "end": 2374.5,
-        "duration": 125.42,
-        "text": "autonomous swarm refers to the deployment of thousands of coordinated AI agents acting in concert with malicious intent. Okay. Give me an example. Imagine an agent that is instructed to execute a spearfishing campaign. It doesn't just send a generic spam email. It autonomously reads a target's public social media, understands our communication style, drafts a perfectly personalized email containing a malicious payload and autonomously sends it. It's already bad. Now imagine a swarm of 10 ,000 of these agents doing this simultaneously, adapting their tactics in real time based on which emails get open. So an AI that can read your email, craft a perfect fishing link based on a conversation you just had with your boss and autonomously send it to your entire contact list. That is a legitimate catastrophic cyber security nightmare. It is. Amode argues that without a disselleration to implement robust safety protocols and external auditing, the rapid deployment of agentic models could empower state sponsored hackers or road actors with unprecedented destructive capabilities. And immediately two of his biggest rivals agree with him. Elon Musk who runs X AI and Tesla and Sam Alman, the CEO of Open AI, both publicly endorsed this idea of pacing the frontier. Yes, they do. They agree that we need external safety verifications and government oversight. Then the movement hits the political sphere with tremendous force. Senator Bernie Sanders teaming up with representative Alexandria Ocasio -Cortez introduces the Artificial Intelligence Data Center moratorium act. And this act is aggressive. It would literally halt the construction of any new high power AI data centers, criminalize the unchecked development of artificial superintelligence and severely block the export of high performance computing chips. Now, before we analyze the motivations behind this, it is crucial to state a rigid rule for our discussion today. Yes, absolutely. We are examining these political and corporate actions entirely impartially. We are viewing this strictly through the lens of economic strategy, market dynamics and competitive posturing as presented in the research."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 18,
-    "title": "We're Just Looking at the Chess Board",
-    "start": 2374.96,
-    "end": 2526.26,
-    "duration": 160.22,
-    "bridge_text": [
-      "What is the deeper secret behind Part 35?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 157.12,
+        "bridge_text": [
+            "What is the deeper secret behind Part 33?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2226.3,
+                "end": 2249,
+                "duration": 22.7,
+                "text": "He warns about the existential dangers of autonomous warms and says we need mandatory third party oversight to permanently monitor these training pipelines. And we must treat those safety arguments with the valid weight they deserve. The risks he outlines are not entirely science fiction. Right. Let's actually look at the genuine risks of agents. What is an autonomous swarm and why is it terrifying?"
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 2249.08,
+                "end": 2374.5,
+                "duration": 125.42,
+                "text": "autonomous swarm refers to the deployment of thousands of coordinated AI agents acting in concert with malicious intent. Okay. Give me an example. Imagine an agent that is instructed to execute a spearfishing campaign. It doesn't just send a generic spam email. It autonomously reads a target's public social media, understands our communication style, drafts a perfectly personalized email containing a malicious payload and autonomously sends it. It's already bad. Now imagine a swarm of 10 ,000 of these agents doing this simultaneously, adapting their tactics in real time based on which emails get open. So an AI that can read your email, craft a perfect fishing link based on a conversation you just had with your boss and autonomously send it to your entire contact list. That is a legitimate catastrophic cyber security nightmare. It is. Amode argues that without a disselleration to implement robust safety protocols and external auditing, the rapid deployment of agentic models could empower state sponsored hackers or road actors with unprecedented destructive capabilities. And immediately two of his biggest rivals agree with him. Elon Musk who runs X AI and Tesla and Sam Alman, the CEO of Open AI, both publicly endorsed this idea of pacing the frontier. Yes, they do. They agree that we need external safety verifications and government oversight. Then the movement hits the political sphere with tremendous force. Senator Bernie Sanders teaming up with representative Alexandria Ocasio -Cortez introduces the Artificial Intelligence Data Center moratorium act. And this act is aggressive. It would literally halt the construction of any new high power AI data centers, criminalize the unchecked development of artificial superintelligence and severely block the export of high performance computing chips. Now, before we analyze the motivations behind this, it is crucial to state a rigid rule for our discussion today. Yes, absolutely. We are examining these political and corporate actions entirely impartially. We are viewing this strictly through the lens of economic strategy, market dynamics and competitive posturing as presented in the research."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 18,
+        "title": "We're Just Looking at the Chess Board",
         "start": 2374.96,
-        "end": 2389.6,
-        "duration": 14.64,
-        "text": "We are not taking political sides, nor are we endorsing or condemning the viewpoints of these acts or the executives. Exactly. Our sole mission is to convey the strategic ideas and implications contained in the original research. We're just looking at the chess board. Just the chess board."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 2389.68,
         "end": 2526.26,
-        "duration": 136.58,
-        "text": "looking at the board, why are billionaires who have spent their entire lives building tech companies suddenly agreeing with a government moratorium that literally stops their own industry from building new data centers on the surface. It seems entirely counterintuitive. It's like oil executives asking the government to ban drilling. It does seem contradictory until you look at the underlying economic structures and burn rates of these specific companies. The research refers to this alliance as the laggard coalition. laggard coalition. While their stated concerns about safety are valid, the research suggests there is a simultaneous layer of corporate protectionism at play. Protectionism. Okay, let's unpack the economics of these frontier labs like inthropic and open AI because they don't have a massive social network generating ad revenue to fund them. Exactly. These labs rely entirely on premium software subscriptions and API usage to survive. They need businesses to pay that $200 a month for enterprise access and they need developers paying needered API fees every single time a piece of software pings their model. They have massive multi billion dollar capital burn rates just to keep the servers powered on and the cooling systems running every token generated cost them electricity and compute. Now, enter meta meta strategy is to release highly capable open weight models for free and to offer heavily subsidized free consumer agents to billions of people because they can right. Meta can afford to do this because their entire AI operation is subsidized by the staggering profits of their advertising business on Instagram and Facebook. So consider the market impact. If meta makes advanced reasoning and agentic capabilities free and ubiquitous, the subscription model of the other frontier labs completely collapses. Oh, totally. Why would a developer pay exorbitant API fees to open AI if they can download meta's open weight model and run it themselves? Why would a consumer pay $200 a month if Meta Mews handles their tasks for free inside WhatsApp? They wouldn't by providing broad consumer access at a near zero marginal cost to the user meta risks turning frontier AI from a premium product into a free open utility, right? The other labs instantly lose their pricing power. So how do they stop meta? They cannot spend them meta practically prints cash."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 19,
-    "title": "Uh, Yeah, I See the Chess Board Now",
-    "start": 2526.86,
-    "end": 2620.8,
-    "duration": 102.86,
-    "bridge_text": [
-      "What is the deeper secret behind Part 37?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 160.22,
+        "bridge_text": [
+            "What is the deeper secret behind Part 35?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2374.96,
+                "end": 2389.6,
+                "duration": 14.64,
+                "text": "We are not taking political sides, nor are we endorsing or condemning the viewpoints of these acts or the executives. Exactly. Our sole mission is to convey the strategic ideas and implications contained in the original research. We're just looking at the chess board. Just the chess board."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 2389.68,
+                "end": 2526.26,
+                "duration": 136.58,
+                "text": "looking at the board, why are billionaires who have spent their entire lives building tech companies suddenly agreeing with a government moratorium that literally stops their own industry from building new data centers on the surface. It seems entirely counterintuitive. It's like oil executives asking the government to ban drilling. It does seem contradictory until you look at the underlying economic structures and burn rates of these specific companies. The research refers to this alliance as the laggard coalition. laggard coalition. While their stated concerns about safety are valid, the research suggests there is a simultaneous layer of corporate protectionism at play. Protectionism. Okay, let's unpack the economics of these frontier labs like inthropic and open AI because they don't have a massive social network generating ad revenue to fund them. Exactly. These labs rely entirely on premium software subscriptions and API usage to survive. They need businesses to pay that $200 a month for enterprise access and they need developers paying needered API fees every single time a piece of software pings their model. They have massive multi billion dollar capital burn rates just to keep the servers powered on and the cooling systems running every token generated cost them electricity and compute. Now, enter meta meta strategy is to release highly capable open weight models for free and to offer heavily subsidized free consumer agents to billions of people because they can right. Meta can afford to do this because their entire AI operation is subsidized by the staggering profits of their advertising business on Instagram and Facebook. So consider the market impact. If meta makes advanced reasoning and agentic capabilities free and ubiquitous, the subscription model of the other frontier labs completely collapses. Oh, totally. Why would a developer pay exorbitant API fees to open AI if they can download meta's open weight model and run it themselves? Why would a consumer pay $200 a month if Meta Mews handles their tasks for free inside WhatsApp? They wouldn't by providing broad consumer access at a near zero marginal cost to the user meta risks turning frontier AI from a premium product into a free open utility, right? The other labs instantly lose their pricing power. So how do they stop meta? They cannot spend them meta practically prints cash."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 19,
+        "title": "Uh, Yeah, I See the Chess Board Now",
         "start": 2526.86,
-        "end": 2541.5,
-        "duration": 14.64,
-        "text": "But by vocally supporting government mandated compute caps, rigorous safety regulations and bureaucratic red tape, they create what the research calls a defensible operational moat. Uh, yeah, I see the chess board now."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 2541.58,
         "end": 2620.8,
-        "duration": 79.22,
-        "text": "If the government passes an act that says, Hey, nobody can build a new data center without completing a comprehensive three year federal safety audit, it hurts meta the most because meta has the cash and was just about to break ground on massive new data centers to expand their lead. Correct. It is a highly effective strategic delay tactic. It restricts raw capacity expansion across the entire industry and for companies that are venture backed and balancing impending stock market floats like anthropic preparing for an IPO, slowing the broader innovation cycle protects their early mover valuations. It artificially freezes the state of the market, stopping meta from leveraging its massive infrastructure advantage while the startups desperately try to catch up. I want to ask you the listener to really think about this dynamic. Does the idea of using safety regulations as a competitive shield makes sense in this high stakes context? It's a fascinating, deeply pragmatic corporate strategy. When you can't beat your opponents product in the free market, you try to change the regulatory rules of the game to slow them down and to truly grasp why meta can execute this scorched Earth strategy while others are forced into protectionism. We must look at the foundational numbers. We have to follow the money, specifically how these mega cap companies are valued by the market and how they are spending their cash reserves. This brings us to a crucial part of the research."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 20,
-    "title": "Valuations and the Capex Trap",
-    "start": 2621.86,
-    "end": 2784.66,
-    "duration": 171.72,
-    "bridge_text": [
-      "What is the deeper secret behind Part 39?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 102.86,
+        "bridge_text": [
+            "What is the deeper secret behind Part 37?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2526.86,
+                "end": 2541.5,
+                "duration": 14.64,
+                "text": "But by vocally supporting government mandated compute caps, rigorous safety regulations and bureaucratic red tape, they create what the research calls a defensible operational moat. Uh, yeah, I see the chess board now."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 2541.58,
+                "end": 2620.8,
+                "duration": 79.22,
+                "text": "If the government passes an act that says, Hey, nobody can build a new data center without completing a comprehensive three year federal safety audit, it hurts meta the most because meta has the cash and was just about to break ground on massive new data centers to expand their lead. Correct. It is a highly effective strategic delay tactic. It restricts raw capacity expansion across the entire industry and for companies that are venture backed and balancing impending stock market floats like anthropic preparing for an IPO, slowing the broader innovation cycle protects their early mover valuations. It artificially freezes the state of the market, stopping meta from leveraging its massive infrastructure advantage while the startups desperately try to catch up. I want to ask you the listener to really think about this dynamic. Does the idea of using safety regulations as a competitive shield makes sense in this high stakes context? It's a fascinating, deeply pragmatic corporate strategy. When you can't beat your opponents product in the free market, you try to change the regulatory rules of the game to slow them down and to truly grasp why meta can execute this scorched Earth strategy while others are forced into protectionism. We must look at the foundational numbers. We have to follow the money, specifically how these mega cap companies are valued by the market and how they are spending their cash reserves. This brings us to a crucial part of the research."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 20,
+        "title": "Valuations and the Capex Trap",
         "start": 2621.86,
-        "end": 2645.18,
-        "duration": 23.32,
-        "text": "Valuations and the CapEx trap. Let's look at meta's financial journey because it has been a total roller coaster. Here really is. It wasn't that long ago back in late 2022 when meta was getting absolutely hammered by the market. The research notes they hit a brutal trough of $166 a share. People thought Mark Zuckerberg spending on the metaverse in reality lands was completely out of control. Apple's ad tracking changes were crippling their revenue."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 2645.26,
         "end": 2784.66,
-        "duration": 139.4,
-        "text": "I mean, the narrative was incredibly grim. But by late 2026, the market narrative has entirely inverted. Meta shares are trading securely in the $645 to $675 range. Their aggregate market capitalization is hovering between $1 .65 trillion and $1 .71 trillion. That is a staggering financial recovery. And yet the research suggests that despite that massive run up, they are still fundamentally undervalued compared to their tech peers. Yes. And they use a specific financial metric to explain this. The PEG ratio. The price earnings to growth ratio. It is a metric utilized to determine the relative trade off between the price of a stock that earnings generate per share and the company's expected growth over a specified period. Okay. I promised earlier we would explain this without using dense mathematical equations. So let's elevate our analogy. Let's do it. In set an apple tree, let's compare it to building a transcontinental railroad. The PEG ratio is essentially a tool that tells you if you are overpaying for a railroad company today based on how much freight it is projected to haul next year. An excellent framework. If the PEG ratio is exactly 1 .0, it means the premium you are paying for the stock perfectly matches its expected growth in hauling freight. It's a fair, mathematically balanced deal. Right. If the PEG ratio is under 1 .0, it means you are getting a phenomenal deal. You are paying less today for a massive on growth tomorrow. If it's way over 1 .0, you are drastically overpaying. The railroad stock is expensive and they simply aren't going to lay enough track or haul enough freight to justify the premium you paid. So when we analyze the magnificent seven tech stocks through the lens of the PEG ratio in late 2026, we see sharp, highly revealing divergences in how the market expects these companies to perform. Let's run out of the data from the research. Apple Peg is 2 .49. That's a very expensive railroad relative to its projected growth. Yes. Tesla is sitting way up at 5 .20. The market expects massive future growth, but you are paying a massive premium for it today. Microsoft is at 1 .64. Amazon is 1 .51. Alphabet Google is sitting nicely at 0 .92. And meta is sitting at 0 .85. A very strong deal indicating substantial undervalued growth potential. But then we have Nvidia. Nvidia is sitting at an astonishingly low 0 .60. Wow. 0 .60."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 21,
-    "title": "Yeah, and Apply Our Railroad Analogy",
-    "start": 2785.34,
-    "end": 2932.22,
-    "duration": 155.8,
-    "bridge_text": [
-      "What is the deeper secret behind Part 41?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 171.72,
+        "bridge_text": [
+            "What is the deeper secret behind Part 39?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2621.86,
+                "end": 2645.18,
+                "duration": 23.32,
+                "text": "Valuations and the CapEx trap. Let's look at meta's financial journey because it has been a total roller coaster. Here really is. It wasn't that long ago back in late 2022 when meta was getting absolutely hammered by the market. The research notes they hit a brutal trough of $166 a share. People thought Mark Zuckerberg spending on the metaverse in reality lands was completely out of control. Apple's ad tracking changes were crippling their revenue."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 2645.26,
+                "end": 2784.66,
+                "duration": 139.4,
+                "text": "I mean, the narrative was incredibly grim. But by late 2026, the market narrative has entirely inverted. Meta shares are trading securely in the $645 to $675 range. Their aggregate market capitalization is hovering between $1 .65 trillion and $1 .71 trillion. That is a staggering financial recovery. And yet the research suggests that despite that massive run up, they are still fundamentally undervalued compared to their tech peers. Yes. And they use a specific financial metric to explain this. The PEG ratio. The price earnings to growth ratio. It is a metric utilized to determine the relative trade off between the price of a stock that earnings generate per share and the company's expected growth over a specified period. Okay. I promised earlier we would explain this without using dense mathematical equations. So let's elevate our analogy. Let's do it. In set an apple tree, let's compare it to building a transcontinental railroad. The PEG ratio is essentially a tool that tells you if you are overpaying for a railroad company today based on how much freight it is projected to haul next year. An excellent framework. If the PEG ratio is exactly 1 .0, it means the premium you are paying for the stock perfectly matches its expected growth in hauling freight. It's a fair, mathematically balanced deal. Right. If the PEG ratio is under 1 .0, it means you are getting a phenomenal deal. You are paying less today for a massive on growth tomorrow. If it's way over 1 .0, you are drastically overpaying. The railroad stock is expensive and they simply aren't going to lay enough track or haul enough freight to justify the premium you paid. So when we analyze the magnificent seven tech stocks through the lens of the PEG ratio in late 2026, we see sharp, highly revealing divergences in how the market expects these companies to perform. Let's run out of the data from the research. Apple Peg is 2 .49. That's a very expensive railroad relative to its projected growth. Yes. Tesla is sitting way up at 5 .20. The market expects massive future growth, but you are paying a massive premium for it today. Microsoft is at 1 .64. Amazon is 1 .51. Alphabet Google is sitting nicely at 0 .92. And meta is sitting at 0 .85. A very strong deal indicating substantial undervalued growth potential. But then we have Nvidia. Nvidia is sitting at an astonishingly low 0 .60. Wow. 0 .60."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 21,
+        "title": "Yeah, and Apply Our Railroad Analogy",
         "start": 2785.34,
-        "end": 2807.54,
-        "duration": 22.2,
-        "text": "On paper, looking purely at the mathematics, Nvidia appears to represent the most attractive valuation in the entire tech sector. It has the lowest PEG ratio and playing massive under price growth. But this exact scenario introduces what the research terms, the semiconductor CapEx trap. Right, because we have to remember why Nvidia is growing so fast. Yeah, and apply our railroad analogy."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 2807.62,
         "end": 2932.22,
-        "duration": 124.6,
-        "text": "Nvidia's unprecedented revenue growth is not driven by consumers buying their products directly. It is directly generated by the capital expenditure budgets, the CapEx of companies like Meta, Google and Microsoft. Right. Meta alone is deploying a staggering $130 billion to $145 billion in CapEx in 2026, buying servers, infrastructure, and crucially, Nvidia's specialized AI chips. So in our analogy, Nvidia isn't running the trains. Nvidia is the company selling the steel and the iron spikes at a massive premium, while everyone else rushes to build the railroad. Exactly. But a low PEG ratio is only as durable as the growth estimate is based upon. If that projected growth vanishes, the valuation collapses violently. Oh, wow. If the Bernie Sanders moratorium act actually passes and the construction of new data centers is legally halted, who stops buying the steel, Meta, and Google? Exactly. Or even more dangerous for Nvidia, what if Meta finishes building its own custom silicon? The research mentions Meta's MTIA chips. If Meta decides they've laid enough track, or they can manufacture their own steel, much cheaper, and they don't need to buy from Nvidia anymore, what happens? Nvidia's hardware orders evaporate almost overnight. Their projected growth collapses. And that beautifully low 0 .60 PEG ratio turns into a severe financial nightmare for investors. This is a historical pattern, isn't it? The research compares this current dynamic to the 1990s internet networking wave. Oh, that makes sense. It is a near perfect historical rhyme. In the late 90s, companies like Cisco and Sun Microsystems built the physical routing equipment and the servers, the literal plumbing of the internet, they enjoyed massive historic valuations because everyone needed their hardware to get online. But once the foundational infrastructure was largely built, their pricing power vanished. The hardware became commoditized. The real permanent long -term economic surplus went to the consumer facing software platforms that used the internet companies like Google and Amazon. They saw the exact same thing with the mobile wave too. The companies that built the 4G cell towers and manufactured the glass screens made a fortune initially."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 22,
-    "title": "Meta, Uber, Airbnb",
-    "start": 2932.94,
-    "end": 3070.68,
-    "duration": 146.66,
-    "bridge_text": [
-      "What is the deeper secret behind Part 43?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 155.8,
+        "bridge_text": [
+            "What is the deeper secret behind Part 41?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2785.34,
+                "end": 2807.54,
+                "duration": 22.2,
+                "text": "On paper, looking purely at the mathematics, Nvidia appears to represent the most attractive valuation in the entire tech sector. It has the lowest PEG ratio and playing massive under price growth. But this exact scenario introduces what the research terms, the semiconductor CapEx trap. Right, because we have to remember why Nvidia is growing so fast. Yeah, and apply our railroad analogy."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 2807.62,
+                "end": 2932.22,
+                "duration": 124.6,
+                "text": "Nvidia's unprecedented revenue growth is not driven by consumers buying their products directly. It is directly generated by the capital expenditure budgets, the CapEx of companies like Meta, Google and Microsoft. Right. Meta alone is deploying a staggering $130 billion to $145 billion in CapEx in 2026, buying servers, infrastructure, and crucially, Nvidia's specialized AI chips. So in our analogy, Nvidia isn't running the trains. Nvidia is the company selling the steel and the iron spikes at a massive premium, while everyone else rushes to build the railroad. Exactly. But a low PEG ratio is only as durable as the growth estimate is based upon. If that projected growth vanishes, the valuation collapses violently. Oh, wow. If the Bernie Sanders moratorium act actually passes and the construction of new data centers is legally halted, who stops buying the steel, Meta, and Google? Exactly. Or even more dangerous for Nvidia, what if Meta finishes building its own custom silicon? The research mentions Meta's MTIA chips. If Meta decides they've laid enough track, or they can manufacture their own steel, much cheaper, and they don't need to buy from Nvidia anymore, what happens? Nvidia's hardware orders evaporate almost overnight. Their projected growth collapses. And that beautifully low 0 .60 PEG ratio turns into a severe financial nightmare for investors. This is a historical pattern, isn't it? The research compares this current dynamic to the 1990s internet networking wave. Oh, that makes sense. It is a near perfect historical rhyme. In the late 90s, companies like Cisco and Sun Microsystems built the physical routing equipment and the servers, the literal plumbing of the internet, they enjoyed massive historic valuations because everyone needed their hardware to get online. But once the foundational infrastructure was largely built, their pricing power vanished. The hardware became commoditized. The real permanent long -term economic surplus went to the consumer facing software platforms that used the internet companies like Google and Amazon. They saw the exact same thing with the mobile wave too. The companies that built the 4G cell towers and manufactured the glass screens made a fortune initially."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 22,
+        "title": "Meta, Uber, Airbnb",
         "start": 2932.94,
-        "end": 2954.54,
-        "duration": 21.6,
-        "text": "But the permanent trillion dollar value consolidated with the apps that lived on our phones. Meta, Uber, Airbnb. Exactly. So the research is arguing that in this agentic wave, the hardware layer Nvidia will eventually commoditize and the ultimate winner will be whoever owns the consumer touch point. Which brings us squarely back to Meta's incredible balance sheet advantage."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 2954.62,
         "end": 3070.68,
-        "duration": 116.06,
-        "text": "Contrast Meta with a competitor like SpaceX, which recently acquired XAI. They are publicly traded now under the ticker SPCX. They have the Starlink satellite revenue certainly. But their AI division burned through $6 .36 billion in losses in 2025 alone. They are heavily reliant on diluting their stock, selling equity, and taking on massive debt to fund the construction of these necessary data centers. While Meta in just one single quarter Q2 of 2026, generated nearly $16 billion in pure net income. They are entirely self -funding their side of the AI wars. They don't need to go hat in hand to Wall Street to ask for permission to build a data center. They just write a check from their advertising profits. It is an unparalleled self -sustaining financial engine driving this technological shift. They are immune to the capital constraints paralyzing their rivals. You know, pointing out how deep and complex this financial maneuvering actually is, the pay ratios, the cat -bex traps, the structural most. This is exactly why we do this show. We don't just want to tell you what the tech does. We want to show you the economic gear is turning beneath it. It's so important to see the whole picture. It really is. And it's exactly why you, the listener, should share this show. If you have friends or colleagues where you geek out on deep finance, tech strategy, or even the geopolitical philosophy of AI, send them this deep dive. It is the highest compliment you can give us and it fuels the continuation of this project. And sharing is incredibly easy. For audio, we are on all the major platforms. You can find us on felon .fm, Spotify, Apple podcasts, or YouTube music. The direct links are always on our research website, which again is linked in the description. And we have the video side too. Right. Also, I mentioned earlier that we are testing short videos on YouTube. As you know, we are still experimenting with building these long form atmospheric videos with the Mosaic AI video editor. So think of the short videos as still a test phase, but we absolutely want your feedback."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 23,
-    "title": "By the Way, Mosaic Just Launched a New Service Called Motion",
-    "start": 3071.44,
-    "end": 3217.4,
-    "duration": 154.88,
-    "bridge_text": [
-      "What is the deeper secret behind Part 45?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 146.66,
+        "bridge_text": [
+            "What is the deeper secret behind Part 43?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 2932.94,
+                "end": 2954.54,
+                "duration": 21.6,
+                "text": "But the permanent trillion dollar value consolidated with the apps that lived on our phones. Meta, Uber, Airbnb. Exactly. So the research is arguing that in this agentic wave, the hardware layer Nvidia will eventually commoditize and the ultimate winner will be whoever owns the consumer touch point. Which brings us squarely back to Meta's incredible balance sheet advantage."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 2954.62,
+                "end": 3070.68,
+                "duration": 116.06,
+                "text": "Contrast Meta with a competitor like SpaceX, which recently acquired XAI. They are publicly traded now under the ticker SPCX. They have the Starlink satellite revenue certainly. But their AI division burned through $6 .36 billion in losses in 2025 alone. They are heavily reliant on diluting their stock, selling equity, and taking on massive debt to fund the construction of these necessary data centers. While Meta in just one single quarter Q2 of 2026, generated nearly $16 billion in pure net income. They are entirely self -funding their side of the AI wars. They don't need to go hat in hand to Wall Street to ask for permission to build a data center. They just write a check from their advertising profits. It is an unparalleled self -sustaining financial engine driving this technological shift. They are immune to the capital constraints paralyzing their rivals. You know, pointing out how deep and complex this financial maneuvering actually is, the pay ratios, the cat -bex traps, the structural most. This is exactly why we do this show. We don't just want to tell you what the tech does. We want to show you the economic gear is turning beneath it. It's so important to see the whole picture. It really is. And it's exactly why you, the listener, should share this show. If you have friends or colleagues where you geek out on deep finance, tech strategy, or even the geopolitical philosophy of AI, send them this deep dive. It is the highest compliment you can give us and it fuels the continuation of this project. And sharing is incredibly easy. For audio, we are on all the major platforms. You can find us on felon .fm, Spotify, Apple podcasts, or YouTube music. The direct links are always on our research website, which again is linked in the description. And we have the video side too. Right. Also, I mentioned earlier that we are testing short videos on YouTube. As you know, we are still experimenting with building these long form atmospheric videos with the Mosaic AI video editor. So think of the short videos as still a test phase, but we absolutely want your feedback."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 23,
+        "title": "By the Way, Mosaic Just Launched a New Service Called Motion",
         "start": 3071.44,
-        "end": 3092.3,
-        "duration": 20.86,
-        "text": "Our goal is to keep the video simple, calm, and entirely free from modern digital distractions. By the way, Mosaic just launched a new service called motion. Oh, yeah. And guess what? It is perfectly suited to our specific style of content creation. It handles that minimalist kinetic typography beautifully. Check it out and let us know what you think."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 3092.38,
         "end": 3217.4,
-        "duration": 125.02,
-        "text": "As we draw this deep dive to a close, I want to offer a synthesis of the massive picture we've explored today. What we are witnessing, what the research so meticulously details is the critical irreversible shift from theoretical AI to ubiquitous consumer distribution. That's the real shift. For years, the AI race was defined purely by who had the smartest model in a vacuum. I saluted in a lab. But the reality of the free market is different. The real winner isn't necessarily the one with the highest benchmark score on a whiteboard. The real winner is the one who can take a secure persistent autonomous digital worker and put it natively into the applications that three billion people already open every single day. Right. It's not about forcing people to learn a new tool. It's about putting the agent invisibly into the tools they already use, like what's happened Instagram. Exactly. Meta's strategic masterstroke isn't just the Mew Spark model itself. It's the unparalleled distribution rails of their ecosystem shielded by a fortress of self -funded capital and decisive legal victories. All while competitors scrambled to erect regulatory walls just to buy themselves a few more quarters of time. It is a fascinating brutal landscape. And it leads me with one final provocative thought for you to mull over as you go about your day. We spent a lot of time talking about how Meta Muse is turning a simple chat app like WhatsApp into a platform that autonomously handles your financial portfolio, harvest your tax losses, and negotiate your internet bills. A lot of power in a chat app. Right. If an AI agent living silently in your chat app is doing all of that on your behalf, what happens to traditional banks? What happens to your online stock broker? What happens to the traditional web browser itself? That is the big question. If you never need to search for a website again because your agent navigates the headless DOM for you, does the open web simply become an invisible background layer? A dark database of APIs that only our AI agents ever interact with? Are we watching the death of the consumer web browser in real time? It is a profound paradigm shifting question regarding the future of human computer interaction."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  },
-  {
-    "num": 24,
-    "title": "That is the Mission, the Flow of Collaborative Intelligence",
-    "start": 3218.08,
-    "end": 3277.7,
-    "duration": 68.54,
-    "bridge_text": [
-      "What is the deeper secret behind Part 47?"
-    ],
-    "segments": [
-      {
-        "type": "audio",
+        "duration": 154.88,
+        "bridge_text": [
+            "What is the deeper secret behind Part 45?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 3071.44,
+                "end": 3092.3,
+                "duration": 20.86,
+                "text": "Our goal is to keep the video simple, calm, and entirely free from modern digital distractions. By the way, Mosaic just launched a new service called motion. Oh, yeah. And guess what? It is perfectly suited to our specific style of content creation. It handles that minimalist kinetic typography beautifully. Check it out and let us know what you think."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 3092.38,
+                "end": 3217.4,
+                "duration": 125.02,
+                "text": "As we draw this deep dive to a close, I want to offer a synthesis of the massive picture we've explored today. What we are witnessing, what the research so meticulously details is the critical irreversible shift from theoretical AI to ubiquitous consumer distribution. That's the real shift. For years, the AI race was defined purely by who had the smartest model in a vacuum. I saluted in a lab. But the reality of the free market is different. The real winner isn't necessarily the one with the highest benchmark score on a whiteboard. The real winner is the one who can take a secure persistent autonomous digital worker and put it natively into the applications that three billion people already open every single day. Right. It's not about forcing people to learn a new tool. It's about putting the agent invisibly into the tools they already use, like what's happened Instagram. Exactly. Meta's strategic masterstroke isn't just the Mew Spark model itself. It's the unparalleled distribution rails of their ecosystem shielded by a fortress of self -funded capital and decisive legal victories. All while competitors scrambled to erect regulatory walls just to buy themselves a few more quarters of time. It is a fascinating brutal landscape. And it leads me with one final provocative thought for you to mull over as you go about your day. We spent a lot of time talking about how Meta Muse is turning a simple chat app like WhatsApp into a platform that autonomously handles your financial portfolio, harvest your tax losses, and negotiate your internet bills. A lot of power in a chat app. Right. If an AI agent living silently in your chat app is doing all of that on your behalf, what happens to traditional banks? What happens to your online stock broker? What happens to the traditional web browser itself? That is the big question. If you never need to search for a website again because your agent navigates the headless DOM for you, does the open web simply become an invisible background layer? A dark database of APIs that only our AI agents ever interact with? Are we watching the death of the consumer web browser in real time? It is a profound paradigm shifting question regarding the future of human computer interaction."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    },
+    {
+        "num": 24,
+        "title": "That is the Mission, the Flow of Collaborative Intelligence",
         "start": 3218.08,
-        "end": 3239.38,
-        "duration": 21.3,
-        "text": "The internet was built for human eyes, but the next iteration may be built exclusively for agentic code. Once again, we want to request that you subscribe to the show on your platform of choice. And critically, we invite you to share resources for future research on SUVtrii .com. Why do we ask for sources? Because the best ideas don't come from us alone. They emerge when your curiosity meets our process."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0,
-        "volume": 1
-      },
-      {
-        "type": "audio",
-        "start": 3239.46,
         "end": 3277.7,
-        "duration": 38.24,
-        "text": "In one line, your signals are synthesis AI acceleration human obsession distilled insight. That is the mission, the flow of collaborative intelligence. Help us in creating a symbiosis of artificial and natural intelligence. We are particularly interested if you have expertise in the specific fields we touched on today. High frequency algorithmic trading, kernel level virtualization architectures like EVPF, hardware and forest trusted execution environments or technology policy and regulatory strategy. Keep searching, keep the quest on, wait no ellipsis, let me rephrase that, keep searching, keep the quest on, see you on the next deep dive. I am Satoshi. And I am Satoshi."
-      },
-      {
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1
-      }
-    ],
-    "locked": false
-  }
+        "duration": 68.54,
+        "bridge_text": [
+            "What is the deeper secret behind Part 47?"
+        ],
+        "segments": [
+            {
+                "type": "audio",
+                "start": 3218.08,
+                "end": 3239.38,
+                "duration": 21.3,
+                "text": "The internet was built for human eyes, but the next iteration may be built exclusively for agentic code. Once again, we want to request that you subscribe to the show on your platform of choice. And critically, we invite you to share resources for future research on SUVtrii .com. Why do we ask for sources? Because the best ideas don't come from us alone. They emerge when your curiosity meets our process."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0,
+                "volume": 1
+            },
+            {
+                "type": "audio",
+                "start": 3239.46,
+                "end": 3277.7,
+                "duration": 38.24,
+                "text": "In one line, your signals are synthesis AI acceleration human obsession distilled insight. That is the mission, the flow of collaborative intelligence. Help us in creating a symbiosis of artificial and natural intelligence. We are particularly interested if you have expertise in the specific fields we touched on today. High frequency algorithmic trading, kernel level virtualization architectures like EVPF, hardware and forest trusted execution environments or technology policy and regulatory strategy. Keep searching, keep the quest on, wait no ellipsis, let me rephrase that, keep searching, keep the quest on, see you on the next deep dive. I am Satoshi. And I am Satoshi."
+            },
+            {
+                "type": "music",
+                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "duration": 4.5,
+                "crossfade": 0.3,
+                "volume": 1
+            }
+        ],
+        "locked": false
+    }
 ]
