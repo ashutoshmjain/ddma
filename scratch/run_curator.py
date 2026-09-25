@@ -864,26 +864,18 @@ def get_mosaic_default_prompt():
             print(f"Warning: Failed to load settings.json for prompt: {se}")
             
     return (
-        "CANVAS & FRAMING SPECIFICATIONS:\n"
-        "- 1:1 Square canvas (740x740 px) at 30 fps.\n"
-        "- Center-align all graphic elements, node diagrams, and typography within the square viewport with a 10% safe margin to prevent edge clipping.\n"
-        "- Background is a solid pure black canvas (#000000). Visuals must persistently cover the timeline with zero empty or black voids.\n\n"
-        "MOTION DESIGN & PACING:\n"
-        "- Cover the entire duration with Dan Koe / Vox-style minimalist motion graphics, blueprint diagrams, and kinetic typography.\n"
-        "- Plan around 13 to 15 seamless segments (~16s each) that flow smoothly into each other like a continuous relay race.\n"
-        "- Front-load aggressive, striking blueprint shapes within the first 5–10 seconds to instantly hook viewer retention.\n"
-        "- No static holds beyond 4 seconds. Introduce discrete step reveals and visual evolutions every 2–4 seconds.\n"
-        "- Transforms: Use lightweight opacity, scale, and translation. Prefer clean, step-based reveals over complex 3D meshes or continuous motion loops.\n\n"
-        "MUSIC STINGS & PAUSE VISUALS:\n"
-        "- During musical stings, bridge interludes, or pauses in dialogue, actively render rhythmic, acoustic-inspired graphics:\n"
-        "  • Vibrating geometric guitar strings or resonant wave lines.\n"
-        "  • Pulsing concentric radar/sonar rings that ripple outward to the beat.\n"
-        "  • Oscillating audio waveform nodes and harmonic frequencies.\n"
-        "  • Never leave musical moments static or idle.\n\n"
-        "TYPOGRAPHY & TEXT REVEALS:\n"
-        "- Highlight key spoken concepts using bold Dan Koe–style text reveals, node labels, and emphasized keyword cards.\n"
-        "- Integrate text directly as part of the infographic layout (flowcharts, comparison metrics, labeled arrows, boxed concepts).\n"
-        "- Maintain crisp, high-contrast white and subtle accent tones against the black canvas."
+        "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - around 150 to 180 seconds long)\n\n"
+        "- Cover the full timeline of the video with Dan Koe-style motion graphics. Entire length of Video must be covered with no blanks\n\n"
+        "- Plan around 13 to 15 segments of roughly ~ 16 seconds each. Each segment renders a graphic with changing visuals and multiple text reveals.\n\n"
+        "- 'front load more aggressive infographics to engage the viewer right up front' or 'use bold Koe style shapes in the first 10 seconds').\n\n"
+        "- Assume background video is a blank black glossy screen - so you must keep persistent visuals (animation or text) through out the segments and segments must merge into each other like a relay race.\n\n"
+        "--------------------------------------------------\n"
+        "PACING & ANIMATION RULES\n"
+        "--------------------------------------------------\n"
+        "- No static holds beyond 6 seconds. Introduce visual changes every 2-4 seconds.\n"
+        "- Use only basic transforms: opacity, position, scale. Keep animations single-property per element.\n"
+        "- Prefer step-based reveals over continuous motion. Avoid preset/template animations.\n"
+        "- No gaps in infographic coverage. No dependency on external assets."
     )
 
 
