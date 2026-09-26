@@ -234,53 +234,54 @@
     },
     {
         "num": 6,
-        "title": "Linux EBPF",
+        "title": "Muse absolute security: EBPF",
         "start": 694.12,
         "end": 856.62,
         "duration": 171.42,
         "bridge_text": [
-            "What happens when intelligence expands in Part 12?"
+            "Why go this extra mile - unlike other Labs ?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 694.12,
+                "start": 694.22,
                 "end": 712.3,
-                "duration": 18.18,
-                "text": "But EBPF allows Sentinel to attach micro programs directly to the kernel's network sockets and system calls without changing the kernel source code or rebooting the server. Wow. So it means Sentinel is inspecting the AI's commands at the exact micro second they hit the hardware layer. That's incredible."
+                "duration": 18.08,
+                "text": "EBPF  allows  Sentinel  to  attach  micro  programs  directly  to  the  kernel's  network  sockets  and  system  calls  without  changing  the  kernel  source  code  or  rebooting  the  server.  Wow.  So  it  means  Sentinel  is  inspecting  the  AI's  commands  at  the  exact  micro  second  they  hit  the  hardware  layer.  That's  incredible."
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0,
                 "volume": 1
             },
             {
                 "type": "audio",
-                "start": 712.38,
-                "end": 856.62,
-                "duration": 144.24,
-                "text": "If the AI tries to execute an unauthorized command or attempts to navigate to a known malicious IP address, Sentinel drops the network packet and blocks the action at the root level before it even executes. If like having a security guard who can literally freeze time the millisecond, the intern reaches for the wrong door handle. Exactly. Which, you know, when you're talking about delegating incredibly complex multi -step digital workflows is absolutely necessary. 100%. You know, speaking of delegating complex multi -step digital workflows, but actually naturally makes me think about how we handle the intensely complex workflows required to produce these very deep dyes for you. It really is a rigorous process, very much mirroring a multi -step agentic workflow itself. Wouldn't you say it totally does. And I want to pull back the curtain for a second on how this show actually comes to life because it relies on the same kind of autonomous systems we're talking about today. We couldn't do it without them. Right. It starts with you, the listeners. You send us open research through our open review platform at SHU TII dot com. That's SHU TRI dot com. Once we get that research, we absolutely obsess over it. We map out the raw data, find the hidden themes, the connections. And then we unleash Gemini Pro to go full internet detective. We have it autonomously chase down citations, parse complex documents and pull comparative data. But just like Muse needs a Sentinel supervisor, we have to tame those AI tangents with very active, precise prompting. Right. We act as a Sentinel. We validate everything across thousands of signals to ensure absolute accuracy. And then comes the human element. We handcraft and polish the research, painfully refining every single word until we can compress it into the tight no fluff audio you're hearing right now. But that is just the audio side. Yeah. For the video side, we designed the sound, the mood, the visual atmosphere. We were building motion graphics with minimalist, clean, high contrast typography. We use simple geometric accents, subtle kinetic text reveals and calm, premium pacing. We focus entirely on strong visual hierarchy and white space to let the information really breathe. And to execute all of that, we use Mosaic. Mosaic is an absolute game changer when it comes to video editing. It allows us to take these massive, complex workflows and turn them into something beautiful, calm and totally distraction free. It's a layered process, much like the layered execution environments. Muse relies upon exactly."
+                "start": 712.48,
+                "end": 845.18,
+                "duration": 132.7,
+                "text": "If  the  AI  tries  to  execute  an  unauthorized  command  or  attempts  to  navigate  to  a  known  malicious  IP  address,  Sentinel  drops  the  network  packet  and  blocks  the  action  at  the  root  level  before  it  even  executes.  If  like  having  a  security  guard  who  can  literally  freeze  time  the  millisecond,  the  intern  reaches  for  the  wrong  door  handle.  Exactly.  Which,  you  know,  when  you're  talking  about  delegating  incredibly  complex  multi -step  digital  workflows  is  absolutely  necessary.  100%.  You  know,  speaking  of  delegating  complex  multi -step  digital  workflows,  but  actually  naturally  makes  me  think  about  how  we  handle  the  intensely  complex  workflows  required  to  produce  these  very  deep  dyes  for  you.  It  really  is  a  rigorous  process,  very  much  mirroring  a  multi -step  agentic  workflow  itself.  Wouldn't  you  say  it  totally  does.  And  I  want  to  pull  back  the  curtain  for  a  second  on  how  this  show  actually  comes  to  life  because  it  relies  on  the  same  kind  of  autonomous  systems  we're  talking  about  today.  We  couldn't  do  it  without  them.  Right.  It  starts  with  you,  the  listeners.  You  send  us  open  research  through  our  open  review  platform  at  SHU  TII  dot  com.  That's  SHU  TRI  dot  com.  Once  we  get  that  research,  we  absolutely  obsess  over  it.  We  map  out  the  raw  data,  find  the  hidden  themes,  the  connections.  And  then  we  unleash  Gemini  Pro  to  go  full  internet  detective.  We  have  it  autonomously  chase  down  citations,  parse  complex  documents  and  pull  comparative  data.  But  just  like  Muse  needs  a  Sentinel  supervisor,  we  have  to  tame  those  AI  tangents  with  very  active,  precise  prompting.  Right.  We  act  as  a  Sentinel.  We  validate  everything  across  thousands  of  signals  to  ensure  absolute  accuracy.  And  then  comes  the  human  element.  We  handcraft  and  polish  the  research,  painfully  refining  every  single  word  until  we  can  compress  it  into  the  tight  no  fluff  audio  you're  hearing  right  now.  But  that  is  just  the  audio  side.  Yeah.  For  the  video  side,  we  designed  the  sound,  the  mood,  the  visual  atmosphere.  We  were  building  motion  graphics  with  minimalist,  clean,  high  contrast  typography.  We  use  simple  geometric  accents,  subtle  kinetic  text  reveals  and  calm,  premium  pacing.  We  focus  entirely  on  strong  visual  hierarchy  and  white  space  to  let  the  information  really  breathe.  And  to  execute  all  of  that,  we  use  Mosaic.  Mosaic  is  an  absolute  game  changer  when  it  comes  to  video  editing.  It"
             },
             {
                 "type": "music",
-                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
-                "duration": 4.5,
+                "music_file": "deepDive-conclusion.mp3",
+                "duration": 6.5,
                 "crossfade": 0.3,
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "8242ce10-a10b-4ae8-a18b-8350065ec4a9"
     },
     {
         "num": 7,
-        "title": "So Bringing This Back to Meta Muse",
+        "title": "Muse : Personal Quant",
         "start": 857.62,
         "end": 1015.64,
         "duration": 166.94,
         "bridge_text": [
-            "What happens when intelligence expands in Part 14?"
+            "Wildest Part - Ambient feed"
         ],
         "segments": [
             {
@@ -306,17 +307,18 @@
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "cb215a20-d0c2-46db-a5ba-e669029cb27e"
     },
     {
         "num": 8,
-        "title": "I Love That Term",
+        "title": "Ambient feed reporting !",
         "start": 1016.34,
         "end": 1164.28,
         "duration": 156.86,
@@ -347,7 +349,7 @@
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
                 "volume": 1
