@@ -313,52 +313,53 @@
                 "volume": 1
             }
         ],
-        "locked": true
+        "locked": true,
+        "mosaic_run_id": "cb215a20-d0c2-46db-a5ba-e669029cb27e"
     },
     {
         "num": 8,
-        "title": "Ambient feed reporting !",
+        "title": "Progressive capital allocation",
         "start": 1016.34,
         "end": 1164.28,
         "duration": 156.86,
         "bridge_text": [
-            "What happens when intelligence expands in Part 16?"
+            "But I am not giving my credit card to Muse !"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 1016.34,
+                "start": 1014.1,
                 "end": 1039.02,
-                "duration": 22.68,
-                "text": "It doesn't force you to log into some clunky obscure financial portal to see what it did. No, it utilizes what the research calls ambient feed reporting ambient feed reporting. I love that term. The AI synthesizes its actions and drops unobtrusive highly visual performance updates directly into your WhatsApp direct messages or your Instagram feed. Exactly where your attention already is precisely."
+                "duration": 24.92,
+                "text": "And  here's  the  wildest  parts  of  me.  It  doesn't  force  you  to  log  into  some  clunky  obscure  financial  portal  to  see  what  it  did.  No,  it  utilizes  what  the  research  calls  ambient  feed  reporting  ambient  feed  reporting.  I  love  that  term.  The  AI  synthesizes  its  actions  and  drops  unobtrusive  highly  visual  performance  updates  directly  into  your  WhatsApp  direct  messages  or  your  Instagram  feed.  Exactly  where  your  attention  already  is  precisely."
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0,
                 "volume": 1
             },
             {
                 "type": "audio",
-                "start": 1039.1,
-                "end": 1164.28,
-                "duration": 125.18,
-                "text": "It comes to you, but it's not just finances it. The research also highlights the cross platform creative use case, which I think is going to fundamentally change the entire creator economy. This is where mues interfaces with the social layer. The agent can be granted permission to access your raw, unedited footage residing in your Facebook or Instagram cloud albums. So just to be clear, if I go on vacation and shoot a hundred random shaky clips on my phone, they just sing to the cloud. What does mues actually do with them? Mues parses the visual DOM of those video files. It understands the context. It identifies the aesthetic highlights and autonomously sends that raw footage to creative processing platforms like mosaic, for instance. Exactly. It can synthesize B -roll, generate contextual infographics, apply trending audio tracks, and then natively schedule and publish that Polish content across YouTube shorts, Instagram reels and TikTok. And it optimizes the posting times for a maximum algorithmic engagement too. Yes, all autonomously. It's literally a full time video editor and social media manager living inside your phone. But this brings me to a massive point of friction. I can guess what it is. I can almost hear you, the listener saying exactly what I said when I first read this. I completely get letting an AI edit my vacation videos. If it messes up a TikTok transition, who cares? Right. Low stakes. But letting a bot harvest tax losses and trade stocks, would you honestly give a piece of software the keys to your retirement account? A hallucination or a bad line of code could wipe out your entire life savings? That is the natural human friction point with autonomous agents. Trust is not simply given. It must be structurally earned. And the research addresses this directly with a deployment strategy called progressive capital allocation, progressive capital allocation. Let's break that down because I imagine it's the only way people will actually adopt this kind of tech. The system is designed to build trust incrementally over an extended period. You do not hand over your life savings or your primary 401k on day one. Obviously not. The model encourages users to seed the agent with a micro portfolio, say, $500."
+                "start": 1039.36,
+                "end": 1171.88,
+                "duration": 132.52,
+                "text": "It  comes  to  you,  but  it's  not  just  finances  it.  The  research  also  highlights  the  cross  platform  creative  use  case,  which  I  think  is  going  to  fundamentally  change  the  entire  creator  economy.  This  is  where  mues  interfaces  with  the  social  layer.  The  agent  can  be  granted  permission  to  access  your  raw,  unedited  footage  residing  in  your  Facebook  or  Instagram  cloud  albums.  So  just  to  be  clear,  if  I  go  on  vacation  and  shoot  a  hundred  random  shaky  clips  on  my  phone,  they  just  sing  to  the  cloud.  What  does  mues  actually  do  with  them?  Mues  parses  the  visual  DOM  of  those  video  files.  It  understands  the  context.  It  identifies  the  aesthetic  highlights  and  autonomously  sends  that  raw  footage  to  creative  processing  platforms  like  mosaic,  for  instance.  Exactly.  It  can  synthesize  B -roll,  generate  contextual  infographics,  apply  trending  audio  tracks,  and  then  natively  schedule  and  publish  that  Polish  content  across  YouTube  shorts,  Instagram  reels  and  TikTok.  And  it  optimizes  the  posting  times  for  a  maximum  algorithmic  engagement  too.  Yes,  all  autonomously.  It's  literally  a  full  time  video  editor  and  social  media  manager  living  inside  your  phone.  But  this  brings  me  to  a  massive  point  of  friction.  I  can  guess  what  it  is.  I  can  almost  hear  you,  the  listener  saying  exactly  what  I  said  when  I  first  read  this.  I  completely  get  letting  an  AI  edit  my  vacation  videos.  If  it  messes  up  a  TikTok  transition,  who  cares?  Right.  Low  stakes.  But  letting  a  bot  harvest  tax  losses  and  trade  stocks,  would  you  honestly  give  a  piece  of  software  the  keys  to  your  retirement  account?  A  hallucination  or  a  bad  line  of  code  could  wipe  out  your  entire  life  savings?  That  is  the  natural  human  friction  point  with  autonomous  agents.  Trust  is  not  simply  given.  It  must  be  structurally  earned.  And  the  research  addresses  this  directly  with  a  deployment  strategy  called  progressive  capital  allocation,  progressive  capital  allocation.  Let's  break  that  down  because  I  imagine  it's  the  only  way  people  will  actually  adopt  this  kind  of  tech.  The  system  is  designed  to  build  trust  incrementally  over  an  extended  period.  You  do  not  hand  over  your  life  savings  or  your  primary  401k  on  day  one.  Obviously  not.  The  model  encourages  users  to  seed  the  agent  with  a  micro  portfolio,  say,  $500.  You  give  it  this  modest  discretionary  capital  and  then  you  simply  observe  it.  You  treat  it  like  a  probationary  hire.  You"
             },
             {
                 "type": "music",
-                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
-                "duration": 4.5,
+                "music_file": "deepDive-conclusion.mp3",
+                "duration": 6.5,
                 "crossfade": 0.3,
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true
     },
     {
         "num": 9,
-        "title": "You Treat it Like a Probationary Hire",
+        "title": "Single use credit card",
         "start": 1164.96,
         "end": 1323.34,
         "duration": 167.3,
@@ -389,7 +390,7 @@
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
                 "volume": 1
