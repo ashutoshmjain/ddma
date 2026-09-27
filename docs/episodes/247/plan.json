@@ -355,52 +355,53 @@
                 "volume": 1
             }
         ],
-        "locked": true
+        "locked": true,
+        "mosaic_run_id": "a67bf65e-e23a-49c6-9435-f47671400ceb"
     },
     {
         "num": 9,
-        "title": "Single use credit card",
+        "title": "Merchant scoped Credit Cards",
         "start": 1164.96,
         "end": 1323.34,
         "duration": 167.3,
         "bridge_text": [
-            "What happens when intelligence expands in Part 18?"
+            "How is agentic industry shaping up ?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 1164.96,
-                "end": 1185.26,
-                "duration": 20.3,
-                "text": "You give it this modest discretionary capital and then you simply observe it. You treat it like a probationary hire. You don't give the new guy the million dollar enterprise account on his first day. You give him the small account and see if he panics when the market drops. That's a perfect way to put it. You evaluate its rebalancing decisions over several financial quarters."
+                "start": 1209.16,
+                "end": 1226.98,
+                "duration": 17.82,
+                "text": "But  what  about  when  it  actually  buys  things  on  the  open  web  like  retail  transactions?  Yeah,  like  if  it's  negotiating  my  internet  bill  or  buying  a  flight  on  Delta.  If  it's  parsing  doms  and  filling  out  checkout  forms,  how  is  that  secure?  I  am  not  letting  an  AI  type  my  actual  physical  credit  card  number  into  a  hundred  different  random  websites."
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-                "duration": 4.5,
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
+                "duration": 5.5,
                 "crossfade": 0,
                 "volume": 1
             },
             {
                 "type": "audio",
-                "start": 1185.34,
-                "end": 1323.34,
-                "duration": 138,
-                "text": "You watch how it executes tax loss harvesting during a market correction. You test its metal. Right. The system requires the AI to explicitly prove its execution discipline and risk management to you. Only after a sustained track record of success do users typically authorize increased capital allocation. OK, that makes total sense for trading stocks inside a closed broker, deco system. But what about when it actually buys things on the open web like retail transactions? Yeah, like if it's negotiating my internet bill or buying a flight on Delta. If it's parsing doms and filling out checkout forms, how is that secure? I am not letting an AI type my actual physical credit card number into a hundred different random websites. And you wouldn't have to the research highlights met as deep infrastructural integration with stripe link for exactly this purpose. OK, how does that work? When Muse needs to settle a real world transaction, it does not pass your physical credit card number around the web. It utilizes the stripe API to provision single use merchant scoped virtual credit cards. Merchant scoped. What does that actually mean in practice? It means if Muse decides to book a flight on Delta Airlines, it generates a unique 16 digit credit card number that is mathematically locked to two specific conditions. OK. First, it can only be charged for the exact amount of the flight. Second, it can only be successfully processed by Delta specific merchant ID. Oh, wow. So even if the AI gets confused and types the number into the wrong website or if a hacker somehow intercepts the headless browser session, the card is completely useless to anyone else. Precisely. It will decline everywhere else. And furthermore, it comes with built in automated buyer protections like chargebacks. Yes. If the AI purchases a physical item and the tracking API registers a package loss, the AI can autonomously initiate a chargeback protocol. It creates a hermetically sealed financial loop where the user is entirely insulated from fraud. I really want to ask you the listener to pause and think about how this changes your fundamental relationship with software. For the last 30 years, computing is meant you going to a screen, logging into a dashboard, navigating menus and pulling all the levers yourself a very manual process. Right. With this agentic paradigm, you aren't logging into a dashboard anymore."
+                "start": 1227.26,
+                "end": 1308.54,
+                "duration": 81.28,
+                "text": "And  you  wouldn't  have  to  the  research  highlights  met  as  deep  infrastructural  integration  with  stripe  link  for  exactly  this  purpose.  OK,  how  does  that  work?  When  Muse  needs  to  settle  a  real  world  transaction,  it  does  not  pass  your  physical  credit  card  number  around  the  web.  It  utilizes  the  stripe  API  to  provision  single  use  merchant  scoped  virtual  credit  cards.  Merchant  scoped.  What  does  that  actually  mean  in  practice?  It  means  if  Muse  decides  to  book  a  flight  on  Delta  Airlines,  it  generates  a  unique  16  digit  credit  card  number  that  is  mathematically  locked  to  two  specific  conditions.  OK.  First,  it  can  only  be  charged  for  the  exact  amount  of  the  flight.  Second,  it  can  only  be  successfully  processed  by  Delta  specific  merchant  ID.  Oh,  wow.  So  even  if  the  AI  gets  confused  and  types  the  number  into  the  wrong  website  or  if  a  hacker  somehow  intercepts  the  headless  browser  session,  the  card  is  completely  useless  to  anyone  else.  Precisely.  It  will  decline  everywhere  else.  And  furthermore,  it  comes  with  built  in  automated  buyer  protections  like  chargebacks.  Yes.  If  the  AI  purchases  a  physical  item  and  the  tracking  API  registers  a  package  loss,  the  AI  can  autonomously  initiate  a  chargeback  protocol.  It  creates  a  hermetically  sealed  financial  loop  where  the  user  is  entirely  insulated  from  fraud.  I  really  want  to  ask  you  the  listener  to  pause  and  think  about  how  this  changes  your  fundamental  relationship  with  software.  For"
             },
             {
                 "type": "music",
-                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
-                "duration": 4.5,
+                "music_file": "deepDive-conclusion.mp3",
+                "duration": 6.5,
                 "crossfade": 0.3,
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true
     },
     {
         "num": 10,
-        "title": "It is a Complete Inversion of the User Interface",
+        "title": "Meta Muse vs Perplexity Computer",
         "start": 1323.96,
         "end": 1448.08,
         "duration": 133.04,
@@ -417,7 +418,7 @@
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0,
                 "volume": 1
@@ -431,8 +432,8 @@
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-                "duration": 4.5,
+                "music_file": "deepDive-conclusion.mp3",
+                "duration": 5.5,
                 "crossfade": 0.3,
                 "volume": 1
             }
