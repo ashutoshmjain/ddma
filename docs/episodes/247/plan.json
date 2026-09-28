@@ -397,7 +397,8 @@
                 "volume": 1
             }
         ],
-        "locked": true
+        "locked": true,
+        "mosaic_run_id": "aa376a8a-5e93-4d96-9462-bed2dd6388a7"
     },
     {
         "num": 10,
@@ -406,15 +407,15 @@
         "end": 1448.08,
         "duration": 133.04,
         "bridge_text": [
-            "What happens when intelligence expands in Part 20?"
+            "Coming up Apple PCC vs Meta Muse !"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 1323.96,
-                "end": 1346.64,
-                "duration": 22.68,
-                "text": "The software is doing the chores in the background, totally at a site and simply reporting its successes to you in a casual text message. It is a complete inversion of the user interface. It is a profound paradigm shift. But as you astutely pointed out earlier, giving an AI a virtual credit card, access to your brokerage and access to your social media archives requires immense structural trust."
+                "start": 1347.82,
+                "end": 1361.84,
+                "duration": 14.02,
+                "text": "how  different  tech  companies  are  choosing  to  build  that  architecture  of  trust  is  creating  a  massive  ideological  divide  in  the  industry  right  now.  Yeah,  the  research  really  gets  into  this.  It  contrasts  metas  approach  with  two  radically  different  philosophies.  Apple  and  perplexity."
             },
             {
                 "type": "music",
@@ -425,10 +426,10 @@
             },
             {
                 "type": "audio",
-                "start": 1346.72,
-                "end": 1448.08,
-                "duration": 101.36,
-                "text": "Absolutely. And how different tech companies are choosing to build that architecture of trust is creating a massive ideological divide in the industry right now. Yeah, the research really gets into this. It contrasts metas approach with two radically different philosophies. Apple and perplexity. Let's start with perplexity because their approach is very distinct. In the research, they detail perplexity computer, which kind of pioneered this agentic idea earlier in 2026. But it is fundamentally a different beast than metamuse, right? It is entirely divergent in both architecture and target demographic. Perplexity structured its environment around what we call multi model orchestrations. Okay, what does that mean? Instead of relying on one single brain, it dynamically routes tasks across 20 different frontier models, various versions of Claude, Gemini and GPT, inside an isolated Linux sandbox. But the economics are what really separated them, I think. The research points out that perplexity max charges around $200 a month and they use what the paper calls a femoral Linux runtimes. An femoral runtime means the environment is temporary. It's fleeting, right? Perplexity is building an enterprise workstation for technical professionals, software engineers, quantitative researchers, data scientists. You log in, you instruct the AI to execute a highly complex, compute intensive data pipeline task. And the moment the task is finished and the output is delivered, the Linux environment essentially self -destructs. It just vanishes. It vanishes. There's no ongoing state. So perplexity is a high -end, expensive, specialized tool for coders who need brute force for a few hours. Contrast that with meta, meta is targeting the global consumer base. Every day user. Exactly."
+                "start": 1362.18,
+                "end": 1481.66,
+                "duration": 119.48,
+                "text": "Let's  start  with  perplexity  because  their  approach  is  very  distinct.  In  the  research,  they  detail  perplexity  computer,  which  kind  of  pioneered  this  agentic  idea  earlier  in  2026.  But  it  is  fundamentally  a  different  beast  than  metamuse,  right?  It  is  entirely  divergent  in  both  architecture  and  target  demographic.  Perplexity  structured  its  environment  around  what  we  call  multi  model  orchestrations.  Okay,  what  does  that  mean?  Instead  of  relying  on  one  single  brain,  it  dynamically  routes  tasks  across  20  different  frontier  models,  various  versions  of  Claude,  Gemini  and  GPT,  inside  an  isolated  Linux  sandbox.  But  the  economics  are  what  really  separated  them,  I  think.  The  research  points  out  that  perplexity  max  charges  around  $200  a  month  and  they  use  what  the  paper  calls  a  femoral  Linux  runtimes.  An  femoral  runtime  means  the  environment  is  temporary.  It's  fleeting,  right?  Perplexity  is  building  an  enterprise  workstation  for  technical  professionals,  software  engineers,  quantitative  researchers,  data  scientists.  You  log  in,  you  instruct  the  AI  to  execute  a  highly  complex,  compute  intensive  data  pipeline  task.  And  the  moment  the  task  is  finished  and  the  output  is  delivered,  the  Linux  environment  essentially  self -destructs.  It  just  vanishes.  It  vanishes.  There's  no  ongoing  state.  So  perplexity  is  a  high -end,  expensive,  specialized  tool  for  coders  who  need  brute  force  for  a  few  hours.  Contrast  that  with  meta,  meta  is  targeting  the  global  consumer  base.  Every  day  user.  Exactly.  Instead  of  charging  $200  a  month,  meta  is  subsidizing  the  cost  entirely  through  its  advertising  cash  flows.  They're  giving  users  100  million  free  weekly  tokens.  And  instead  of  routing  to  third  party  models  and  paying  API  fees,  meta  relies  entirely  on  its  vertically  integrated  proprietary  models,  like  new  Spark.  Meta  is  aiming  for  total  ubiquity  while  perplexity  is  aiming  for  enterprise  specialization.  But  the  much  more  significant  architectural  clash  detailed  in  the  research  is  actually  between  meta  and  Apple.  Oh,  man,  yeah,  we  have  to  look  closely  at  Apple's  private  cloud  compute  or  PCC.  This"
             },
             {
                 "type": "music",
@@ -438,11 +439,11 @@
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true
     },
     {
         "num": 11,
-        "title": "They're Giving Users 100 Million Free Weekly Tokens",
+        "title": "Meta Muse vs Apple PCC",
         "start": 1448.72,
         "end": 1599.54,
         "duration": 159.74,
@@ -452,28 +453,28 @@
         "segments": [
             {
                 "type": "audio",
-                "start": 1448.72,
-                "end": 1469.74,
-                "duration": 21.02,
-                "text": "Instead of charging $200 a month, meta is subsidizing the cost entirely through its advertising cash flows. They're giving users 100 million free weekly tokens. And instead of routing to third party models and paying API fees, meta relies entirely on its vertically integrated proprietary models, like new Spark. Meta is aiming for total ubiquity while perplexity is aiming for enterprise specialization."
+                "start": 1481.54,
+                "end": 1498.5,
+                "duration": 16.96,
+                "text": "This  is  where  the  privacy  debate  gets  really  intense.  The  research  highlights  that  Apple  and  Meta  have  taken  entirely  different  paths  regarding  execution  persistence.  Apple's  private  cloud  compute  is  fundamentally  stateless.  What  does  stateless  mean  when  we're  talking  about  artificial  intelligence?"
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0,
                 "volume": 1
             },
             {
                 "type": "audio",
-                "start": 1469.82,
-                "end": 1599.54,
-                "duration": 129.72,
-                "text": "But the much more significant architectural clash detailed in the research is actually between meta and Apple. Oh, man, yeah, we have to look closely at Apple's private cloud compute or PCC. This is where the privacy debate gets really intense. The research highlights that Apple and Meta have taken entirely different paths regarding execution persistence. Apple's private cloud compute is fundamentally stateless. What does stateless mean when we're talking about artificial intelligence? A stateless architecture means the system has absolutely no permanent memory of the event or the user after the transaction is complete. Okay. When you ask your iPhone a complex query that exceeds the processing power of the local device, Apple encrypts the prompt and sends it to a custom Apple silicon server in their data center. Right. The server evaluates the response sends it back to your phone and then instantly cryptographically wipes its memory footprint. So it literally forgets you exist the second it answers you. Exactly. There is no local disc persistence. The data is never written to a permanent hard drive. So using an analogy, Apple PCC is like a highly secure, self -destructing message. You ask it to do a math problem. It writes the answer on a piece of paper, hands the paper to you and then immediately burns the paper and the desk it was sitting at. That's exactly it. It achieves incredibly strong cryptographic guarantees for privacy, which obviously aligns perfectly with Apple's corporate brand. Right. But because it is stateless, it is structurally incapable of true autonomy. Apple PCC cannot run a background task for three weeks. It cannot monitor the stock market for a specific dip and proactively initiate a complex web transaction on a Tuesday while your phone is turned off and sitting in your pocket. Because the moment the immediate synchronous task is done, the room disappears. It can't wait around for Tuesday. Precisely. Meta Muse, on the other hand, is stateful and persistent. It operates a continuous background virtual machine. So sticking with the analogy, if Apple is burning the paper, Meta is building a permanent, highly surveilled bank vault where your digital worker lives full time. They have a desk, they have file cabinets, they remember what you told them last week."
+                "start": 1498.96,
+                "end": 1641.6,
+                "duration": 142.64,
+                "text": "A  stateless  architecture  means  the  system  has  absolutely  no  permanent  memory  of  the  event  or  the  user  after  the  transaction  is  complete.  Okay.  When  you  ask  your  iPhone  a  complex  query  that  exceeds  the  processing  power  of  the  local  device,  Apple  encrypts  the  prompt  and  sends  it  to  a  custom  Apple  silicon  server  in  their  data  center.  Right.  The  server  evaluates  the  response  sends  it  back  to  your  phone  and  then  instantly  cryptographically  wipes  its  memory  footprint.  So  it  literally  forgets  you  exist  the  second  it  answers  you.  Exactly.  There  is  no  local  disc  persistence.  The  data  is  never  written  to  a  permanent  hard  drive.  So  using  an  analogy,  Apple  PCC  is  like  a  highly  secure,  self -destructing  message.  You  ask  it  to  do  a  math  problem.  It  writes  the  answer  on  a  piece  of  paper,  hands  the  paper  to  you  and  then  immediately  burns  the  paper  and  the  desk  it  was  sitting  at.  That's  exactly  it.  It  achieves  incredibly  strong  cryptographic  guarantees  for  privacy,  which  obviously  aligns  perfectly  with  Apple's  corporate  brand.  Right.  But  because  it  is  stateless,  it  is  structurally  incapable  of  true  autonomy.  Apple  PCC  cannot  run  a  background  task  for  three  weeks.  It  cannot  monitor  the  stock  market  for  a  specific  dip  and  proactively  initiate  a  complex  web  transaction  on  a  Tuesday  while  your  phone  is  turned  off  and  sitting  in  your  pocket.  Because  the  moment  the  immediate  synchronous  task  is  done,  the  room  disappears.  It  can't  wait  around  for  Tuesday.  Precisely.  Meta  Muse,  on  the  other  hand,  is  stateful  and  persistent.  It  operates  a  continuous  background  virtual  machine.  So  sticking  with  the  analogy,  if  Apple  is  burning  the  paper,  Meta  is  building  a  permanent,  highly  surveilled  bank  vault  where  your  digital  worker  lives  full  time.  They  have  a  desk,  they  have  file  cabinets,  they  remember  what  you  told  them  last  week.  And  they  can  wait  until  Tuesday  to  execute  a  trade.  That  is  the  fundamental  trade  off  of  the  agentic  era  to  have  a  true  agent  that  can  manage  your  life  asynchronously.  You  require  statefulness,  but  statefulness  inherently  introduces  a  much  larger  attack  surface  for  security  threats  and  privacy  violations.  And  this  is  exactly  where  my  alarm  bells  start  ringing  again.  Let's  be  real  here.  If  Meta  has  a  persistent  permanent  virtual  room  where  my  AI  is  tracking  my  investments,  looking  at  my  raw  video  footage,  reading  my  WhatsApp's,  and  negotiating  my  bills,  isn't  Meta  just  going  to  harvest  all  of  this  incredibly  rich  workflow  data  to  serve  me  more  targeted  ads?  It's  the  obvious  question."
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "deepDive-conclusion.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
                 "volume": 1
