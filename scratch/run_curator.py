@@ -81,24 +81,11 @@ def configure_gemini(api_key=None):
     if api_key:
         genai.configure(api_key=api_key)
         return True
-def load_settings():
-    if os.path.exists("settings.json"):
-        try:
-            with open("settings.json", "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            pass
-    return {}
-
-PORT = 8000
-
-# Global tracker for background Mosaic runs
-# Keys: (project_id, clip_num), Values: {"status": ..., "progress": ..., "error": ..., "run_id": ...}
-mosaic_runs = {}
-
 plan_file_lock = threading.Lock()
 
 def safe_load_json(file_path, retries=10, delay=0.05):
+    if not os.path.exists(file_path):
+        return None
     for i in range(retries):
         try:
             with plan_file_lock:
@@ -107,9 +94,24 @@ def safe_load_json(file_path, retries=10, delay=0.05):
                         return json.load(f)
         except (PermissionError, json.JSONDecodeError, OSError):
             time.sleep(delay)
-    with plan_file_lock:
-        with open(file_path, "r", encoding="utf-8") as f:
-            return json.load(f)
+    try:
+        with plan_file_lock:
+            if os.path.exists(file_path):
+                with open(file_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+    except Exception:
+        return None
+    return None
+
+def load_settings():
+    s = safe_load_json("settings.json")
+    return s if isinstance(s, dict) else {}
+
+PORT = 8000
+
+# Global tracker for background Mosaic runs
+# Keys: (project_id, clip_num), Values: {"status": ..., "progress": ..., "error": ..., "run_id": ...}
+mosaic_runs = {}
 
 def safe_save_json(file_path, data):
     with plan_file_lock:
@@ -180,6 +182,86 @@ def auto_recompile_clip(project_id, clip_num):
             print(f"[{project_id}][Clip {clip_num}] Auto re-compilation complete!")
     except Exception as e:
         print(f"[{project_id}][Clip {clip_num}] Warning: Auto compile-clip failed: {e}")
+
+def heal_mosaic_project_state(project_id, plan_data=None):
+    """
+    Scans project state for interrupted or stalled Mosaic runs across server restarts
+    or prompt settings changes. Self-heals zombie states:
+    1. If mosaic file not downloaded yet: auto-resumes polling thread.
+    2. If mosaic file downloaded but master compilation incomplete/broken: auto-resumes compile-clip.
+    3. If master compilation is already valid on disk: ensures mosaic_jobs.json reflects 100% completed.
+    """
+    ep_num_match = re.search(r'\d+', str(project_id))
+    if not ep_num_match:
+        return
+    ep_num = ep_num_match.group(0)
+
+    if plan_data is None:
+        plan_path = os.path.join("projects", project_id, "plan.json")
+        if os.path.exists(plan_path):
+            plan_data = safe_load_json(plan_path) or []
+        else:
+            plan_data = []
+
+    for clip in plan_data:
+        if not isinstance(clip, dict) or "mosaic_run_id" not in clip:
+            continue
+        c_num = clip.get("num")
+        if c_num is None:
+            continue
+        run_id = clip["mosaic_run_id"]
+        versioned_mosaic_file = os.path.join("clips", f"{ep_num}-{c_num}-mosaic-{run_id}.mp4")
+        orig_file = os.path.join("clips", f"{ep_num}-{c_num}-original.mp4")
+        master_clip_path = os.path.join("clips", f"{ep_num}-{c_num}.mp4")
+        job_key = (project_id, int(c_num))
+
+        has_mosaic_source = os.path.exists(versioned_mosaic_file) or os.path.exists(orig_file)
+
+        master_is_valid = False
+        if os.path.exists(master_clip_path) and os.path.getsize(master_clip_path) > 1024:
+            try:
+                chk = subprocess.run(
+                    ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1", master_clip_path],
+                    capture_output=True, text=True, timeout=5
+                )
+                if chk.returncode == 0:
+                    master_is_valid = True
+            except Exception:
+                pass
+
+        if not has_mosaic_source:
+            # Case 1: Mosaic run active in cloud, not yet downloaded locally
+            if job_key not in mosaic_runs or mosaic_runs[job_key].get("status") == "failed":
+                print(f"[{project_id}][Clip {c_num}] Auto-resuming Mosaic polling thread for run_id {run_id}...")
+                st_data = load_settings()
+                t = threading.Thread(
+                    target=run_mosaic_pipeline,
+                    args=(project_id, c_num, st_data, "", clip.get("segments", []), os.path.join("audio", f"{ep_num}.mp3"), run_id),
+                    daemon=True
+                )
+                t.start()
+        elif has_mosaic_source and not master_is_valid:
+            # Case 2: Mosaic video downloaded, but master clip compilation was interrupted mid-flight (e.g. at 95%)
+            if job_key not in mosaic_runs or mosaic_runs[job_key].get("status") not in ("compiling", "completed"):
+                print(f"[{project_id}][Clip {c_num}] Auto-healing interrupted compilation for run_id {run_id}...")
+                update_mosaic_job_state(project_id, c_num, "auto-compiling", 95, run_id=run_id)
+                def _heal_worker(pid=project_id, cn=c_num, rid=run_id):
+                    try:
+                        plan_file = os.path.join("projects", pid, "plan.json")
+                        subprocess.run([sys.executable, "ddma.py", "compile-clip", "--num", str(cn), "--plan-file", plan_file], check=True)
+                        update_mosaic_job_state(pid, cn, "completed", 100, run_id=rid)
+                        print(f"[{pid}][Clip {cn}] Auto-healing compilation complete!")
+                    except Exception as h_err:
+                        print(f"[{pid}][Clip {cn}] Auto-healing compilation failed: {h_err}")
+                        update_mosaic_job_state(pid, cn, "failed", 0, error=str(h_err), run_id=rid)
+                t = threading.Thread(target=_heal_worker, daemon=True)
+                t.start()
+        elif has_mosaic_source and master_is_valid:
+            # Case 3: Master clip already valid, ensure mosaic_jobs.json reflects 100% completed
+            d_jobs = load_mosaic_jobs(project_id)
+            cur_j = d_jobs.get(int(c_num))
+            if cur_j and cur_j.get("status") != "completed":
+                update_mosaic_job_state(project_id, c_num, "completed", 100, run_id=run_id)
 
 # Background thread helper for executing the Mosaic API pipeline (upload, run, poll, download)
 def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments, audio_path, run_id=None):
@@ -855,8 +937,8 @@ def get_mosaic_default_prompt():
     settings_path = "settings.json"
     if os.path.exists(settings_path):
         try:
-            with open(settings_path, "r", encoding="utf-8") as sf:
-                s_data = json.load(sf)
+            s_data = safe_load_json(settings_path)
+            if s_data and isinstance(s_data, dict):
                 prompt = s_data.get("mosaic_default_prompt")
                 if prompt:
                     return prompt
@@ -865,17 +947,18 @@ def get_mosaic_default_prompt():
             
     return (
         "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - around 150 to 180 seconds long)\n\n"
-        "- Cover the full timeline of the video with Dan Koe-style motion graphics. Entire length of Video must be covered with no blanks\n\n"
-        "- Plan around 13 to 15 segments of roughly ~ 16 seconds each. Each segment renders a graphic with changing visuals and multiple text reveals.\n\n"
-        "- 'front load more aggressive infographics to engage the viewer right up front' or 'use bold Koe style shapes in the first 10 seconds').\n\n"
-        "- Assume background video is a blank black glossy screen - so you must keep persistent visuals (animation or text) through out the segments and segments must merge into each other like a relay race.\n\n"
+        "- Cover the entire timeline of the video with Dan Koe-style motion graphics. Visual coverage must be active and persistent from 0:00 to the very last second with ZERO blank frames.\n\n"
+        "- Maintain uniform graphic density across all segments. Do not front-load or taper off; the closing segments must be just as visually rich and engaging as the opening.\n\n"
+        "- Plan 10 to 12 continuous segments of roughly ~ 15 seconds each, perfectly mapped to the clip length. Each segment renders a dynamic diagrammatic graphic with changing visual steps and text reveals.\n\n"
+        "- Assume background video is a blank black glossy screen (#000000). Keep persistent visuals (animations, conceptual geometry, or text) throughout. Segments must hand off to each other seamlessly like a relay race.\n\n"
+        "- Strong Outro: The final segment must conclude with an active summary diagram or key visual takeaway that persists until the clip finishes—never cut to a blank black screen.\n\n"
         "--------------------------------------------------\n"
         "PACING & ANIMATION RULES\n"
         "--------------------------------------------------\n"
-        "- No static holds beyond 6 seconds. Introduce visual changes every 2-4 seconds.\n"
+        "- No static holds beyond 6 seconds. Introduce visual changes or step reveals every 2-4 seconds.\n"
         "- Use only basic transforms: opacity, position, scale. Keep animations single-property per element.\n"
-        "- Prefer step-based reveals over continuous motion. Avoid preset/template animations.\n"
-        "- No gaps in infographic coverage. No dependency on external assets."
+        "- Prefer step-based reveals over continuous complex motion. Avoid preset/template animations.\n"
+        "- No gaps in infographic coverage. Zero external asset dependencies."
     )
 
 
@@ -3785,33 +3868,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 import re
                 ep_num_match = re.search(r'\d+', project_id)
 
-                # Self-healing & Auto-Resume check: ensure clips with mosaic_run_id are being polled / downloaded
-                plan_modified = False
-                if ep_num_match and plan_data:
-                    ep_num = ep_num_match.group(0)
-                    for clip in plan_data:
-                        if "mosaic_run_id" in clip:
-                            c_num = clip.get("num")
-                            run_id = clip["mosaic_run_id"]
-                            versioned_mosaic_file = os.path.join("clips", f"{ep_num}-{c_num}-mosaic-{run_id}.mp4")
-                            orig_file = os.path.join("clips", f"{ep_num}-{c_num}-original.mp4")
-                            job_key = (project_id, int(c_num))
-                            if not os.path.exists(versioned_mosaic_file) and not os.path.exists(orig_file):
-                                if job_key not in mosaic_runs or mosaic_runs[job_key].get("status") == "failed":
-                                    print(f"[{project_id}][Clip {c_num}] Auto-resuming Mosaic polling thread for run_id {run_id}...")
-                                    st_data = load_settings()
-                                    t = threading.Thread(
-                                        target=run_mosaic_pipeline,
-                                        args=(project_id, c_num, st_data, "", clip.get("segments", []), os.path.join("audio", f"{ep_num}.mp3"), run_id),
-                                        daemon=True
-                                    )
-                                    t.start()
-                    if plan_modified:
-                        try:
-                            with open(plan_path, "w", encoding="utf-8") as f:
-                                json.dump(plan_data, f, indent=4)
-                        except Exception as w_err:
-                            print(f"Error saving self-healed plan.json: {w_err}")
+                # Comprehensive Self-healing & Auto-Resume check (polling, downloads, interrupted compiles)
+                heal_mosaic_project_state(project_id, plan_data)
                 if ep_num_match:
                     ep_num = ep_num_match.group(0)
                     clips_dir = "clips"

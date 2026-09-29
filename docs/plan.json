@@ -449,7 +449,7 @@
         "end": 1599.54,
         "duration": 159.74,
         "bridge_text": [
-            "What happens when intelligence expands in Part 22?"
+            "So how does Meta guarantees absolute privacy"
         ],
         "segments": [
             {
@@ -469,23 +469,24 @@
             {
                 "type": "audio",
                 "start": 1498.96,
-                "end": 1641.6,
-                "duration": 142.64,
-                "text": "A  stateless  architecture  means  the  system  has  absolutely  no  permanent  memory  of  the  event  or  the  user  after  the  transaction  is  complete.  Okay.  When  you  ask  your  iPhone  a  complex  query  that  exceeds  the  processing  power  of  the  local  device,  Apple  encrypts  the  prompt  and  sends  it  to  a  custom  Apple  silicon  server  in  their  data  center.  Right.  The  server  evaluates  the  response  sends  it  back  to  your  phone  and  then  instantly  cryptographically  wipes  its  memory  footprint.  So  it  literally  forgets  you  exist  the  second  it  answers  you.  Exactly.  There  is  no  local  disc  persistence.  The  data  is  never  written  to  a  permanent  hard  drive.  So  using  an  analogy,  Apple  PCC  is  like  a  highly  secure,  self -destructing  message.  You  ask  it  to  do  a  math  problem.  It  writes  the  answer  on  a  piece  of  paper,  hands  the  paper  to  you  and  then  immediately  burns  the  paper  and  the  desk  it  was  sitting  at.  That's  exactly  it.  It  achieves  incredibly  strong  cryptographic  guarantees  for  privacy,  which  obviously  aligns  perfectly  with  Apple's  corporate  brand.  Right.  But  because  it  is  stateless,  it  is  structurally  incapable  of  true  autonomy.  Apple  PCC  cannot  run  a  background  task  for  three  weeks.  It  cannot  monitor  the  stock  market  for  a  specific  dip  and  proactively  initiate  a  complex  web  transaction  on  a  Tuesday  while  your  phone  is  turned  off  and  sitting  in  your  pocket.  Because  the  moment  the  immediate  synchronous  task  is  done,  the  room  disappears.  It  can't  wait  around  for  Tuesday.  Precisely.  Meta  Muse,  on  the  other  hand,  is  stateful  and  persistent.  It  operates  a  continuous  background  virtual  machine.  So  sticking  with  the  analogy,  if  Apple  is  burning  the  paper,  Meta  is  building  a  permanent,  highly  surveilled  bank  vault  where  your  digital  worker  lives  full  time.  They  have  a  desk,  they  have  file  cabinets,  they  remember  what  you  told  them  last  week.  And  they  can  wait  until  Tuesday  to  execute  a  trade.  That  is  the  fundamental  trade  off  of  the  agentic  era  to  have  a  true  agent  that  can  manage  your  life  asynchronously.  You  require  statefulness,  but  statefulness  inherently  introduces  a  much  larger  attack  surface  for  security  threats  and  privacy  violations.  And  this  is  exactly  where  my  alarm  bells  start  ringing  again.  Let's  be  real  here.  If  Meta  has  a  persistent  permanent  virtual  room  where  my  AI  is  tracking  my  investments,  looking  at  my  raw  video  footage,  reading  my  WhatsApp's,  and  negotiating  my  bills,  isn't  Meta  just  going  to  harvest  all  of  this  incredibly  rich  workflow  data  to  serve  me  more  targeted  ads?  It's  the  obvious  question."
+                "end": 1642.06,
+                "duration": 143.1,
+                "text": "A  stateless  architecture  means  the  system  has  absolutely  no  permanent  memory  of  the  event  or  the  user  after  the  transaction  is  complete.  Okay.  When  you  ask  your  iPhone  a  complex  query  that  exceeds  the  processing  power  of  the  local  device,  Apple  encrypts  the  prompt  and  sends  it  to  a  custom  Apple  silicon  server  in  their  data  center.  Right.  The  server  evaluates  the  response  sends  it  back  to  your  phone  and  then  instantly  cryptographically  wipes  its  memory  footprint.  So  it  literally  forgets  you  exist  the  second  it  answers  you.  Exactly.  There  is  no  local  disc  persistence.  The  data  is  never  written  to  a  permanent  hard  drive.  So  using  an  analogy,  Apple  PCC  is  like  a  highly  secure,  self -destructing  message.  You  ask  it  to  do  a  math  problem.  It  writes  the  answer  on  a  piece  of  paper,  hands  the  paper  to  you  and  then  immediately  burns  the  paper  and  the  desk  it  was  sitting  at.  That's  exactly  it.  It  achieves  incredibly  strong  cryptographic  guarantees  for  privacy,  which  obviously  aligns  perfectly  with  Apple's  corporate  brand.  Right.  But  because  it  is  stateless,  it  is  structurally  incapable  of  true  autonomy.  Apple  PCC  cannot  run  a  background  task  for  three  weeks.  It  cannot  monitor  the  stock  market  for  a  specific  dip  and  proactively  initiate  a  complex  web  transaction  on  a  Tuesday  while  your  phone  is  turned  off  and  sitting  in  your  pocket.  Because  the  moment  the  immediate  synchronous  task  is  done,  the  room  disappears.  It  can't  wait  around  for  Tuesday.  Precisely.  Meta  Muse,  on  the  other  hand,  is  stateful  and  persistent.  It  operates  a  continuous  background  virtual  machine.  So  sticking  with  the  analogy,  if  Apple  is  burning  the  paper,  Meta  is  building  a  permanent,  highly  surveilled  bank  vault  where  your  digital  worker  lives  full  time.  They  have  a  desk,  they  have  file  cabinets,  they  remember  what  you  told  them  last  week.  And  they  can  wait  until  Tuesday  to  execute  a  trade.  That  is  the  fundamental  trade  off  of  the  agentic  era  to  have  a  true  agent  that  can  manage  your  life  asynchronously.  You  require  statefulness,  but  statefulness  inherently  introduces  a  much  larger  attack  surface  for  security  threats  and  privacy  violations.  And  this  is  exactly  where  my  alarm  bells  start  ringing  again.  Let's  be  real  here.  If  Meta  has  a  persistent  permanent  virtual  room  where  my  AI  is  tracking  my  investments,  looking  at  my  raw  video  footage,  reading  my  WhatsApp's,  and  negotiating  my  bills,  isn't  Meta  just  going  to  harvest  all  of  this  incredibly  rich  workflow  data  to  serve  me  more  targeted  ads?  It's  the  obvious  question.  I  mean,"
             },
             {
                 "type": "music",
                 "music_file": "deepDive-conclusion.mp3",
-                "duration": 4.5,
+                "duration": 6.5,
                 "crossfade": 0.3,
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "27dcb50c-2f0d-4773-a8e6-1a494e06058a"
     },
     {
         "num": 12,
-        "title": "And They Can Wait Until Tuesday to Execute a Trade",
+        "title": "Meta Muse - Absolute Privacy .",
         "start": 1600.1,
         "end": 1694.74,
         "duration": 103.56,
@@ -502,21 +503,21 @@
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0,
                 "volume": 1
             },
             {
                 "type": "audio",
-                "start": 1622.4,
-                "end": 1694.74,
-                "duration": 72.34,
-                "text": "Let's be real here. If Meta has a persistent permanent virtual room where my AI is tracking my investments, looking at my raw video footage, reading my WhatsApp's, and negotiating my bills, isn't Meta just going to harvest all of this incredibly rich workflow data to serve me more targeted ads? It's the obvious question. I mean, programmatic advertising is their core business model. That is how they make hundreds of billions of dollars. This raises a critical question and it is the absolute crux of the modern privacy debate. How does a massive advertising company secure a persistent state without violating user trust or facing massive regulatory backlash? How do they? The research points to a multi -layered cryptographic approach. First, they decouple the user identity from the model context. What does decoupling identity actually mean in practice? It means your authentication tokens, your actual passwords and your core identity are held in a completely separate security demon isolated from the AI model itself. Okay, so they're kept apart. Yes. When the AI goes out to the open internet to execute a task, surrogate credentials are dynamically swapped at the network boundary. Okay, so the AI is basically wearing a mask when it leaves the vault."
+                "start": 1663.92,
+                "end": 1784.58,
+                "duration": 120.66,
+                "text": "First,  they  decouple  the  user  identity  from  the  model  context.  What  does  decoupling  identity  actually  mean  in  practice?  It  means  your  authentication  tokens,  your  actual  passwords  and  your  core  identity  are  held  in  a  completely  separate  security  demon  isolated  from  the  AI  model  itself.  Okay,  so  they're  kept  apart.  Yes.  When  the  AI  goes  out  to  the  open  internet  to  execute  a  task,  surrogate  credentials  are  dynamically  swapped  at  the  network  boundary.  Okay,  so  the  AI  is  basically  wearing  a  mask  when  it  leaves  the  vault.  The  AI  model  itself  never  actually  sees  or  ingests  your  real  passwords.  It  just  holds  a  temporary  token  that  basically  says,  Hey,  I  have  permission  to  do  this.  Exactly.  Yes.  But  the  long  term  structural  solution  mentioned  in  the  research  is  the  deployment  of  the  forthcoming  Mew's  confidential  VM.  Confidential  VM.  Right.  This  architecture  will  utilize  hardware -enforced  trusted  execution  environments  or  teas.  Teas?  We  need  to  explain  how  this  works  at  the  hardware  level  because  it  honestly  sounds  like  a  magic  bullet.  A  trusted  execution  environment  is  a  secure  area  of  the  main  processor.  It  guarantees  that  the  code  and  data  loaded  inside  it  are  protected  with  respect  to  confidentiality  and  integrity.  Okay.  In  a  true  tea  setup,  the  encryption  keys  used  to  scramble  the  data  inside  the  virtual  machine  are  held  exclusively  by  the  client,  meaning  you,  the  user  on  your  local  device.  Wait,  really?  So  the  data  is  processed  on  Meta's  server,  but  Meta  doesn't  have  the  key  to  unlock  the  data.  Exactly.  Even  if  a  rogue  meta  engineer  wanted  to  look  inside  your  virtual  machine,  or  if  they're  advertising  algorithm  attempted  to  scrape  your  session  data,  they  physically  and  mathematically  cannot.  The  hardware  won't  let  them  right.  The  silicon  hardware  itself  enforces  the  encryption.  Meta  is  technically  and  cryptographically  barred  from  accessing  internal  session  states  or  leveraging  those  workflow  logs  for  programmatic  advertising.  So  they  are  building  a  highly  capable  bank  vault  on  their  property,  but  not  even  the  bank  manager  has  the  physical  key  to  open  the  door.  That's  a  great  way  to  summarize  it."
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "deepDive-conclusion.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
                 "volume": 1
