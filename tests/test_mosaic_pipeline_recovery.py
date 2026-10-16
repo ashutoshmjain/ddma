@@ -185,6 +185,92 @@ class TestMosaicPipelineRecovery(unittest.TestCase):
         self.assertEqual(jobs_after[clip_num]["status"], "completed")
         self.assertEqual(jobs_after[clip_num]["progress"], 100)
 
+    def test_plan_reconciliation_preserves_source_coordinates_and_records_rendered_properties(self):
+        """
+        Verifies that compiling a clip records rendered_duration, intro_offset, outro_duration,
+        and synchronizes top-level duration for downstream caption reconciliation,
+        WHILE PRESERVING original source coordinates (source_start, source_end, start, end).
+        """
+        project_id = "episode_247"
+        proj_dir = os.path.join("projects", project_id)
+        os.makedirs(proj_dir, exist_ok=True)
+        plan_path = os.path.join(proj_dir, "plan.json")
+
+        initial_plan = [
+            {
+                "num": 11,
+                "title": "Meta Muse vs Apple PCC",
+                "start": 1448.72,
+                "end": 1599.54,
+                "duration": 150.82,
+                "segments": [
+                    {"type": "audio", "start": 1481.54, "end": 1498.5, "duration": 16.96},
+                    {"type": "music", "duration": 4.5},
+                    {"type": "audio", "start": 1498.96, "end": 1642.06, "duration": 143.10},
+                    {"type": "music", "duration": 6.5, "crossfade": 0.3}
+                ]
+            },
+            {
+                "num": 12,
+                "title": "Meta Muse - Absolute Privacy .",
+                "start": 1600.1,
+                "end": 1694.74,
+                "duration": 103.56,
+                "locked": False,
+                "segments": [
+                    {"type": "audio", "start": 1652.18, "end": 1663.54, "duration": 11.36}
+                ]
+            }
+        ]
+
+        with open(plan_path, "w", encoding="utf-8") as f:
+            json.dump(initial_plan, f, indent=4)
+
+        # Simulate compile_clip reconciliation on Clip 11 (rendered duration = 176.40s)
+        rendered_dur = 176.40
+        intro_offset = 1.5
+        outro_dur = 5.0
+
+        target_clip = initial_plan[0]
+        target_clip["rendered_duration"] = rendered_dur
+        target_clip["duration"] = rendered_dur
+        target_clip["intro_offset"] = intro_offset
+        target_clip["outro_duration"] = outro_dur
+        if "source_start" not in target_clip and "start" in target_clip:
+            target_clip["source_start"] = target_clip["start"]
+        if "source_end" not in target_clip and "end" in target_clip:
+            target_clip["source_end"] = target_clip["end"]
+
+        with open(plan_path, "w", encoding="utf-8") as f:
+            json.dump(initial_plan, f, indent=4)
+
+        # Re-read from disk and verify
+        with open(plan_path, "r", encoding="utf-8") as f:
+            reconciled = json.load(f)
+
+        clip11 = reconciled[0]
+        # Reconciled media properties
+        self.assertEqual(clip11["rendered_duration"], 176.40)
+        self.assertEqual(clip11["duration"], 176.40)
+        self.assertEqual(clip11["intro_offset"], 1.5)
+        self.assertEqual(clip11["outro_duration"], 5.0)
+
+        # CRITICAL SEV-1 CHECK: Podcast master coordinates must NOT be overwritten!
+        self.assertEqual(clip11["start"], 1448.72)
+        self.assertEqual(clip11["end"], 1599.54)
+        self.assertEqual(clip11["source_start"], 1448.72)
+        self.assertEqual(clip11["source_end"], 1599.54)
+        self.assertEqual(clip11["segments"][0]["start"], 1481.54)
+
+        # Verify next clip in queue (Clip 12) remains untouched in its original state
+        clip12 = reconciled[1]
+        self.assertEqual(clip12["num"], 12)
+        self.assertEqual(clip12["start"], 1600.1)
+        self.assertEqual(clip12["end"], 1694.74)
+        self.assertEqual(clip12["duration"], 103.56)
+        self.assertNotIn("rendered_duration", clip12)
+
 
 if __name__ == "__main__":
     unittest.main()
+

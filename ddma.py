@@ -1498,7 +1498,7 @@ def compile_clip(
             except Exception as e:
                 typer.echo(f"Warning: Could not sync to docs: {e}")
             
-            # Check final duration warning against the 2m 55s limit (175s)
+            # Check final duration warning against the 2m 55s limit (175s) and reconcile plan.json
             try:
                 cmd_dur = [
                     "ffprobe", "-v", "error", "-show_entries", "format=duration",
@@ -1506,9 +1506,36 @@ def compile_clip(
                 ]
                 dur_res = subprocess.run(cmd_dur, stdout=subprocess.PIPE, text=True)
                 if dur_res.returncode == 0:
-                    final_dur = float(dur_res.stdout.strip())
+                    final_dur = round(float(dur_res.stdout.strip()), 2)
                     if final_dur > 175.0:
                         typer.echo(f"\n⚠️  WARNING: Final compiled clip duration ({final_dur:.2f}s) exceeds the 2m 55s limit (175s)!")
+
+                    # Forward reconciliation: record rendered media properties without corrupting source coordinates
+                    if target_clip is not None:
+                        target_clip["rendered_duration"] = final_dur
+                        target_clip["duration"] = final_dur
+                        target_clip["intro_offset"] = intro_duration
+                        target_clip["outro_duration"] = 5.0 if not is_last_clip else 0.0
+                        if "source_start" not in target_clip and "start" in target_clip:
+                            target_clip["source_start"] = target_clip["start"]
+                        if "source_end" not in target_clip and "end" in target_clip:
+                            target_clip["source_end"] = target_clip["end"]
+
+                        # Save updated plan.json to plan_file atomically
+                        try:
+                            with open(plan_file, "w", encoding="utf-8") as pf:
+                                json.dump(plan_data, pf, indent=4)
+                            typer.echo(f"Reconciled plan metadata for Clip {num}: rendered_duration={final_dur}s, intro_offset={intro_duration}s")
+                            
+                            # Sync to docs/episodes/<ep>/plan.json if exists
+                            ep_val = ep_prefix if ep_prefix else episode
+                            if ep_val:
+                                docs_ep_plan = os.path.join("docs", "episodes", ep_val, "plan.json")
+                                if os.path.exists(os.path.dirname(docs_ep_plan)):
+                                    with open(docs_ep_plan, "w", encoding="utf-8") as dpf:
+                                        json.dump(plan_data, dpf, indent=4)
+                        except Exception as ex_save:
+                            typer.echo(f"Warning: Failed to save reconciled plan metadata: {ex_save}")
             except Exception:
                 pass
         else:

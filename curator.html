@@ -2264,6 +2264,9 @@
         }
 
         function calculateClipVideoDuration(clip) {
+            if (clip && clip.rendered_duration) {
+                return parseFloat(clip.rendered_duration);
+            }
             const bodyDur = calculateClipAudioDuration(clip);
             if (bodyDur <= 0) return 0;
             // 4-Element Construct Model: 1.5s Intro Card + Audio Body + 5.0s Outro (1.0s xfade = +4.0s)

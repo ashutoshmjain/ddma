@@ -489,9 +489,9 @@
         "title": "Meta Muse - Absolute Privacy .",
         "start": 1600.1,
         "end": 1694.74,
-        "duration": 103.56,
+        "duration": 146.36,
         "bridge_text": [
-            "What happens when intelligence expands in Part 24?"
+            "Who can stop Meta at winning the consumer AI race ?"
         ],
         "segments": [
             {
@@ -523,7 +523,13 @@
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "d01b844f-4640-40d0-bbad-4c9924ea73fa",
+        "rendered_duration": 146.36,
+        "intro_offset": 1.5,
+        "outro_duration": 5.0,
+        "source_start": 1600.1,
+        "source_end": 1694.74
     },
     {
         "num": 13,
@@ -564,7 +570,8 @@
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": false,
+        "hidden": true
     },
     {
         "num": 14,
@@ -605,7 +612,8 @@
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": false,
+        "hidden": true
     },
     {
         "num": 15,
@@ -614,15 +622,15 @@
         "end": 2111.5,
         "duration": 156.64,
         "bridge_text": [
-            "What is the deeper secret behind Part 29?"
+            "Can Google match or beat Meta at consumer AI ?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 1963.78,
+                "start": 1902.7,
                 "end": 1985.14,
-                "duration": 21.36,
-                "text": "Furthermore, they own the consumer virtualization space through Google cloud platform. They know how to run millions of secure virtual machines at scale. Better than almost anyone. And crucially, their distribution is completely ubiquitous. They own Android, Chrome, Gmail, Google Docs, YouTube. They are integrated into the absolute fabric of the Internet. Okay. So let me take a picture here."
+                "duration": 82.44,
+                "text": "there  is  only  one  contender  with  the  scaled  infrastructure  parity  to  truly  challenge  meta  on  a  global  level.  And  that  is  Alphabet,  the  parent  company  of  Google.  Google,  it  always  has  back  to  Google,  doesn't  it?  It  really  does.  Let's  list  their  weapons  here  because  on  paper,  they  look  completely  unstoppable.  The  research  points  out  they  have  full  stack  silicon  independence.  Yes.  They  aren't  totally  reliant  on  buying  hardware  from  Nvidia.  They  have  their  own  custom  chips,  the  TPU  V5P  and  the  incredibly  powerful  new  Trillium  chips.  Their  hardware  stack  is  truly  formidable  and  they  possess  unified  frontier  intelligence.  Their  DeepMind  Division  maintains  the  Gemini  series,  which  consistently  matches  or  exceeds  news  spark  in  many  benchmarks.  Right.  Gemini  is  particularly  notable  for  having  massive  context  windows  of  one  to  million  tokens,  meaning  it  can  hold  a  massive  amount  of  information  in  a  short  term  memory.  It  can  parse  a  thousand  page  legal  document  and  execute  complex  multi -step  reasoning  across  the  entire  text  without  forgetting  what  was  on  page  two.  Exactly.  Furthermore,  they  own  the  consumer  virtualization  space  through  Google  cloud  platform.  They  know  how  to  run  millions  of  secure  virtual  machines  at  scale.  Better  than  almost  anyone.  And  crucially,  their  distribution  is  completely  ubiquitous.  They  own  Android,  Chrome,  Gmail,  Google  Docs,  YouTube.  They  are  integrated  into  the  absolute  fabric  of  the  Internet.  Okay.  So  let  me  take  a  picture  here."
             },
             {
                 "type": "music",

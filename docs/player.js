@@ -246,7 +246,7 @@ async function loadVideoDurations() {
                 item.rawDuration = duration;
                 const isAudioOnly = clipInfo && clipInfo.audio_only === true;
                 const defaultTrim = (i === 0 || isAudioOnly || (clipInfo && clipInfo.num === 1)) ? 0.0 : 2.0;
-                const introTrim = clipInfo && clipInfo.intro_trim !== undefined ? parseFloat(clipInfo.intro_trim) : defaultTrim;
+                const introTrim = clipInfo && clipInfo.intro_trim !== undefined ? parseFloat(clipInfo.intro_trim) : (clipInfo && clipInfo.intro_offset !== undefined ? parseFloat(clipInfo.intro_offset) : defaultTrim);
                 
                 if (currentMode === 'audio') {
                     item.playOffset = isAudioOnly ? 0.0 : 2.0;
@@ -271,7 +271,7 @@ async function loadVideoDurations() {
                 const clipInfo = plan.find(c => c.num === item.clipNum);
                 const isAudioOnly = clipInfo && clipInfo.audio_only === true;
                 const defaultTrim = (i === 0 || isAudioOnly || (clipInfo && clipInfo.num === 1)) ? 0.0 : 2.0;
-                const introTrim = clipInfo && clipInfo.intro_trim !== undefined ? parseFloat(clipInfo.intro_trim) : defaultTrim;
+                const introTrim = clipInfo && clipInfo.intro_trim !== undefined ? parseFloat(clipInfo.intro_trim) : (clipInfo && clipInfo.intro_offset !== undefined ? parseFloat(clipInfo.intro_offset) : defaultTrim);
                 
                 const baseDur = calculateClipDuration(clipInfo);
                 item.rawDuration = baseDur + (currentMode === 'audio' ? 0.0 : 2.0);
@@ -377,11 +377,16 @@ function getVideoDuration(src) {
 }
 
 function calculateClipDuration(clip) {
+    if (clip && clip.rendered_duration) {
+        return parseFloat(clip.rendered_duration);
+    }
     let total = 0;
     if (clip && clip.segments) {
         clip.segments.forEach(seg => {
             total += parseFloat(seg.duration) || 0;
         });
+    } else if (clip && clip.duration) {
+        total = parseFloat(clip.duration) || 0;
     }
     return total;
 }
