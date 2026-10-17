@@ -527,7 +527,7 @@
         "mosaic_run_id": "d01b844f-4640-40d0-bbad-4c9924ea73fa",
         "rendered_duration": 146.36,
         "intro_offset": 1.5,
-        "outro_duration": 5.0,
+        "outro_duration": 5,
         "source_start": 1600.1,
         "source_end": 1694.74
     },
@@ -617,44 +617,45 @@
     },
     {
         "num": 15,
-        "title": "Better Than Almost Anyone",
+        "title": "Consumer AI - Meta vs Google",
         "start": 1963.78,
         "end": 2111.5,
         "duration": 156.64,
         "bridge_text": [
-            "Can Google match or beat Meta at consumer AI ?"
+            "Next: What are the legal issues holding Google back vs Meta?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 1902.7,
-                "end": 1985.14,
-                "duration": 82.44,
-                "text": "there  is  only  one  contender  with  the  scaled  infrastructure  parity  to  truly  challenge  meta  on  a  global  level.  And  that  is  Alphabet,  the  parent  company  of  Google.  Google,  it  always  has  back  to  Google,  doesn't  it?  It  really  does.  Let's  list  their  weapons  here  because  on  paper,  they  look  completely  unstoppable.  The  research  points  out  they  have  full  stack  silicon  independence.  Yes.  They  aren't  totally  reliant  on  buying  hardware  from  Nvidia.  They  have  their  own  custom  chips,  the  TPU  V5P  and  the  incredibly  powerful  new  Trillium  chips.  Their  hardware  stack  is  truly  formidable  and  they  possess  unified  frontier  intelligence.  Their  DeepMind  Division  maintains  the  Gemini  series,  which  consistently  matches  or  exceeds  news  spark  in  many  benchmarks.  Right.  Gemini  is  particularly  notable  for  having  massive  context  windows  of  one  to  million  tokens,  meaning  it  can  hold  a  massive  amount  of  information  in  a  short  term  memory.  It  can  parse  a  thousand  page  legal  document  and  execute  complex  multi -step  reasoning  across  the  entire  text  without  forgetting  what  was  on  page  two.  Exactly.  Furthermore,  they  own  the  consumer  virtualization  space  through  Google  cloud  platform.  They  know  how  to  run  millions  of  secure  virtual  machines  at  scale.  Better  than  almost  anyone.  And  crucially,  their  distribution  is  completely  ubiquitous.  They  own  Android,  Chrome,  Gmail,  Google  Docs,  YouTube.  They  are  integrated  into  the  absolute  fabric  of  the  Internet.  Okay.  So  let  me  take  a  picture  here."
+                "end": 1972.32,
+                "duration": 69.62,
+                "text": "there  is  only  one  contender  with  the  scaled  infrastructure  parity  to  truly  challenge  meta  on  a  global  level.  And  that  is  Alphabet,  the  parent  company  of  Google.  Google,  it  always  has  back  to  Google,  doesn't  it?  It  really  does.  Let's  list  their  weapons  here  because  on  paper,  they  look  completely  unstoppable.  The  research  points  out  they  have  full  stack  silicon  independence.  Yes.  They  aren't  totally  reliant  on  buying  hardware  from  Nvidia.  They  have  their  own  custom  chips,  the  TPU  V5P  and  the  incredibly  powerful  new  Trillium  chips.  Their  hardware  stack  is  truly  formidable  and  they  possess  unified  frontier  intelligence.  Their  DeepMind  Division  maintains  the  Gemini  series,  which  consistently  matches  or  exceeds  news  spark  in  many  benchmarks.  Right.  Gemini  is  particularly  notable  for  having  massive  context  windows  of  one  to  million  tokens,  meaning  it  can  hold  a  massive  amount  of  information  in  a  short  term  memory.  It  can  parse  a  thousand  page  legal  document  and  execute  complex  multi -step  reasoning  across  the  entire  text  without  forgetting  what  was  on  page  two.  Exactly.  Furthermore,  they  own  the  consumer  virtualization  space  through  Google  cloud  platform.  They  know  how  to  run  millions  of  secure  virtual  machines  at  scale.  Better  than  almost  anyone."
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0,
                 "volume": 1
             },
             {
                 "type": "audio",
-                "start": 1985.22,
-                "end": 2111.5,
-                "duration": 126.28,
-                "text": "Google has the perfect army. They have the most advanced weapons. They have infinite supply lines through their data centers. And they hold the absolute high ground with billions of daily active users. That's the reality. So why aren't they winning the agent war easily? Why is Google hesitating while meta is the one causing the earthquake? If we connect this to the bigger macro economic picture, we see a textbook business school case study unfolding in real time. Google is paralyzed by the innovators dilemma. The innovators dilemma. Wait, if Google makes 75 % of its money on search ads, building an agent that bypasses search is essentially corporate suicide. Is that why they're hesitating? Let's explore the mechanics of this dilemma. You have identified the exact friction point over 75 % of Alphabet's operating profit originates from search advertising queries. Right. The Google search bar. Think about how the fundamental mechanics of search work today. You type in a query, say, best flights to London. Google gives you a list of blue links and crucially a list of sponsored advertisements. Yeah, the ones at the very top when you click that ad, the airline pays Google a cost per click fee. That is the engine of their empire. Right. It relies entirely on me, the human looking at a screen and clicking a specific link. But an autonomous agent doesn't need to look at search end results. If you tell metamuse to buy a flight to London, it does not open Google search. Of course not. It goes directly to the airline's database via an API queries the availability and executes the transaction. It doesn't see the travel agency ad and it certainly doesn't click it. Wow. An agent that just does the task for you entirely bypasses the search engine result page. It completely destroys the cost per click advertising model. Wow. So if Google releases a perfect, frictionless agent that does everything for you in the background, they are effectively burning down their own 75 % profit engine. They are trapped by their own success. But it's not just the business model holding the back. Is it the research mentions they are fighting a massive war on a completely different front right now? Yes. Google is currently bogged down in existential due district scrutiny."
+                "start": 1985.82,
+                "end": 2079.64,
+                "duration": 93.82,
+                "text": "Google  has  the  perfect  army.  They  have  the  most  advanced  weapons.  They  have  infinite  supply  lines  through  their  data  centers.  And  they  hold  the  absolute  high  ground  with  billions  of  daily  active  users.  That's  the  reality.  So  why  aren't  they  winning  the  agent  war  easily?  Why  is  Google  hesitating  while  meta  is  the  one  causing  the  earthquake?  If  we  connect  this  to  the  bigger  macro  economic  picture,  we  see  a  textbook  business  school  case  study  unfolding  in  real  time.  Google  is  paralyzed  by  the  innovators  dilemma.  The  innovators  dilemma.  Wait,  if  Google  makes  75 %  of  its  money  on  search  ads,  building  an  agent  that  bypasses  search  is  essentially  corporate  suicide.  Is  that  why  they're  hesitating?  Let's  explore  the  mechanics  of  this  dilemma.  You  have  identified  the  exact  friction  point  over  75 %  of  Alphabet's  operating  profit  originates  from  search  advertising  queries.  Right.  The  Google  search  bar.  Think  about  how  the  fundamental  mechanics  of  search  work  today.  You  type  in  a  query,  say,  best  flights  to  London.  Google  gives  you  a  list  of  blue  links  and  crucially  a  list  of  sponsored  advertisements.  Yeah,  the  ones  at  the  very  top  when  you  click  that  ad,  the  airline  pays  Google  a  cost  per  click  fee.  That  is  the  engine  of  their  empire.  Right.  It  relies  entirely  on  me,  the  human  looking  at  a  screen  and  clicking  a  specific  link.  But  an  autonomous  agent  doesn't  need  to  look  at  search  end  results.  If  you  tell  metamuse  to  buy  a  flight  to  London,  it  does  not  open  Google  search.  Of  course  not.  It  goes  directly  to  the  airline's  database  via  an  API  queries  the  availability  and  executes  the  transaction.  It  doesn't  see  the  travel  agency  ad  and  it  certainly  doesn't  click  it.  Wow.  An"
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "deepDive-conclusion.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "d0391ae6-6da2-4c9a-95e4-32e08cb1c5c7"
     },
     {
         "num": 16,
