@@ -321,7 +321,7 @@
         "title": "Progressive capital allocation",
         "start": 1016.34,
         "end": 1164.28,
-        "duration": 156.86,
+        "duration": 173.78,
         "bridge_text": [
             "But I am not giving my credit card to Muse !"
         ],
@@ -356,7 +356,14 @@
             }
         ],
         "locked": true,
-        "mosaic_run_id": "a67bf65e-e23a-49c6-9435-f47671400ceb"
+        "mosaic_run_id": "a67bf65e-e23a-49c6-9435-f47671400ceb",
+        "rendered_duration": 173.78,
+        "intro_offset": 1.5,
+        "outro_duration": 5.0,
+        "source_start": 1016.34,
+        "source_end": 1164.28,
+        "_audio_sig": "0021326766123cc88e7cab3c49e8bf81",
+        "_compiled_sig": "552843b13762b8cdb116ae9eb54a8a7a"
     },
     {
         "num": 9,
@@ -405,7 +412,7 @@
         "title": "Meta Muse vs Perplexity Computer",
         "start": 1323.96,
         "end": 1448.08,
-        "duration": 133.04,
+        "duration": 150.83,
         "bridge_text": [
             "Coming up Apple PCC vs Meta Muse !"
         ],
@@ -440,7 +447,14 @@
             }
         ],
         "locked": true,
-        "mosaic_run_id": "ffe313db-04ef-40a8-ac65-9adf4a22eb71"
+        "mosaic_run_id": "ffe313db-04ef-40a8-ac65-9adf4a22eb71",
+        "rendered_duration": 150.83,
+        "intro_offset": 1.5,
+        "outro_duration": 5.0,
+        "source_start": 1323.96,
+        "source_end": 1448.08,
+        "_audio_sig": "ce46f3048f98ed4b27c834fc312b33cf",
+        "_compiled_sig": "e23b2ac5d24b337aa80a1aba5120de08"
     },
     {
         "num": 11,
@@ -620,7 +634,7 @@
         "title": "Consumer AI - Meta vs Google",
         "start": 1963.78,
         "end": 2111.5,
-        "duration": 156.64,
+        "duration": 177.77,
         "bridge_text": [
             "Next: What are the legal issues holding Google back vs Meta?"
         ],
@@ -655,28 +669,33 @@
             }
         ],
         "locked": true,
-        "mosaic_run_id": "d0391ae6-6da2-4c9a-95e4-32e08cb1c5c7"
+        "mosaic_run_id": "d0391ae6-6da2-4c9a-95e4-32e08cb1c5c7",
+        "rendered_duration": 177.77,
+        "intro_offset": 1.5,
+        "outro_duration": 5,
+        "source_start": 1963.78,
+        "source_end": 2111.5
     },
     {
         "num": 16,
-        "title": "Yes, a Massive Legal Victory",
+        "title": "Legal Issues -  Google vs Meta",
         "start": 2112.12,
         "end": 2225.52,
-        "duration": 122.32,
+        "duration": 132.14,
         "bridge_text": [
-            "What is the deeper secret behind Part 31?"
+            "Next : True risk vs regulatory capture !"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 2112.12,
+                "start": 2107.64,
                 "end": 2129.5,
-                "duration": 17.38,
-                "text": "Federal courts recently declared Google's default search distribution contracts the billions they pay to be the default search engine on devices like the iPhone to be an unlawful monopoly. It's huge. They are literally fighting for their corporate structure in court, facing the genuine threat of being broken up by the government."
+                "duration": 21.86,
+                "text": "Yes.  Google  is  currently  bogged  down  in  existential  due  district  scrutiny.  Federal  courts  recently  declared  Google's  default  search  distribution  contracts  the  billions  they  pay  to  be  the  default  search  engine  on  devices  like  the  iPhone  to  be  an  unlawful  monopoly.  It's  huge.  They  are  literally  fighting  for  their  corporate  structure  in  court,  facing  the  genuine  threat  of  being  broken  up  by  the  government."
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0,
                 "volume": 1
@@ -690,13 +709,21 @@
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "deepDive-conclusion.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "d412d715-45df-4420-b8e1-7d339a86165c",
+        "rendered_duration": 132.14,
+        "intro_offset": 1.5,
+        "outro_duration": 5.0,
+        "source_start": 2112.12,
+        "source_end": 2225.52,
+        "_audio_sig": "266fa713ea013aab70c76c3778a2bd85",
+        "_compiled_sig": "da855a81114a6609bfd28dceadbda4fc"
     },
     {
         "num": 17,
@@ -717,7 +744,7 @@
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
                 "crossfade": 0,
                 "volume": 1
@@ -731,7 +758,7 @@
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "deepDive-conclusion.mp3",
                 "duration": 4.5,
                 "crossfade": 0.3,
                 "volume": 1

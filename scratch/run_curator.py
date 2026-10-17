@@ -3571,25 +3571,63 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not os.path.exists(plan_path):
                     plan_path = "plan.json"
 
-                # 1. First re-slice fresh audio from plan.json for this clip to capture any recent user edits
+                ep_num = project_id.replace('episode_', '')
                 info_path = os.path.join("projects", project_id, "project_info.json")
                 audio_file = None
+                ep_title = "Life, Death and the Lysosome"
                 if os.path.exists(info_path):
                     with open(info_path, "r", encoding="utf-8") as f_info:
                         p_info = json.load(f_info)
                         audio_file = p_info.get("audio_file") or p_info.get("audio_filename")
+                        if p_info.get("title"):
+                            ep_title = p_info["title"]
+                        elif p_info.get("name"):
+                            ep_title = p_info["name"]
                 if audio_file and not os.path.exists(audio_file):
                     audio_file = os.path.join("projects", project_id, audio_file)
                 if not audio_file or not os.path.exists(audio_file):
-                    ep_num = project_id.replace('episode_', '')
                     for candidate_ext in [f"{ep_num}.m4a", f"{ep_num}.mp3", f"episode_{ep_num}.m4a", f"episode_{ep_num}.mp3"]:
                         candidate_path = os.path.join("projects", project_id, candidate_ext)
                         if os.path.exists(candidate_path):
                             audio_file = candidate_path
                             break
 
-                if audio_file and os.path.exists(audio_file):
-                    cut_cmd = [sys.executable, "ddma.py", "cut", "--audio", audio_file, "--plan-file", plan_path, "--out-dir", "clips"]
+                # Smart signature check to avoid redundant audio slicing or video re-encoding
+                import hashlib, glob
+                need_audio_cut = True
+                try:
+                    with open(plan_path, "r", encoding="utf-8") as pf_chk:
+                        p_data_chk = json.load(pf_chk)
+                    t_clip = next((c for c in p_data_chk if str(c.get("num")) == str(clip_num)), None)
+                    if t_clip:
+                        curr_audio_sig = hashlib.md5(json.dumps(t_clip.get("segments", []), sort_keys=True).encode("utf-8")).hexdigest()
+                        curr_compile_sig = hashlib.md5(json.dumps({
+                            "title": t_clip.get("title", ""),
+                            "ep_title": ep_title,
+                            "bridge_text": t_clip.get("bridge_text", ""),
+                            "mosaic_run_id": t_clip.get("mosaic_run_id"),
+                            "segments": t_clip.get("segments", []),
+                            "force_draft": is_draft
+                        }, sort_keys=True).encode("utf-8")).hexdigest()
+                        out_mp4 = os.path.join("clips", f"{ep_num}-{clip_num}.mp4")
+                        if os.path.exists(out_mp4) and os.path.getsize(out_mp4) > 10000 and t_clip.get("_compiled_sig") == curr_compile_sig:
+                            print(f"[{project_id}][Clip {clip_num}] Fast-Hit: Master video {out_mp4} is already up-to-date! Returning immediately.")
+                            self.send_response(200)
+                            self.send_header('Content-type', 'application/json')
+                            self.send_header('Access-Control-Allow-Origin', '*')
+                            self.end_headers()
+                            self.wfile.write(json.dumps({"success": True, "cached": True, "message": "Master video is already compiled and up to date."}).encode('utf-8'))
+                            return
+                        existing_mp3s = glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}-*.mp3")) + glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}.mp3"))
+                        if existing_mp3s and t_clip.get("_audio_sig") == curr_audio_sig:
+                            need_audio_cut = False
+                            print(f"[{project_id}][Clip {clip_num}] Fast-Hit: Audio segments unchanged, skipping ddma.py cut.")
+                except Exception as sig_err:
+                    print(f"[{project_id}][Clip {clip_num}] Warning checking cache signatures: {sig_err}")
+
+                # 1. Re-slice fresh audio from plan.json for this clip only if segments changed or MP3 missing
+                if need_audio_cut and audio_file and os.path.exists(audio_file):
+                    cut_cmd = [sys.executable, "ddma.py", "cut", "--audio", audio_file, "--plan-file", plan_path, "--out-dir", "clips", "--num", str(clip_num)]
                     print(f"[{project_id}][Clip {clip_num}] Re-slicing fresh audio for Clip {clip_num}: {' '.join(cut_cmd)}")
                     res_cut = subprocess.run(cut_cmd, capture_output=True, text=True, cwd=".")
                     if res_cut.returncode != 0:

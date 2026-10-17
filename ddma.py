@@ -628,9 +628,9 @@ def cut(
         else:
             cmd = [
                 "ffmpeg", "-y",
-                "-i", audio,
                 "-ss", start_str,
                 "-to", end_str,
+                "-i", audio,
                 "-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
                 "-c:a", "libmp3lame",
                 "-q:a", "2",
@@ -1235,7 +1235,9 @@ def compile_clip(
         else:
             typer.echo(f"Warning probing media specs via ffprobe. Using defaults.")
 
-        # 6. Equalize master body durations (Audio is the master timeline ground truth)
+        # 6. Equalize master body durations in single-pass filtergraph (Audio is the master timeline ground truth)
+        effective_a_dur = a_dur_fresh if a_dur_fresh is not None else a_dur
+        body_v_extra_filter = ""
         if is_black_canvas:
             if os.path.exists(temp_remux_path):
                 body_video_path = temp_remux_path
@@ -1244,45 +1246,15 @@ def compile_clip(
         else:
             input_body_path = temp_remux_path if os.path.exists(temp_remux_path) else backup_path
             body_video_path = input_body_path
-            if a_dur is not None and (v_dur is None or abs(v_dur - a_dur) > 0.05):
-                target_dur = a_dur
-                typer.echo(f"Equalizing master body stream durations to match audio ground truth ({a_dur:.3f}s)...")
-                if v_dur and v_dur < a_dur:
-                    # Video is shorter than audio: extend video stream by cloning last frame to match audio duration exactly
-                    pad_dur = a_dur - v_dur
-                    typer.echo(f"Extending Mosaic video stream with final frame pad ({pad_dur:.3f}s) to match audio duration...")
-                    cmd_norm = [
-                        "ffmpeg", "-y",
-                        "-i", input_body_path,
-                        "-vf", f"tpad=stop_mode=clone:stop_duration={pad_dur:.3f}",
-                        "-c:v", "libx264", "-crf", "18", "-preset", "fast", "-pix_fmt", "yuv420p",
-                        "-c:a", "aac", "-b:a", "192k",
-                        "-ar", ar_str,
-                        "-t", f"{target_dur:.3f}",
-                        temp_body_path
-                    ]
+            if effective_a_dur is not None and (v_dur is None or abs(v_dur - effective_a_dur) > 0.05):
+                target_dur = effective_a_dur
+                if v_dur and v_dur < target_dur:
+                    pad_dur = target_dur - v_dur
+                    typer.echo(f"Extending Mosaic video stream with final frame pad ({pad_dur:.3f}s) in single-pass filtergraph...")
+                    body_v_extra_filter = f",tpad=stop_mode=clone:stop_duration={pad_dur:.3f},trim=duration={target_dur:.3f},setpts=PTS-STARTPTS"
                 else:
-                    # Trim video stream down to match audio duration
-                    cmd_norm = [
-                        "ffmpeg", "-y",
-                        "-i", input_body_path,
-                        "-ss", "0",
-                        "-t", f"{target_dur:.3f}",
-                        "-c:v", "libx264",
-                        "-crf", "18",
-                        "-preset", "fast",
-                        "-pix_fmt", "yuv420p",
-                        "-c:a", "aac",
-                        "-b:a", "192k",
-                        "-ar", ar_str,
-                        temp_body_path
-                    ]
-                res_norm = subprocess.run(cmd_norm, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-                if res_norm.returncode == 0:
-                    body_video_path = temp_body_path
-                    typer.echo(f"Master body successfully equalized to {target_dur:.3f}s.")
-                else:
-                    typer.echo(f"Warning: Failed to equalize master body, using input body path. Error: {res_norm.stderr}")
+                    typer.echo(f"Trimming Mosaic video stream to {target_dur:.3f}s in single-pass filtergraph...")
+                    body_v_extra_filter = f",trim=duration={target_dur:.3f},setpts=PTS-STARTPTS"
 
         # 7. Render intro
         intro_duration = 1.5
@@ -1397,16 +1369,19 @@ def compile_clip(
 
             img_outro.convert("RGB").save(temp_img_outro_path)
 
-            # Probe duration of equalized master body to slice end audio
-            try:
-                dur_cmd = [
-                    "ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", body_video_path
-                ]
-                dur_res = subprocess.run(dur_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-                if dur_res.returncode == 0:
-                    body_duration = float(dur_res.stdout.strip())
-            except:
-                pass
+            # Resolve duration of master body to slice end audio
+            if effective_a_dur is not None:
+                body_duration = effective_a_dur
+            else:
+                try:
+                    dur_cmd = [
+                        "ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", body_video_path
+                    ]
+                    dur_res = subprocess.run(dur_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                    if dur_res.returncode == 0:
+                        body_duration = float(dur_res.stdout.strip())
+                except:
+                    pass
             start_time = max(0.0, body_duration - 5.0)
 
             # Generate outro card video
@@ -1437,6 +1412,7 @@ def compile_clip(
                 typer.echo(f"Warning generating outro card video: {res_out.stderr}")
 
         scale_filter = f"scale={v_width}:{v_height}:force_original_aspect_ratio=decrease,pad={v_width}:{v_height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=25"
+        body_v_filter = f"{scale_filter}{body_v_extra_filter},settb=1/90000"
         if not is_last_clip and os.path.exists(temp_outro_video_path):
             typer.echo(f"Compiling (Intro -> Body -> Outro) into {out_path}...")
             cmd_concat = [
@@ -1446,7 +1422,7 @@ def compile_clip(
                 "-i", temp_outro_video_path,
                 "-filter_complex",
                 f"[0:v]{scale_filter},settb=1/90000[v0];"
-                f"[1:v]{scale_filter},settb=1/90000[v1];"
+                f"[1:v]{body_v_filter}[v1];"
                 f"[2:v]{scale_filter},settb=1/90000[v2];"
                 "[v0][v1]concat=n=2:v=1:a=0[v01];"
                 "[v01]fps=25,settb=1/90000[v01tb];"
@@ -1457,10 +1433,11 @@ def compile_clip(
                 "-map", "[a]",
                 "-c:v", "libx264",
                 "-crf", "18",
-                "-preset", "fast",
+                "-preset", "veryfast",
                 "-pix_fmt", "yuv420p",
                 "-c:a", "aac",
                 "-b:a", "192k",
+                "-movflags", "+faststart",
                 out_path
             ]
         else:
@@ -1471,17 +1448,18 @@ def compile_clip(
                 "-i", body_video_path,
                 "-filter_complex",
                 f"[0:v]{scale_filter},settb=1/90000[v0];"
-                f"[1:v]{scale_filter},settb=1/90000[v1];"
+                f"[1:v]{body_v_filter}[v1];"
                 "[v0][v1]concat=n=2:v=1:a=0[v];"
                 "[0:a][1:a]concat=n=2:v=0:a=1[a]",
                 "-map", "[v]",
                 "-map", "[a]",
                 "-c:v", "libx264",
                 "-crf", "18",
-                "-preset", "fast",
+                "-preset", "veryfast",
                 "-pix_fmt", "yuv420p",
                 "-c:a", "aac",
                 "-b:a", "192k",
+                "-movflags", "+faststart",
                 out_path
             ]
         res_concat = subprocess.run(cmd_concat, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -1489,14 +1467,16 @@ def compile_clip(
         if res_concat.returncode == 0:
             typer.echo(f"Successfully compiled clip: {out_path}")
             
-            # Sync compiled clip to docs/assets/clips/ for preview player UI
-            docs_clips_dir = os.path.join("docs", "episodes", episode, "clips") if episode else os.path.join("docs", "assets", "clips")
-            os.makedirs(docs_clips_dir, exist_ok=True)
-            try:
-                shutil.copy2(out_path, os.path.join(docs_clips_dir, out_filename))
-                typer.echo(f"Synced compiled clip to {os.path.join(docs_clips_dir, out_filename)}")
-            except Exception as e:
-                typer.echo(f"Warning: Could not sync to docs: {e}")
+            # Sync compiled clip to canonical deepDive publication repo if present
+            if episode:
+                deepdive_clips_dir = os.path.abspath(os.path.join("..", "deepDive", "src", "ddma", "docs", "episodes", str(episode), "clips"))
+                if os.path.exists(os.path.dirname(deepdive_clips_dir)):
+                    os.makedirs(deepdive_clips_dir, exist_ok=True)
+                    try:
+                        shutil.copy2(out_path, os.path.join(deepdive_clips_dir, out_filename))
+                        typer.echo(f"Synced compiled clip to {os.path.join(deepdive_clips_dir, out_filename)}")
+                    except Exception as e:
+                        typer.echo(f"Warning: Could not sync to deepDive clips: {e}")
             
             # Check final duration warning against the 2m 55s limit (175s) and reconcile plan.json
             try:
@@ -1512,6 +1492,7 @@ def compile_clip(
 
                     # Forward reconciliation: record rendered media properties without corrupting source coordinates
                     if target_clip is not None:
+                        import hashlib
                         target_clip["rendered_duration"] = final_dur
                         target_clip["duration"] = final_dur
                         target_clip["intro_offset"] = intro_duration
@@ -1520,6 +1501,18 @@ def compile_clip(
                             target_clip["source_start"] = target_clip["start"]
                         if "source_end" not in target_clip and "end" in target_clip:
                             target_clip["source_end"] = target_clip["end"]
+                        
+                        audio_sig = hashlib.md5(json.dumps(target_clip.get("segments", []), sort_keys=True).encode("utf-8")).hexdigest()
+                        compile_sig = hashlib.md5(json.dumps({
+                            "title": target_clip.get("title", ""),
+                            "ep_title": ep_title,
+                            "bridge_text": target_clip.get("bridge_text", ""),
+                            "mosaic_run_id": mosaic_run_id,
+                            "segments": target_clip.get("segments", []),
+                            "force_draft": force_draft
+                        }, sort_keys=True).encode("utf-8")).hexdigest()
+                        target_clip["_audio_sig"] = audio_sig
+                        target_clip["_compiled_sig"] = compile_sig
 
                         # Save updated plan.json to plan_file atomically
                         try:

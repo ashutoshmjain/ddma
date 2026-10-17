@@ -1996,8 +1996,13 @@
                 <h3 id="videoModalTitle">VIDEO PREVIEW</h3>
                 <button class="icon-btn" id="closeVideoModalBtn" style="font-size: 1.2rem;" title="Close player">✖</button>
             </div>
-            <div style="display: flex; justify-content: center; background-color: #000; border-radius: 8px; overflow: hidden; margin-top: 0.5rem; aspect-ratio: 1/1; max-height: 480px; border: 1px solid var(--border-color);">
+            <div style="position: relative; display: flex; justify-content: center; align-items: center; background-color: #000; border-radius: 8px; overflow: hidden; margin-top: 0.5rem; aspect-ratio: 1/1; max-height: 480px; border: 1px solid var(--border-color);">
                 <video id="previewVideoPlayer" controls style="width: 100%; height: 100%; object-fit: contain;"></video>
+                <div id="videoModalLoadingOverlay" style="display: none; position: absolute; inset: 0; background: rgba(10, 12, 18, 0.88); backdrop-filter: blur(4px); flex-direction: column; justify-content: center; align-items: center; gap: 0.85rem; z-index: 10; padding: 1.5rem; text-align: center;">
+                    <div style="font-size: 2.2rem; animation: pulse 1.2s infinite ease-in-out;">⏳</div>
+                    <div id="videoModalLoadingTitle" style="font-size: 0.95rem; font-weight: 700; color: #fff; font-family: var(--font-mono);">Compiling Master Video...</div>
+                    <div id="videoModalLoadingSub" style="font-size: 0.78rem; color: var(--text-muted); max-width: 360px; line-height: 1.4;">Assembling Intro, Mosaic Motion Graphics, and Outro Bridge...</div>
+                </div>
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.8rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
                 <span id="videoModalSubtitle" style="font-size: 0.75rem; color: var(--text-muted);"></span>
@@ -6450,11 +6455,18 @@
                 const mosaicStatusText = statusInfo.mosaic_status || statusInfo.status || '';
                 const mosaicErrorText = statusInfo.mosaic_error || statusInfo.error || '';
                 
-                let videoBtnHtml = `<button class="btn btn-mini btn-card-video btn-status-warning" id="playVideoBtn_${index}" style="font-weight:600;" title="Play 1-click Black Canvas Baseline preview (Intro 2s + Black Canvas Audio Body + Outro 5s)">📹 Draft</button>`;
+                const isCompilingMosaic = Boolean(window.activeCompilingClips && window.activeCompilingClips[clip.num]);
+                const isCompilingDraft = Boolean(window.activeCompilingDrafts && window.activeCompilingDrafts[clip.num]);
+
+                let videoBtnHtml = isCompilingDraft
+                    ? `<button class="btn btn-mini btn-card-video btn-status-warning" id="playVideoBtn_${index}" style="font-weight:600; cursor: wait;" disabled title="Compiling Draft preview...">⏳ Compiling...</button>`
+                    : `<button class="btn btn-mini btn-card-video btn-status-warning" id="playVideoBtn_${index}" style="font-weight:600;" title="Play 1-click Black Canvas Baseline preview (Intro 2s + Black Canvas Audio Body + Outro 5s)">📹 Draft</button>`;
                 
                 let mosaicBtnHtml = "";
                 if (isLocked) {
-                    if (mosaicState === 'processing') {
+                    if (isCompilingMosaic) {
+                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-success" id="mosaicCardBtn_${index}" style="font-weight: 600; cursor: wait;" disabled title="Assembling Master Mosaic video...">⏳ Compiling...</button>`;
+                    } else if (mosaicState === 'processing') {
                         const pct = mosaicProgress;
                         const stageText = mosaicStatusText ? ` - ${mosaicStatusText}` : '';
                         mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-mosaic-progress" id="mosaicCardBtn_${index}" style="font-weight: 600; --progress: ${pct}%;" title="Mosaic generation in progress (${pct}%${stageText})">⏳ ${pct}%</button>`;
@@ -6675,9 +6687,19 @@
                         e.stopPropagation();
                         const btn = this;
                         
+                        window.activeCompilingDrafts = window.activeCompilingDrafts || {};
+                        window.activeCompilingDrafts[clip.num] = true;
                         btn.innerHTML = '⏳ Compiling...';
                         btn.disabled = true;
+                        btn.style.cursor = 'wait';
                         updateStateBar(`Compiling Black Canvas Baseline preview for Part ${clip.num}: "${clip.title}"...`);
+                        
+                        openVideoModalLoading(
+                            `📹 DRAFT BASELINE (Black Canvas Preview) - Part ${clip.num}: ${clip.title}`,
+                            `ℹ️ Local Black Canvas Baseline (2s Title Intro + Black Canvas Audio Body + 5s Outro Curiosity Question).`,
+                            `Compiling Draft Baseline for Part ${clip.num}...`,
+                            `Assembling 2s Intro, Black Canvas Audio Body, and 5s Outro Bridge...`
+                        );
                         
                         fetch(`/compile-clip?id=${activeProjectId}&num=${clip.num}&draft=true`, {
                             method: 'POST'
@@ -6687,9 +6709,6 @@
                             return res.json();
                         })
                         .then(data => {
-                            btn.classList.remove('btn-status-warning', 'btn-status-gray');
-                            btn.classList.add('btn-status-success');
-                            
                             const epNum = activeProjectId.replace('episode_', '');
                             const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
                             
@@ -6702,12 +6721,18 @@
                             updateStateBar(`Playing Draft Baseline video preview for Part ${clip.num}`);
                         })
                         .catch(err => {
+                            closeVideoModal();
                             alert("Error compiling Draft Baseline preview: " + err.message);
                             updateStateBar("Ready");
                         })
                         .finally(() => {
-                            btn.innerHTML = '📹 Draft';
-                            btn.disabled = false;
+                            if (window.activeCompilingDrafts) delete window.activeCompilingDrafts[clip.num];
+                            const liveBtn = document.getElementById(`playVideoBtn_${index}`) || btn;
+                            if (liveBtn) {
+                                liveBtn.innerHTML = '📹 Draft';
+                                liveBtn.disabled = false;
+                                liveBtn.style.cursor = '';
+                            }
                         });
                     });
                 }
@@ -6744,9 +6769,20 @@
 
                                 if (useExisting) {
                                     // 1-Click Master Mosaic Video compilation (re-renders fresh Intro/Outro cards around existing Mosaic body for 0 cost)
+                                    window.activeCompilingClips = window.activeCompilingClips || {};
+                                    window.activeCompilingClips[clip.num] = true;
                                     btn.innerHTML = '⏳ Compiling...';
                                     btn.disabled = true;
+                                    btn.style.cursor = 'wait';
                                     updateStateBar(`Compiling Master Mosaic video preview for Part ${clip.num}: "${clip.title}"...`);
+                                    
+                                    const epNum = activeProjectId.replace('episode_', '');
+                                    openVideoModalLoading(
+                                        `🌌 MASTER MOSAIC VIDEO (Motion Infographics) - Part ${clip.num}: ${clip.title}`,
+                                        `✨ Master Video with Dan Koe–style Motion Graphics • clips/${epNum}-${clip.num}.mp4`,
+                                        `Preparing Master Mosaic Video (Part ${clip.num})...`,
+                                        `Verifying cached build & streaming Intro + Mosaic Motion Graphics + Outro...`
+                                    );
                                     
                                     fetch(`/compile-clip?id=${activeProjectId}&num=${clip.num}`, {
                                         method: 'POST'
@@ -6756,10 +6792,6 @@
                                         return res.json();
                                     })
                                     .then(data => {
-                                        btn.classList.remove('btn-status-purple', 'btn-status-gray');
-                                        btn.classList.add('btn-status-success');
-                                        
-                                        const epNum = activeProjectId.replace('episode_', '');
                                         const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
                                         
                                         openVideoModal(
@@ -6771,12 +6803,20 @@
                                         updateStateBar(`Playing Master Mosaic video preview for Part ${clip.num}`);
                                     })
                                     .catch(err => {
+                                        closeVideoModal();
                                         alert("Error compiling Master Mosaic preview: " + err.message);
                                         updateStateBar("Ready");
                                     })
                                     .finally(() => {
-                                        btn.innerHTML = '🌌 Mosaic';
-                                        btn.disabled = false;
+                                        if (window.activeCompilingClips) delete window.activeCompilingClips[clip.num];
+                                        const liveBtn = document.getElementById(`mosaicCardBtn_${index}`) || btn;
+                                        if (liveBtn) {
+                                            liveBtn.classList.remove('btn-status-purple', 'btn-status-gray');
+                                            liveBtn.classList.add('btn-status-success');
+                                            liveBtn.innerHTML = '🟢 Mosaic';
+                                            liveBtn.disabled = false;
+                                            liveBtn.style.cursor = '';
+                                        }
                                     });
                                 } else {
                                     // User explicitly chose to run a fresh new API call
@@ -7400,14 +7440,60 @@
             combinedAudioPlayer.src = "";
         });
 
+        function openVideoModalLoading(titleText, subtitleText, loadingTitle = "Compiling Master Video...", loadingSub = "Assembling Intro, Mosaic Motion Graphics, and Outro Bridge...") {
+            audioElement.pause();
+            playBtn.textContent = '▶';
+            
+            previewVideoPlayer.pause();
+            previewVideoPlayer.removeAttribute('src');
+            previewVideoPlayer.load();
+            
+            videoModalTitle.textContent = titleText;
+            videoModalSubtitle.textContent = subtitleText;
+            downloadVideoBtn.style.pointerEvents = 'none';
+            downloadVideoBtn.style.opacity = '0.5';
+            
+            const loadingOverlay = document.getElementById('videoModalLoadingOverlay');
+            const loadingTitleEl = document.getElementById('videoModalLoadingTitle');
+            const loadingSubEl = document.getElementById('videoModalLoadingSub');
+            if (loadingTitleEl) loadingTitleEl.textContent = loadingTitle;
+            if (loadingSubEl) loadingSubEl.textContent = loadingSub;
+            if (loadingOverlay) loadingOverlay.style.display = 'flex';
+            
+            document.body.style.cursor = 'wait';
+            videoModalOverlay.style.display = 'flex';
+            videoModalOverlay.classList.remove('minimized');
+            videoModalOverlay.classList.add('active');
+        }
+
         function openVideoModal(videoUrl, titleText, subtitleText) {
             audioElement.pause();
             playBtn.textContent = '▶';
+            
+            const loadingOverlay = document.getElementById('videoModalLoadingOverlay');
+            const loadingTitleEl = document.getElementById('videoModalLoadingTitle');
+            const loadingSubEl = document.getElementById('videoModalLoadingSub');
+            if (loadingTitleEl) loadingTitleEl.textContent = "Buffering Video Stream...";
+            if (loadingSubEl) loadingSubEl.textContent = "Starting playback...";
+            if (loadingOverlay) loadingOverlay.style.display = 'flex';
+
+            const hideLoading = () => {
+                if (loadingOverlay) loadingOverlay.style.display = 'none';
+                document.body.style.cursor = '';
+                previewVideoPlayer.removeEventListener('canplay', hideLoading);
+                previewVideoPlayer.removeEventListener('playing', hideLoading);
+                previewVideoPlayer.removeEventListener('error', hideLoading);
+            };
+            previewVideoPlayer.addEventListener('canplay', hideLoading);
+            previewVideoPlayer.addEventListener('playing', hideLoading);
+            previewVideoPlayer.addEventListener('error', hideLoading);
             
             previewVideoPlayer.src = videoUrl;
             videoModalTitle.textContent = titleText;
             videoModalSubtitle.textContent = subtitleText;
             downloadVideoBtn.href = videoUrl;
+            downloadVideoBtn.style.pointerEvents = '';
+            downloadVideoBtn.style.opacity = '';
             
             videoModalOverlay.style.display = 'flex';
             videoModalOverlay.classList.remove('minimized');
@@ -7415,10 +7501,14 @@
             
             previewVideoPlayer.play().catch(err => {
                 console.log("Video playback error/prevented:", err);
+                hideLoading();
             });
         }
 
         function closeVideoModal() {
+            const loadingOverlay = document.getElementById('videoModalLoadingOverlay');
+            if (loadingOverlay) loadingOverlay.style.display = 'none';
+            document.body.style.cursor = '';
             videoModalOverlay.classList.remove('active');
             videoModalOverlay.classList.remove('minimized');
             videoModalOverlay.style.display = 'none';
