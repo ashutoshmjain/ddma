@@ -3563,6 +3563,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
             is_draft = params.get('draft', ['false'])[0].lower() in ('true', '1')
+            req_source = params.get('source', [None])[0]
             try:
                 if not project_id or not clip_num:
                     raise Exception("Missing project id or clip number.")
@@ -3600,14 +3601,23 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         p_data_chk = json.load(pf_chk)
                     t_clip = next((c for c in p_data_chk if str(c.get("num")) == str(clip_num)), None)
                     if t_clip:
+                        if req_source in ("mosaic", "infographic") and t_clip.get("visual_source") != req_source:
+                            t_clip["visual_source"] = req_source
+                            with open(plan_path, "w", encoding="utf-8") as pf_w:
+                                json.dump(p_data_chk, pf_w, indent=4)
                         curr_audio_sig = hashlib.md5(json.dumps(t_clip.get("segments", []), sort_keys=True).encode("utf-8")).hexdigest()
                         curr_compile_sig = hashlib.md5(json.dumps({
                             "title": t_clip.get("title", ""),
                             "ep_title": ep_title,
                             "bridge_text": t_clip.get("bridge_text", ""),
                             "mosaic_run_id": t_clip.get("mosaic_run_id"),
+                            "visual_source": t_clip.get("visual_source", ""),
+                            "infographic_scenes": t_clip.get("infographic_scenes", []),
                             "segments": t_clip.get("segments", []),
-                            "force_draft": is_draft
+                            "force_draft": is_draft,
+                            "text": t_clip.get("text", ""),
+                            "caption_chunks": t_clip.get("caption_chunks", []),
+                            "vertical_format": "1080x1920_ass_v1"
                         }, sort_keys=True).encode("utf-8")).hexdigest()
                         out_mp4 = os.path.join("clips", f"{ep_num}-{clip_num}.mp4")
                         if os.path.exists(out_mp4) and os.path.getsize(out_mp4) > 10000 and t_clip.get("_compiled_sig") == curr_compile_sig:
@@ -3648,6 +3658,259 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(json.dumps({"success": True, "message": "Compilation completed successfully."}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                return
+
+        elif parsed_url.path == '/render-local-infographic':
+            try:
+                query = parse_qs(parsed_url.query)
+                project_id = query.get('id', [None])[0]
+                clip_num = query.get('num', [None])[0]
+                force_regen = query.get('force', ['false'])[0].lower() in ('true', '1')
+
+                if not project_id or not clip_num:
+                    raise Exception("Missing id or num parameter")
+
+                content_len = int(self.headers.get('Content-Length', 0))
+                req_body = {}
+                if content_len > 0:
+                    raw_body = self.rfile.read(content_len).decode('utf-8')
+                    try:
+                        req_body = json.loads(raw_body)
+                    except Exception:
+                        pass
+                custom_instructions = str(req_body.get("directive") or req_body.get("instructions") or "").strip()
+
+                if os.getcwd() not in sys.path:
+                    sys.path.insert(0, os.getcwd())
+                import glob
+                import ddma as ddma_mod
+                import infographic_engine
+
+                plan_path = os.path.join("projects", project_id, "plan.json")
+                if not os.path.exists(plan_path):
+                    plan_path = "plan.json"
+
+                with open(plan_path, "r", encoding="utf-8") as pf:
+                    plan_data = json.load(pf)
+
+                t_clip = next((c for c in plan_data if str(c.get("num")) == str(clip_num)), None)
+                if not t_clip:
+                    raise Exception(f"Clip {clip_num} not found in {plan_path}")
+
+                ep_num = project_id.replace('episode_', '')
+                info_path = os.path.join("projects", project_id, "project_info.json")
+                audio_file = None
+                if os.path.exists(info_path):
+                    with open(info_path, "r", encoding="utf-8") as f_info:
+                        p_info = json.load(f_info)
+                        audio_file = p_info.get("audio_file") or p_info.get("audio_filename")
+                if audio_file and not os.path.exists(audio_file):
+                    audio_file = os.path.join("projects", project_id, audio_file)
+                if not audio_file or not os.path.exists(audio_file):
+                    for candidate_ext in [f"{ep_num}.m4a", f"{ep_num}.mp3", f"episode_{ep_num}.m4a", f"episode_{ep_num}.mp3"]:
+                        candidate_path = os.path.join("projects", project_id, candidate_ext)
+                        if os.path.exists(candidate_path):
+                            audio_file = candidate_path
+                            break
+
+                # 1. Ensure sliced clip MP3 exists
+                mp3_matches = glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}-*.mp3")) + glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}.mp3"))
+                if not mp3_matches and audio_file and os.path.exists(audio_file):
+                    subprocess.run([sys.executable, "ddma.py", "cut", "--audio", audio_file, "--plan-file", plan_path, "--out-dir", "clips", "--num", str(clip_num)], capture_output=True, text=True)
+                    mp3_matches = glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}-*.mp3")) + glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}.mp3"))
+                if not mp3_matches:
+                    raise Exception(f"Could not locate or slice clip MP3 for Clip {clip_num}")
+                mp3_matches.sort(key=os.path.getmtime, reverse=True)
+                clip_mp3 = mp3_matches[0]
+
+                # 2. Compute body duration & ensure caption_chunks exist
+                body_dur = 0.0
+                try:
+                    p_dur = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", clip_mp3], capture_output=True, text=True)
+                    if p_dur.returncode == 0 and p_dur.stdout.strip():
+                        body_dur = float(p_dur.stdout.strip())
+                except Exception:
+                    pass
+                if body_dur <= 0:
+                    segs = t_clip.get("segments", [])
+                    body_dur = sum(float(s.get("duration", 0.0)) for s in segs) - sum(float(s.get("crossfade", 0.0)) for s in segs[:-1]) if segs else 60.0
+
+                sorted_clips = sorted(plan_data, key=lambda x: x.get("num", 0))
+                is_last = (sorted_clips[-1].get("num") == t_clip.get("num")) if sorted_clips else False
+
+                if not t_clip.get("caption_chunks"):
+                    ddma_mod.generate_clip_captions(
+                        t_clip, plan_file=plan_path, audio_path=clip_mp3,
+                        intro_offset=1.5, body_duration=body_dur, has_outro=(not is_last)
+                    )
+
+                infographic_mp4 = os.path.join("clips", f"{ep_num}-{clip_num}-infographic.mp4")
+                if force_regen or custom_instructions or not os.path.exists(infographic_mp4) or os.path.getsize(infographic_mp4) < 10000:
+                    settings = load_settings()
+                    api_key = settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
+                    g_mod = genai if (HAS_GENAI and configure_gemini(api_key)) else None
+                    scenes = infographic_engine.generate_infographic_storyboard(
+                        t_clip, body_duration=body_dur, intro_offset=1.5,
+                        custom_instructions=custom_instructions, genai_mod=g_mod,
+                        force_regenerate=(force_regen or bool(custom_instructions))
+                    )
+                    print(f"[{project_id}][Clip {clip_num}] Rendering local 740x740 Dan Koe infographic ({len(scenes)} scenes)...")
+                    infographic_engine.render_infographic_mp4(scenes, clip_mp3, infographic_mp4, duration=body_dur)
+
+                t_clip["visual_source"] = "infographic"
+                t_clip["infographic_ready"] = True
+                with open(plan_path, "w", encoding="utf-8") as pf_w:
+                    json.dump(plan_data, pf_w, indent=4)
+
+                docs_plan_path = os.path.join("docs", "episodes", ep_num, "plan.json")
+                if os.path.exists(docs_plan_path):
+                    try:
+                        with open(docs_plan_path, "w", encoding="utf-8") as dpf_w:
+                            json.dump(plan_data, dpf_w, indent=4)
+                    except Exception:
+                        pass
+
+                # 3. Compile 1080x1920 vertical captioned video with the 740x740 infographic
+                cmd_comp = [sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", plan_path]
+                proc = subprocess.run(cmd_comp, capture_output=True, text=True, cwd=".")
+                if proc.returncode != 0:
+                    raise Exception(f"compile-clip failed: {proc.stderr}")
+
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "success": True,
+                    "infographic_file": infographic_mp4,
+                    "scenes_count": len(t_clip.get("infographic_scenes", [])),
+                    "message": "Local 740x740 Infographic rendered and compiled into 1080x1920 captioned video!"
+                }).encode('utf-8'))
+                return
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                return
+
+        elif parsed_url.path == '/generate-clip-captions':
+            try:
+                query = parse_qs(parsed_url.query)
+                project_id = query.get('id', [None])[0]
+                clip_num = query.get('num', [None])[0]
+                force_whisper = query.get('whisper', ['false'])[0].lower() == 'true'
+
+                if not project_id or not clip_num:
+                    raise Exception("Missing id or num parameter")
+
+                content_len = int(self.headers.get('Content-Length', 0))
+                req_body = {}
+                if content_len > 0:
+                    raw_body = self.rfile.read(content_len).decode('utf-8')
+                    try:
+                        req_body = json.loads(raw_body)
+                    except Exception:
+                        pass
+
+                plan_path = os.path.join("projects", project_id, "plan.json")
+                if not os.path.exists(plan_path):
+                    plan_path = "plan.json"
+
+                with open(plan_path, "r", encoding="utf-8") as pf:
+                    plan_data = json.load(pf)
+
+                t_clip = next((c for c in plan_data if str(c.get("num")) == str(clip_num)), None)
+                if not t_clip:
+                    raise Exception(f"Clip {clip_num} not found in {plan_path}")
+
+                if "text" in req_body and req_body["text"] is not None:
+                    t_clip["text"] = req_body["text"]
+
+                ep_num = project_id.replace('episode_', '')
+                import glob
+                if os.getcwd() not in sys.path:
+                    sys.path.insert(0, os.getcwd())
+                import ddma as ddma_mod
+
+                # Ensure rendered clip MP3 exists if force_whisper is requested
+                mp3_matches = glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}-*.mp3")) + glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}.mp3"))
+                if force_whisper and not mp3_matches:
+                    info_path = os.path.join("projects", project_id, "project_info.json")
+                    audio_file = None
+                    if os.path.exists(info_path):
+                        with open(info_path, "r", encoding="utf-8") as f_info:
+                            p_info = json.load(f_info)
+                            audio_file = p_info.get("audio_file") or p_info.get("audio_filename")
+                    if audio_file and not os.path.exists(audio_file):
+                        audio_file = os.path.join("projects", project_id, audio_file)
+                    if not audio_file or not os.path.exists(audio_file):
+                        for candidate_ext in [f"{ep_num}.m4a", f"{ep_num}.mp3", f"episode_{ep_num}.m4a", f"episode_{ep_num}.mp3"]:
+                            candidate_path = os.path.join("projects", project_id, candidate_ext)
+                            if os.path.exists(candidate_path):
+                                audio_file = candidate_path
+                                break
+                    if audio_file and os.path.exists(audio_file):
+                        subprocess.run([sys.executable, "ddma.py", "cut", "--audio", audio_file, "--plan-file", plan_path, "--out-dir", "clips", "--num", str(clip_num)], capture_output=True, text=True)
+                        mp3_matches = glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}-*.mp3")) + glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}.mp3"))
+
+                audio_path_for_caps = mp3_matches[0] if mp3_matches else None
+
+                # Compute body duration from segments
+                body_dur = 0.0
+                segs = t_clip.get("segments", [])
+                if segs:
+                    for idx_s, s_obj in enumerate(segs):
+                        body_dur += float(s_obj.get("duration", 0.0))
+                        if idx_s < len(segs) - 1:
+                            body_dur -= float(s_obj.get("crossfade", 0.0))
+                else:
+                    body_dur = max(0.0, float(t_clip.get("end", 0.0)) - float(t_clip.get("start", 0.0)))
+
+                sorted_clips = sorted(plan_data, key=lambda x: x.get("num", 0))
+                is_last = (sorted_clips[-1].get("num") == t_clip.get("num")) if sorted_clips else False
+
+                chunks = ddma_mod.generate_clip_captions(
+                    t_clip,
+                    plan_file=plan_path,
+                    audio_path=audio_path_for_caps,
+                    intro_offset=1.5,
+                    body_duration=body_dur,
+                    has_outro=(not is_last),
+                    force_whisper=force_whisper,
+                    force_realign=True
+                )
+
+                with open(plan_path, "w", encoding="utf-8") as pf_w:
+                    json.dump(plan_data, pf_w, indent=4)
+
+                docs_plan_path = os.path.join("docs", "episodes", ep_num, "plan.json")
+                if os.path.exists(docs_plan_path):
+                    try:
+                        with open(docs_plan_path, "w", encoding="utf-8") as dpf_w:
+                            json.dump(plan_data, dpf_w, indent=4)
+                    except Exception:
+                        pass
+
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "success": True,
+                    "caption_chunks": chunks,
+                    "count": len(chunks)
+                }).encode('utf-8'))
                 return
             except Exception as e:
                 self.send_response(500)
@@ -3915,7 +4178,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         # Sort files so that named files (e.g., 244-1-Title.mp4) are processed first,
                         # and direct standard files (e.g., 244-1.mp4) are processed last, overwriting/prioritizing them.
                         for file in sorted(os.listdir(clips_dir)):
-                            if file.startswith(f"{ep_num}-") and file.endswith(".mp4") and not file.endswith("-original.mp4"):
+                            if file.startswith(f"{ep_num}-") and file.endswith(".mp4") and not file.endswith("-original.mp4") and not file.endswith("-infographic.mp4") and "-mosaic-" not in file:
                                 try:
                                     parts = file.split("-")
                                     if len(parts) >= 2:
@@ -3951,10 +4214,13 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                     clip_num = int(clip_num_str)
                                     
                                     if clip_num not in clip_statuses:
-                                        clip_statuses[clip_num] = {"has_audio": False, "video_state": "none", "has_mosaic_file": False}
+                                        clip_statuses[clip_num] = {"has_audio": False, "video_state": "none", "has_mosaic_file": False, "has_infographic_file": False}
                                     
                                     if file.endswith(".mp3"):
                                         clip_statuses[clip_num]["has_audio"] = True
+                                    elif file.endswith("-infographic.mp4"):
+                                        clip_statuses[clip_num]["video_state"] = "compiled"
+                                        clip_statuses[clip_num]["has_infographic_file"] = True
                                     elif file.endswith("-original.mp4") or "-mosaic-" in file:
                                         clip_statuses[clip_num]["video_state"] = "compiled"
                                         clip_statuses[clip_num]["has_mosaic_file"] = True

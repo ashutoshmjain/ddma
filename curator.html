@@ -1595,46 +1595,64 @@
     </div>
 
     
-    <!-- Clip Text & Social Caption Modal -->
+    <!-- Clip Captions & 1080x1920 ASS Burn Modal -->
     <div class="modal-overlay" id="clipTextModalOverlay" style="display: none; position: fixed; inset: 0; background: rgba(28, 25, 23, 0.5); backdrop-filter: blur(4px); z-index: 1100; align-items: center; justify-content: center;">
-        <div class="modal-card" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; max-width: 680px; width: 92%; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.15); overflow: hidden;">
+        <div class="modal-card" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; max-width: 780px; width: 94%; max-height: 92vh; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.15); overflow: hidden;">
             <!-- Modal Header -->
-            <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: var(--bg-light);">
+            <div style="padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: var(--bg-light);">
                 <div>
-                    <h3 id="clipTextModalTitle" style="font-family: var(--font-sans); font-size: 1.05rem; font-weight: 700; color: var(--text-dark-primary); margin: 0;">CLIP 1: Spoken Text &amp; Social Caption</h3>
-                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; font-family: var(--font-mono);" id="clipTextModalSubtitle">Edit and correct spellings for Mosaic AI prompts &amp; Instagram/X/LinkedIn captions</div>
+                    <h3 id="clipTextModalTitle" style="font-family: var(--font-sans); font-size: 1.05rem; font-weight: 700; color: var(--text-dark-primary); margin: 0;">CLIP 1: Spoken Script &amp; 1080×1920 Burned Captions</h3>
+                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; font-family: var(--font-mono);" id="clipTextModalSubtitle">Edit script &amp; timed 3–6 word ASS caption chunks (DejaVu Sans Mono 46pt • y≈500–555 • ≤34 chars)</div>
                 </div>
                 <button class="icon-btn" id="closeClipTextModalBtn" style="font-size: 1rem; cursor: pointer;">✖</button>
             </div>
 
             <!-- Modal Body -->
-            <div style="padding: 1.25rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; flex-grow: 1;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <label for="clipTextInput" style="font-size: 0.75rem; font-weight: 700; color: var(--text-dark-primary); font-family: var(--font-mono); text-transform: uppercase;">
-                        Spoken Script / Caption:
-                    </label>
-                    <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
-                        <span id="clipTextWordCount" style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono); margin-right: 0.2rem;">0 words • 0 chars</span>
-                        <button class="btn btn-secondary btn-mini" id="openExternalEditorBtn" style="font-size: 0.7rem; padding: 0.2rem 0.55rem; font-weight: 700; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;" title="Open in your system editor (gVim, Vim, Notepad) like git commit comments and auto-save on close">💻 Edit in Vim / Notepad</button>
-                        <button class="btn btn-secondary btn-mini" id="syncFromDiskBtn" style="font-size: 0.7rem; padding: 0.2rem 0.45rem;" title="Sync text changes from file on disk if you saved in external editor (:w)">🔄 Sync Disk</button>
-                        <button class="btn btn-secondary btn-mini" id="smartFormatClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; font-weight: 600;" title="Instantly capitalize sentences, fix punctuation spacing, and structure into clean paragraphs">✨ Smart Format</button>
-                        <button class="btn btn-secondary btn-mini" id="aiPolishClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; font-weight: 600; background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15)); border: 1px solid rgba(168,85,247,0.3);" title="Use AI to correct phonetic spelling typos (e.g. Sanskrit/medical terms) and format paragraphs">🤖 AI Polish</button>
-                        <button class="btn btn-secondary btn-mini" id="resetClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.45rem;" title="Reset to raw Whisper transcription">↺ Reset</button>
-                        <button class="btn btn-primary btn-mini" id="copyClipTextBtn" style="font-size: 0.7rem; padding: 0.2rem 0.55rem; font-weight: 600;" title="Copy to clipboard for Instagram, X, LinkedIn, or Nostr">📋 Copy Caption</button>
+            <div style="padding: 1rem 1.25rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; flex-grow: 1;">
+                <!-- Section 1: Spoken Script / Social Caption -->
+                <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.35rem;">
+                        <label for="clipTextInput" style="font-size: 0.74rem; font-weight: 700; color: var(--text-dark-primary); font-family: var(--font-mono); text-transform: uppercase;">
+                            1. Spoken Script &amp; Social Caption:
+                        </label>
+                        <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                            <span id="clipTextWordCount" style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono); margin-right: 0.2rem;">0 words • 0 chars</span>
+                            <button class="btn btn-secondary btn-mini" id="openExternalEditorBtn" style="font-size: 0.68rem; padding: 0.18rem 0.5rem; font-weight: 700; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;" title="Open in your system editor (gVim, Vim, Notepad) and auto-save on close">💻 Vim / Notepad</button>
+                            <button class="btn btn-secondary btn-mini" id="syncFromDiskBtn" style="font-size: 0.68rem; padding: 0.18rem 0.45rem;" title="Sync text changes from file on disk if you saved in external editor (:w)">🔄 Sync Disk</button>
+                            <button class="btn btn-secondary btn-mini" id="smartFormatClipTextBtn" style="font-size: 0.68rem; padding: 0.18rem 0.45rem; font-weight: 600;" title="Instantly capitalize sentences, fix punctuation spacing, and structure into clean paragraphs">✨ Smart Format</button>
+                            <button class="btn btn-secondary btn-mini" id="aiPolishClipTextBtn" style="font-size: 0.68rem; padding: 0.18rem 0.45rem; font-weight: 600; background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.15)); border: 1px solid rgba(168,85,247,0.3);" title="Use AI to correct phonetic spelling typos (e.g. Sanskrit/medical terms) and format paragraphs">🤖 AI Polish</button>
+                            <button class="btn btn-secondary btn-mini" id="resetClipTextBtn" style="font-size: 0.68rem; padding: 0.18rem 0.45rem;" title="Reset to raw Whisper transcription">↺ Reset</button>
+                            <button class="btn btn-primary btn-mini" id="copyClipTextBtn" style="font-size: 0.68rem; padding: 0.18rem 0.5rem; font-weight: 600;" title="Copy to clipboard for Instagram, X, LinkedIn, or Nostr">📋 Copy Text</button>
+                        </div>
                     </div>
+                    <textarea id="clipTextInput" rows="6" spellcheck="true" style="width: 100%; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.7rem; font-family: var(--font-sans); font-size: 0.85rem; line-height: 1.5; color: var(--text-dark-primary); background: #fcfbf9; outline: none; resize: vertical; min-height: 110px;" placeholder="Edit and refine the spoken script text for this clip..."></textarea>
                 </div>
 
-                <textarea id="clipTextInput" rows="12" spellcheck="true" style="width: 100%; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.85rem; font-family: var(--font-sans); font-size: 0.88rem; line-height: 1.6; color: var(--text-dark-primary); background: #fcfbf9; outline: none; resize: vertical; min-height: 220px;" placeholder="Edit and refine the spoken script text for this clip..."></textarea>
+                <!-- Section 2: Timed 3-6 Word ASS Caption Chunks (Burned at y=500..555 on 1080x1920) -->
+                <div style="display: flex; flex-direction: column; gap: 0.4rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.35rem;">
+                        <label for="clipCaptionChunksInput" style="font-size: 0.74rem; font-weight: 700; color: var(--text-dark-primary); font-family: var(--font-mono); text-transform: uppercase;">
+                            2. Burned Video Captions (3–6 words • ≤34 chars • lowercase • chained):
+                        </label>
+                        <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                            <span id="clipCaptionChunksStats" style="font-size: 0.68rem; color: #059669; font-family: var(--font-mono); font-weight: 600; margin-right: 0.2rem;">0 events</span>
+                            <button class="btn btn-secondary btn-mini" id="realignCaptionsFromScriptBtn" style="font-size: 0.68rem; padding: 0.18rem 0.5rem; font-weight: 700; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;" title="Align your edited script words above onto word timestamps and re-chunk into 3–6 word (≤34 char) chained lines">⚡ Auto-Align &amp; Chunk from Script</button>
+                            <button class="btn btn-secondary btn-mini" id="whisperResyncCaptionsBtn" style="font-size: 0.68rem; padding: 0.18rem 0.5rem; font-weight: 600;" title="Run faster-whisper small.en on the rendered clip MP3 for fresh acoustic word timestamps">🎙️ Whisper small.en Sync</button>
+                            <button class="btn btn-secondary btn-mini" id="copyAssFileBtn" style="font-size: 0.68rem; padding: 0.18rem 0.5rem; font-weight: 600;" title="Copy full .ASS subtitle file to clipboard">📋 Copy .ASS</button>
+                        </div>
+                    </div>
+                    <textarea id="clipCaptionChunksInput" rows="8" spellcheck="false" style="width: 100%; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.7rem; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.55; color: var(--text-dark-primary); background: #f8fafc; outline: none; resize: vertical; min-height: 150px;" placeholder="0:00:01.50 -> 0:00:03.42 | yes, google is currently bogged"></textarea>
+                </div>
 
-                <div style="font-size: 0.72rem; color: var(--text-muted); background: var(--bg-light); padding: 0.6rem 0.8rem; border-radius: 6px; border: 1px solid var(--border-light); line-height: 1.4;">
-                    💡 <strong>Persistent Sync:</strong> Saved text is stored in <code>plan.json</code> under this clip. It will automatically populate the Mosaic AI Prompt Editor and serve as ready-to-use captions for your Instagram, X (Twitter), LinkedIn, and Nostr post uploads.
+                <div style="font-size: 0.71rem; color: var(--text-muted); background: var(--bg-light); padding: 0.55rem 0.75rem; border-radius: 6px; border: 1px solid var(--border-light); line-height: 1.4;">
+                    🎯 <strong>1080×1920 Vertical Render Spec:</strong> Captions burn into the top black pad (<code>y≈500–555</code>, <code>DejaVu Sans Mono 46pt</code>) above the <code>1000×1000</code> video frame (<code>y=560..1560</code>), skipping the 1.5s Intro and 5s Outro. Edit script above and click <strong>⚡ Auto-Align</strong>, or edit individual <code>start -&gt; end | phrase</code> lines directly below!
                 </div>
             </div>
 
             <!-- Modal Footer -->
-            <div style="padding: 0.85rem 1.25rem; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 0.6rem; background: var(--bg-light);">
+            <div style="padding: 0.8rem 1.25rem; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 0.6rem; background: var(--bg-light);">
                 <button class="btn btn-secondary btn-mini" id="cancelClipTextBtn" style="padding: 0.35rem 0.85rem; font-size: 0.78rem;">Cancel</button>
-                <button class="btn btn-primary btn-mini" id="saveClipTextBtn" style="padding: 0.35rem 1rem; font-size: 0.78rem; font-weight: 600;">Save &amp; Persist</button>
+                <button class="btn btn-primary btn-mini" id="saveClipTextBtn" style="padding: 0.35rem 1rem; font-size: 0.78rem; font-weight: 600;">Save Captions &amp; Persist</button>
             </div>
         </div>
     </div>
@@ -1991,17 +2009,17 @@
 
     <!-- Video Preview Modal -->
     <div class="export-modal-overlay" id="videoModalOverlay">
-        <div class="export-modal" style="max-width: 600px; padding: 1.5rem;">
+        <div class="export-modal" style="max-width: 520px; padding: 1.25rem;">
             <div class="export-modal-header">
                 <h3 id="videoModalTitle">VIDEO PREVIEW</h3>
                 <button class="icon-btn" id="closeVideoModalBtn" style="font-size: 1.2rem;" title="Close player">✖</button>
             </div>
-            <div style="position: relative; display: flex; justify-content: center; align-items: center; background-color: #000; border-radius: 8px; overflow: hidden; margin-top: 0.5rem; aspect-ratio: 1/1; max-height: 480px; border: 1px solid var(--border-color);">
+            <div style="position: relative; display: flex; justify-content: center; align-items: center; background-color: #000; border-radius: 8px; overflow: hidden; margin: 0.5rem auto 0 auto; aspect-ratio: 9/16; height: 68vh; max-height: 640px; border: 1px solid var(--border-color);">
                 <video id="previewVideoPlayer" controls style="width: 100%; height: 100%; object-fit: contain;"></video>
                 <div id="videoModalLoadingOverlay" style="display: none; position: absolute; inset: 0; background: rgba(10, 12, 18, 0.88); backdrop-filter: blur(4px); flex-direction: column; justify-content: center; align-items: center; gap: 0.85rem; z-index: 10; padding: 1.5rem; text-align: center;">
                     <div style="font-size: 2.2rem; animation: pulse 1.2s infinite ease-in-out;">⏳</div>
                     <div id="videoModalLoadingTitle" style="font-size: 0.95rem; font-weight: 700; color: #fff; font-family: var(--font-mono);">Compiling Master Video...</div>
-                    <div id="videoModalLoadingSub" style="font-size: 0.78rem; color: var(--text-muted); max-width: 360px; line-height: 1.4;">Assembling Intro, Mosaic Motion Graphics, and Outro Bridge...</div>
+                    <div id="videoModalLoadingSub" style="font-size: 0.78rem; color: var(--text-muted); max-width: 360px; line-height: 1.4;">Assembling Intro, Mosaic Motion Graphics, Outro Bridge &amp; 1080×1920 Burned Captions...</div>
                 </div>
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.8rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
@@ -2671,9 +2689,129 @@
             return text;
         }
 
+        function formatAssTimeJs(sec) {
+            const sVal = Math.max(0, parseFloat(sec) || 0);
+            const totalCs = Math.round(sVal * 100);
+            const h = Math.floor(totalCs / 360000);
+            let rem = totalCs % 360000;
+            const m = Math.floor(rem / 6000);
+            rem = rem % 6000;
+            const s = Math.floor(rem / 100);
+            const cs = rem % 100;
+            return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(cs).padStart(2, '0')}`;
+        }
+
+        function parseAssTimeJs(str) {
+            const parts = String(str || '').trim().split(':');
+            if (parts.length === 3) {
+                return (parseFloat(parts[0]) || 0) * 3600 + (parseFloat(parts[1]) || 0) * 60 + (parseFloat(parts[2]) || 0);
+            } else if (parts.length === 2) {
+                return (parseFloat(parts[0]) || 0) * 60 + (parseFloat(parts[1]) || 0);
+            }
+            return parseFloat(str) || 0;
+        }
+
+        function formatChunksForTextarea(chunks) {
+            if (!Array.isArray(chunks) || chunks.length === 0) return '';
+            return chunks.map(ch => `${formatAssTimeJs(ch.start)} -> ${formatAssTimeJs(ch.end)} | ${String(ch.text || '').trim().toLowerCase()}`).join('\n');
+        }
+
+        function parseChunksFromTextarea(rawText) {
+            if (!rawText || !rawText.trim()) return [];
+            const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+            const parsed = [];
+            for (const line of lines) {
+                const pipeIdx = line.indexOf('|');
+                if (pipeIdx !== -1) {
+                    const timePart = line.slice(0, pipeIdx).trim();
+                    const textPart = line.slice(pipeIdx + 1).replace(/\s+/g, ' ').trim().toLowerCase();
+                    const arrowParts = timePart.split(/->|→/);
+                    if (arrowParts.length === 2 && textPart) {
+                        const s = Math.round(parseAssTimeJs(arrowParts[0]) * 100) / 100;
+                        const e = Math.round(parseAssTimeJs(arrowParts[1]) * 100) / 100;
+                        parsed.push({ start: s, end: Math.max(s + 0.05, e), text: textPart });
+                    }
+                }
+            }
+            // Enforce strict chaining: each event's end time = next event's start time
+            for (let i = 0; i < parsed.length - 1; i++) {
+                if (parsed[i + 1].start <= parsed[i].start) {
+                    parsed[i + 1].start = Math.round((parsed[i].start + 0.08) * 100) / 100;
+                }
+                parsed[i].end = parsed[i + 1].start;
+            }
+            return parsed;
+        }
+
+        function buildAssDocumentJs(chunks) {
+            const header = [
+                "[Script Info]",
+                "ScriptType: v4.00+",
+                "PlayResX: 1080",
+                "PlayResY: 1920",
+                "WrapStyle: 2",
+                "ScaledBorderAndShadow: yes",
+                "",
+                "[V4+ Styles]",
+                "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
+                "Style: Caption,DejaVu Sans Mono,46,&H00FFFFFF,&H000019FF,&H80000000,&H80000000,0,0,0,0,100,100,1.2,0,1,2,0,8,60,60,500,1",
+                "",
+                "[Events]",
+                "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
+            ];
+            for (const ch of (chunks || [])) {
+                const txt = String(ch.text || '').replace(/\s+/g, ' ').trim().toLowerCase();
+                if (txt) {
+                    header.push(`Dialogue: 0,${formatAssTimeJs(ch.start)},${formatAssTimeJs(ch.end)},Caption,,0,0,0,,${txt}`);
+                }
+            }
+            return header.join('\n') + '\n';
+        }
+
+        function updateCaptionChunksStats() {
+            const chunksEl = document.getElementById('clipCaptionChunksInput');
+            const statsEl = document.getElementById('clipCaptionChunksStats');
+            if (!chunksEl || !statsEl) return;
+            const chunks = parseChunksFromTextarea(chunksEl.value);
+            let maxLen = 0;
+            let overCount = 0;
+            for (const ch of chunks) {
+                const len = (ch.text || '').length;
+                if (len > maxLen) maxLen = len;
+                if (len > 34) overCount++;
+            }
+            if (overCount > 0) {
+                statsEl.style.color = '#dc2626';
+                statsEl.textContent = `${chunks.length} events • ⚠️ ${overCount} line(s) > 34 chars (max ${maxLen})`;
+            } else {
+                statsEl.style.color = '#059669';
+                statsEl.textContent = `${chunks.length} events • ✓ Chained • ✓ Max ${maxLen}/34 chars`;
+            }
+        }
+
+        async function requestServerAlignedCaptions(clipIndex, editedText, forceWhisper = false) {
+            if (clipIndex === null || !clips[clipIndex] || !activeProjectId) return null;
+            const clip = clips[clipIndex];
+            const resp = await fetch(`/generate-clip-captions?id=${activeProjectId}&num=${clip.num}&whisper=${forceWhisper ? 'true' : 'false'}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: editedText })
+            });
+            const data = await resp.json();
+            if (data.success && Array.isArray(data.caption_chunks)) {
+                clip.caption_chunks = data.caption_chunks;
+                return data.caption_chunks;
+            }
+            throw new Error(data.error || 'Failed to align captions');
+        }
+
+        let _captionChunksManuallyEdited = false;
+        let _initialModalTextVal = "";
+
         function openClipTextModal(clipIndex) {
             if (clipIndex === undefined || clipIndex === null || !clips[clipIndex]) return;
             activeTextClipIndex = clipIndex;
+            _captionChunksManuallyEdited = false;
             const clip = clips[clipIndex];
             const episodeNum = (projectInfo && projectInfo.name) ? (projectInfo.name.match(/\d+/)?.[0] || projectInfo.name) : "244";
 
@@ -2681,16 +2819,38 @@
             const titleEl = document.getElementById('clipTextModalTitle');
             const subtitleEl = document.getElementById('clipTextModalSubtitle');
             const inputEl = document.getElementById('clipTextInput');
+            const chunksEl = document.getElementById('clipCaptionChunksInput');
 
             if (titleEl) {
-                titleEl.textContent = `CLIP ${clip.num}: ${clip.title || 'Spoken Text'}`;
+                titleEl.textContent = `CLIP ${clip.num}: ${clip.title || 'Spoken Script & Burned Captions'}`;
             }
             if (subtitleEl) {
-                subtitleEl.textContent = `Episode ${episodeNum} • Part ${clip.num} | Spoken transcript & social caption`;
+                subtitleEl.textContent = `Episode ${episodeNum} • Part ${clip.num} | 1080×1920 Burned ASS Captions (DejaVu Sans Mono 46pt • y≈500–555)`;
             }
             if (inputEl) {
                 inputEl.value = getClipSpokenText(clip);
+                _initialModalTextVal = inputEl.value.trim();
                 updateClipTextWordCount();
+            }
+
+            if (chunksEl) {
+                if (Array.isArray(clip.caption_chunks) && clip.caption_chunks.length > 0) {
+                    chunksEl.value = formatChunksForTextarea(clip.caption_chunks);
+                    updateCaptionChunksStats();
+                } else {
+                    chunksEl.value = "⏳ Generating 3–6 word (≤34 char) chained caption chunks...";
+                    requestServerAlignedCaptions(clipIndex, inputEl ? inputEl.value : '', false)
+                        .then(chunks => {
+                            if (activeTextClipIndex === clipIndex && chunksEl) {
+                                chunksEl.value = formatChunksForTextarea(chunks);
+                                updateCaptionChunksStats();
+                            }
+                        })
+                        .catch(err => {
+                            console.warn("Could not auto-fetch captions:", err);
+                            if (chunksEl) chunksEl.value = "";
+                        });
+                }
             }
 
             if (modal) {
@@ -2712,7 +2872,7 @@
             activeTextClipIndex = null;
         }
 
-        // Setup Event Listeners for Clip Text Modal
+        // Setup Event Listeners for Clip Captions Modal
         document.addEventListener('DOMContentLoaded', () => {
             const modal = document.getElementById('clipTextModalOverlay');
             const closeBtn = document.getElementById('closeClipTextModalBtn');
@@ -2721,6 +2881,10 @@
             const copyBtn = document.getElementById('copyClipTextBtn');
             const resetBtn = document.getElementById('resetClipTextBtn');
             const inputEl = document.getElementById('clipTextInput');
+            const chunksEl = document.getElementById('clipCaptionChunksInput');
+            const realignBtn = document.getElementById('realignCaptionsFromScriptBtn');
+            const whisperResyncBtn = document.getElementById('whisperResyncCaptionsBtn');
+            const copyAssBtn = document.getElementById('copyAssFileBtn');
 
             if (closeBtn) closeBtn.addEventListener('click', closeClipTextModal);
             if (cancelBtn) cancelBtn.addEventListener('click', closeClipTextModal);
@@ -2732,7 +2896,77 @@
             }
 
             if (inputEl) {
-                inputEl.addEventListener('input', updateClipTextWordCount);
+                inputEl.addEventListener('input', () => {
+                    updateClipTextWordCount();
+                });
+            }
+
+            if (chunksEl) {
+                chunksEl.addEventListener('input', () => {
+                    _captionChunksManuallyEdited = true;
+                    updateCaptionChunksStats();
+                });
+            }
+
+            if (realignBtn) {
+                realignBtn.addEventListener('click', async () => {
+                    if (activeTextClipIndex === null || !clips[activeTextClipIndex]) return;
+                    const origHtml = realignBtn.innerHTML;
+                    realignBtn.innerHTML = '⏳ Aligning...';
+                    realignBtn.disabled = true;
+                    try {
+                        const chunks = await requestServerAlignedCaptions(activeTextClipIndex, inputEl ? inputEl.value.trim() : '', false);
+                        if (chunksEl && chunks) {
+                            chunksEl.value = formatChunksForTextarea(chunks);
+                            _captionChunksManuallyEdited = false;
+                            updateCaptionChunksStats();
+                            updateStateBar(`⚡ Aligned script edits into ${chunks.length} chained ASS caption events!`);
+                        }
+                    } catch (err) {
+                        alert('Error aligning captions: ' + err.message);
+                    } finally {
+                        realignBtn.innerHTML = origHtml;
+                        realignBtn.disabled = false;
+                    }
+                });
+            }
+
+            if (whisperResyncBtn) {
+                whisperResyncBtn.addEventListener('click', async () => {
+                    if (activeTextClipIndex === null || !clips[activeTextClipIndex]) return;
+                    const origHtml = whisperResyncBtn.innerHTML;
+                    whisperResyncBtn.innerHTML = '⏳ Running faster-whisper small.en...';
+                    whisperResyncBtn.disabled = true;
+                    updateStateBar(`🎙️ Running faster-whisper small.en word-level transcription on rendered clip audio...`);
+                    try {
+                        const chunks = await requestServerAlignedCaptions(activeTextClipIndex, inputEl ? inputEl.value.trim() : '', true);
+                        if (chunksEl && chunks) {
+                            chunksEl.value = formatChunksForTextarea(chunks);
+                            _captionChunksManuallyEdited = false;
+                            updateCaptionChunksStats();
+                            updateStateBar(`🎙️ Whisper small.en sync complete (${chunks.length} chained events)!`);
+                        }
+                    } catch (err) {
+                        alert('Error running Whisper small.en sync: ' + err.message);
+                    } finally {
+                        whisperResyncBtn.innerHTML = origHtml;
+                        whisperResyncBtn.disabled = false;
+                    }
+                });
+            }
+
+            if (copyAssBtn) {
+                copyAssBtn.addEventListener('click', () => {
+                    if (!chunksEl) return;
+                    const chunks = parseChunksFromTextarea(chunksEl.value);
+                    const assText = buildAssDocumentJs(chunks);
+                    navigator.clipboard.writeText(assText).then(() => {
+                        const orig = copyAssBtn.innerHTML;
+                        copyAssBtn.innerHTML = '✅ Copied .ASS!';
+                        updateStateBar('📋 Copied full .ASS subtitle file to clipboard!');
+                        setTimeout(() => { copyAssBtn.innerHTML = orig; }, 1800);
+                    });
+                });
             }
 
             if (copyBtn) {
@@ -2764,14 +2998,21 @@
                     method: 'POST'
                 })
                 .then(res => res.json())
-                .then(data => {
+                .then(async data => {
                     if (data.success && data.text !== undefined) {
                         if (inputEl && inputEl.value !== data.text) {
                             inputEl.value = data.text;
                             updateClipTextWordCount();
                             clips[activeTextClipIndex].text = data.text;
+                            try {
+                                const chunks = await requestServerAlignedCaptions(activeTextClipIndex, data.text, false);
+                                if (chunksEl && chunks) {
+                                    chunksEl.value = formatChunksForTextarea(chunks);
+                                    updateCaptionChunksStats();
+                                }
+                            } catch (e) {}
                             savePlanToServer();
-                            updateStateBar(`🔄 Synced Clip ${clips[activeTextClipIndex].num} text from disk (:w)!`);
+                            updateStateBar(`🔄 Synced Clip ${clips[activeTextClipIndex].num} text & aligned captions from disk (:w)!`);
                         } else if (!silent) {
                             updateStateBar(`🔄 Text on disk is up to date.`);
                         }
@@ -2861,11 +3102,19 @@
                         })
                     })
                     .then(res => res.json())
-                    .then(data => {
+                    .then(async data => {
                         if (data.success && data.polished_text) {
                             inputEl.value = data.polished_text;
                             updateClipTextWordCount();
-                            updateStateBar('✨ AI polish complete! Review and click Save & Persist.');
+                            try {
+                                const chunks = await requestServerAlignedCaptions(activeTextClipIndex, data.polished_text, false);
+                                if (chunksEl && chunks) {
+                                    chunksEl.value = formatChunksForTextarea(chunks);
+                                    _captionChunksManuallyEdited = false;
+                                    updateCaptionChunksStats();
+                                }
+                            } catch (e) {}
+                            updateStateBar('✨ AI polish & caption alignment complete! Review and click Save Captions & Persist.');
                         } else {
                             throw new Error(data.error || 'Server polish failed');
                         }
@@ -2884,14 +3133,22 @@
             }
 
             if (resetBtn) {
-                resetBtn.addEventListener('click', () => {
+                resetBtn.addEventListener('click', async () => {
                     if (activeTextClipIndex === null || !clips[activeTextClipIndex]) return;
                     const rawText = getClipRawWhisperText(clips[activeTextClipIndex]);
                     if (inputEl) {
                         inputEl.value = rawText;
                         updateClipTextWordCount();
                     }
-                    updateStateBar('↺ Reset text to raw Whisper transcript.');
+                    try {
+                        const chunks = await requestServerAlignedCaptions(activeTextClipIndex, rawText, false);
+                        if (chunksEl && chunks) {
+                            chunksEl.value = formatChunksForTextarea(chunks);
+                            _captionChunksManuallyEdited = false;
+                            updateCaptionChunksStats();
+                        }
+                    } catch (e) {}
+                    updateStateBar('↺ Reset text & caption chunks to raw Whisper transcript.');
                 });
             }
 
@@ -2902,16 +3159,31 @@
                         return;
                     }
                     const textVal = inputEl ? inputEl.value.trim() : '';
-                    clips[activeTextClipIndex].text = textVal;
+                    const topScriptEdited = (textVal !== _initialModalTextVal);
+                    if (topScriptEdited || !clips[activeTextClipIndex].text) {
+                        clips[activeTextClipIndex].text = textVal;
+                    }
                     const savedClipIdx = activeTextClipIndex;
                     const shouldReturnToMosaic = returnToMosaicAfterTextSave && activeMosaicClipIndex !== null && activeMosaicBtnEl;
                     
                     const origBtnText = saveBtn.innerHTML;
                     saveBtn.disabled = true;
                     saveBtn.innerHTML = '⏳ Saving...';
-                    updateStateBar(`💾 Saving & persisting text for Clip ${clips[activeTextClipIndex].num}...`);
+                    updateStateBar(`💾 Saving & persisting captions for Clip ${clips[activeTextClipIndex].num}...`);
                     
                     try {
+                        if (!_captionChunksManuallyEdited && topScriptEdited) {
+                            // User edited the top script without manually editing individual chunk lines -> auto-align
+                            const aligned = await requestServerAlignedCaptions(savedClipIdx, textVal, false);
+                            if (aligned) {
+                                clips[savedClipIdx].caption_chunks = aligned;
+                            }
+                        } else if (chunksEl) {
+                            const parsedChunks = parseChunksFromTextarea(chunksEl.value);
+                            if (parsedChunks.length > 0) {
+                                clips[savedClipIdx].caption_chunks = parsedChunks;
+                            }
+                        }
                         await savePlanToServer();
                     } catch (saveErr) {
                         console.error("Failed to save plan to server:", saveErr);
@@ -2920,7 +3192,7 @@
                         saveBtn.innerHTML = origBtnText;
                     }
 
-                    updateStateBar(`💾 Saved & persisted text for Clip ${clips[savedClipIdx].num}!`);
+                    updateStateBar(`💾 Saved & persisted captions for Clip ${clips[savedClipIdx].num}!`);
                     closeClipTextModal();
 
                     if (shouldReturnToMosaic) {
@@ -6455,6 +6727,8 @@
                 const mosaicStatusText = statusInfo.mosaic_status || statusInfo.status || '';
                 const mosaicErrorText = statusInfo.mosaic_error || statusInfo.error || '';
                 
+                const hasInfographicRender = Boolean(clip.infographic_ready) || Boolean(statusInfo.has_infographic_file);
+                const isCompilingInfographic = Boolean(window.activeCompilingInfographics && window.activeCompilingInfographics[clip.num]);
                 const isCompilingMosaic = Boolean(window.activeCompilingClips && window.activeCompilingClips[clip.num]);
                 const isCompilingDraft = Boolean(window.activeCompilingDrafts && window.activeCompilingDrafts[clip.num]);
 
@@ -6462,6 +6736,30 @@
                     ? `<button class="btn btn-mini btn-card-video btn-status-warning" id="playVideoBtn_${index}" style="font-weight:600; cursor: wait;" disabled title="Compiling Draft preview...">⏳ Compiling...</button>`
                     : `<button class="btn btn-mini btn-card-video btn-status-warning" id="playVideoBtn_${index}" style="font-weight:600;" title="Play 1-click Black Canvas Baseline preview (Intro 2s + Black Canvas Audio Body + Outro 5s)">📹 Draft</button>`;
                 
+                const activeVisualSource = clip.visual_source || (hasInfographicRender ? 'infographic' : (hasMosaicRender ? 'mosaic' : ''));
+                const isInfographicActive = hasInfographicRender && activeVisualSource === 'infographic';
+                const isMosaicActive = (hasMosaicRender || mosaicState === 'completed') && activeVisualSource === 'mosaic';
+
+                let infographicBtnHtml = "";
+                if (isLocked) {
+                    if (isCompilingInfographic) {
+                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-success" id="infographicCardBtn_${index}" style="font-weight: 600; cursor: wait;" disabled title="Rendering Local 740×740 Dan Koe Infographic &amp; 1080×1920 Captions...">⏳ Rendering...</button>`;
+                    } else if (hasInfographicRender) {
+                        const activeStyle = isInfographicActive
+                            ? 'font-weight: 700; box-shadow: 0 0 0 2px #38bdf8;'
+                            : 'font-weight: 600; opacity: 0.78;';
+                        const activeLabel = isInfographicActive ? '🟢 Infographic ✓' : '🟢 Infographic';
+                        const activeTip = isInfographicActive
+                            ? 'ACTIVE MASTER for deepDive / shutri.com • Left-click to play • Right-click for custom instructions / re-render'
+                            : 'Click to switch Active Master to Local Infographic (updates clips/' + episodeNum + '-' + clip.num + '.mp4 &amp; deepDive) • Right-click to re-render';
+                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-success" id="infographicCardBtn_${index}" style="${activeStyle}" title="${activeTip}">${activeLabel}</button>`;
+                    } else {
+                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-purple" id="infographicCardBtn_${index}" style="font-weight: 600;" title="Left-click: 1-click render Local 740×740 Dan Koe Infographic + 1080×1920 Captions ($0 cost) • Right-click: Custom visual instructions">✨ Infographic</button>`;
+                    }
+                } else {
+                    infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-gray" style="font-weight: 600; opacity: 0.4; cursor: not-allowed;" disabled title="Lock clip first to enable Local Infographic">✨ Infographic</button>`;
+                }
+
                 let mosaicBtnHtml = "";
                 if (isLocked) {
                     if (isCompilingMosaic) {
@@ -6474,7 +6772,14 @@
                         const errTip = mosaicErrorText ? mosaicErrorText.replace(/"/g, '&quot;') : 'Mosaic render failed';
                         mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-danger" id="mosaicCardBtn_${index}" style="font-weight: 600;" data-error="${errTip}" title="Click to view error details & retry: ${errTip}">⚠️ Failed</button>`;
                     } else if (hasMosaicRender || mosaicState === 'completed') {
-                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-success" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Play 1-click Master Motion Graphics video (Intro 2s + Mosaic Body + Outro 5s)">🟢 Mosaic</button>`;
+                        const activeStyle = isMosaicActive
+                            ? 'font-weight: 700; box-shadow: 0 0 0 2px #38bdf8;'
+                            : 'font-weight: 600; opacity: 0.78;';
+                        const activeLabel = isMosaicActive ? '🟢 Mosaic ✓' : '🟢 Mosaic';
+                        const activeTip = isMosaicActive
+                            ? 'ACTIVE MASTER for deepDive / shutri.com • Click to preview or re-run Mosaic'
+                            : 'Cached locally • Click [OK] to switch Active Master back to Mosaic';
+                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-success" id="mosaicCardBtn_${index}" style="${activeStyle}" title="${activeTip}">${activeLabel}</button>`;
                     } else {
                         mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-purple" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Send draft video to Mosaic API for AI Motion Graphics">🌌 Mosaic</button>`;
                     }
@@ -6524,7 +6829,8 @@
                             
                             <div class="actions-separator"></div>
                             
-                            <button class="btn btn-secondary btn-mini btn-card-text" id="textCardBtn_${index}" data-index="${index}" style="font-weight:600;" title="View, edit, and copy persistent spoken transcript & social caption for this clip">📝 Text</button>
+                            <button class="btn btn-secondary btn-mini btn-card-text" id="textCardBtn_${index}" data-index="${index}" style="font-weight:600;" title="View, edit, and align 1080×1920 burned ASS captions &amp; spoken transcript for this clip">💬 Captions</button>
+                            ${infographicBtnHtml}
                             ${mosaicBtnHtml}
                             <button class="btn btn-mini btn-card-remix btn-status-purple" id="remixCardBtn_${index}" style="font-weight:600;" ${isLocked ? '' : 'disabled style="opacity: 0.4; cursor: not-allowed;" title="Lock clip first to enable Gemini Remix"'} title="Recast this clip using Creative AI based on preceding locked clips">🔄 Remix</button>
                             <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600;">${lockBtnIcon}</button>
@@ -6738,6 +7044,97 @@
                 }
                 
                 if (isLocked) {
+                    const infographicBtnEl = card.querySelector(`#infographicCardBtn_${index}`);
+                    if (infographicBtnEl) {
+                        const runLocalInfographic = (btn, forceRegen = false, customDirective = "") => {
+                            window.activeCompilingInfographics = window.activeCompilingInfographics || {};
+                            window.activeCompilingInfographics[clip.num] = true;
+                            btn.innerHTML = '⏳ Rendering...';
+                            btn.disabled = true;
+                            btn.style.cursor = 'wait';
+                            updateStateBar(`Rendering Local 740×740 Dan Koe Infographic & 1080×1920 Captions for Part ${clip.num}: "${clip.title}"...`);
+                            
+                            const epNum = activeProjectId.replace('episode_', '');
+                            openVideoModalLoading(
+                                `✨ LOCAL DAN KOE INFOGRAPHIC - Part ${clip.num}: ${clip.title}`,
+                                `✨ 740×740 Neon Wireframe Engine → 1080×1920 Vertical + Burned ASS Captions ($0 Cost) • clips/${epNum}-${clip.num}.mp4`,
+                                `Rendering Local Dan Koe Infographic (Part ${clip.num})...`,
+                                forceRegen
+                                    ? `Generating fresh scene storyboard, rendering 740×740 neon vectors, and burning 1080×1920 captions...`
+                                    : `Verifying 740×740 infographic & assembling 1080×1920 captioned vertical Short...`
+                            );
+                            
+                            fetch(`/render-local-infographic?id=${activeProjectId}&num=${clip.num}&force=${forceRegen ? 'true' : 'false'}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ directive: customDirective || "" })
+                            })
+                            .then(res => {
+                                if (!res.ok) return res.json().then(data => { throw new Error(data.error || "Local infographic render failed"); });
+                                return res.json();
+                            })
+                            .then(data => {
+                                clip.infographic_ready = true;
+                                clip.visual_source = "infographic";
+                                if (window.clipStatusesCache) {
+                                    window.clipStatusesCache[clip.num] = window.clipStatusesCache[clip.num] || {};
+                                    window.clipStatusesCache[clip.num].has_infographic_file = true;
+                                    window.clipStatusesCache[clip.num].video_state = 'compiled';
+                                }
+                                const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
+                                openVideoModal(
+                                    freshVideoUrl,
+                                    `✨ LOCAL DAN KOE INFOGRAPHIC (1080×1920 + Captions) - Part ${clip.num}: ${clip.title}`,
+                                    `✨ 740×740 Neon Wireframe Engine (${data.scenes_count || 12} scenes) + Burned ASS Captions • clips/${epNum}-${clip.num}.mp4`
+                                );
+                                updateStateBar(`Playing Local Dan Koe Infographic video for Part ${clip.num}`);
+                            })
+                            .catch(err => {
+                                closeVideoModal();
+                                alert("Error rendering Local Dan Koe Infographic: " + err.message);
+                                updateStateBar("Ready");
+                            })
+                            .finally(() => {
+                                if (window.activeCompilingInfographics) delete window.activeCompilingInfographics[clip.num];
+                                const liveBtn = document.getElementById(`infographicCardBtn_${index}`) || btn;
+                                const otherMosaicBtn = document.getElementById(`mosaicCardBtn_${index}`);
+                                if (liveBtn) {
+                                    liveBtn.classList.remove('btn-status-purple', 'btn-status-gray');
+                                    liveBtn.classList.add('btn-status-success');
+                                    liveBtn.innerHTML = (clip.visual_source === 'infographic') ? '🟢 Infographic ✓' : '🟢 Infographic';
+                                    liveBtn.style.fontWeight = (clip.visual_source === 'infographic') ? '700' : '600';
+                                    liveBtn.style.boxShadow = (clip.visual_source === 'infographic') ? '0 0 0 2px #38bdf8' : '';
+                                    liveBtn.style.opacity = (clip.visual_source === 'infographic') ? '1' : '0.78';
+                                    liveBtn.disabled = false;
+                                    liveBtn.style.cursor = '';
+                                }
+                                if (otherMosaicBtn && clip.visual_source === 'infographic' && otherMosaicBtn.classList.contains('btn-status-success')) {
+                                    otherMosaicBtn.innerHTML = '🟢 Mosaic';
+                                    otherMosaicBtn.style.fontWeight = '600';
+                                    otherMosaicBtn.style.boxShadow = '';
+                                    otherMosaicBtn.style.opacity = '0.78';
+                                }
+                            });
+                        };
+
+                        infographicBtnEl.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            runLocalInfographic(this, false, "");
+                        });
+
+                        infographicBtnEl.addEventListener('contextmenu', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const customDir = prompt(
+                                `✨ Re-Render Local Dan Koe Infographic — Part ${clip.num} ("${clip.title}")\n\n` +
+                                `Enter optional custom visual metaphors/instructions (or leave blank to force a fresh storyboard & 740×740 render):`,
+                                ""
+                            );
+                            if (customDir === null) return;
+                            runLocalInfographic(this, true, customDir.trim());
+                        });
+                    }
+
                     const mosaicBtnEl = card.querySelector(`#mosaicCardBtn_${index}`);
                     if (mosaicBtnEl) {
                         mosaicBtnEl.addEventListener('click', function(e) {
@@ -6784,7 +7181,7 @@
                                         `Verifying cached build & streaming Intro + Mosaic Motion Graphics + Outro...`
                                     );
                                     
-                                    fetch(`/compile-clip?id=${activeProjectId}&num=${clip.num}`, {
+                                    fetch(`/compile-clip?id=${activeProjectId}&num=${clip.num}&source=mosaic`, {
                                         method: 'POST'
                                     })
                                     .then(res => {
@@ -6792,6 +7189,7 @@
                                         return res.json();
                                     })
                                     .then(data => {
+                                        clip.visual_source = "mosaic";
                                         const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
                                         
                                         openVideoModal(
@@ -6810,12 +7208,22 @@
                                     .finally(() => {
                                         if (window.activeCompilingClips) delete window.activeCompilingClips[clip.num];
                                         const liveBtn = document.getElementById(`mosaicCardBtn_${index}`) || btn;
+                                        const otherInfoBtn = document.getElementById(`infographicCardBtn_${index}`);
                                         if (liveBtn) {
                                             liveBtn.classList.remove('btn-status-purple', 'btn-status-gray');
                                             liveBtn.classList.add('btn-status-success');
-                                            liveBtn.innerHTML = '🟢 Mosaic';
+                                            liveBtn.innerHTML = (clip.visual_source === 'mosaic') ? '🟢 Mosaic ✓' : '🟢 Mosaic';
+                                            liveBtn.style.fontWeight = (clip.visual_source === 'mosaic') ? '700' : '600';
+                                            liveBtn.style.boxShadow = (clip.visual_source === 'mosaic') ? '0 0 0 2px #38bdf8' : '';
+                                            liveBtn.style.opacity = (clip.visual_source === 'mosaic') ? '1' : '0.78';
                                             liveBtn.disabled = false;
                                             liveBtn.style.cursor = '';
+                                        }
+                                        if (otherInfoBtn && clip.visual_source === 'mosaic' && otherInfoBtn.classList.contains('btn-status-success')) {
+                                            otherInfoBtn.innerHTML = '🟢 Infographic';
+                                            otherInfoBtn.style.fontWeight = '600';
+                                            otherInfoBtn.style.boxShadow = '';
+                                            otherInfoBtn.style.opacity = '0.78';
                                         }
                                     });
                                 } else {

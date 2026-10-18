@@ -33,6 +33,10 @@ clips/*
 !clips/.gitkeep
 title_cards/*
 !title_cards/.gitkeep
+captions/*
+!captions/.gitkeep
+fonts/*
+!fonts/.gitkeep
 
 # Project assets
 projects/*

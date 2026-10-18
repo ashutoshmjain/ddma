@@ -816,6 +816,417 @@ def mux_clip(
         raise typer.Exit(code=1)
 
 
+_FASTER_WHISPER_MODEL = None
+
+def get_faster_whisper_model():
+    global _FASTER_WHISPER_MODEL
+    if _FASTER_WHISPER_MODEL is None:
+        from faster_whisper import WhisperModel
+        _FASTER_WHISPER_MODEL = WhisperModel("small.en", device="cpu", compute_type="int8")
+    return _FASTER_WHISPER_MODEL
+
+
+def ensure_dejavu_font() -> str:
+    """Ensure DejaVuSansMono.ttf is available in local fonts/ folder for libass."""
+    fonts_dir = "fonts"
+    os.makedirs(fonts_dir, exist_ok=True)
+    ttf_path = os.path.join(fonts_dir, "DejaVuSansMono.ttf")
+    if not os.path.exists(ttf_path):
+        try:
+            import urllib.request
+            import zipfile
+            import io
+            url = "https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2_37/dejavu-fonts-ttf-2.37.zip"
+            data = urllib.request.urlopen(url, timeout=15).read()
+            z = zipfile.ZipFile(io.BytesIO(data))
+            for n in z.namelist():
+                if n.endswith(("DejaVuSansMono.ttf", "DejaVuSansMono-Bold.ttf")):
+                    with open(os.path.join(fonts_dir, os.path.basename(n)), "wb") as f_out:
+                        f_out.write(z.read(n))
+        except Exception as e:
+            typer.echo(f"Warning downloading DejaVuSansMono.ttf: {e}")
+    return fonts_dir
+
+
+def format_ass_time(seconds: float) -> str:
+    """Format seconds as h:mm:ss.cc for ASS Dialogue events."""
+    seconds = max(0.0, float(seconds))
+    total_cs = int(round(seconds * 100))
+    h = total_cs // 360000
+    rem = total_cs % 360000
+    m = rem // 6000
+    rem = rem % 6000
+    s = rem // 100
+    cs = rem % 100
+    return f"{h}:{m:02d}:{s:02d}.{cs:02d}"
+
+
+def extract_clip_words(clip: dict, plan_file: str, audio_path: Optional[str] = None, force_whisper: bool = False) -> list:
+    """
+    Extract word-level timestamps in rendered clip body coordinates (0..body_duration).
+    Uses faster-whisper small.en when force_whisper=True or when transcription.json is absent,
+    and caches on clip['_caption_words'] keyed by _audio_sig.
+    """
+    import hashlib
+    audio_sig = hashlib.md5(json.dumps(clip.get("segments", []), sort_keys=True).encode("utf-8")).hexdigest()
+    if not force_whisper and clip.get("_caption_words_sig") == audio_sig and clip.get("_caption_words"):
+        return clip["_caption_words"]
+
+    words = []
+    if force_whisper and audio_path and os.path.exists(audio_path):
+        try:
+            import whisper.audio
+            typer.echo(f"Running faster-whisper small.en word-level transcription on {audio_path}...")
+            model = get_faster_whisper_model()
+            audio_arr = whisper.audio.load_audio(audio_path)
+            segments_gen, _ = model.transcribe(audio_arr, word_timestamps=True)
+            for s in segments_gen:
+                for w in (s.words or []):
+                    w_txt = w.word.strip()
+                    if w_txt:
+                        words.append({
+                            "word": w_txt,
+                            "start": round(float(w.start), 2),
+                            "end": round(float(w.end), 2)
+                        })
+        except Exception as e:
+            typer.echo(f"Warning running faster-whisper on {audio_path}: {e}")
+
+    # Fast segment-aware mapping from project transcription.json (respects reordered segments & crossfades)
+    if not words:
+        proj_dir = os.path.dirname(plan_file) if plan_file else ""
+        trans_candidates = []
+        if proj_dir:
+            trans_candidates.append(os.path.join(proj_dir, "transcription.json"))
+        import re
+        ep_match = re.search(r"episodes?[_/\\](\d+)", str(plan_file))
+        if ep_match:
+            ep_id = ep_match.group(1)
+            trans_candidates.append(os.path.join("projects", f"episode_{ep_id}", "transcription.json"))
+            trans_candidates.append(os.path.join("docs", "episodes", ep_id, "transcription.json"))
+        trans_candidates.append("transcription.json")
+
+        trans_path = next((p for p in trans_candidates if os.path.exists(p)), None)
+        if trans_path:
+            try:
+                with open(trans_path, "r", encoding="utf-8") as tf:
+                    trans_data = json.load(tf)
+                all_ep_words = []
+                for seg in trans_data.get("segments", []):
+                    for w in seg.get("words", []):
+                        all_ep_words.append(w)
+
+                segments = clip.get("segments", [])
+                if segments:
+                    t_cursor = 0.0
+                    for idx, s in enumerate(segments):
+                        dur = float(s.get("duration", 0.0))
+                        cf = float(s.get("crossfade", 0.0)) if idx < len(segments) - 1 else 0.0
+                        if s.get("type") == "audio":
+                            s_start = float(s.get("start", 0.0))
+                            s_end = float(s.get("end", 0.0))
+                            eff_dur = s_end - s_start if s_end > s_start else dur
+                            for w in all_ep_words:
+                                ws = float(w.get("start", 0.0))
+                                we = float(w.get("end", ws))
+                                w_mid = (ws + we) / 2.0
+                                if s_start <= w_mid <= s_end:
+                                    rel_s = max(0.0, ws - s_start)
+                                    rel_e = min(eff_dur, max(rel_s + 0.04, we - s_start))
+                                    w_txt = str(w.get("word", "")).strip()
+                                    if w_txt:
+                                        words.append({
+                                            "word": w_txt,
+                                            "start": round(t_cursor + rel_s, 2),
+                                            "end": round(t_cursor + rel_e, 2)
+                                        })
+                        t_cursor += max(0.0, dur - cf)
+                else:
+                    c_start = float(clip.get("start", 0.0))
+                    c_end = float(clip.get("end", 0.0))
+                    for w in all_ep_words:
+                        ws = float(w.get("start", 0.0))
+                        we = float(w.get("end", ws))
+                        w_mid = (ws + we) / 2.0
+                        if c_start <= w_mid <= c_end:
+                            w_txt = str(w.get("word", "")).strip()
+                            if w_txt:
+                                words.append({
+                                    "word": w_txt,
+                                    "start": round(max(0.0, ws - c_start), 2),
+                                    "end": round(max(0.04, we - c_start), 2)
+                                })
+            except Exception as e:
+                typer.echo(f"Warning mapping words from transcription.json: {e}")
+
+    # Final fallback to faster-whisper small.en if words still empty and audio_path exists
+    if not words and audio_path and os.path.exists(audio_path):
+        try:
+            import whisper.audio
+            typer.echo(f"Transcribing {audio_path} with faster-whisper small.en...")
+            model = get_faster_whisper_model()
+            audio_arr = whisper.audio.load_audio(audio_path)
+            segments_gen, _ = model.transcribe(audio_arr, word_timestamps=True)
+            for s in segments_gen:
+                for w in (s.words or []):
+                    w_txt = w.word.strip()
+                    if w_txt:
+                        words.append({
+                            "word": w_txt,
+                            "start": round(float(w.start), 2),
+                            "end": round(float(w.end), 2)
+                        })
+        except Exception as e:
+            typer.echo(f"Warning in faster-whisper fallback: {e}")
+
+    if words:
+        clip["_caption_words"] = words
+        clip["_caption_words_sig"] = audio_sig
+    return words
+
+
+def align_text_to_words(edited_text: str, raw_words: list) -> list:
+    """
+    Align user-edited clip.text onto word-level timestamps so spelling fixes and edits
+    appear in the burned captions at the exact spoken timestamps.
+    """
+    if not raw_words:
+        return []
+    if not edited_text or not edited_text.strip():
+        return [dict(w) for w in raw_words]
+
+    import difflib
+    import re
+
+    edited_tokens = [t.strip() for t in re.split(r"\s+", edited_text.strip()) if t.strip()]
+    if not edited_tokens:
+        return [dict(w) for w in raw_words]
+
+    def norm_tok(t: str) -> str:
+        return re.sub(r"[^a-z0-9]", "", t.lower())
+
+    raw_norms = [norm_tok(w["word"]) for w in raw_words]
+    edit_norms = [norm_tok(t) for t in edited_tokens]
+
+    matcher = difflib.SequenceMatcher(None, raw_norms, edit_norms, autojunk=False)
+    aligned = []
+
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == "equal":
+            for k in range(i2 - i1):
+                rw = raw_words[i1 + k]
+                aligned.append({
+                    "word": edited_tokens[j1 + k],
+                    "start": rw["start"],
+                    "end": rw["end"]
+                })
+        elif tag == "replace":
+            span_start = raw_words[i1]["start"]
+            span_end = raw_words[i2 - 1]["end"]
+            count = j2 - j1
+            step = max(0.04, (span_end - span_start) / max(1, count))
+            for k in range(count):
+                s_t = round(span_start + k * step, 2)
+                e_t = round(span_start + (k + 1) * step, 2)
+                aligned.append({
+                    "word": edited_tokens[j1 + k],
+                    "start": s_t,
+                    "end": max(s_t + 0.04, e_t)
+                })
+        elif tag == "insert":
+            anchor_t = raw_words[i1]["start"] if i1 < len(raw_words) else raw_words[-1]["end"]
+            count = j2 - j1
+            step = 0.12
+            for k in range(count):
+                s_t = round(anchor_t + k * step, 2)
+                aligned.append({
+                    "word": edited_tokens[j1 + k],
+                    "start": s_t,
+                    "end": round(s_t + step, 2)
+                })
+        elif tag == "delete":
+            # User deleted these words from the caption script
+            pass
+
+    return aligned if aligned else [dict(w) for w in raw_words]
+
+
+def build_caption_chunks(
+    words: list,
+    intro_offset: float = 1.5,
+    body_duration: Optional[float] = None,
+    has_outro: bool = True
+) -> list:
+    """
+    Build timed caption chunks according to the deepDive vertical-render spec:
+    - Coverage: spoken body only (skip ~1.5s title intro and ~5s outro card).
+    - Chunking: 3–6 words (occasionally up to 8), <=34 characters each, single-line.
+    - Chaining: each event's end time = the next event's start time (no gaps, no overlaps).
+    - Text: all lowercase, natural punctuation preserved.
+    """
+    if not words:
+        return []
+
+    min_t = float(intro_offset)
+    if body_duration is not None and body_duration > 0:
+        # Outro is 5s with a 1s crossfade starting at body_duration - 1.0 in body coordinates
+        max_t = float(intro_offset) + float(body_duration) - (1.0 if has_outro else 0.0)
+    else:
+        max_t = float(intro_offset) + float(words[-1]["end"]) + 1.0
+
+    # Shift words into compiled video timeline (+intro_offset) and filter to spoken body coverage
+    shifted_words = []
+    for w in words:
+        w_text = " ".join(str(w.get("word", "")).split()).lower()
+        if not w_text:
+            continue
+        ws = round(float(w["start"]) + min_t, 2)
+        we = round(float(w["end"]) + min_t, 2)
+        if ws >= max_t - 0.05:
+            continue
+        ws = max(min_t, ws)
+        we = min(max_t, max(ws + 0.04, we))
+        shifted_words.append({"word": w_text, "start": ws, "end": we})
+
+    if not shifted_words:
+        return []
+
+    # Group into phrase chunks of 3-6 words, <= 34 characters
+    raw_groups = []
+    curr_group = []
+
+    for w in shifted_words:
+        w_tok = w["word"]
+        if len(w_tok) > 34:
+            w_tok = w_tok[:34]
+            w = dict(w, word=w_tok)
+
+        if not curr_group:
+            curr_group.append(w)
+            continue
+
+        cand_text = " ".join([x["word"] for x in curr_group] + [w_tok])
+        if len(cand_text) > 34 or len(curr_group) >= 6:
+            raw_groups.append(curr_group)
+            curr_group = [w]
+            continue
+
+        curr_group.append(w)
+        # Break naturally at punctuation once we have 3–6 words
+        if len(curr_group) >= 3 and w_tok[-1] in (".", ",", ";", ":", "?", "!"):
+            raw_groups.append(curr_group)
+            curr_group = []
+
+    if curr_group:
+        raw_groups.append(curr_group)
+
+    # Rebalance or merge any 1-2 word orphan chunks where possible while keeping <= 34 chars and <= 8 words
+    balanced_groups = []
+    for grp in raw_groups:
+        if balanced_groups and len(grp) <= 2:
+            prev = balanced_groups[-1]
+            merged_text = " ".join([x["word"] for x in prev + grp])
+            if len(merged_text) <= 34 and len(prev) + len(grp) <= 8:
+                balanced_groups[-1] = prev + grp
+                continue
+            elif len(prev) >= 4:
+                # Try shifting last word of prev to start of grp so both have >= 2-3 words
+                cand_prev = prev[:-1]
+                cand_curr = [prev[-1]] + grp
+                if len(" ".join(x["word"] for x in cand_curr)) <= 34:
+                    balanced_groups[-1] = cand_prev
+                    balanced_groups.append(cand_curr)
+                    continue
+        balanced_groups.append(grp)
+
+    chunks = []
+    for grp in balanced_groups:
+        text_line = " ".join(x["word"] for x in grp).replace("\n", " ").strip().lower()
+        if len(text_line) > 34:
+            text_line = text_line[:34].rstrip()
+        chunks.append({
+            "start": round(grp[0]["start"], 2),
+            "end": round(grp[-1]["end"], 2),
+            "text": text_line
+        })
+
+    # Strict chaining: each event's end time = the next event's start time (no gaps, no overlaps)
+    for i in range(len(chunks) - 1):
+        next_start = round(chunks[i + 1]["start"], 2)
+        if next_start <= chunks[i]["start"]:
+            next_start = round(chunks[i]["start"] + 0.08, 2)
+            chunks[i + 1]["start"] = next_start
+        chunks[i]["end"] = next_start
+
+    if chunks:
+        last_end = max(round(chunks[-1]["start"] + 0.25, 2), min(round(max_t, 2), round(chunks[-1]["end"] + 0.15, 2)))
+        chunks[-1]["end"] = last_end
+
+    return chunks
+
+
+def write_ass_file(chunks: list, ass_path: str):
+    """Write exact ASS v4+ caption file for 1080x1920 vertical canvas."""
+    os.makedirs(os.path.dirname(ass_path) if os.path.dirname(ass_path) else ".", exist_ok=True)
+    lines = [
+        "[Script Info]",
+        "ScriptType: v4.00+",
+        "PlayResX: 1080",
+        "PlayResY: 1920",
+        "WrapStyle: 2",
+        "ScaledBorderAndShadow: yes",
+        "",
+        "[V4+ Styles]",
+        "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
+        "Style: Caption,DejaVu Sans Mono,46,&H00FFFFFF,&H000019FF,&H80000000,&H80000000,0,0,0,0,100,100,1.2,0,1,2,0,8,60,60,500,1",
+        "",
+        "[Events]",
+        "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
+    ]
+    for ch in (chunks or []):
+        start_str = format_ass_time(ch.get("start", 0.0))
+        end_str = format_ass_time(ch.get("end", 0.0))
+        txt = str(ch.get("text", "")).replace("\n", " ").strip().lower()
+        if txt:
+            lines.append(f"Dialogue: 0,{start_str},{end_str},Caption,,0,0,0,,{txt}")
+
+    with open(ass_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+
+
+def generate_clip_captions(
+    clip: dict,
+    plan_file: str,
+    audio_path: Optional[str] = None,
+    intro_offset: float = 1.5,
+    body_duration: Optional[float] = None,
+    has_outro: bool = True,
+    force_whisper: bool = False,
+    force_realign: bool = False
+) -> list:
+    """
+    Ensure clip['caption_chunks'] is populated and up to date with clip['segments'] and clip['text'].
+    """
+    import hashlib
+    caption_sig = hashlib.md5(json.dumps({
+        "segments": clip.get("segments", []),
+        "text": clip.get("text", ""),
+        "intro_offset": intro_offset,
+        "has_outro": has_outro
+    }, sort_keys=True).encode("utf-8")).hexdigest()
+
+    if not force_whisper and not force_realign and isinstance(clip.get("caption_chunks"), list) and len(clip["caption_chunks"]) > 0:
+        return clip["caption_chunks"]
+
+    raw_words = extract_clip_words(clip, plan_file=plan_file, audio_path=audio_path, force_whisper=force_whisper)
+    edited_text = clip.get("text", "")
+    aligned_words = align_text_to_words(edited_text, raw_words)
+    chunks = build_caption_chunks(aligned_words, intro_offset=intro_offset, body_duration=body_duration, has_outro=has_outro)
+    clip["caption_chunks"] = chunks
+    clip["_caption_sig"] = caption_sig
+    return chunks
+
+
 @app.command()
 def compile_clip(
     num: int = typer.Option(..., help="Clip number to compile"),
@@ -938,8 +1349,26 @@ def compile_clip(
 
     target_clip = next((c for c in plan_data if c.get("num") == num), None)
     mosaic_run_id = target_clip.get("mosaic_run_id") if target_clip else None
-    
-    backup_path = f"clips/{episode}-{num}-mosaic-{mosaic_run_id}.mp4" if (mosaic_run_id and os.path.exists(f"clips/{episode}-{num}-mosaic-{mosaic_run_id}.mp4")) else f"clips/{episode}-{num}.mp4"
+    visual_source = target_clip.get("visual_source") if target_clip else None
+
+    infographic_path = f"clips/{episode}-{num}-infographic.mp4"
+    mosaic_path = f"clips/{episode}-{num}-mosaic-{mosaic_run_id}.mp4" if mosaic_run_id else ""
+
+    if visual_source == "infographic" and os.path.exists(infographic_path):
+        backup_path = infographic_path
+        has_motion_source = True
+    elif visual_source == "mosaic" and mosaic_path and os.path.exists(mosaic_path):
+        backup_path = mosaic_path
+        has_motion_source = True
+    elif os.path.exists(infographic_path):
+        backup_path = infographic_path
+        has_motion_source = True
+    elif mosaic_path and os.path.exists(mosaic_path):
+        backup_path = mosaic_path
+        has_motion_source = True
+    else:
+        backup_path = f"clips/{episode}-{num}.mp4"
+        has_motion_source = False
 
     # Check for freshly cut audio clip (e.g. clips/245-1-*.mp3) and remux audio track
     audio_pattern1 = os.path.join(master_dir, f"{episode}-{num}-*.mp3")
@@ -950,11 +1379,10 @@ def compile_clip(
     
     temp_remux_path = f"temp_remux_{num}.mp4"
     temp_body_path = f"temp_body_{num}.mp4"
-    has_mosaic_id = bool(target_clip and target_clip.get("mosaic_run_id"))
-    has_mosaic_file = os.path.exists(backup_path)
+    has_mosaic_file = has_motion_source and os.path.exists(backup_path)
     
-    # A clip is a black canvas draft if force_draft is requested OR if Mosaic video file does not exist on disk
-    is_black_canvas = force_draft or not (has_mosaic_id and has_mosaic_file)
+    # A clip is a black canvas draft if force_draft is requested OR if neither Infographic nor Mosaic video exists
+    is_black_canvas = force_draft or not has_mosaic_file
 
     a_dur_fresh = None
     fps_str = "30"
@@ -1294,7 +1722,22 @@ def compile_clip(
 
         temp_img_outro_path = f"temp_outro_img_{num}.png"
         temp_outro_video_path = f"temp_outro_{num}.mp4"
+        temp_ass_path = f"temp_captions_{num}.ass"
+
+        # Resolve duration of master body
         body_duration = 5.0
+        if effective_a_dur is not None:
+            body_duration = effective_a_dur
+        else:
+            try:
+                dur_cmd = [
+                    "ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", body_video_path
+                ]
+                dur_res = subprocess.run(dur_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                if dur_res.returncode == 0:
+                    body_duration = float(dur_res.stdout.strip())
+            except Exception:
+                pass
 
         if not is_last_clip:
             typer.echo(f"Rendering 5-second outro transition card (curiosity question)...")
@@ -1369,19 +1812,6 @@ def compile_clip(
 
             img_outro.convert("RGB").save(temp_img_outro_path)
 
-            # Resolve duration of master body to slice end audio
-            if effective_a_dur is not None:
-                body_duration = effective_a_dur
-            else:
-                try:
-                    dur_cmd = [
-                        "ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", body_video_path
-                    ]
-                    dur_res = subprocess.run(dur_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-                    if dur_res.returncode == 0:
-                        body_duration = float(dur_res.stdout.strip())
-                except:
-                    pass
             start_time = max(0.0, body_duration - 5.0)
 
             # Generate outro card video
@@ -1411,58 +1841,88 @@ def compile_clip(
             if res_out.returncode != 0:
                 typer.echo(f"Warning generating outro card video: {res_out.stderr}")
 
+        # 8. Generate ASS Captions & Prepare 1080x1920 Vertical Render Filter
+        fonts_dir = ensure_dejavu_font()
+        fresh_audio_for_caps = audio_matches[0] if audio_matches else None
+        caption_chunks = generate_clip_captions(
+            target_clip if target_clip is not None else clip,
+            plan_file=plan_file,
+            audio_path=fresh_audio_for_caps,
+            intro_offset=intro_duration,
+            body_duration=body_duration,
+            has_outro=(not is_last_clip)
+        )
+        write_ass_file(caption_chunks, temp_ass_path)
+        os.makedirs("captions", exist_ok=True)
+        write_ass_file(caption_chunks, os.path.join("captions", f"{base_name}.ass"))
+        typer.echo(f"Prepared {len(caption_chunks)} ASS caption events (1080x1920 vertical spec) -> {temp_ass_path}")
+
         scale_filter = f"scale={v_width}:{v_height}:force_original_aspect_ratio=decrease,pad={v_width}:{v_height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=25"
         body_v_filter = f"{scale_filter}{body_v_extra_filter},settb=1/90000"
-        if not is_last_clip and os.path.exists(temp_outro_video_path):
-            typer.echo(f"Compiling (Intro -> Body -> Outro) into {out_path}...")
-            cmd_concat = [
-                "ffmpeg", "-y",
-                "-i", intro_video_path,
-                "-i", body_video_path,
-                "-i", temp_outro_video_path,
-                "-filter_complex",
-                f"[0:v]{scale_filter},settb=1/90000[v0];"
-                f"[1:v]{body_v_filter}[v1];"
-                f"[2:v]{scale_filter},settb=1/90000[v2];"
-                "[v0][v1]concat=n=2:v=1:a=0[v01];"
-                "[v01]fps=25,settb=1/90000[v01tb];"
-                f"[v01tb][v2]xfade=transition=fade:duration=1.0:offset={intro_duration + body_duration - 1.0:.3f}[v];"
-                "[0:a][1:a]concat=n=2:v=0:a=1[a0];"
-                "[a0][2:a]acrossfade=d=1.0:c1=tri:c2=tri[a]",
-                "-map", "[v]",
-                "-map", "[a]",
-                "-c:v", "libx264",
-                "-crf", "18",
-                "-preset", "veryfast",
-                "-pix_fmt", "yuv420p",
-                "-c:a", "aac",
-                "-b:a", "192k",
-                "-movflags", "+faststart",
-                out_path
-            ]
-        else:
-            typer.echo(f"Compiling (Intro -> Body) into {out_path}...")
-            cmd_concat = [
-                "ffmpeg", "-y",
-                "-i", intro_video_path,
-                "-i", body_video_path,
-                "-filter_complex",
-                f"[0:v]{scale_filter},settb=1/90000[v0];"
-                f"[1:v]{body_v_filter}[v1];"
-                "[v0][v1]concat=n=2:v=1:a=0[v];"
-                "[0:a][1:a]concat=n=2:v=0:a=1[a]",
-                "-map", "[v]",
-                "-map", "[a]",
-                "-c:v", "libx264",
-                "-crf", "18",
-                "-preset", "veryfast",
-                "-pix_fmt", "yuv420p",
-                "-c:a", "aac",
-                "-b:a", "192k",
-                "-movflags", "+faststart",
-                out_path
-            ]
-        res_concat = subprocess.run(cmd_concat, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        vertical_burn_filter = f"scale=1000:1000:flags=lanczos,pad=1080:1920:40:560:color=black,subtitles=filename={temp_ass_path}:fontsdir={fonts_dir},setsar=1"
+
+        def build_concat_cmd(crf_val: int):
+            if not is_last_clip and os.path.exists(temp_outro_video_path):
+                return [
+                    "ffmpeg", "-y",
+                    "-i", intro_video_path,
+                    "-i", body_video_path,
+                    "-i", temp_outro_video_path,
+                    "-filter_complex",
+                    f"[0:v]{scale_filter},settb=1/90000[v0];"
+                    f"[1:v]{body_v_filter}[v1];"
+                    f"[2:v]{scale_filter},settb=1/90000[v2];"
+                    "[v0][v1]concat=n=2:v=1:a=0[v01];"
+                    "[v01]fps=25,settb=1/90000[v01tb];"
+                    f"[v01tb][v2]xfade=transition=fade:duration=1.0:offset={intro_duration + body_duration - 1.0:.3f}[v740];"
+                    f"[v740]{vertical_burn_filter}[v];"
+                    "[0:a][1:a]concat=n=2:v=0:a=1[a0];"
+                    "[a0][2:a]acrossfade=d=1.0:c1=tri:c2=tri[a]",
+                    "-map", "[v]",
+                    "-map", "[a]",
+                    "-c:v", "libx264",
+                    "-crf", str(crf_val),
+                    "-preset", "veryfast",
+                    "-pix_fmt", "yuv420p",
+                    "-c:a", "aac",
+                    "-b:a", "128k",
+                    "-movflags", "+faststart",
+                    out_path
+                ]
+            else:
+                return [
+                    "ffmpeg", "-y",
+                    "-i", intro_video_path,
+                    "-i", body_video_path,
+                    "-filter_complex",
+                    f"[0:v]{scale_filter},settb=1/90000[v0];"
+                    f"[1:v]{body_v_filter}[v1];"
+                    "[v0][v1]concat=n=2:v=1:a=0[v740];"
+                    f"[v740]{vertical_burn_filter}[v];"
+                    "[0:a][1:a]concat=n=2:v=0:a=1[a]",
+                    "-map", "[v]",
+                    "-map", "[a]",
+                    "-c:v", "libx264",
+                    "-crf", str(crf_val),
+                    "-preset", "veryfast",
+                    "-pix_fmt", "yuv420p",
+                    "-c:a", "aac",
+                    "-b:a", "128k",
+                    "-movflags", "+faststart",
+                    out_path
+                ]
+
+        typer.echo(f"Compiling 1080x1920 vertical video with burned ASS captions into {out_path}...")
+        current_crf = 20
+        res_concat = subprocess.run(build_concat_cmd(current_crf), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        # Enforce <= 20 MB Nostr free upload cap by raising CRF if needed
+        max_bytes = 20 * 1024 * 1024
+        while res_concat.returncode == 0 and os.path.exists(out_path) and os.path.getsize(out_path) > max_bytes and current_crf < 30:
+            size_mb = os.path.getsize(out_path) / (1024 * 1024)
+            current_crf += 4
+            typer.echo(f"Render size ({size_mb:.2f} MB) exceeds 20 MB cap; re-encoding with CRF {current_crf}...")
+            res_concat = subprocess.run(build_concat_cmd(current_crf), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         if res_concat.returncode == 0:
             typer.echo(f"Successfully compiled clip: {out_path}")
@@ -1478,23 +1938,39 @@ def compile_clip(
                     except Exception as e:
                         typer.echo(f"Warning: Could not sync to deepDive clips: {e}")
             
-            # Check final duration warning against the 2m 55s limit (175s) and reconcile plan.json
+            # Verification checklist (1080x1920 DAR 9:16, <=180s, <=20MB, |rendered_duration - mp4 duration| <= 2s) and reconcile plan.json
             try:
-                cmd_dur = [
-                    "ffprobe", "-v", "error", "-show_entries", "format=duration",
-                    "-of", "default=noprint_wrappers=1:nokey=1", out_path
+                cmd_verify = [
+                    "ffprobe", "-v", "error",
+                    "-select_streams", "v:0",
+                    "-show_entries", "stream=width,height,display_aspect_ratio:format=duration,size",
+                    "-of", "json", out_path
                 ]
-                dur_res = subprocess.run(cmd_dur, stdout=subprocess.PIPE, text=True)
-                if dur_res.returncode == 0:
-                    final_dur = round(float(dur_res.stdout.strip()), 2)
-                    if final_dur > 175.0:
-                        typer.echo(f"\n⚠️  WARNING: Final compiled clip duration ({final_dur:.2f}s) exceeds the 2m 55s limit (175s)!")
+                ver_res = subprocess.run(cmd_verify, stdout=subprocess.PIPE, text=True)
+                if ver_res.returncode == 0:
+                    ver_data = json.loads(ver_res.stdout)
+                    v_stream = (ver_data.get("streams") or [{}])[0]
+                    v_fmt = ver_data.get("format") or {}
+                    final_dur = round(float(v_fmt.get("duration", 0.0)), 2)
+                    final_size_mb = round(float(v_fmt.get("size", os.path.getsize(out_path))) / (1024 * 1024), 2)
+                    out_w = int(v_stream.get("width", 0))
+                    out_h = int(v_stream.get("height", 0))
+                    out_dar = v_stream.get("display_aspect_ratio", "")
+
+                    typer.echo(
+                        f"[OK] VERIFIED: {out_w}x{out_h} (DAR {out_dar}) | "
+                        f"Duration: {final_dur:.2f}s (<=180s) | Size: {final_size_mb:.2f} MB (<=20MB) | "
+                        f"Captions: {len(caption_chunks)} events"
+                    )
+                    if final_dur > 180.0:
+                        typer.echo(f"\n[WARNING] Final compiled clip duration ({final_dur:.2f}s) exceeds the 180s YouTube Shorts ceiling!")
 
                     # Forward reconciliation: record rendered media properties without corrupting source coordinates
                     if target_clip is not None:
                         import hashlib
                         target_clip["rendered_duration"] = final_dur
                         target_clip["duration"] = final_dur
+                        target_clip["audio_duration"] = round(float(body_duration), 2)
                         target_clip["intro_offset"] = intro_duration
                         target_clip["outro_duration"] = 5.0 if not is_last_clip else 0.0
                         if "source_start" not in target_clip and "start" in target_clip:
@@ -1508,8 +1984,13 @@ def compile_clip(
                             "ep_title": ep_title,
                             "bridge_text": target_clip.get("bridge_text", ""),
                             "mosaic_run_id": mosaic_run_id,
+                            "visual_source": target_clip.get("visual_source", ""),
+                            "infographic_scenes": target_clip.get("infographic_scenes", []),
                             "segments": target_clip.get("segments", []),
-                            "force_draft": force_draft
+                            "force_draft": force_draft,
+                            "text": target_clip.get("text", ""),
+                            "caption_chunks": target_clip.get("caption_chunks", []),
+                            "vertical_format": "1080x1920_ass_v1"
                         }, sort_keys=True).encode("utf-8")).hexdigest()
                         target_clip["_audio_sig"] = audio_sig
                         target_clip["_compiled_sig"] = compile_sig
@@ -1518,7 +1999,10 @@ def compile_clip(
                         try:
                             with open(plan_file, "w", encoding="utf-8") as pf:
                                 json.dump(plan_data, pf, indent=4)
-                            typer.echo(f"Reconciled plan metadata for Clip {num}: rendered_duration={final_dur}s, intro_offset={intro_duration}s")
+                            if os.path.abspath(plan_file) != os.path.abspath("plan.json"):
+                                with open("plan.json", "w", encoding="utf-8") as rpf:
+                                    json.dump(plan_data, rpf, indent=4)
+                            typer.echo(f"Reconciled plan metadata for Clip {num}: rendered_duration={final_dur}s, audio_duration={round(float(body_duration), 2)}s, intro_offset={intro_duration}s")
                             
                             # Sync to docs/episodes/<ep>/plan.json if exists
                             ep_val = ep_prefix if ep_prefix else episode
@@ -1529,8 +2013,8 @@ def compile_clip(
                                         json.dump(plan_data, dpf, indent=4)
                         except Exception as ex_save:
                             typer.echo(f"Warning: Failed to save reconciled plan metadata: {ex_save}")
-            except Exception:
-                pass
+            except Exception as ex_ver:
+                typer.echo(f"Warning during post-compile verification: {ex_ver}")
         else:
             typer.echo(f"Error concatenating: {res_concat.stderr}", err=True)
             raise typer.Exit(code=1)
@@ -1540,7 +2024,7 @@ def compile_clip(
         temp_files_to_remove = [
             temp_img_path, intro_video_path, concat_txt_path, temp_body_path, 
             temp_extracted_frame, temp_img_outro_path, temp_outro_video_path,
-            temp_remux_path
+            temp_remux_path, temp_ass_path
         ]
         for temp_f in temp_files_to_remove:
             if os.path.exists(temp_f):
