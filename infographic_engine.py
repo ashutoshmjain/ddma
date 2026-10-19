@@ -467,7 +467,7 @@ def _render_scene_frame(scene, local_t, scene_dur, fonts, sprites, width=740, he
             prog = _ease_out_cubic((local_t - i * 0.45) / 0.9)
             if prog <= 0.05:
                 continue
-            w = (260 - i * 52) * prog
+            w = max(8.0, (260 - i * 52) * prog)
             y0 = base_y - i * (tier_h + 6)
             col = _scale_rgb(accent_rgb if i == tiers - 1 else white_rgb, master_alpha * prog)
             draw.rectangle([int(cx - w / 2), int(y0 - tier_h), int(cx + w / 2), int(y0)], outline=col, width=2)
@@ -573,9 +573,9 @@ def _render_scene_frame(scene, local_t, scene_dur, fonts, sprites, width=740, he
         draw.rectangle([rx - 65, top_y, rx + 65, bot_y], outline=c_accent, width=2)
         l_h = int(110 * p_step2)
         r_h = int(155 * p_step3)
-        if l_h > 4:
+        if l_h > 14:
             draw.rectangle([lx - 45, bot_y - l_h, lx + 45, bot_y - 10], outline=c_dim, width=2)
-        if r_h > 4:
+        if r_h > 14:
             draw.rectangle([rx - 45, bot_y - r_h, rx + 45, bot_y - 10], outline=c_accent, width=2)
         _draw_spaced_text(draw, lx, bot_y + 28, labels[0] or "LEGACY", fonts[16], fill=c_white, spacing=2)
         _draw_spaced_text(draw, rx, bot_y + 28, labels[1] or "FRONTIER", fonts[16], fill=c_accent, spacing=2)
@@ -855,6 +855,7 @@ def render_infographic_mp4(scenes, audio_path, out_mp4_path, duration=None, fps=
     width, height = 740, 740
     total_frames = max(1, int(round(duration * fps)))
 
+    tmp_mp4_path = out_mp4_path + ".tmp.mp4"
     cmd = [
         "ffmpeg", "-y",
         "-f", "rawvideo",
@@ -874,7 +875,7 @@ def render_infographic_mp4(scenes, audio_path, out_mp4_path, duration=None, fps=
         "-b:a", "192k",
         "-shortest",
         "-movflags", "+faststart",
-        out_mp4_path,
+        tmp_mp4_path,
     ]
 
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
@@ -903,6 +904,14 @@ def render_infographic_mp4(scenes, audio_path, out_mp4_path, duration=None, fps=
             frame_img = _render_scene_frame(sc, local_t, s_dur, fonts, sprites, width=width, height=height)
             last_bytes = frame_img.tobytes()
             proc.stdin.write(last_bytes)
+    except Exception:
+        proc.kill()
+        if os.path.exists(tmp_mp4_path):
+            try:
+                os.remove(tmp_mp4_path)
+            except Exception:
+                pass
+        raise
     finally:
         if proc.stdin:
             try:
@@ -912,7 +921,13 @@ def render_infographic_mp4(scenes, audio_path, out_mp4_path, duration=None, fps=
 
     _, stderr_bytes = proc.communicate()
     if proc.returncode != 0:
+        if os.path.exists(tmp_mp4_path):
+            try:
+                os.remove(tmp_mp4_path)
+            except Exception:
+                pass
         err_msg = stderr_bytes.decode("utf-8", errors="replace") if stderr_bytes else "Unknown FFmpeg error"
         raise RuntimeError(f"FFmpeg infographic render failed: {err_msg[-600:]}")
 
+    os.replace(tmp_mp4_path, out_mp4_path)
     return out_mp4_path

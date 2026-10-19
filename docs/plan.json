@@ -3556,11 +3556,11 @@
         "mosaic_run_id": "d412d715-45df-4420-b8e1-7d339a86165c",
         "rendered_duration": 132.14,
         "intro_offset": 1.5,
-        "outro_duration": 5,
+        "outro_duration": 5.0,
         "source_start": 2112.12,
         "source_end": 2225.52,
         "_audio_sig": "266fa713ea013aab70c76c3778a2bd85",
-        "_compiled_sig": "cbfcb7c79e3960e079f31700bbc26987",
+        "_compiled_sig": "e49e05c32190b3387b8d7e93a3126db7",
         "caption_chunks": [
             {
                 "start": 1.5,
@@ -5618,7 +5618,7 @@
         "_caption_words_sig": "266fa713ea013aab70c76c3778a2bd85",
         "_caption_sig": "2acf211690b2f4935d3e41bf18266212",
         "audio_duration": 126.6,
-        "visual_source": "infographic",
+        "visual_source": "mosaic",
         "infographic_ready": true
     },
     {

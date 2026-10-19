@@ -3690,8 +3690,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if os.getcwd() not in sys.path:
                     sys.path.insert(0, os.getcwd())
                 import glob
+                import importlib
                 import ddma as ddma_mod
                 import infographic_engine
+                importlib.reload(infographic_engine)
 
                 plan_path = os.path.join("projects", project_id, "plan.json")
                 if not os.path.exists(plan_path):
