@@ -54,20 +54,25 @@
             --font-mono: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         }
 
-        /* Global Custom Scrollbars */
+        /* Global Custom Scrollbars (High-Contrast Tactile) */
         ::-webkit-scrollbar {
-            width: 7px;
-            height: 7px;
+            width: 10px;
+            height: 10px;
         }
         ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-light-hover);
+            background: #f0ece1;
             border-radius: 6px;
         }
+        ::-webkit-scrollbar-thumb {
+            background: #a8a29e;
+            border-radius: 6px;
+            border: 2px solid #f0ece1;
+        }
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-dark-muted);
+            background: #57534e;
+        }
+        .clip-list {
+            overflow-x: hidden !important;
         }
 
         * {
@@ -598,32 +603,34 @@
 
         .clip-card-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 0.4rem;
+            flex-direction: column;
+            gap: 0.4rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.45rem;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .clip-card-title-container {
+        .clip-card-deck-identity {
             display: flex;
-            flex-direction: column;
-            gap: 0.1rem;
-            flex: 1;
+            align-items: center;
+            width: 100%;
+            gap: 0.45rem;
+            min-width: 0;
         }
 
         .clip-card-title {
             font-weight: 700;
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             color: var(--text-main);
             flex: 1;
-            min-width: 0;
+            min-width: 60px;
             outline: none;
             border: none;
             background: transparent;
-            padding: 0.1rem 0.2rem;
+            padding: 0.15rem 0.3rem;
             border-bottom: 1px dashed transparent;
-            transition: color 0.3s ease;
+            transition: border-color 0.2s ease, color 0.3s ease;
         }
 
         .clip-card-title:focus {
@@ -635,17 +642,83 @@
             border-bottom: none;
         }
 
-        .clip-duration-badge {
-            font-size: 0.75rem;
-            color: var(--accent);
-            font-weight: 700;
+        .clip-duration-pill {
+            font-size: 0.7rem;
             font-family: var(--font-mono);
+            font-weight: 700;
+            color: #0284c7;
+            background: rgba(2, 132, 199, 0.08);
+            border: 1px solid rgba(2, 132, 199, 0.25);
+            border-radius: 4px;
+            padding: 0.15rem 0.45rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            user-select: none;
+        }
+
+        .clip-card-deck-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .clip-card.collapsed .clip-card-deck-actions {
+            display: none !important;
         }
 
         .clip-card-actions {
             display: flex;
-            gap: 0.4rem;
+            gap: 0.3rem;
             align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* Segment Drawer Collapsible */
+        .seg-tune-drawer.drawer-collapsed {
+            display: none !important;
+        }
+        .toggle-seg-drawer-btn {
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 0.12rem 0.38rem;
+            cursor: pointer;
+        }
+        .toggle-seg-drawer-btn.active {
+            background-color: var(--primary) !important;
+            color: white !important;
+        }
+
+        /* Transcript Dock Modes */
+        .main-container.dock-bottom {
+            flex-direction: column !important;
+        }
+        .main-container.dock-bottom .left-panel {
+            width: 100% !important;
+            flex: 1 1 auto !important;
+            border-right: none !important;
+            border-bottom: 1px solid var(--border-color) !important;
+            min-height: 200px;
+        }
+        .main-container.dock-bottom .panel-resizer {
+            width: 100% !important;
+            height: 6px !important;
+            cursor: row-resize !important;
+            background-color: var(--border-color);
+        }
+        .main-container.dock-bottom .right-panel {
+            width: 100% !important;
+            flex: 0 0 340px !important;
+            max-height: 55vh;
+            border-left: none !important;
+        }
+        .main-container.dock-bottom .right-panel.collapsed {
+            height: 0px !important;
+            flex: 0 0 0px !important;
+            max-height: 0px !important;
+            overflow: hidden !important;
         }
 
         /* Segment containers inside card */
@@ -1556,9 +1629,10 @@
                     <button id="collapseTranscriptBtn" class="icon-btn" title="Collapse Transcript" style="font-size: 0.7rem; padding: 0.2rem; cursor: pointer;">▶</button>
                     <h2 style="margin: 0; font-size: 0.85rem;">WORD-LEVEL TRANSCRIPT</h2>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.6rem;">
-                    <button class="btn btn-secondary btn-mini" id="toggleUsedBtn">👁 Highlight Used</button>
-                    <div id="segmentCount" style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">0 words loaded</div>
+                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                    <button class="btn btn-secondary btn-mini" id="transcriptDockToggleBtn" title="Switch between Bottom Dock (split top/bottom) and Side-by-Side">⊟ Dock Bottom</button>
+                    <button class="btn btn-secondary btn-mini" id="toggleUsedBtn">👁 Highlight</button>
+                    <div id="segmentCount" style="font-size: 0.72rem; color: var(--text-muted); font-family: var(--font-mono);">0 words</div>
                 </div>
             </div>
             <div class="search-box">
@@ -2548,6 +2622,7 @@
                 setupResizer();
                 setupSidebarCollapse();
                 setupTranscriptCollapse();
+                setupTranscriptDockMode();
                 setupSettingsModal();
                 setupCustomAlertModal();
                 // setupHelpChat removed for decluttering
@@ -3464,25 +3539,35 @@
             });
         }
 
-        // Interactive panel resizing logic
+        // Interactive panel resizing logic (supports both Side-by-Side and Bottom Dock)
         function setupResizer() {
             let isDragging = false;
+            const mainContainer = document.querySelector('.main-container');
             
             resizer.addEventListener('mousedown', function(e) {
                 isDragging = true;
                 resizer.classList.add('dragging');
-                document.body.style.cursor = 'col-resize';
+                const isBottom = mainContainer && mainContainer.classList.contains('dock-bottom');
+                document.body.style.cursor = isBottom ? 'row-resize' : 'col-resize';
                 document.body.style.userSelect = 'none';
             });
             
             document.addEventListener('mousemove', function(e) {
                 if (!isDragging) return;
                 
-                const sidebarWidth = sidebarPanel.offsetWidth;
-                const newWidth = e.clientX - sidebarWidth;
-                
-                if (newWidth > 320 && newWidth < 850) {
-                    leftPanel.style.width = `${newWidth}px`;
+                if (mainContainer && mainContainer.classList.contains('dock-bottom')) {
+                    const containerRect = mainContainer.getBoundingClientRect();
+                    const newHeight = containerRect.bottom - e.clientY;
+                    if (newHeight > 140 && newHeight < containerRect.height - 140) {
+                        rightPanel.style.height = `${newHeight}px`;
+                        rightPanel.style.flex = `0 0 ${newHeight}px`;
+                    }
+                } else {
+                    const sidebarWidth = sidebarPanel ? sidebarPanel.offsetWidth : 0;
+                    const newWidth = e.clientX - sidebarWidth;
+                    if (newWidth > 320 && newWidth < 1200) {
+                        leftPanel.style.width = `${newWidth}px`;
+                    }
                 }
             });
             
@@ -3492,6 +3577,57 @@
                     resizer.classList.remove('dragging');
                     document.body.style.cursor = '';
                     document.body.style.userSelect = '';
+                }
+            });
+        }
+
+        // Out-of-the-Box Transcript Docking: Top/Bottom Split vs Side-by-Side
+        function setupTranscriptDockMode() {
+            const mainContainer = document.querySelector('.main-container');
+            const dockToggleBtn = document.getElementById('transcriptDockToggleBtn');
+            
+            function applyDockMode(mode) {
+                if (!mainContainer) return;
+                if (mode === 'bottom') {
+                    mainContainer.classList.add('dock-bottom');
+                    if (dockToggleBtn) dockToggleBtn.innerHTML = '◫ Side-by-Side';
+                    if (resizer) resizer.style.cursor = 'row-resize';
+                    if (leftPanel) {
+                        leftPanel.style.width = '100%';
+                        leftPanel.style.flex = '1 1 auto';
+                    }
+                } else {
+                    mainContainer.classList.remove('dock-bottom');
+                    if (dockToggleBtn) dockToggleBtn.innerHTML = '⊟ Dock Bottom';
+                    if (resizer) resizer.style.cursor = 'col-resize';
+                    if (leftPanel && !rightPanel.classList.contains('collapsed')) {
+                        leftPanel.style.width = `${lastLeftPanelWidth || 500}px`;
+                        leftPanel.style.flex = 'none';
+                    }
+                }
+                localStorage.setItem('ddma_transcript_dock_mode', mode);
+            }
+
+            const savedMode = localStorage.getItem('ddma_transcript_dock_mode');
+            const initialMode = savedMode || (window.innerWidth < 1100 ? 'bottom' : 'side');
+            applyDockMode(initialMode);
+
+            if (dockToggleBtn) {
+                dockToggleBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const currentMode = mainContainer.classList.contains('dock-bottom') ? 'bottom' : 'side';
+                    const nextMode = currentMode === 'bottom' ? 'side' : 'bottom';
+                    applyDockMode(nextMode);
+                });
+            }
+
+            window.addEventListener('resize', function() {
+                if (!localStorage.getItem('ddma_transcript_dock_mode')) {
+                    if (window.innerWidth < 1100 && !mainContainer.classList.contains('dock-bottom')) {
+                        applyDockMode('bottom');
+                    } else if (window.innerWidth >= 1100 && mainContainer.classList.contains('dock-bottom')) {
+                        applyDockMode('side');
+                    }
                 }
             });
         }
@@ -6552,6 +6688,7 @@
                         
                         if (seg.type === "audio") {
                             let audioEditorHtml = "";
+                            const isAudioDrawerOpen = Boolean(window.segDrawersState && window.segDrawersState[`audio_drawer_${index}_${segIdx}`]);
                             if (!isLocked) {
                                 const trimStartVal = (seg.trim_start !== undefined ? seg.trim_start : 0.0).toFixed(2);
                                 const trimEndVal = (seg.trim_end !== undefined ? seg.trim_end : 0.1).toFixed(2);
@@ -6561,54 +6698,60 @@
                                 const volumeVal = (seg.volume !== undefined ? seg.volume : 1.0).toFixed(2);
 
                                 audioEditorHtml = `
-                                    <div class="music-editor-row" style="margin-top: 0.25rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;" onclick="event.stopPropagation();">
+                                    <div class="music-editor-row seg-tune-drawer ${isAudioDrawerOpen ? '' : 'drawer-collapsed'}" id="audio_drawer_${index}_${segIdx}" style="margin-top: 0.35rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; padding: 0.35rem 0.5rem; background: rgba(0,0,0,0.03); border-radius: 6px; border: 1px dashed var(--border-color);" onclick="event.stopPropagation();">
                                         <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                             <label style="font-size: 0.65rem; color: #38bdf8; font-weight: 600;">Trim In:</label>
                                             <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'trim_start', -0.05)">-</button>
-                                            <input type="number" class="audio-trim-start" step="0.05" min="0" style="width: 48px; text-align: center; font-size: 0.7rem;" value="${trimStartVal}" data-clip="${index}" data-seg="${segIdx}">
+                                            <input type="number" class="audio-trim-start" step="0.05" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${trimStartVal}" data-clip="${index}" data-seg="${segIdx}">
                                             <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'trim_start', 0.05)">+</button>
                                         </div>
                                         <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                             <label style="font-size: 0.65rem; color: #38bdf8; font-weight: 600;">Trim Out:</label>
                                             <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'trim_end', -0.05)">-</button>
-                                            <input type="number" class="audio-trim-end" step="0.05" min="0" style="width: 48px; text-align: center; font-size: 0.7rem;" value="${trimEndVal}" data-clip="${index}" data-seg="${segIdx}">
+                                            <input type="number" class="audio-trim-end" step="0.05" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${trimEndVal}" data-clip="${index}" data-seg="${segIdx}">
                                             <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'trim_end', 0.05)">+</button>
                                         </div>
                                         <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                             <label style="font-size: 0.65rem; color: #a855f7; font-weight: 600;">Fade In:</label>
                                             <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_in', -0.1)">-</button>
-                                            <input type="number" class="audio-fade-in" step="0.1" min="0" style="width: 48px; text-align: center; font-size: 0.7rem;" value="${fadeInVal}" data-clip="${index}" data-seg="${segIdx}">
+                                            <input type="number" class="audio-fade-in" step="0.1" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${fadeInVal}" data-clip="${index}" data-seg="${segIdx}">
                                             <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_in', 0.1)">+</button>
                                         </div>
                                         <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                             <label style="font-size: 0.65rem; color: #a855f7; font-weight: 600;">Fade Out:</label>
                                             <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_out', -0.5)">-</button>
-                                            <input type="number" class="audio-fade-out" step="0.5" min="0" style="width: 48px; text-align: center; font-size: 0.7rem;" value="${fadeOutVal}" data-clip="${index}" data-seg="${segIdx}">
+                                            <input type="number" class="audio-fade-out" step="0.5" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${fadeOutVal}" data-clip="${index}" data-seg="${segIdx}">
                                             <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_out', 0.5)">+</button>
                                         </div>
                                         <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                             <label style="font-size: 0.65rem; color: #f59e0b; font-weight: 600;">Crossfade:</label>
                                             <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'crossfade', -0.1)">-</button>
-                                            <input type="number" class="audio-crossfade" step="0.1" min="0" style="width: 48px; text-align: center; font-size: 0.7rem;" value="${crossfadeVal}" data-clip="${index}" data-seg="${segIdx}">
+                                            <input type="number" class="audio-crossfade" step="0.1" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${crossfadeVal}" data-clip="${index}" data-seg="${segIdx}">
                                             <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'crossfade', 0.1)">+</button>
                                         </div>
                                         <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                             <label style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600;">Vol:</label>
                                             <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'volume', -0.05)">-</button>
-                                            <input type="number" class="audio-volume" step="0.05" min="0" max="2" style="width: 48px; text-align: center; font-size: 0.7rem;" value="${volumeVal}" data-clip="${index}" data-seg="${segIdx}">
+                                            <input type="number" class="audio-volume" step="0.05" min="0" max="2" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${volumeVal}" data-clip="${index}" data-seg="${segIdx}">
                                             <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'volume', 0.05)">+</button>
                                         </div>
                                     </div>
                                 `;
                             }
+                            const tuneBtnHtml = !isLocked ? `<button class="btn btn-secondary btn-mini toggle-seg-drawer-btn ${isAudioDrawerOpen ? 'active' : ''}" data-drawer="audio_drawer_${index}_${segIdx}" style="padding: 0.12rem 0.4rem; font-size: 0.65rem; font-weight: 600;" title="Toggle fine-tune steppers (Trim, Fades, Crossfade, Vol)">🎛️ Tune</button>` : '';
                             segmentsHtml += `
                                 <div class="segment-row audio-seg" data-clip="${index}" data-seg="${segIdx}" style="${rowStyle}">
-                                    <div class="segment-info">
-                                        <span class="segment-meta audio-meta">🎙 Audio Segment (${formatTime(seg.duration)})</span>
-                                        <span class="segment-text">"${seg.text}"</span>
+                                    <div class="segment-info" style="width: 100%;">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; width: 100%;">
+                                            <span class="segment-meta audio-meta">🎙 Audio Segment (${formatTime(seg.duration)})</span>
+                                            <div style="display: flex; align-items: center; gap: 0.3rem; margin-left: auto;">
+                                                ${tuneBtnHtml}
+                                                ${segmentActionsHtml}
+                                            </div>
+                                        </div>
+                                        <span class="segment-text" style="margin-top: 0.2rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">"${seg.text}"</span>
                                         ${audioEditorHtml}
                                     </div>
-                                    ${segmentActionsHtml}
                                 </div>
                             `;
                         } else if (seg.type === "music") {
@@ -6618,53 +6761,62 @@
                                 musicOptionsHtml += `<option value="${f}" ${isSelected}>${f}</option>`;
                             });
 
+                            const isMusicDrawerOpen = Boolean(window.segDrawersState && window.segDrawersState[`music_drawer_${index}_${segIdx}`]);
                             const fadeInVal = (seg.fade_in !== undefined ? seg.fade_in : 0.0).toFixed(2);
                             const fadeOutVal = (seg.fade_out !== undefined ? seg.fade_out : 2.0).toFixed(2);
                             const crossfadeVal = (seg.crossfade !== undefined ? seg.crossfade : 0.3).toFixed(2);
                             const volumeVal = (seg.volume !== undefined ? seg.volume : 1.0).toFixed(2);
+                            const musicTuneBtnHtml = !isLocked ? `<button class="btn btn-secondary btn-mini toggle-seg-drawer-btn ${isMusicDrawerOpen ? 'active' : ''}" data-drawer="music_drawer_${index}_${segIdx}" style="padding: 0.12rem 0.4rem; font-size: 0.65rem; font-weight: 600;" title="Toggle fine-tune steppers (Fades, Crossfade, Vol)">🎛️ Tune</button>` : '';
                             
                             segmentsHtml += `
                                 <div class="segment-row music-seg" data-clip="${index}" data-seg="${segIdx}">
-                                    <div class="segment-info">
-                                        <span class="segment-meta music-meta">🎵 Music Segment (${formatTime(seg.duration)})</span>
+                                    <div class="segment-info" style="width: 100%;">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; width: 100%;">
+                                            <span class="segment-meta music-meta">🎵 Music Segment (${formatTime(seg.duration)})</span>
+                                            <div style="display: flex; align-items: center; gap: 0.3rem; margin-left: auto;">
+                                                ${musicTuneBtnHtml}
+                                                ${segmentActionsHtml}
+                                            </div>
+                                        </div>
                                         <div class="music-editor-row" style="margin-top: 0.25rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center;" onclick="event.stopPropagation();">
                                             <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                                 <label style="font-size: 0.65rem; color: #a78bfa; font-weight: 600;">Sting:</label>
-                                                <select class="music-select" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''} style="font-size: 0.7rem; padding: 0.1rem 0.2rem;">
+                                                <select class="music-select" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''} style="font-size: 0.7rem; padding: 0.1rem 0.2rem; max-width: 180px;">
                                                     ${musicOptionsHtml}
                                                 </select>
                                             </div>
                                             <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                                 <label style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600;">Dur (s):</label>
-                                                <input type="number" class="music-duration" step="any" min="0" style="width: 48px; text-align: center; font-size: 0.7rem;" value="${seg.duration}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
+                                                <input type="number" class="music-duration" step="any" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${seg.duration}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
                                             </div>
+                                        </div>
+                                        <div class="music-editor-row seg-tune-drawer ${isMusicDrawerOpen ? '' : 'drawer-collapsed'}" id="music_drawer_${index}_${segIdx}" style="margin-top: 0.35rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; padding: 0.35rem 0.5rem; background: rgba(0,0,0,0.03); border-radius: 6px; border: 1px dashed var(--border-color);" onclick="event.stopPropagation();">
                                             <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                                 <label style="font-size: 0.65rem; color: #a855f7; font-weight: 600;">Fade In:</label>
                                                 <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_in', -0.1)" ${isLocked ? 'disabled' : ''}>-</button>
-                                                <input type="number" class="music-fade-in" step="0.1" min="0" style="width: 48px; text-align: center; font-size: 0.7rem;" value="${fadeInVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
+                                                <input type="number" class="music-fade-in" step="0.1" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${fadeInVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
                                                 <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_in', 0.1)" ${isLocked ? 'disabled' : ''}>+</button>
                                             </div>
                                             <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                                 <label style="font-size: 0.65rem; color: #a855f7; font-weight: 600;">Fade Out:</label>
                                                 <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_out', -0.5)" ${isLocked ? 'disabled' : ''}>-</button>
-                                                <input type="number" class="music-fade-out" step="0.5" min="0" style="width: 48px; text-align: center; font-size: 0.7rem;" value="${fadeOutVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
+                                                <input type="number" class="music-fade-out" step="0.5" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${fadeOutVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
                                                 <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_out', 0.5)" ${isLocked ? 'disabled' : ''}>+</button>
                                             </div>
                                             <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                                 <label style="font-size: 0.65rem; color: #f59e0b; font-weight: 600;">Crossfade:</label>
                                                 <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'crossfade', -0.1)" ${isLocked ? 'disabled' : ''}>-</button>
-                                                <input type="number" class="music-crossfade" step="0.1" min="0" style="width: 48px; text-align: center; font-size: 0.7rem;" value="${crossfadeVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
+                                                <input type="number" class="music-crossfade" step="0.1" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${crossfadeVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
                                                 <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'crossfade', 0.1)" ${isLocked ? 'disabled' : ''}>+</button>
                                             </div>
                                             <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                                 <label style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600;">Vol:</label>
                                                 <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'volume', -0.05)" ${isLocked ? 'disabled' : ''}>-</button>
-                                                <input type="number" class="music-volume" step="0.05" min="0" max="2" style="width: 48px; text-align: center; font-size: 0.7rem;" value="${volumeVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
+                                                <input type="number" class="music-volume" step="0.05" min="0" max="2" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${volumeVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
                                                 <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'volume', 0.05)" ${isLocked ? 'disabled' : ''}>+</button>
                                             </div>
                                         </div>
                                     </div>
-                                    ${segmentActionsHtml}
                                 </div>
                             `;
                         }
@@ -6678,20 +6830,19 @@
                     outroCardHtml = `
                         <div class="segment-row segment-row-outro" style="display: flex; flex-direction: column; align-items: stretch; border-left: 3px solid #6b7280; padding: 0.4rem 0.6rem; margin-top: 0.4rem; background: rgba(107, 114, 128, 0.02); border-radius: 4px; border-top: 1px solid rgba(107, 114, 128, 0.1); border-bottom: 1px solid rgba(107, 114, 128, 0.1); border-right: 1px solid rgba(107, 114, 128, 0.1); opacity: 0.6; gap: 0.2rem; cursor: default;">
                             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                                <span style="font-size: 0.75rem; font-weight: 700; color: #6b7280; display: flex; align-items: center; gap: 0.25rem;">🎬 Outro Clip (No Bridge)</span>
-                                <span style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">Last Clip</span>
-                            </div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem; font-style: italic;">
-                                No outro transition card needed for the last clip.
+                                <span style="font-size: 0.75rem; font-weight: 700; color: #6b7280; display: flex; align-items: center; gap: 0.25rem;">🎬 Outro Clip (End of Episode)</span>
+                                <span style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">No bridge</span>
                             </div>
                         </div>
                     `;
                 } else {
+                    const nextClip = clips[index + 1];
+                    const nextPartNum = nextClip ? nextClip.num : (clip.num + 1);
                     const bridgeTextVal = clip.bridge_text ? (Array.isArray(clip.bridge_text) ? clip.bridge_text.join(" ") : clip.bridge_text) : "";
                     outroCardHtml = `
-                        <div class="segment-row segment-row-outro" style="display: flex; flex-direction: column; align-items: stretch; border-left: 3px solid #10b981; padding: 0.4rem 0.6rem; margin-top: 0.4rem; background: rgba(16, 185, 129, 0.02); border-radius: 4px; border-top: 1px solid rgba(16, 185, 129, 0.1); border-bottom: 1px solid rgba(16, 185, 129, 0.1); border-right: 1px solid rgba(16, 185, 129, 0.1); gap: 0.4rem; cursor: default;">
+                        <div class="segment-row segment-row-outro" style="display: flex; flex-direction: column; align-items: stretch; border-left: 3px solid #eab308; padding: 0.4rem 0.6rem; margin-top: 0.4rem; background: rgba(234, 179, 8, 0.02); border-radius: 4px; border-top: 1px solid rgba(234, 179, 8, 0.1); border-bottom: 1px solid rgba(234, 179, 8, 0.1); border-right: 1px solid rgba(234, 179, 8, 0.1); gap: 0.2rem; cursor: default;">
                             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                                <span style="font-size: 0.75rem; font-weight: 700; color: #10b981; display: flex; align-items: center; gap: 0.25rem;">🎬 Outro Clip (Bridge Card)</span>
+                                <span style="font-size: 0.75rem; font-weight: 700; color: #eab308; display: flex; align-items: center; gap: 0.25rem;">🎬 Outro Clip (Bridge to Part ${nextPartNum})</span>
                                 <span style="font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-mono);">Duration: 5.0s</span>
                             </div>
                             <div style="margin-top: 0.1rem; width: 100%;" onclick="event.stopPropagation();">
@@ -6811,52 +6962,52 @@
                 
                 card.innerHTML = `
                     <div class="clip-card-header">
-                        <div class="clip-card-title-container">
-                            <div style="display: flex; align-items: center; width: 100%; gap: 0.4rem;">
-                                <span class="clip-collapse-caret" style="cursor: pointer; font-size: 0.85rem; user-select: none; margin-right: 0.2rem; font-family: var(--font-mono); color: var(--text-muted);" data-index="${index}">${caretText}</span>
-                                <span class="clip-num-badge" style="background-color: var(--primary); color: white; padding: 0.15rem 0.35rem; border-radius: 4px; font-weight: bold; font-size: 0.75rem; font-family: var(--font-mono); white-space: nowrap;">${episodeNum}-${clip.num}</span>
-                                <input type="text" class="clip-card-title" placeholder="Enter title description..." value="${clip.title}" data-index="${index}" ${isLocked ? 'disabled' : ''}>
-                            </div>
+                        <!-- Deck 1: Identity & Lock (Caret, Badge, Expanding Title, Duration Pill, Right-pinned Lock & Delete) -->
+                        <div class="clip-card-deck-identity">
+                            <span class="clip-collapse-caret" style="cursor: pointer; font-size: 0.85rem; user-select: none; font-family: var(--font-mono); color: var(--text-muted); padding: 0.1rem;" data-index="${index}">${caretText}</span>
+                            <span class="clip-num-badge" style="background-color: var(--primary); color: white; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: bold; font-size: 0.72rem; font-family: var(--font-mono); white-space: nowrap; flex-shrink: 0;">${episodeNum}-${clip.num}</span>
+                            <input type="text" class="clip-card-title" placeholder="Enter title description..." value="${escapeHtml(clip.title || '')}" data-index="${index}" ${isLocked ? 'disabled' : ''}>
                             
-                            <!-- Clip Level Settings (Duration, Volume, Crossfade) -->
-                            <div class="music-editor-row" style="margin-top: 0.4rem; padding: 0.3rem 0.5rem; background: rgba(255,255,255,0.02); border-radius: 4px; display: inline-flex; align-self: flex-start;" onclick="event.stopPropagation();">
-                                <div class="music-editor-field">
-                                    <label style="font-size: 0.7rem; color: #06b6d4; font-weight: 700;">Video Dur:</label>
-                                    <input type="text" class="clip-dur-input" style="width: 55px; background: transparent; border: none; color: #06b6d4; font-size: 0.75rem; font-family: var(--font-mono); font-weight: bold; padding: 0;" value="${formatTime(totalDuration)}" disabled title="Full 4-Element Video Duration (Intro 2s + Body + Outro 5s)">
-                                </div>
-                                <div class="music-editor-field">
-                                    <label style="font-size: 0.7rem; color: var(--text-muted);">Audio Body:</label>
-                                    <input type="text" class="clip-audio-body-input" style="width: 55px; background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-mono); padding: 0;" value="${formatTime(calculateClipAudioDuration(clip))}" disabled title="Audio Segments Body Duration">
-                                </div>
-                                <div class="music-editor-field">
-                                    <label style="font-size: 0.7rem;">Volume:</label>
-                                    <input type="number" class="clip-volume" step="any" min="0" max="2" style="width: 55px;" value="${clip.volume !== undefined ? clip.volume : 1.00}" data-index="${index}">
-                                </div>
-                                <div class="music-editor-field">
-                                    <label style="font-size: 0.7rem;">Crossfade (s):</label>
-                                    <input type="number" class="clip-crossfade" step="any" min="0" style="width: 55px;" value="${clip.crossfade !== undefined ? clip.crossfade : 0.0}" data-index="${index}">
-                                </div>
-                                <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.25rem; margin-left: 0.4rem;">
-                                    <input type="checkbox" class="clip-audio-only-checkbox" id="clipAudioOnly_${index}" data-index="${index}" ${clip.audio_only ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="cursor: pointer; margin-top: 2px;">
-                                    <label for="clipAudioOnly_${index}" style="font-size: 0.7rem; cursor: pointer; user-select: none; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Audio Only</label>
-                                </div>
+                            <span class="clip-duration-pill" title="Video Duration: ${formatTime(totalDuration)} | Audio Body: ${formatTime(calculateClipAudioDuration(clip))}">
+                                🎬 ${formatTime(totalDuration)} <span style="opacity:0.4;">|</span> 🎙 ${formatTime(calculateClipAudioDuration(clip))}
+                            </span>
+
+                            <div style="display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0; margin-left: auto;">
+                                <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600; padding: 0.2rem 0.45rem;" title="${isLocked ? 'Click to Unlock clip' : 'Click to Lock clip'}">${lockBtnIcon}</button>
+                                ${deleteCardBtnHtml}
                             </div>
                         </div>
 
-                        <div class="clip-card-actions">
-                            <button class="btn btn-secondary btn-mini btn-card-intro ${introStatusClass}" id="introCardBtn_${index}" style="font-weight:600;" title="Preview Intro Clip (Title Card + Music)">🎬 Intro</button>
-                            <button class="btn btn-secondary btn-mini btn-card-outro ${outroStatusClass}" id="outroCardBtn_${index}" style="font-weight:600;" ${outroBtnDisabled} title="Preview Outro Clip (Bridge Card Question + Fadeout)">🎬 Outro</button>
-                            <button class="btn-card-play ${audioStatusClass}" id="playCardBtn_${index}">▶ Audio</button>
-                            ${videoBtnHtml}
-                            
-                            <div class="actions-separator"></div>
-                            
-                            <button class="btn btn-secondary btn-mini btn-card-text" id="textCardBtn_${index}" data-index="${index}" style="font-weight:600;" title="View, edit, and align 1080×1920 burned ASS captions &amp; spoken transcript for this clip">💬 Captions</button>
-                            ${infographicBtnHtml}
-                            ${mosaicBtnHtml}
-                            <button class="btn btn-mini btn-card-remix btn-status-purple" id="remixCardBtn_${index}" style="font-weight:600;" ${isLocked ? '' : 'disabled style="opacity: 0.4; cursor: not-allowed;" title="Lock clip first to enable Gemini Remix"'} title="Recast this clip using Creative AI based on preceding locked clips">🔄 Remix</button>
-                            <button class="btn btn-secondary btn-mini lock-clip" id="lockCardBtn_${index}" style="font-weight:600;">${lockBtnIcon}</button>
-                            ${deleteCardBtnHtml}
+                        <!-- Deck 2: Action Ribbon & Inline Controls -->
+                        <div class="clip-card-deck-actions">
+                            <div class="clip-card-actions">
+                                <button class="btn btn-secondary btn-mini btn-card-intro ${introStatusClass}" id="introCardBtn_${index}" style="font-weight:600;" title="Preview Intro Clip (Title Card + Music)">🎬 Intro</button>
+                                <button class="btn btn-secondary btn-mini btn-card-outro ${outroStatusClass}" id="outroCardBtn_${index}" style="font-weight:600;" ${outroBtnDisabled} title="Preview Outro Clip (Bridge Card Question + Fadeout)">🎬 Outro</button>
+                                <button class="btn-card-play ${audioStatusClass}" id="playCardBtn_${index}">▶ Audio</button>
+                                ${videoBtnHtml}
+                                
+                                <div style="width: 1px; height: 16px; background: var(--border-color); margin: 0 0.1rem;"></div>
+                                
+                                <button class="btn btn-secondary btn-mini btn-card-text" id="textCardBtn_${index}" data-index="${index}" style="font-weight:600;" title="View, edit, and align 1080×1920 burned ASS captions & spoken transcript">💬 Captions</button>
+                                ${infographicBtnHtml}
+                                ${mosaicBtnHtml}
+                                <button class="btn btn-mini btn-card-remix btn-status-purple" id="remixCardBtn_${index}" style="font-weight:600;" ${isLocked ? '' : 'disabled style="opacity: 0.4; cursor: not-allowed;" title="Lock clip first to enable Gemini Remix"'} title="Recast this clip using Creative AI based on preceding locked clips">🔄 Remix</button>
+                            </div>
+
+                            <div class="music-editor-row" style="margin: 0; padding: 0.15rem 0.4rem; background: var(--bg-light); border-radius: 4px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.4rem; font-size: 0.7rem; flex-shrink: 0;" onclick="event.stopPropagation();">
+                                <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.2rem;">
+                                    <label style="font-size: 0.68rem; font-weight: 600;">Vol:</label>
+                                    <input type="number" class="clip-volume" step="any" min="0" max="2" style="width: 44px; text-align: center; font-size: 0.7rem; padding: 0.1rem;" value="${clip.volume !== undefined ? clip.volume : 1.00}" data-index="${index}">
+                                </div>
+                                <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.2rem;">
+                                    <label style="font-size: 0.68rem; font-weight: 600;">Xfade:</label>
+                                    <input type="number" class="clip-crossfade" step="any" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${clip.crossfade !== undefined ? clip.crossfade : 0.0}" data-index="${index}">
+                                </div>
+                                <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.2rem;">
+                                    <input type="checkbox" class="clip-audio-only-checkbox" id="clipAudioOnly_${index}" data-index="${index}" ${clip.audio_only ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="cursor: pointer;">
+                                    <label for="clipAudioOnly_${index}" style="font-size: 0.68rem; cursor: pointer; user-select: none; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Audio Only</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -8021,6 +8172,22 @@
             alert("Successfully saved plan to plan.json!");
             exportModalOverlay.classList.remove('active');
         });
-    </script>
+    
+
+        // Global listener for segment fine-tune drawers
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.toggle-seg-drawer-btn');
+            if (!btn) return;
+            e.stopPropagation();
+            const drawerId = btn.dataset.drawer;
+            const drawer = document.getElementById(drawerId);
+            if (drawer) {
+                window.segDrawersState = window.segDrawersState || {};
+                const isNowOpen = drawer.classList.toggle('drawer-collapsed') === false;
+                window.segDrawersState[drawerId] = isNowOpen;
+                btn.classList.toggle('active', isNowOpen);
+            }
+        });
+</script>
 </body>
 </html>
