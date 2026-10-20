@@ -3722,11 +3722,49 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             audio_file = candidate_path
                             break
 
-                # 1. Ensure sliced clip MP3 exists
+                # 1. Ensure sliced clip MP3 exists & is up to date with segments
+                import hashlib
+                curr_audio_sig = hashlib.md5(json.dumps(t_clip.get("segments", []), sort_keys=True).encode("utf-8")).hexdigest()
+                
+                # Compute expected duration from segments
+                segs = t_clip.get("segments", [])
+                expected_dur = sum(float(s.get("duration", 0.0)) for s in segs) - sum(float(s.get("crossfade", 0.0)) for s in segs[:-1]) if segs else 0.0
+
                 mp3_matches = glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}-*.mp3")) + glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}.mp3"))
-                if not mp3_matches and audio_file and os.path.exists(audio_file):
-                    subprocess.run([sys.executable, "ddma.py", "cut", "--audio", audio_file, "--plan-file", plan_path, "--out-dir", "clips", "--num", str(clip_num)], capture_output=True, text=True)
+                need_audio_cut = force_regen or not mp3_matches or (t_clip.get("_audio_sig") != curr_audio_sig)
+                
+                # Check probed duration of existing MP3 against expected segments duration
+                if not need_audio_cut and mp3_matches:
+                    mp3_matches.sort(key=os.path.getmtime, reverse=True)
+                    try:
+                        p_probe = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", mp3_matches[0]], capture_output=True, text=True)
+                        if p_probe.returncode == 0 and p_probe.stdout.strip():
+                            probed_dur = float(p_probe.stdout.strip())
+                            if expected_dur > 0 and abs(probed_dur - expected_dur) > 1.5:
+                                print(f"[{project_id}][Clip {clip_num}] Existing MP3 duration ({probed_dur:.2f}s) mismatch with segments ({expected_dur:.2f}s). Re-cutting...")
+                                need_audio_cut = True
+                    except Exception:
+                        pass
+
+                if need_audio_cut and audio_file and os.path.exists(audio_file):
+                    print(f"[{project_id}][Clip {clip_num}] Re-slicing fresh audio from segments...")
+                    for old_m in mp3_matches:
+                        try:
+                            if os.path.exists(old_m):
+                                os.remove(old_m)
+                        except Exception:
+                            pass
+                    old_info_mp4 = os.path.join("clips", f"{ep_num}-{clip_num}-infographic.mp4")
+                    if os.path.exists(old_info_mp4):
+                        try:
+                            os.remove(old_info_mp4)
+                        except Exception:
+                            pass
+                    cut_res = subprocess.run([sys.executable, "ddma.py", "cut", "--audio", audio_file, "--plan-file", plan_path, "--out-dir", "clips", "--num", str(clip_num)], capture_output=True, text=True, cwd=".")
+                    if cut_res.returncode != 0:
+                        print(f"[{project_id}][Clip {clip_num}] Cut warning/error: {cut_res.stderr}")
                     mp3_matches = glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}-*.mp3")) + glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}.mp3"))
+
                 if not mp3_matches:
                     raise Exception(f"Could not locate or slice clip MP3 for Clip {clip_num}")
                 mp3_matches.sort(key=os.path.getmtime, reverse=True)
@@ -3741,31 +3779,49 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 except Exception:
                     pass
                 if body_dur <= 0:
-                    segs = t_clip.get("segments", [])
-                    body_dur = sum(float(s.get("duration", 0.0)) for s in segs) - sum(float(s.get("crossfade", 0.0)) for s in segs[:-1]) if segs else 60.0
+                    body_dur = expected_dur if expected_dur > 0 else 60.0
 
                 sorted_clips = sorted(plan_data, key=lambda x: x.get("num", 0))
                 is_last = (sorted_clips[-1].get("num") == t_clip.get("num")) if sorted_clips else False
 
-                if not t_clip.get("caption_chunks"):
+                curr_caption_sig = hashlib.md5(json.dumps({
+                    "segments": t_clip.get("segments", []),
+                    "text": t_clip.get("text", ""),
+                    "intro_offset": 1.5,
+                    "has_outro": (not is_last)
+                }, sort_keys=True).encode("utf-8")).hexdigest()
+
+                if need_audio_cut or not t_clip.get("caption_chunks") or t_clip.get("_caption_sig") != curr_caption_sig:
+                    print(f"[{project_id}][Clip {clip_num}] Re-aligning captions for fresh audio/segments...")
                     ddma_mod.generate_clip_captions(
                         t_clip, plan_file=plan_path, audio_path=clip_mp3,
-                        intro_offset=1.5, body_duration=body_dur, has_outro=(not is_last)
+                        intro_offset=1.5, body_duration=body_dur, has_outro=(not is_last),
+                        force_realign=True
                     )
+                    t_clip["_caption_sig"] = curr_caption_sig
 
                 infographic_mp4 = os.path.join("clips", f"{ep_num}-{clip_num}-infographic.mp4")
-                if force_regen or custom_instructions or not os.path.exists(infographic_mp4) or os.path.getsize(infographic_mp4) < 10000:
+                existing_scenes = t_clip.get("infographic_scenes") or []
+                scenes_mismatch = (not existing_scenes) or (abs(float(existing_scenes[-1].get("end", 0.0)) - body_dur) > 1.5)
+                need_render_infographic = (
+                    force_regen or bool(custom_instructions) or need_audio_cut or scenes_mismatch or
+                    not os.path.exists(infographic_mp4) or os.path.getsize(infographic_mp4) < 10000
+                )
+
+                if need_render_infographic:
                     settings = load_settings()
                     api_key = settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
                     g_mod = genai if (HAS_GENAI and configure_gemini(api_key)) else None
                     scenes = infographic_engine.generate_infographic_storyboard(
                         t_clip, body_duration=body_dur, intro_offset=1.5,
                         custom_instructions=custom_instructions, genai_mod=g_mod,
-                        force_regenerate=(force_regen or bool(custom_instructions))
+                        force_regenerate=True
                     )
                     print(f"[{project_id}][Clip {clip_num}] Rendering local 740x740 Dan Koe infographic ({len(scenes)} scenes)...")
                     infographic_engine.render_infographic_mp4(scenes, clip_mp3, infographic_mp4, duration=body_dur)
 
+                t_clip["_audio_sig"] = curr_audio_sig
+                t_clip["audio_duration"] = round(body_dur, 2)
                 t_clip["visual_source"] = "infographic"
                 t_clip["infographic_ready"] = True
                 with open(plan_path, "w", encoding="utf-8") as pf_w:

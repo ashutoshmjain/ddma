@@ -8584,7 +8584,7 @@
         "_caption_words": [
             {
                 "word": "We",
-                "start": 0.0,
+                "start": 0,
                 "end": 0.24
             },
             {
@@ -8695,11 +8695,11 @@
             {
                 "word": "sole",
                 "start": 7.72,
-                "end": 8.0
+                "end": 8
             },
             {
                 "word": "mission",
-                "start": 8.0,
+                "start": 8,
                 "end": 8.32
             },
             {
@@ -8804,7 +8804,7 @@
             },
             {
                 "word": "Just",
-                "start": 14.0,
+                "start": 14,
                 "end": 14.1
             },
             {
@@ -8910,11 +8910,11 @@
             {
                 "word": "suddenly",
                 "start": 27.2,
-                "end": 28.0
+                "end": 28
             },
             {
                 "word": "agreeing",
-                "start": 28.0,
+                "start": 28,
                 "end": 28.7
             },
             {
@@ -9170,11 +9170,11 @@
             {
                 "word": "companies.",
                 "start": 47.5,
-                "end": 48.0
+                "end": 48
             },
             {
                 "word": "The",
-                "start": 48.0,
+                "start": 48,
                 "end": 48.5
             },
             {
@@ -9240,11 +9240,11 @@
             {
                 "word": "their",
                 "start": 52.82,
-                "end": 53.0
+                "end": 53
             },
             {
                 "word": "stated",
-                "start": 53.0,
+                "start": 53,
                 "end": 53.36
             },
             {
@@ -9505,11 +9505,11 @@
             {
                 "word": "entirely",
                 "start": 70.38,
-                "end": 71.0
+                "end": 71
             },
             {
                 "word": "on",
-                "start": 71.0,
+                "start": 71,
                 "end": 71.28
             },
             {
@@ -9845,7 +9845,7 @@
             {
                 "word": "compute.",
                 "start": 95.46,
-                "end": 96.0
+                "end": 96
             },
             {
                 "word": "Now,",
@@ -9900,11 +9900,11 @@
             {
                 "word": "open",
                 "start": 100.6,
-                "end": 101.0
+                "end": 101
             },
             {
                 "word": "weight",
-                "start": 101.0,
+                "start": 101,
                 "end": 101.28
             },
             {
@@ -10130,11 +10130,11 @@
             {
                 "word": "So",
                 "start": 116.88,
-                "end": 117.0
+                "end": 117
             },
             {
                 "word": "consider",
-                "start": 117.0,
+                "start": 117,
                 "end": 117.36
             },
             {
@@ -10295,11 +10295,11 @@
             {
                 "word": "exorbitant",
                 "start": 128.2,
-                "end": 129.0
+                "end": 129
             },
             {
                 "word": "API",
-                "start": 129.0,
+                "start": 129,
                 "end": 129.22
             },
             {
@@ -10474,7 +10474,7 @@
             },
             {
                 "word": "They",
-                "start": 139.0,
+                "start": 139,
                 "end": 139.1
             },
             {
@@ -10515,11 +10515,11 @@
             {
                 "word": "a",
                 "start": 141.94,
-                "end": 142.0
+                "end": 142
             },
             {
                 "word": "near",
-                "start": 142.0,
+                "start": 142,
                 "end": 142.22
             },
             {
@@ -10530,11 +10530,11 @@
             {
                 "word": "marginal",
                 "start": 142.64,
-                "end": 143.0
+                "end": 143
             },
             {
                 "word": "cost",
-                "start": 143.0,
+                "start": 143,
                 "end": 143.42
             },
             {
@@ -10550,11 +10550,11 @@
             {
                 "word": "user",
                 "start": 143.68,
-                "end": 144.0
+                "end": 144
             },
             {
                 "word": "meta",
-                "start": 144.0,
+                "start": 144,
                 "end": 144.74
             },
             {
@@ -10670,11 +10670,11 @@
             {
                 "word": "So",
                 "start": 151.64,
-                "end": 152.0
+                "end": 152
             },
             {
                 "word": "how",
-                "start": 152.0,
+                "start": 152,
                 "end": 152.24
             },
             {
@@ -11097,11 +11097,11 @@
             },
             {
                 "start": 129.7,
-                "end": 132.0,
+                "end": 132,
                 "text": "exorbitant api fees to open ai"
             },
             {
-                "start": 132.0,
+                "start": 132,
                 "end": 133.68,
                 "text": "if they can download meta's open"
             },
@@ -11184,7 +11184,7 @@
         "_caption_sig": "ba46f5e1aac03028fb2ea0658dfccf9f",
         "infographic_scenes": [
             {
-                "start": 0.0,
+                "start": 0,
                 "end": 10.14,
                 "archetype": "perspective_grid_scale",
                 "accent": "white",
@@ -11366,7 +11366,7 @@
         "rendered_duration": 165.55,
         "audio_duration": 160.02,
         "intro_offset": 1.5,
-        "outro_duration": 5.0,
+        "outro_duration": 5,
         "source_start": 2374.96,
         "source_end": 2526.26,
         "_audio_sig": "5006f2c70369fa7ba41b085309f0dbc6",
@@ -11374,44 +11374,2698 @@
     },
     {
         "num": 19,
-        "title": "Exclusion ny Regulation",
+        "title": "Exclusion by Regulation",
         "start": 2526.86,
         "end": 2620.8,
-        "duration": 102.86,
+        "duration": 153.34,
         "bridge_text": [
-            "What is the deeper secret behind Part 37?"
+            "What is PEG ratio ?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 2526.86,
-                "end": 2541.5,
-                "duration": 14.64,
-                "text": "But by vocally supporting government mandated compute caps, rigorous safety regulations and bureaucratic red tape, they create what the research calls a defensible operational moat. Uh, yeah, I see the chess board now."
+                "start": 2541.26,
+                "end": 2623.62,
+                "duration": 82.36,
+                "text": "now.  If  the  government  passes  an  act  that  says,  Hey,  nobody  can  build  a  new  data  center  without  completing  a  comprehensive  three  year  federal  safety  audit,  it  hurts  meta  the  most  because  meta  has  the  cash  and  was  just  about  to  break  ground  on  massive  new  data  centers  to  expand  their  lead.  Correct.  It  is  a  highly  effective  strategic  delay  tactic.  It  restricts  raw  capacity  expansion  across  the  entire  industry  and  for  companies  that  are  venture  backed  and  balancing  impending  stock  market  floats  like  anthropic  preparing  for  an  IPO,  slowing  the  broader  innovation  cycle  protects  their  early  mover  valuations.  It  artificially  freezes  the  state  of  the  market,  stopping  meta  from  leveraging  its  massive  infrastructure  advantage  while  the  startups  desperately  try  to  catch  up.  I  want  to  ask  you  the  listener  to  really  think  about  this  dynamic.  Does  the  idea  of  using  safety  regulations  as  a  competitive  shield  makes  sense  in  this  high  stakes  context?  It's  a  fascinating,  deeply  pragmatic  corporate  strategy.  When  you  can't  beat  your  opponents  product  in  the  free  market,  you  try  to  change  the  regulatory  rules  of  the  game  to  slow  them  down  and  to  truly  grasp  why  meta  can  execute  this  scorched  Earth  strategy  while  others  are  forced  into  protectionism.  We  must  look  at  the  foundational  numbers.  We  have  to  follow  the  money,  specifically  how  these  mega  cap  companies  are  valued  by  the  market  and  how  they  are  spending  their  cash  reserves.  This  brings  us  to  a  crucial  part  of  the  research.  Valuations  and  the  CapEx  trap."
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
                 "duration": 4.5,
-                "crossfade": 0,
+                "crossfade": 0.3,
                 "volume": 1
             },
             {
                 "type": "audio",
-                "start": 2541.58,
-                "end": 2620.8,
-                "duration": 79.22,
-                "text": "If the government passes an act that says, Hey, nobody can build a new data center without completing a comprehensive three year federal safety audit, it hurts meta the most because meta has the cash and was just about to break ground on massive new data centers to expand their lead. Correct. It is a highly effective strategic delay tactic. It restricts raw capacity expansion across the entire industry and for companies that are venture backed and balancing impending stock market floats like anthropic preparing for an IPO, slowing the broader innovation cycle protects their early mover valuations. It artificially freezes the state of the market, stopping meta from leveraging its massive infrastructure advantage while the startups desperately try to catch up. I want to ask you the listener to really think about this dynamic. Does the idea of using safety regulations as a competitive shield makes sense in this high stakes context? It's a fascinating, deeply pragmatic corporate strategy. When you can't beat your opponents product in the free market, you try to change the regulatory rules of the game to slow them down and to truly grasp why meta can execute this scorched Earth strategy while others are forced into protectionism. We must look at the foundational numbers. We have to follow the money, specifically how these mega cap companies are valued by the market and how they are spending their cash reserves. This brings us to a crucial part of the research."
+                "start": 2624.24,
+                "end": 2681.18,
+                "duration": 56.94,
+                "text": "Let's  look  at  meta's  financial  journey  because  it  has  been  a  total  roller  coaster.  Here  really  is.  It  wasn't  that  long  ago  back  in  late  2022  when  meta  was  getting  absolutely  hammered  by  the  market.  The  research  notes  they  hit  a  brutal  trough  of  $166  a  share.  People  thought  Mark  Zuckerberg  spending  on  the  metaverse  in  reality  lands  was  completely  out  of  control.  Apple's  ad  tracking  changes  were  crippling  their  revenue.  I  mean,  the  narrative  was  incredibly  grim.  But  by  late  2026,  the  market  narrative  has  entirely  inverted.  Meta  shares  are  trading  securely  in  the  $645  to  $675  range.  Their  aggregate  market  capitalization  is  hovering  between  $1 .65  trillion  and  $1 .71  trillion.  That  is  a  staggering  financial  recovery.  And  yet  the  research  suggests  that  despite  that  massive  run  up,  they  are  still  fundamentally  undervalued  compared  to  their  tech  peers.  Yes.  And  they  use  a  specific  financial  metric  to  explain  this.  The  PEG  ratio.  The  price  earnings  to  growth  ratio."
             },
             {
                 "type": "music",
-                "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
+                "music_file": "deepDive-conclusion.mp3",
                 "duration": 4.5,
-                "crossfade": 0.3,
-                "volume": 1
+                "crossfade": 0.3
             }
         ],
-        "locked": false
+        "locked": true,
+        "text": "Now. If the government passes an act that says, Hey, nobody can build a new data center without completing a comprehensive three year federal safety audit, it hurts meta the most because meta has the cash and was just about to break ground on massive new data centers to expand their lead.\n\nCorrect. It is a highly effective strategic delay tactic. It restricts raw capacity expansion across the entire industry and for companies that are venture backed and balancing impending stock market floats like anthropic preparing for an IPO, slowing the broader innovation cycle protects their early mover valuations.\n\nIt artificially freezes the state of the market, stopping meta from leveraging its massive infrastructure advantage while the startups desperately try to catch up. I want to ask you the listener to really think about this dynamic. Does the idea of using safety regulations as a competitive shield makes sense in this high stakes context?\n\nIt's a fascinating, deeply pragmatic corporate strategy. When you can't beat your opponents product in the free market, you try to change the regulatory rules of the game to slow them down and to truly grasp why meta can execute this scorched Earth strategy while others are forced into protectionism.\n\nWe must look at the foundational numbers. We have to follow the money, specifically how these mega cap companies are valued by the market and how they are spending their cash reserves. This brings us to a crucial part of the research.\n\nValuations and the CapEx trap. Let's look at meta's financial journey because it has been a total roller coaster. Here really is.\n\nIt wasn't that long ago back in late 2022 when meta was getting absolutely hammered by the market. The research notes they hit a brutal trough of $166 a share. People thought Mark Zuckerberg spending on the metaverse in reality lands was completely out of control.\n\nApple's ad tracking changes were crippling their revenue. I mean, the narrative was incredibly grim. But by late 2026, the market narrative has entirely inverted.\n\nMeta shares are trading securely in the $645 to $675 range. 71 trillion. That is a staggering financial recovery.\n\nAnd yet the research suggests that despite that massive run up, they are still fundamentally undervalued compared to their tech peers. Yes. And they use a specific financial metric to explain this.\n\nThe PEG ratio. The price earnings to growth ratio.",
+        "_caption_words": [
+            {
+                "word": "now.",
+                "start": 0.0,
+                "end": 0.24
+            },
+            {
+                "word": "If",
+                "start": 0.68,
+                "end": 0.84
+            },
+            {
+                "word": "the",
+                "start": 0.84,
+                "end": 0.92
+            },
+            {
+                "word": "government",
+                "start": 0.92,
+                "end": 1.14
+            },
+            {
+                "word": "passes",
+                "start": 1.14,
+                "end": 1.58
+            },
+            {
+                "word": "an",
+                "start": 1.58,
+                "end": 1.78
+            },
+            {
+                "word": "act",
+                "start": 1.78,
+                "end": 1.92
+            },
+            {
+                "word": "that",
+                "start": 1.92,
+                "end": 2.08
+            },
+            {
+                "word": "says,",
+                "start": 2.08,
+                "end": 2.24
+            },
+            {
+                "word": "Hey,",
+                "start": 2.24,
+                "end": 2.5
+            },
+            {
+                "word": "nobody",
+                "start": 2.86,
+                "end": 3.2
+            },
+            {
+                "word": "can",
+                "start": 3.2,
+                "end": 3.44
+            },
+            {
+                "word": "build",
+                "start": 3.44,
+                "end": 3.68
+            },
+            {
+                "word": "a",
+                "start": 3.68,
+                "end": 3.82
+            },
+            {
+                "word": "new",
+                "start": 3.82,
+                "end": 3.98
+            },
+            {
+                "word": "data",
+                "start": 3.98,
+                "end": 4.22
+            },
+            {
+                "word": "center",
+                "start": 4.22,
+                "end": 4.52
+            },
+            {
+                "word": "without",
+                "start": 4.52,
+                "end": 4.8
+            },
+            {
+                "word": "completing",
+                "start": 4.8,
+                "end": 5.3
+            },
+            {
+                "word": "a",
+                "start": 5.3,
+                "end": 5.48
+            },
+            {
+                "word": "comprehensive",
+                "start": 5.48,
+                "end": 6.06
+            },
+            {
+                "word": "three",
+                "start": 6.06,
+                "end": 6.96
+            },
+            {
+                "word": "year",
+                "start": 6.96,
+                "end": 7.16
+            },
+            {
+                "word": "federal",
+                "start": 7.16,
+                "end": 7.54
+            },
+            {
+                "word": "safety",
+                "start": 7.54,
+                "end": 7.88
+            },
+            {
+                "word": "audit,",
+                "start": 7.88,
+                "end": 8.22
+            },
+            {
+                "word": "it",
+                "start": 8.42,
+                "end": 8.78
+            },
+            {
+                "word": "hurts",
+                "start": 8.78,
+                "end": 9.2
+            },
+            {
+                "word": "meta",
+                "start": 9.2,
+                "end": 9.5
+            },
+            {
+                "word": "the",
+                "start": 9.5,
+                "end": 9.68
+            },
+            {
+                "word": "most",
+                "start": 9.68,
+                "end": 10.0
+            },
+            {
+                "word": "because",
+                "start": 10.0,
+                "end": 10.52
+            },
+            {
+                "word": "meta",
+                "start": 10.52,
+                "end": 10.8
+            },
+            {
+                "word": "has",
+                "start": 10.8,
+                "end": 11.02
+            },
+            {
+                "word": "the",
+                "start": 11.02,
+                "end": 11.2
+            },
+            {
+                "word": "cash",
+                "start": 11.2,
+                "end": 11.54
+            },
+            {
+                "word": "and",
+                "start": 11.54,
+                "end": 11.78
+            },
+            {
+                "word": "was",
+                "start": 11.78,
+                "end": 11.94
+            },
+            {
+                "word": "just",
+                "start": 11.94,
+                "end": 12.24
+            },
+            {
+                "word": "about",
+                "start": 12.24,
+                "end": 12.62
+            },
+            {
+                "word": "to",
+                "start": 12.62,
+                "end": 12.82
+            },
+            {
+                "word": "break",
+                "start": 12.82,
+                "end": 13.04
+            },
+            {
+                "word": "ground",
+                "start": 13.04,
+                "end": 13.32
+            },
+            {
+                "word": "on",
+                "start": 13.32,
+                "end": 13.56
+            },
+            {
+                "word": "massive",
+                "start": 13.56,
+                "end": 13.92
+            },
+            {
+                "word": "new",
+                "start": 13.92,
+                "end": 14.18
+            },
+            {
+                "word": "data",
+                "start": 14.18,
+                "end": 14.42
+            },
+            {
+                "word": "centers",
+                "start": 14.42,
+                "end": 15.0
+            },
+            {
+                "word": "to",
+                "start": 15.0,
+                "end": 15.12
+            },
+            {
+                "word": "expand",
+                "start": 15.12,
+                "end": 15.46
+            },
+            {
+                "word": "their",
+                "start": 15.46,
+                "end": 15.68
+            },
+            {
+                "word": "lead.",
+                "start": 15.68,
+                "end": 16.0
+            },
+            {
+                "word": "Correct.",
+                "start": 16.12,
+                "end": 16.42
+            },
+            {
+                "word": "It",
+                "start": 16.8,
+                "end": 16.96
+            },
+            {
+                "word": "is",
+                "start": 16.96,
+                "end": 17.1
+            },
+            {
+                "word": "a",
+                "start": 17.1,
+                "end": 17.2
+            },
+            {
+                "word": "highly",
+                "start": 17.2,
+                "end": 17.44
+            },
+            {
+                "word": "effective",
+                "start": 17.44,
+                "end": 17.88
+            },
+            {
+                "word": "strategic",
+                "start": 17.88,
+                "end": 18.62
+            },
+            {
+                "word": "delay",
+                "start": 18.62,
+                "end": 18.94
+            },
+            {
+                "word": "tactic.",
+                "start": 18.94,
+                "end": 19.34
+            },
+            {
+                "word": "It",
+                "start": 19.82,
+                "end": 19.9
+            },
+            {
+                "word": "restricts",
+                "start": 19.9,
+                "end": 20.42
+            },
+            {
+                "word": "raw",
+                "start": 20.42,
+                "end": 20.58
+            },
+            {
+                "word": "capacity",
+                "start": 20.58,
+                "end": 21.02
+            },
+            {
+                "word": "expansion",
+                "start": 21.02,
+                "end": 21.46
+            },
+            {
+                "word": "across",
+                "start": 21.46,
+                "end": 21.78
+            },
+            {
+                "word": "the",
+                "start": 21.78,
+                "end": 21.98
+            },
+            {
+                "word": "entire",
+                "start": 21.98,
+                "end": 22.32
+            },
+            {
+                "word": "industry",
+                "start": 22.32,
+                "end": 22.82
+            },
+            {
+                "word": "and",
+                "start": 22.82,
+                "end": 23.42
+            },
+            {
+                "word": "for",
+                "start": 23.42,
+                "end": 23.56
+            },
+            {
+                "word": "companies",
+                "start": 23.56,
+                "end": 23.88
+            },
+            {
+                "word": "that",
+                "start": 23.88,
+                "end": 24.06
+            },
+            {
+                "word": "are",
+                "start": 24.06,
+                "end": 24.12
+            },
+            {
+                "word": "venture",
+                "start": 24.12,
+                "end": 24.4
+            },
+            {
+                "word": "backed",
+                "start": 24.4,
+                "end": 24.7
+            },
+            {
+                "word": "and",
+                "start": 24.7,
+                "end": 24.84
+            },
+            {
+                "word": "balancing",
+                "start": 24.84,
+                "end": 25.3
+            },
+            {
+                "word": "impending",
+                "start": 25.3,
+                "end": 25.74
+            },
+            {
+                "word": "stock",
+                "start": 25.74,
+                "end": 26.08
+            },
+            {
+                "word": "market",
+                "start": 26.08,
+                "end": 26.4
+            },
+            {
+                "word": "floats",
+                "start": 26.4,
+                "end": 26.66
+            },
+            {
+                "word": "like",
+                "start": 26.66,
+                "end": 26.92
+            },
+            {
+                "word": "anthropic",
+                "start": 26.92,
+                "end": 27.6
+            },
+            {
+                "word": "preparing",
+                "start": 27.6,
+                "end": 28.24
+            },
+            {
+                "word": "for",
+                "start": 28.24,
+                "end": 28.48
+            },
+            {
+                "word": "an",
+                "start": 28.48,
+                "end": 28.6
+            },
+            {
+                "word": "IPO,",
+                "start": 28.6,
+                "end": 29.02
+            },
+            {
+                "word": "slowing",
+                "start": 29.58,
+                "end": 29.7
+            },
+            {
+                "word": "the",
+                "start": 29.7,
+                "end": 29.84
+            },
+            {
+                "word": "broader",
+                "start": 29.84,
+                "end": 30.1
+            },
+            {
+                "word": "innovation",
+                "start": 30.1,
+                "end": 30.52
+            },
+            {
+                "word": "cycle",
+                "start": 30.52,
+                "end": 30.88
+            },
+            {
+                "word": "protects",
+                "start": 30.88,
+                "end": 31.24
+            },
+            {
+                "word": "their",
+                "start": 31.24,
+                "end": 31.52
+            },
+            {
+                "word": "early",
+                "start": 31.52,
+                "end": 31.82
+            },
+            {
+                "word": "mover",
+                "start": 31.82,
+                "end": 32.1
+            },
+            {
+                "word": "valuations.",
+                "start": 32.1,
+                "end": 32.84
+            },
+            {
+                "word": "It",
+                "start": 33.06,
+                "end": 33.26
+            },
+            {
+                "word": "artificially",
+                "start": 33.26,
+                "end": 34.08
+            },
+            {
+                "word": "freezes",
+                "start": 34.08,
+                "end": 34.56
+            },
+            {
+                "word": "the",
+                "start": 34.56,
+                "end": 34.72
+            },
+            {
+                "word": "state",
+                "start": 34.72,
+                "end": 34.92
+            },
+            {
+                "word": "of",
+                "start": 34.92,
+                "end": 35.02
+            },
+            {
+                "word": "the",
+                "start": 35.02,
+                "end": 35.1
+            },
+            {
+                "word": "market,",
+                "start": 35.1,
+                "end": 35.4
+            },
+            {
+                "word": "stopping",
+                "start": 35.68,
+                "end": 35.96
+            },
+            {
+                "word": "meta",
+                "start": 35.96,
+                "end": 36.26
+            },
+            {
+                "word": "from",
+                "start": 36.26,
+                "end": 36.54
+            },
+            {
+                "word": "leveraging",
+                "start": 36.54,
+                "end": 36.9
+            },
+            {
+                "word": "its",
+                "start": 36.9,
+                "end": 37.12
+            },
+            {
+                "word": "massive",
+                "start": 37.12,
+                "end": 37.42
+            },
+            {
+                "word": "infrastructure",
+                "start": 37.42,
+                "end": 38.1
+            },
+            {
+                "word": "advantage",
+                "start": 38.1,
+                "end": 38.62
+            },
+            {
+                "word": "while",
+                "start": 38.62,
+                "end": 39.12
+            },
+            {
+                "word": "the",
+                "start": 39.12,
+                "end": 39.24
+            },
+            {
+                "word": "startups",
+                "start": 39.24,
+                "end": 39.54
+            },
+            {
+                "word": "desperately",
+                "start": 39.54,
+                "end": 40.14
+            },
+            {
+                "word": "try",
+                "start": 40.14,
+                "end": 40.4
+            },
+            {
+                "word": "to",
+                "start": 40.4,
+                "end": 40.5
+            },
+            {
+                "word": "catch",
+                "start": 40.5,
+                "end": 40.76
+            },
+            {
+                "word": "up.",
+                "start": 40.76,
+                "end": 40.98
+            },
+            {
+                "word": "I",
+                "start": 40.98,
+                "end": 41.32
+            },
+            {
+                "word": "want",
+                "start": 41.32,
+                "end": 41.42
+            },
+            {
+                "word": "to",
+                "start": 41.42,
+                "end": 41.48
+            },
+            {
+                "word": "ask",
+                "start": 41.48,
+                "end": 41.66
+            },
+            {
+                "word": "you",
+                "start": 41.66,
+                "end": 41.92
+            },
+            {
+                "word": "the",
+                "start": 41.92,
+                "end": 42.2
+            },
+            {
+                "word": "listener",
+                "start": 42.2,
+                "end": 42.48
+            },
+            {
+                "word": "to",
+                "start": 42.48,
+                "end": 42.68
+            },
+            {
+                "word": "really",
+                "start": 42.68,
+                "end": 42.84
+            },
+            {
+                "word": "think",
+                "start": 42.84,
+                "end": 43.08
+            },
+            {
+                "word": "about",
+                "start": 43.08,
+                "end": 43.26
+            },
+            {
+                "word": "this",
+                "start": 43.26,
+                "end": 43.44
+            },
+            {
+                "word": "dynamic.",
+                "start": 43.44,
+                "end": 43.8
+            },
+            {
+                "word": "Does",
+                "start": 44.32,
+                "end": 44.56
+            },
+            {
+                "word": "the",
+                "start": 44.56,
+                "end": 44.74
+            },
+            {
+                "word": "idea",
+                "start": 44.74,
+                "end": 45.2
+            },
+            {
+                "word": "of",
+                "start": 45.2,
+                "end": 45.48
+            },
+            {
+                "word": "using",
+                "start": 45.48,
+                "end": 45.72
+            },
+            {
+                "word": "safety",
+                "start": 45.72,
+                "end": 46.2
+            },
+            {
+                "word": "regulations",
+                "start": 46.2,
+                "end": 46.82
+            },
+            {
+                "word": "as",
+                "start": 46.82,
+                "end": 47.2
+            },
+            {
+                "word": "a",
+                "start": 47.2,
+                "end": 47.32
+            },
+            {
+                "word": "competitive",
+                "start": 47.32,
+                "end": 47.74
+            },
+            {
+                "word": "shield",
+                "start": 47.74,
+                "end": 48.14
+            },
+            {
+                "word": "makes",
+                "start": 48.14,
+                "end": 48.42
+            },
+            {
+                "word": "sense",
+                "start": 48.42,
+                "end": 48.76
+            },
+            {
+                "word": "in",
+                "start": 48.76,
+                "end": 49.1
+            },
+            {
+                "word": "this",
+                "start": 49.1,
+                "end": 49.28
+            },
+            {
+                "word": "high",
+                "start": 49.28,
+                "end": 49.42
+            },
+            {
+                "word": "stakes",
+                "start": 49.42,
+                "end": 49.66
+            },
+            {
+                "word": "context?",
+                "start": 49.66,
+                "end": 50.32
+            },
+            {
+                "word": "It's",
+                "start": 50.9,
+                "end": 51.04
+            },
+            {
+                "word": "a",
+                "start": 51.04,
+                "end": 51.12
+            },
+            {
+                "word": "fascinating,",
+                "start": 51.12,
+                "end": 51.92
+            },
+            {
+                "word": "deeply",
+                "start": 52.22,
+                "end": 52.62
+            },
+            {
+                "word": "pragmatic",
+                "start": 52.62,
+                "end": 53.18
+            },
+            {
+                "word": "corporate",
+                "start": 53.18,
+                "end": 53.94
+            },
+            {
+                "word": "strategy.",
+                "start": 53.94,
+                "end": 54.62
+            },
+            {
+                "word": "When",
+                "start": 55.22,
+                "end": 55.44
+            },
+            {
+                "word": "you",
+                "start": 55.44,
+                "end": 55.54
+            },
+            {
+                "word": "can't",
+                "start": 55.54,
+                "end": 55.9
+            },
+            {
+                "word": "beat",
+                "start": 55.9,
+                "end": 56.0
+            },
+            {
+                "word": "your",
+                "start": 56.0,
+                "end": 56.16
+            },
+            {
+                "word": "opponents",
+                "start": 56.16,
+                "end": 56.42
+            },
+            {
+                "word": "product",
+                "start": 56.42,
+                "end": 56.76
+            },
+            {
+                "word": "in",
+                "start": 56.76,
+                "end": 56.92
+            },
+            {
+                "word": "the",
+                "start": 56.92,
+                "end": 57.0
+            },
+            {
+                "word": "free",
+                "start": 57.0,
+                "end": 57.2
+            },
+            {
+                "word": "market,",
+                "start": 57.2,
+                "end": 57.56
+            },
+            {
+                "word": "you",
+                "start": 58.02,
+                "end": 58.14
+            },
+            {
+                "word": "try",
+                "start": 58.14,
+                "end": 58.34
+            },
+            {
+                "word": "to",
+                "start": 58.34,
+                "end": 58.44
+            },
+            {
+                "word": "change",
+                "start": 58.44,
+                "end": 58.86
+            },
+            {
+                "word": "the",
+                "start": 58.86,
+                "end": 59.08
+            },
+            {
+                "word": "regulatory",
+                "start": 59.08,
+                "end": 59.46
+            },
+            {
+                "word": "rules",
+                "start": 59.46,
+                "end": 59.9
+            },
+            {
+                "word": "of",
+                "start": 59.9,
+                "end": 60.06
+            },
+            {
+                "word": "the",
+                "start": 60.06,
+                "end": 60.18
+            },
+            {
+                "word": "game",
+                "start": 60.18,
+                "end": 60.4
+            },
+            {
+                "word": "to",
+                "start": 60.4,
+                "end": 60.68
+            },
+            {
+                "word": "slow",
+                "start": 60.68,
+                "end": 60.94
+            },
+            {
+                "word": "them",
+                "start": 60.94,
+                "end": 61.14
+            },
+            {
+                "word": "down",
+                "start": 61.14,
+                "end": 61.38
+            },
+            {
+                "word": "and",
+                "start": 61.38,
+                "end": 61.82
+            },
+            {
+                "word": "to",
+                "start": 61.82,
+                "end": 62.14
+            },
+            {
+                "word": "truly",
+                "start": 62.14,
+                "end": 62.7
+            },
+            {
+                "word": "grasp",
+                "start": 62.7,
+                "end": 63.08
+            },
+            {
+                "word": "why",
+                "start": 63.08,
+                "end": 63.68
+            },
+            {
+                "word": "meta",
+                "start": 63.68,
+                "end": 64.08
+            },
+            {
+                "word": "can",
+                "start": 64.08,
+                "end": 64.3
+            },
+            {
+                "word": "execute",
+                "start": 64.3,
+                "end": 64.84
+            },
+            {
+                "word": "this",
+                "start": 64.84,
+                "end": 65.1
+            },
+            {
+                "word": "scorched",
+                "start": 65.1,
+                "end": 65.54
+            },
+            {
+                "word": "Earth",
+                "start": 65.54,
+                "end": 65.7
+            },
+            {
+                "word": "strategy",
+                "start": 65.7,
+                "end": 66.24
+            },
+            {
+                "word": "while",
+                "start": 66.24,
+                "end": 66.42
+            },
+            {
+                "word": "others",
+                "start": 66.42,
+                "end": 66.74
+            },
+            {
+                "word": "are",
+                "start": 66.74,
+                "end": 66.96
+            },
+            {
+                "word": "forced",
+                "start": 66.96,
+                "end": 67.26
+            },
+            {
+                "word": "into",
+                "start": 67.26,
+                "end": 67.5
+            },
+            {
+                "word": "protectionism.",
+                "start": 67.5,
+                "end": 68.2
+            },
+            {
+                "word": "We",
+                "start": 68.44,
+                "end": 68.84
+            },
+            {
+                "word": "must",
+                "start": 68.84,
+                "end": 69.02
+            },
+            {
+                "word": "look",
+                "start": 69.02,
+                "end": 69.24
+            },
+            {
+                "word": "at",
+                "start": 69.24,
+                "end": 69.32
+            },
+            {
+                "word": "the",
+                "start": 69.32,
+                "end": 69.44
+            },
+            {
+                "word": "foundational",
+                "start": 69.44,
+                "end": 69.88
+            },
+            {
+                "word": "numbers.",
+                "start": 69.88,
+                "end": 70.28
+            },
+            {
+                "word": "We",
+                "start": 70.28,
+                "end": 70.68
+            },
+            {
+                "word": "have",
+                "start": 70.68,
+                "end": 70.88
+            },
+            {
+                "word": "to",
+                "start": 70.88,
+                "end": 71.08
+            },
+            {
+                "word": "follow",
+                "start": 71.08,
+                "end": 71.38
+            },
+            {
+                "word": "the",
+                "start": 71.38,
+                "end": 71.56
+            },
+            {
+                "word": "money,",
+                "start": 71.56,
+                "end": 71.84
+            },
+            {
+                "word": "specifically",
+                "start": 72.04,
+                "end": 72.98
+            },
+            {
+                "word": "how",
+                "start": 72.98,
+                "end": 73.3
+            },
+            {
+                "word": "these",
+                "start": 73.3,
+                "end": 73.54
+            },
+            {
+                "word": "mega",
+                "start": 73.54,
+                "end": 73.76
+            },
+            {
+                "word": "cap",
+                "start": 73.76,
+                "end": 74.04
+            },
+            {
+                "word": "companies",
+                "start": 74.04,
+                "end": 74.42
+            },
+            {
+                "word": "are",
+                "start": 74.42,
+                "end": 74.68
+            },
+            {
+                "word": "valued",
+                "start": 74.68,
+                "end": 75.12
+            },
+            {
+                "word": "by",
+                "start": 75.12,
+                "end": 75.28
+            },
+            {
+                "word": "the",
+                "start": 75.28,
+                "end": 75.38
+            },
+            {
+                "word": "market",
+                "start": 75.38,
+                "end": 75.66
+            },
+            {
+                "word": "and",
+                "start": 75.66,
+                "end": 75.82
+            },
+            {
+                "word": "how",
+                "start": 75.82,
+                "end": 75.98
+            },
+            {
+                "word": "they",
+                "start": 75.98,
+                "end": 76.12
+            },
+            {
+                "word": "are",
+                "start": 76.12,
+                "end": 76.22
+            },
+            {
+                "word": "spending",
+                "start": 76.22,
+                "end": 76.54
+            },
+            {
+                "word": "their",
+                "start": 76.54,
+                "end": 76.74
+            },
+            {
+                "word": "cash",
+                "start": 76.74,
+                "end": 77.0
+            },
+            {
+                "word": "reserves.",
+                "start": 77.0,
+                "end": 77.26
+            },
+            {
+                "word": "This",
+                "start": 77.62,
+                "end": 77.82
+            },
+            {
+                "word": "brings",
+                "start": 77.82,
+                "end": 78.02
+            },
+            {
+                "word": "us",
+                "start": 78.02,
+                "end": 78.18
+            },
+            {
+                "word": "to",
+                "start": 78.18,
+                "end": 78.34
+            },
+            {
+                "word": "a",
+                "start": 78.34,
+                "end": 78.44
+            },
+            {
+                "word": "crucial",
+                "start": 78.44,
+                "end": 78.76
+            },
+            {
+                "word": "part",
+                "start": 78.76,
+                "end": 79.02
+            },
+            {
+                "word": "of",
+                "start": 79.02,
+                "end": 79.12
+            },
+            {
+                "word": "the",
+                "start": 79.12,
+                "end": 79.2
+            },
+            {
+                "word": "research.",
+                "start": 79.2,
+                "end": 79.54
+            },
+            {
+                "word": "Valuations",
+                "start": 80.6,
+                "end": 81.04
+            },
+            {
+                "word": "and",
+                "start": 81.04,
+                "end": 81.48
+            },
+            {
+                "word": "the",
+                "start": 81.48,
+                "end": 81.62
+            },
+            {
+                "word": "CapEx",
+                "start": 81.62,
+                "end": 82.08
+            },
+            {
+                "word": "trap.",
+                "start": 82.08,
+                "end": 82.36
+            },
+            {
+                "word": "Let's",
+                "start": 86.56,
+                "end": 86.72
+            },
+            {
+                "word": "look",
+                "start": 86.72,
+                "end": 86.88
+            },
+            {
+                "word": "at",
+                "start": 86.88,
+                "end": 87.02
+            },
+            {
+                "word": "meta's",
+                "start": 87.02,
+                "end": 87.36
+            },
+            {
+                "word": "financial",
+                "start": 87.36,
+                "end": 87.74
+            },
+            {
+                "word": "journey",
+                "start": 87.74,
+                "end": 88.06
+            },
+            {
+                "word": "because",
+                "start": 88.06,
+                "end": 88.62
+            },
+            {
+                "word": "it",
+                "start": 88.62,
+                "end": 88.8
+            },
+            {
+                "word": "has",
+                "start": 88.8,
+                "end": 88.94
+            },
+            {
+                "word": "been",
+                "start": 88.94,
+                "end": 89.1
+            },
+            {
+                "word": "a",
+                "start": 89.1,
+                "end": 89.34
+            },
+            {
+                "word": "total",
+                "start": 89.34,
+                "end": 89.64
+            },
+            {
+                "word": "roller",
+                "start": 89.64,
+                "end": 90.0
+            },
+            {
+                "word": "coaster.",
+                "start": 90.0,
+                "end": 90.38
+            },
+            {
+                "word": "Here",
+                "start": 90.42,
+                "end": 90.56
+            },
+            {
+                "word": "really",
+                "start": 90.56,
+                "end": 90.8
+            },
+            {
+                "word": "is.",
+                "start": 90.8,
+                "end": 91.1
+            },
+            {
+                "word": "It",
+                "start": 91.2,
+                "end": 91.24
+            },
+            {
+                "word": "wasn't",
+                "start": 91.24,
+                "end": 91.46
+            },
+            {
+                "word": "that",
+                "start": 91.46,
+                "end": 91.6
+            },
+            {
+                "word": "long",
+                "start": 91.6,
+                "end": 91.78
+            },
+            {
+                "word": "ago",
+                "start": 91.78,
+                "end": 91.96
+            },
+            {
+                "word": "back",
+                "start": 91.96,
+                "end": 92.18
+            },
+            {
+                "word": "in",
+                "start": 92.18,
+                "end": 92.32
+            },
+            {
+                "word": "late",
+                "start": 92.32,
+                "end": 92.48
+            },
+            {
+                "word": "2022",
+                "start": 92.48,
+                "end": 93.04
+            },
+            {
+                "word": "when",
+                "start": 93.04,
+                "end": 93.6
+            },
+            {
+                "word": "meta",
+                "start": 93.6,
+                "end": 93.76
+            },
+            {
+                "word": "was",
+                "start": 93.76,
+                "end": 93.94
+            },
+            {
+                "word": "getting",
+                "start": 93.94,
+                "end": 94.1
+            },
+            {
+                "word": "absolutely",
+                "start": 94.1,
+                "end": 94.7
+            },
+            {
+                "word": "hammered",
+                "start": 94.7,
+                "end": 95.26
+            },
+            {
+                "word": "by",
+                "start": 95.26,
+                "end": 95.36
+            },
+            {
+                "word": "the",
+                "start": 95.36,
+                "end": 95.46
+            },
+            {
+                "word": "market.",
+                "start": 95.46,
+                "end": 95.7
+            },
+            {
+                "word": "The",
+                "start": 96.38,
+                "end": 96.48
+            },
+            {
+                "word": "research",
+                "start": 96.48,
+                "end": 96.74
+            },
+            {
+                "word": "notes",
+                "start": 96.74,
+                "end": 96.96
+            },
+            {
+                "word": "they",
+                "start": 96.96,
+                "end": 97.16
+            },
+            {
+                "word": "hit",
+                "start": 97.16,
+                "end": 97.28
+            },
+            {
+                "word": "a",
+                "start": 97.28,
+                "end": 97.36
+            },
+            {
+                "word": "brutal",
+                "start": 97.36,
+                "end": 97.6
+            },
+            {
+                "word": "trough",
+                "start": 97.6,
+                "end": 98.04
+            },
+            {
+                "word": "of",
+                "start": 98.04,
+                "end": 98.2
+            },
+            {
+                "word": "$166",
+                "start": 98.2,
+                "end": 99.16
+            },
+            {
+                "word": "a",
+                "start": 99.16,
+                "end": 99.54
+            },
+            {
+                "word": "share.",
+                "start": 99.54,
+                "end": 99.8
+            },
+            {
+                "word": "People",
+                "start": 100.36,
+                "end": 100.52
+            },
+            {
+                "word": "thought",
+                "start": 100.52,
+                "end": 100.7
+            },
+            {
+                "word": "Mark",
+                "start": 100.7,
+                "end": 100.9
+            },
+            {
+                "word": "Zuckerberg",
+                "start": 100.9,
+                "end": 101.3
+            },
+            {
+                "word": "spending",
+                "start": 101.3,
+                "end": 101.62
+            },
+            {
+                "word": "on",
+                "start": 101.62,
+                "end": 101.82
+            },
+            {
+                "word": "the",
+                "start": 101.82,
+                "end": 101.88
+            },
+            {
+                "word": "metaverse",
+                "start": 101.88,
+                "end": 102.22
+            },
+            {
+                "word": "in",
+                "start": 102.22,
+                "end": 102.36
+            },
+            {
+                "word": "reality",
+                "start": 102.36,
+                "end": 102.72
+            },
+            {
+                "word": "lands",
+                "start": 102.72,
+                "end": 103.04
+            },
+            {
+                "word": "was",
+                "start": 103.04,
+                "end": 103.22
+            },
+            {
+                "word": "completely",
+                "start": 103.22,
+                "end": 103.68
+            },
+            {
+                "word": "out",
+                "start": 103.68,
+                "end": 103.9
+            },
+            {
+                "word": "of",
+                "start": 103.9,
+                "end": 103.94
+            },
+            {
+                "word": "control.",
+                "start": 103.9,
+                "end": 104.28
+            },
+            {
+                "word": "Apple's",
+                "start": 104.76,
+                "end": 105.2
+            },
+            {
+                "word": "ad",
+                "start": 105.2,
+                "end": 105.36
+            },
+            {
+                "word": "tracking",
+                "start": 105.36,
+                "end": 105.68
+            },
+            {
+                "word": "changes",
+                "start": 105.68,
+                "end": 106.16
+            },
+            {
+                "word": "were",
+                "start": 106.16,
+                "end": 106.34
+            },
+            {
+                "word": "crippling",
+                "start": 106.34,
+                "end": 106.9
+            },
+            {
+                "word": "their",
+                "start": 106.9,
+                "end": 107.12
+            },
+            {
+                "word": "revenue.",
+                "start": 107.12,
+                "end": 107.5
+            },
+            {
+                "word": "I",
+                "start": 107.78,
+                "end": 107.84
+            },
+            {
+                "word": "mean,",
+                "start": 107.84,
+                "end": 107.92
+            },
+            {
+                "word": "the",
+                "start": 108.0,
+                "end": 108.16
+            },
+            {
+                "word": "narrative",
+                "start": 108.16,
+                "end": 108.46
+            },
+            {
+                "word": "was",
+                "start": 108.46,
+                "end": 108.72
+            },
+            {
+                "word": "incredibly",
+                "start": 108.72,
+                "end": 109.4
+            },
+            {
+                "word": "grim.",
+                "start": 109.4,
+                "end": 109.76
+            },
+            {
+                "word": "But",
+                "start": 109.98,
+                "end": 110.24
+            },
+            {
+                "word": "by",
+                "start": 110.24,
+                "end": 110.48
+            },
+            {
+                "word": "late",
+                "start": 110.48,
+                "end": 110.68
+            },
+            {
+                "word": "2026,",
+                "start": 110.68,
+                "end": 111.64
+            },
+            {
+                "word": "the",
+                "start": 111.96,
+                "end": 112.02
+            },
+            {
+                "word": "market",
+                "start": 112.02,
+                "end": 112.38
+            },
+            {
+                "word": "narrative",
+                "start": 112.38,
+                "end": 112.86
+            },
+            {
+                "word": "has",
+                "start": 112.86,
+                "end": 113.08
+            },
+            {
+                "word": "entirely",
+                "start": 113.08,
+                "end": 113.66
+            },
+            {
+                "word": "inverted.",
+                "start": 113.66,
+                "end": 114.12
+            },
+            {
+                "word": "Meta",
+                "start": 114.84,
+                "end": 115.04
+            },
+            {
+                "word": "shares",
+                "start": 115.04,
+                "end": 115.24
+            },
+            {
+                "word": "are",
+                "start": 115.24,
+                "end": 115.48
+            },
+            {
+                "word": "trading",
+                "start": 115.48,
+                "end": 115.76
+            },
+            {
+                "word": "securely",
+                "start": 115.76,
+                "end": 116.3
+            },
+            {
+                "word": "in",
+                "start": 116.3,
+                "end": 116.66
+            },
+            {
+                "word": "the",
+                "start": 116.66,
+                "end": 116.78
+            },
+            {
+                "word": "$645",
+                "start": 116.78,
+                "end": 117.78
+            },
+            {
+                "word": "to",
+                "start": 117.78,
+                "end": 118.1
+            },
+            {
+                "word": "$675",
+                "start": 118.1,
+                "end": 119.16
+            },
+            {
+                "word": "range.",
+                "start": 119.16,
+                "end": 119.74
+            },
+            {
+                "word": "Their",
+                "start": 120.44,
+                "end": 120.56
+            },
+            {
+                "word": "aggregate",
+                "start": 120.56,
+                "end": 121.04
+            },
+            {
+                "word": "market",
+                "start": 121.04,
+                "end": 121.4
+            },
+            {
+                "word": "capitalization",
+                "start": 121.4,
+                "end": 122.22
+            },
+            {
+                "word": "is",
+                "start": 122.22,
+                "end": 122.44
+            },
+            {
+                "word": "hovering",
+                "start": 122.44,
+                "end": 122.76
+            },
+            {
+                "word": "between",
+                "start": 122.76,
+                "end": 123.18
+            },
+            {
+                "word": "$1",
+                "start": 123.18,
+                "end": 123.64
+            },
+            {
+                "word": ".65",
+                "start": 123.64,
+                "end": 124.26
+            },
+            {
+                "word": "trillion",
+                "start": 124.26,
+                "end": 124.82
+            },
+            {
+                "word": "and",
+                "start": 124.82,
+                "end": 125.7
+            },
+            {
+                "word": "$1",
+                "start": 125.7,
+                "end": 125.88
+            },
+            {
+                "word": ".71",
+                "start": 125.88,
+                "end": 126.42
+            },
+            {
+                "word": "trillion.",
+                "start": 126.42,
+                "end": 127.04
+            },
+            {
+                "word": "That",
+                "start": 127.52,
+                "end": 127.7
+            },
+            {
+                "word": "is",
+                "start": 127.7,
+                "end": 127.84
+            },
+            {
+                "word": "a",
+                "start": 127.84,
+                "end": 128.0
+            },
+            {
+                "word": "staggering",
+                "start": 128.0,
+                "end": 128.56
+            },
+            {
+                "word": "financial",
+                "start": 128.56,
+                "end": 129.16
+            },
+            {
+                "word": "recovery.",
+                "start": 129.16,
+                "end": 129.66
+            },
+            {
+                "word": "And",
+                "start": 129.66,
+                "end": 130.24
+            },
+            {
+                "word": "yet",
+                "start": 130.24,
+                "end": 130.38
+            },
+            {
+                "word": "the",
+                "start": 130.38,
+                "end": 130.58
+            },
+            {
+                "word": "research",
+                "start": 130.58,
+                "end": 130.94
+            },
+            {
+                "word": "suggests",
+                "start": 130.94,
+                "end": 131.38
+            },
+            {
+                "word": "that",
+                "start": 131.38,
+                "end": 131.62
+            },
+            {
+                "word": "despite",
+                "start": 131.62,
+                "end": 131.94
+            },
+            {
+                "word": "that",
+                "start": 131.94,
+                "end": 132.18
+            },
+            {
+                "word": "massive",
+                "start": 132.18,
+                "end": 132.58
+            },
+            {
+                "word": "run",
+                "start": 132.58,
+                "end": 132.82
+            },
+            {
+                "word": "up,",
+                "start": 132.82,
+                "end": 133.04
+            },
+            {
+                "word": "they",
+                "start": 133.46,
+                "end": 133.56
+            },
+            {
+                "word": "are",
+                "start": 133.56,
+                "end": 133.72
+            },
+            {
+                "word": "still",
+                "start": 133.72,
+                "end": 134.04
+            },
+            {
+                "word": "fundamentally",
+                "start": 134.04,
+                "end": 134.8
+            },
+            {
+                "word": "undervalued",
+                "start": 134.8,
+                "end": 135.92
+            },
+            {
+                "word": "compared",
+                "start": 135.92,
+                "end": 136.28
+            },
+            {
+                "word": "to",
+                "start": 136.28,
+                "end": 136.46
+            },
+            {
+                "word": "their",
+                "start": 136.46,
+                "end": 136.58
+            },
+            {
+                "word": "tech",
+                "start": 136.58,
+                "end": 136.86
+            },
+            {
+                "word": "peers.",
+                "start": 136.86,
+                "end": 137.16
+            },
+            {
+                "word": "Yes.",
+                "start": 137.26,
+                "end": 137.44
+            },
+            {
+                "word": "And",
+                "start": 137.76,
+                "end": 137.84
+            },
+            {
+                "word": "they",
+                "start": 137.84,
+                "end": 137.98
+            },
+            {
+                "word": "use",
+                "start": 137.98,
+                "end": 138.22
+            },
+            {
+                "word": "a",
+                "start": 138.22,
+                "end": 138.36
+            },
+            {
+                "word": "specific",
+                "start": 138.36,
+                "end": 138.7
+            },
+            {
+                "word": "financial",
+                "start": 138.7,
+                "end": 139.22
+            },
+            {
+                "word": "metric",
+                "start": 139.22,
+                "end": 139.48
+            },
+            {
+                "word": "to",
+                "start": 139.48,
+                "end": 139.7
+            },
+            {
+                "word": "explain",
+                "start": 139.7,
+                "end": 140.08
+            },
+            {
+                "word": "this.",
+                "start": 140.08,
+                "end": 140.46
+            },
+            {
+                "word": "The",
+                "start": 141.16,
+                "end": 141.3
+            },
+            {
+                "word": "PEG",
+                "start": 141.3,
+                "end": 141.58
+            },
+            {
+                "word": "ratio.",
+                "start": 141.58,
+                "end": 141.9
+            },
+            {
+                "word": "The",
+                "start": 142.14,
+                "end": 142.2
+            },
+            {
+                "word": "price",
+                "start": 142.2,
+                "end": 142.54
+            },
+            {
+                "word": "earnings",
+                "start": 142.54,
+                "end": 142.78
+            },
+            {
+                "word": "to",
+                "start": 142.78,
+                "end": 142.94
+            },
+            {
+                "word": "growth",
+                "start": 142.94,
+                "end": 143.12
+            },
+            {
+                "word": "ratio.",
+                "start": 143.12,
+                "end": 143.5
+            }
+        ],
+        "_caption_words_sig": "b58eddb6b09e6180e809cbb22ca352d5",
+        "caption_chunks": [
+            {
+                "start": 1.5,
+                "end": 3.28,
+                "text": "now. if the government passes an"
+            },
+            {
+                "start": 3.28,
+                "end": 3.74,
+                "text": "act that says,"
+            },
+            {
+                "start": 3.74,
+                "end": 5.48,
+                "text": "hey, nobody can build a new"
+            },
+            {
+                "start": 5.48,
+                "end": 6.98,
+                "text": "data center without completing a"
+            },
+            {
+                "start": 6.98,
+                "end": 9.04,
+                "text": "comprehensive three year federal"
+            },
+            {
+                "start": 9.04,
+                "end": 11.18,
+                "text": "safety audit, it hurts meta the"
+            },
+            {
+                "start": 11.18,
+                "end": 13.04,
+                "text": "most because meta has the cash"
+            },
+            {
+                "start": 13.04,
+                "end": 14.54,
+                "text": "and was just about to break"
+            },
+            {
+                "start": 14.54,
+                "end": 16.5,
+                "text": "ground on massive new data centers"
+            },
+            {
+                "start": 16.5,
+                "end": 17.62,
+                "text": "to expand their lead."
+            },
+            {
+                "start": 17.62,
+                "end": 19.38,
+                "text": "correct. it is a highly effective"
+            },
+            {
+                "start": 19.38,
+                "end": 21.32,
+                "text": "strategic delay tactic."
+            },
+            {
+                "start": 21.32,
+                "end": 22.52,
+                "text": "it restricts raw capacity"
+            },
+            {
+                "start": 22.52,
+                "end": 23.82,
+                "text": "expansion across the entire"
+            },
+            {
+                "start": 23.82,
+                "end": 25.56,
+                "text": "industry and for companies that"
+            },
+            {
+                "start": 25.56,
+                "end": 26.8,
+                "text": "are venture backed and balancing"
+            },
+            {
+                "start": 26.8,
+                "end": 28.42,
+                "text": "impending stock market floats like"
+            },
+            {
+                "start": 28.42,
+                "end": 31.08,
+                "text": "anthropic preparing for an ipo,"
+            },
+            {
+                "start": 31.08,
+                "end": 32.02,
+                "text": "slowing the broader innovation"
+            },
+            {
+                "start": 32.02,
+                "end": 33.6,
+                "text": "cycle protects their early mover"
+            },
+            {
+                "start": 33.6,
+                "end": 35.58,
+                "text": "valuations. it artificially"
+            },
+            {
+                "start": 35.58,
+                "end": 37.18,
+                "text": "freezes the state of the market,"
+            },
+            {
+                "start": 37.18,
+                "end": 38.62,
+                "text": "stopping meta from leveraging its"
+            },
+            {
+                "start": 38.62,
+                "end": 40.12,
+                "text": "massive infrastructure advantage"
+            },
+            {
+                "start": 40.12,
+                "end": 41.9,
+                "text": "while the startups desperately try"
+            },
+            {
+                "start": 41.9,
+                "end": 42.48,
+                "text": "to catch up."
+            },
+            {
+                "start": 42.48,
+                "end": 43.7,
+                "text": "i want to ask you the"
+            },
+            {
+                "start": 43.7,
+                "end": 44.76,
+                "text": "listener to really think about"
+            },
+            {
+                "start": 44.76,
+                "end": 46.98,
+                "text": "this dynamic. does the idea of"
+            },
+            {
+                "start": 46.98,
+                "end": 48.82,
+                "text": "using safety regulations as a"
+            },
+            {
+                "start": 48.82,
+                "end": 50.6,
+                "text": "competitive shield makes sense in"
+            },
+            {
+                "start": 50.6,
+                "end": 52.4,
+                "text": "this high stakes context?"
+            },
+            {
+                "start": 52.4,
+                "end": 53.72,
+                "text": "it's a fascinating,"
+            },
+            {
+                "start": 53.72,
+                "end": 55.44,
+                "text": "deeply pragmatic corporate"
+            },
+            {
+                "start": 55.44,
+                "end": 57.66,
+                "text": "strategy. when you can't beat your"
+            },
+            {
+                "start": 57.66,
+                "end": 58.7,
+                "text": "opponents product in the free"
+            },
+            {
+                "start": 58.7,
+                "end": 60.58,
+                "text": "market, you try to change the"
+            },
+            {
+                "start": 60.58,
+                "end": 62.18,
+                "text": "regulatory rules of the game to"
+            },
+            {
+                "start": 62.18,
+                "end": 64.2,
+                "text": "slow them down and to truly"
+            },
+            {
+                "start": 64.2,
+                "end": 66.6,
+                "text": "grasp why meta can execute this"
+            },
+            {
+                "start": 66.6,
+                "end": 67.92,
+                "text": "scorched earth strategy while"
+            },
+            {
+                "start": 67.92,
+                "end": 69.0,
+                "text": "others are forced into"
+            },
+            {
+                "start": 69.0,
+                "end": 70.94,
+                "text": "protectionism. we must look at the"
+            },
+            {
+                "start": 70.94,
+                "end": 72.58,
+                "text": "foundational numbers. we have to"
+            },
+            {
+                "start": 72.58,
+                "end": 73.54,
+                "text": "follow the money,"
+            },
+            {
+                "start": 73.54,
+                "end": 75.54,
+                "text": "specifically how these mega cap"
+            },
+            {
+                "start": 75.54,
+                "end": 77.16,
+                "text": "companies are valued by the market"
+            },
+            {
+                "start": 77.16,
+                "end": 78.24,
+                "text": "and how they are spending their"
+            },
+            {
+                "start": 78.24,
+                "end": 79.84,
+                "text": "cash reserves. this brings us to"
+            },
+            {
+                "start": 79.84,
+                "end": 82.1,
+                "text": "a crucial part of the research."
+            },
+            {
+                "start": 82.1,
+                "end": 88.06,
+                "text": "valuations and the capex trap."
+            },
+            {
+                "start": 88.06,
+                "end": 89.24,
+                "text": "let's look at meta's financial"
+            },
+            {
+                "start": 89.24,
+                "end": 90.84,
+                "text": "journey because it has been a"
+            },
+            {
+                "start": 90.84,
+                "end": 91.92,
+                "text": "total roller coaster."
+            },
+            {
+                "start": 91.92,
+                "end": 92.7,
+                "text": "here really is."
+            },
+            {
+                "start": 92.7,
+                "end": 93.68,
+                "text": "it wasn't that long ago back"
+            },
+            {
+                "start": 93.68,
+                "end": 95.44,
+                "text": "in late 2022 when meta was"
+            },
+            {
+                "start": 95.44,
+                "end": 96.96,
+                "text": "getting absolutely hammered by the"
+            },
+            {
+                "start": 96.96,
+                "end": 98.66,
+                "text": "market. the research notes they"
+            },
+            {
+                "start": 98.66,
+                "end": 100.66,
+                "text": "hit a brutal trough of $166"
+            },
+            {
+                "start": 100.66,
+                "end": 102.4,
+                "text": "a share. people thought mark"
+            },
+            {
+                "start": 102.4,
+                "end": 103.38,
+                "text": "zuckerberg spending on the"
+            },
+            {
+                "start": 103.38,
+                "end": 104.72,
+                "text": "metaverse in reality lands was"
+            },
+            {
+                "start": 104.72,
+                "end": 106.26,
+                "text": "completely out of control."
+            },
+            {
+                "start": 106.26,
+                "end": 107.84,
+                "text": "apple's ad tracking changes were"
+            },
+            {
+                "start": 107.84,
+                "end": 109.28,
+                "text": "crippling their revenue."
+            },
+            {
+                "start": 109.28,
+                "end": 110.22,
+                "text": "i mean, the narrative was"
+            },
+            {
+                "start": 110.22,
+                "end": 113.46,
+                "text": "incredibly grim. but by late 2026,"
+            },
+            {
+                "start": 113.46,
+                "end": 115.16,
+                "text": "the market narrative has entirely"
+            },
+            {
+                "start": 115.16,
+                "end": 117.26,
+                "text": "inverted. meta shares are trading"
+            },
+            {
+                "start": 117.26,
+                "end": 120.66,
+                "text": "securely in the $645 to $675"
+            },
+            {
+                "start": 120.66,
+                "end": 129.02,
+                "text": "range. 71 trillion."
+            },
+            {
+                "start": 129.02,
+                "end": 130.66,
+                "text": "that is a staggering financial"
+            },
+            {
+                "start": 130.66,
+                "end": 132.44,
+                "text": "recovery. and yet the research"
+            },
+            {
+                "start": 132.44,
+                "end": 134.08,
+                "text": "suggests that despite that massive"
+            },
+            {
+                "start": 134.08,
+                "end": 135.54,
+                "text": "run up, they are still"
+            },
+            {
+                "start": 135.54,
+                "end": 137.78,
+                "text": "fundamentally undervalued compared"
+            },
+            {
+                "start": 137.78,
+                "end": 138.76,
+                "text": "to their tech peers."
+            },
+            {
+                "start": 138.76,
+                "end": 140.2,
+                "text": "yes. and they use a specific"
+            },
+            {
+                "start": 140.2,
+                "end": 142.66,
+                "text": "financial metric to explain this."
+            },
+            {
+                "start": 142.66,
+                "end": 143.64,
+                "text": "the peg ratio."
+            },
+            {
+                "start": 143.64,
+                "end": 144.44,
+                "text": "the price earnings to"
+            },
+            {
+                "start": 144.44,
+                "end": 145.15,
+                "text": "growth ratio."
+            }
+        ],
+        "_caption_sig": "5101637845388a9a91fdf555e201ff38",
+        "infographic_scenes": [
+            {
+                "start": 0.0,
+                "end": 11.54,
+                "archetype": "perspective_grid_scale",
+                "accent": "white",
+                "title": "GOVERNMENT PASSES",
+                "labels": [
+                    "SAYS",
+                    "NOBODY",
+                    "BUILD"
+                ],
+                "subtitle": ""
+            },
+            {
+                "start": 11.54,
+                "end": 22.32,
+                "archetype": "split_fracture",
+                "accent": "gold",
+                "title": "BREAK GROUND",
+                "labels": [
+                    "DATA",
+                    "CENTERS",
+                    "EXPAND"
+                ],
+                "subtitle": ""
+            },
+            {
+                "start": 22.32,
+                "end": 34.08,
+                "archetype": "timeline_document",
+                "accent": "gold",
+                "title": "PACE THE FRONTIER",
+                "labels": [
+                    "SEP 2026",
+                    "ANTHROPIC"
+                ],
+                "subtitle": "SEP 2026"
+            },
+            {
+                "start": 34.08,
+                "end": 45.48,
+                "archetype": "triangle_network",
+                "accent": "red",
+                "title": "FREEZES STATE",
+                "labels": [
+                    "MARKET",
+                    "STOPPING",
+                    "META"
+                ],
+                "subtitle": ""
+            },
+            {
+                "start": 45.48,
+                "end": 56.16,
+                "archetype": "radial_constellation",
+                "accent": "white",
+                "title": "USING SAFETY",
+                "labels": [
+                    "REGULATIONS",
+                    "COMPETITIVE",
+                    "SHIELD"
+                ],
+                "subtitle": ""
+            },
+            {
+                "start": 56.16,
+                "end": 66.42,
+                "archetype": "convergence_funnel",
+                "accent": "white",
+                "title": "CONVERGENCE",
+                "labels": [
+                    "PAUSE",
+                    "REGULATION"
+                ],
+                "subtitle": ""
+            },
+            {
+                "start": 66.42,
+                "end": 76.74,
+                "archetype": "trajectory_curve",
+                "accent": "cyan",
+                "title": "OTHERS FORCED",
+                "labels": [
+                    "PROTECTIONISM",
+                    "MUST",
+                    "LOOK"
+                ],
+                "subtitle": ""
+            },
+            {
+                "start": 76.74,
+                "end": 87.74,
+                "archetype": "ecosystem_cards",
+                "accent": "red",
+                "title": "CASH RESERVES",
+                "labels": [
+                    "CRUCIAL",
+                    "PART",
+                    "RESEARCH"
+                ],
+                "subtitle": ""
+            },
+            {
+                "start": 87.74,
+                "end": 99.16,
+                "archetype": "fork_roadblock",
+                "accent": "white",
+                "title": "JOURNEY TOTAL",
+                "labels": [
+                    "ROLLER",
+                    "COASTER",
+                    "REALLY"
+                ],
+                "subtitle": ""
+            },
+            {
+                "start": 99.16,
+                "end": 111.96,
+                "archetype": "stepped_pyramid",
+                "accent": "gold",
+                "title": "PACE THE FRONTIER",
+                "labels": [
+                    "SEP 2026",
+                    "ANTHROPIC"
+                ],
+                "subtitle": "SEP 2026"
+            },
+            {
+                "start": 111.96,
+                "end": 127.52,
+                "archetype": "rotating_gear",
+                "accent": "cyan",
+                "title": "MARKET NARRATIVE",
+                "labels": [
+                    "ENTIRELY",
+                    "INVERTED",
+                    "META"
+                ],
+                "subtitle": ""
+            },
+            {
+                "start": 127.52,
+                "end": 138.7,
+                "archetype": "balance_comparison",
+                "accent": "red",
+                "title": "STAGGERING FINANCIAL",
+                "labels": [
+                    "RECOVERY",
+                    "RESEARCH",
+                    "SUGGESTS"
+                ],
+                "subtitle": ""
+            },
+            {
+                "start": 138.7,
+                "end": 147.8,
+                "archetype": "perspective_grid_scale",
+                "accent": "white",
+                "title": "FINANCIAL METRIC",
+                "labels": [
+                    "EXPLAIN",
+                    "RATIO",
+                    "PRICE"
+                ],
+                "subtitle": ""
+            }
+        ],
+        "visual_source": "infographic",
+        "infographic_ready": true,
+        "rendered_duration": 153.34,
+        "audio_duration": 147.8,
+        "intro_offset": 1.5,
+        "outro_duration": 5.0,
+        "source_start": 2526.86,
+        "source_end": 2620.8,
+        "_audio_sig": "b58eddb6b09e6180e809cbb22ca352d5",
+        "_compiled_sig": "37bbfe96ce1e48c5d1278480dbebe189"
     },
     {
         "num": 20,

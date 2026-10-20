@@ -1215,7 +1215,7 @@ def generate_clip_captions(
         "has_outro": has_outro
     }, sort_keys=True).encode("utf-8")).hexdigest()
 
-    if not force_whisper and not force_realign and isinstance(clip.get("caption_chunks"), list) and len(clip["caption_chunks"]) > 0:
+    if not force_whisper and not force_realign and clip.get("_caption_sig") == caption_sig and isinstance(clip.get("caption_chunks"), list) and len(clip["caption_chunks"]) > 0:
         return clip["caption_chunks"]
 
     raw_words = extract_clip_words(clip, plan_file=plan_file, audio_path=audio_path, force_whisper=force_whisper)

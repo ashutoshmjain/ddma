@@ -612,7 +612,9 @@ def generate_infographic_storyboard(
     """
     existing = clip_obj.get("infographic_scenes")
     if existing and isinstance(existing, list) and len(existing) >= 4 and not force_regenerate and not custom_instructions:
-        return existing
+        last_scene_end = float(existing[-1].get("end", 0.0))
+        if abs(last_scene_end - float(body_duration)) <= 1.0:
+            return existing
 
     title = clip_obj.get("title", "Deep Dive")
     chunks = clip_obj.get("caption_chunks") or []

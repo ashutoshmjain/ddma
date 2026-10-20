@@ -5166,6 +5166,21 @@
             return closestIdx;
         }
 
+        function invalidateClipMedia(clipIdx) {
+            if (!clips || !clips[clipIdx]) return;
+            const c = clips[clipIdx];
+            delete c.infographic_ready;
+            delete c.infographic_scenes;
+            delete c.caption_chunks;
+            delete c._caption_sig;
+            delete c._audio_sig;
+            delete c._compiled_sig;
+            if (window.clipStatusesCache && window.clipStatusesCache[c.num]) {
+                window.clipStatusesCache[c.num].has_infographic_file = false;
+                window.clipStatusesCache[c.num].video_state = 'dirty';
+            }
+        }
+
         // Add Segment Logic
         function addAudioSegmentToClip(clipIdx) {
             if (clips[clipIdx].locked) return;
@@ -5194,6 +5209,7 @@
             });
             delete clips[clipIdx].text;
             if (clips[clipIdx].mosaic_run_id) delete clips[clipIdx].mosaic_run_id;
+            invalidateClipMedia(clipIdx);
             
             startWordIdx = null;
             endWordIdx = null;
@@ -5213,6 +5229,7 @@
                 duration: 4.5,
                 crossfade: 0.3
             });
+            invalidateClipMedia(clipIdx);
             
             renderClips();
             savePlanToServer();
@@ -5225,6 +5242,7 @@
             clips[clipIdx].segments.splice(segIdx, 1);
             delete clips[clipIdx].text;
             if (clips[clipIdx].mosaic_run_id) delete clips[clipIdx].mosaic_run_id;
+            invalidateClipMedia(clipIdx);
             editingSegmentRef = null;
             startWordIdx = null;
             endWordIdx = null;
@@ -5238,6 +5256,7 @@
             if (clips[clipIdx].locked) return;
             
             clips[clipIdx].segments[segIdx][field] = value;
+            invalidateClipMedia(clipIdx);
             savePlanToServer();
         }
 
@@ -5253,6 +5272,7 @@
             let val = seg[field] !== undefined ? parseFloat(seg[field]) : defaultVal;
             val = Math.max(0, parseFloat((val + delta).toFixed(2)));
             seg[field] = val;
+            invalidateClipMedia(clipIdx);
             renderClips();
             savePlanToServer();
         };
@@ -5289,6 +5309,7 @@
                 }
             }
             
+            invalidateClipMedia(clipIdx);
             renderClips();
             savePlanToServer();
         }
@@ -5312,6 +5333,7 @@
                 }
             }
             
+            invalidateClipMedia(clipIdx);
             renderClips();
             savePlanToServer();
         }
