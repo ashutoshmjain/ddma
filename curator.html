@@ -5413,6 +5413,8 @@
             let defaultVal = 0.0;
             if (field === 'trim_end' && seg.type === 'audio') defaultVal = 0.1;
             if (field === 'fade_out' && seg.type === 'music') defaultVal = 2.0;
+            if (field === 'silence_before' && seg.type === 'music') defaultVal = 0.2;
+            if (field === 'crossfade' && seg.type === 'music') defaultVal = 0.5;
             if (field === 'volume') defaultVal = 1.0;
             
             let val = seg[field] !== undefined ? parseFloat(seg[field]) : defaultVal;
@@ -6753,7 +6755,7 @@
                                 <div class="segment-row audio-seg" data-clip="${index}" data-seg="${segIdx}" style="${rowStyle}">
                                     <div class="segment-info" style="width: 100%;">
                                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; width: 100%;">
-                                            <span class="segment-meta audio-meta">🎙 Audio Segment (${formatTime(seg.duration)})</span>
+                                            <span class="segment-meta audio-meta" style="color: #38bdf8; font-weight: 700;">${segIdx === 0 ? "🎙 Hook Audio Segment" : "🎙 Discussion Audio Segment"} (${formatTime(seg.duration)})</span>
                                             <div style="display: flex; align-items: center; gap: 0.3rem; margin-left: auto;">
                                                 ${tuneBtnHtml}
                                                 ${segmentActionsHtml}
@@ -6772,17 +6774,28 @@
                             });
 
                             const isMusicDrawerOpen = Boolean(window.segDrawersState && window.segDrawersState[`music_drawer_${index}_${segIdx}`]);
+                            const isOutro = (segIdx === clip.segments.length - 1);
+                            const musicTitle = isOutro ? "🎵 Outro Conclusion Sting" : "🎵 Mid Transition Sting";
+                            const silenceVal = (seg.silence_before !== undefined ? seg.silence_before : 0.2).toFixed(2);
                             const fadeInVal = (seg.fade_in !== undefined ? seg.fade_in : 0.0).toFixed(2);
                             const fadeOutVal = (seg.fade_out !== undefined ? seg.fade_out : 2.0).toFixed(2);
-                            const crossfadeVal = (seg.crossfade !== undefined ? seg.crossfade : 0.3).toFixed(2);
+                            const crossfadeVal = (seg.crossfade !== undefined ? seg.crossfade : (isOutro ? 0.0 : 0.5)).toFixed(2);
                             const volumeVal = (seg.volume !== undefined ? seg.volume : 1.0).toFixed(2);
-                            const musicTuneBtnHtml = !isLocked ? `<button class="btn btn-secondary btn-mini toggle-seg-drawer-btn ${isMusicDrawerOpen ? 'active' : ''}" data-drawer="music_drawer_${index}_${segIdx}" style="padding: 0.12rem 0.4rem; font-size: 0.65rem; font-weight: 600;" title="Toggle fine-tune steppers (Fades, Crossfade, Vol)">🎛️ Tune</button>` : '';
+
+                            const badgeHtml = isOutro 
+                                ? `<span style="font-size: 0.65rem; background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.3); color: #d8b4fe; padding: 0.1rem 0.35rem; border-radius: 4px; font-family: var(--font-mono); margin-left: 0.35rem;">⚡ Gap: ${silenceVal}s | 📉 Fade: ${fadeOutVal}s</span>`
+                                : `<span style="font-size: 0.65rem; background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.3); color: #d8b4fe; padding: 0.1rem 0.35rem; border-radius: 4px; font-family: var(--font-mono); margin-left: 0.35rem;">⚡ Gap: ${silenceVal}s | 📉 Fade: ${fadeOutVal}s | 🔀 XFade: ${crossfadeVal}s</span>`;
+
+                            const musicTuneBtnHtml = !isLocked ? `<button class="btn btn-secondary btn-mini toggle-seg-drawer-btn ${isMusicDrawerOpen ? 'active' : ''}" data-drawer="music_drawer_${index}_${segIdx}" style="padding: 0.12rem 0.4rem; font-size: 0.65rem; font-weight: 600;" title="Toggle fine-tune steppers (Silence, Fades, Crossfade, Vol)">🎛️ Tune</button>` : '';
                             
                             segmentsHtml += `
                                 <div class="segment-row music-seg" data-clip="${index}" data-seg="${segIdx}">
                                     <div class="segment-info" style="width: 100%;">
                                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; width: 100%;">
-                                            <span class="segment-meta music-meta">🎵 Music Segment (${formatTime(seg.duration)})</span>
+                                            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.2rem;">
+                                                <span class="segment-meta music-meta" style="color: #c084fc; font-weight: 700;">${musicTitle} (${formatTime(seg.duration)})</span>
+                                                ${badgeHtml}
+                                            </div>
                                             <div style="display: flex; align-items: center; gap: 0.3rem; margin-left: auto;">
                                                 ${musicTuneBtnHtml}
                                                 ${segmentActionsHtml}
@@ -6802,10 +6815,10 @@
                                         </div>
                                         <div class="music-editor-row seg-tune-drawer ${isMusicDrawerOpen ? '' : 'drawer-collapsed'}" id="music_drawer_${index}_${segIdx}" style="margin-top: 0.35rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; padding: 0.35rem 0.5rem; background: rgba(0,0,0,0.03); border-radius: 6px; border: 1px dashed var(--border-color);" onclick="event.stopPropagation();">
                                             <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
-                                                <label style="font-size: 0.65rem; color: #a855f7; font-weight: 600;">Fade In:</label>
-                                                <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_in', -0.1)" ${isLocked ? 'disabled' : ''}>-</button>
-                                                <input type="number" class="music-fade-in" step="0.1" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${fadeInVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
-                                                <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_in', 0.1)" ${isLocked ? 'disabled' : ''}>+</button>
+                                                <label style="font-size: 0.65rem; color: #38bdf8; font-weight: 600;">Silence:</label>
+                                                <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'silence_before', -0.05)" ${isLocked ? 'disabled' : ''}>-</button>
+                                                <input type="number" class="music-silence" step="0.05" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${silenceVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
+                                                <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'silence_before', 0.05)" ${isLocked ? 'disabled' : ''}>+</button>
                                             </div>
                                             <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                                 <label style="font-size: 0.65rem; color: #a855f7; font-weight: 600;">Fade Out:</label>
@@ -7527,7 +7540,26 @@
                         });
                     });
 
-                    card.querySelectorAll('.music-crossfade').forEach(el => {
+                    card.querySelectorAll('.music-silence').forEach(el => {
+                    el.addEventListener('input', function() {
+                        const clipIdx = parseInt(this.dataset.clip);
+                        const segIdx = parseInt(this.dataset.seg);
+                        const newSil = parseFloat(this.value) || 0.0;
+                        clips[clipIdx].segments[segIdx].silence_before = newSil;
+                        savePlanToServer();
+                    });
+                    el.addEventListener('change', function() {
+                        const clipIdx = parseInt(this.dataset.clip);
+                        const segIdx = parseInt(this.dataset.seg);
+                        const newSil = parseFloat(this.value) || 0.0;
+                        clips[clipIdx].segments[segIdx].silence_before = newSil;
+                        invalidateClipMedia(clipIdx);
+                        renderClips();
+                        savePlanToServer();
+                    });
+                });
+
+                card.querySelectorAll('.music-crossfade').forEach(el => {
                         el.addEventListener('input', function() {
                             const clipIdx = parseInt(this.dataset.clip);
                             const segIdx = parseInt(this.dataset.seg);

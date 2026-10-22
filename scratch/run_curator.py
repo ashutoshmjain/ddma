@@ -619,179 +619,111 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                 print(f"Warning: Failed to clean up mosaic_run_id from plan.json on error: {pe}")
         
 def compile_segments_helper(segments, output_path, audio_source_path):
-    temp_files = []
-    try:
-        for idx, seg in enumerate(segments):
-            temp_file = f"temp_preview_{idx}.wav"
-            temp_files.append(temp_file)
-            
-            if seg["type"] == "audio":
-                # Slice audio segment from project audio source with trim & fade
-                raw_start = float(seg["start"])
-                raw_end = float(seg["end"])
-                trim_start = float(seg.get("trim_start", 0.0))
-                # Default trim_end for speech audio is 0.1s (cleans trailing Whisper phoneme bleed)
-                trim_end = float(seg.get("trim_end", 0.1 if "trim_end" not in seg else seg.get("trim_end")))
-                
-                effective_start = raw_start + trim_start
-                effective_end = max(effective_start + 0.1, raw_end - trim_end)
-                eff_dur = effective_end - effective_start
+    """
+    Compiles clip segments preview using exact sample-accurate timeline mixing:
+    - Hook speech: 0 to h_dur
+    - Mid Sting: 0.2s silence gap, dur_m, 2.0s fade out
+    - Body speech: crossfades 0.5s into fading sting tail (afade=t=in:ss=0:d=0.5)
+    - Outro Sting: 0.2s silence gap after body speech, 2.0s fade out
+    - Normalized to -16 LUFS
+    """
+    if not segments:
+        cmd = [
+            "ffmpeg", "-y",
+            "-f", "lavfi",
+            "-i", "anullsrc=r=48000:cl=stereo:d=1.0",
+            "-c:a", "libmp3lame", "-b:a", "128k",
+            output_path
+        ]
+        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return
 
-                fade_in = float(seg.get("fade_in", 0.0))
-                fade_out = float(seg.get("fade_out", 0.0))
-                volume = float(seg.get("volume", 1.0))
+    def get_music_path(m_name: str) -> str:
+        m_clean = os.path.basename(m_name)
+        for cand in [
+            os.path.join("music", m_clean),
+            os.path.join("ddma", "music", m_clean),
+            os.path.join("..", "ddma", "music", m_clean),
+            os.path.join("..", "music", m_clean),
+            os.path.join("docs", "assets", "music", m_clean)
+        ]:
+            if os.path.exists(cand):
+                return cand
+        return os.path.join("music", m_clean)
 
-                filters = []
-                if fade_in > 0:
-                    fade_in_dur = min(fade_in, eff_dur / 2.0)
-                    filters.append(f"afade=t=in:ss=0:d={fade_in_dur:.3f}:curve=qsin")
-                if fade_out > 0:
-                    fade_out_dur = min(fade_out, eff_dur / 2.0)
-                    st_time = max(0.0, eff_dur - fade_out_dur)
-                    filters.append(f"afade=t=out:st={st_time:.3f}:d={fade_out_dur:.3f}:curve=qsin")
-                filters.append(f"volume={volume}")
-                af_str = ",".join(filters)
+    inputs = []
+    filter_parts = []
+    labels = []
+    in_idx = 0
+    t_cursor = 0.0
 
-                cmd = [
-                    "ffmpeg", "-y",
-                    "-ss", f"{effective_start:.3f}",
-                    "-to", f"{effective_end:.3f}",
-                    "-i", audio_source_path,
-                    "-ar", "48000",
-                    "-ac", "2",
-                    "-af", af_str,
-                    temp_file
-                ]
-                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                if res.returncode != 0:
-                    raise Exception(f"FFmpeg error slicing audio: {res.stderr.decode('utf-8')}")
+    for s_idx, seg in enumerate(segments):
+        seg_type = seg.get("type")
+        if seg_type == "audio":
+            s_start = float(seg.get("start", 0.0))
+            s_end = float(seg.get("end", 0.0))
+            s_dur = max(0.1, s_end - s_start)
 
-            elif seg["type"] == "music":
-                # Slice music segment with trim & fade
-                music_file = seg.get("music_file", "")
-                raw_duration = float(seg.get("duration", 4.5))
-                trim_start = float(seg.get("trim_start", 0.0))
-                trim_end = float(seg.get("trim_end", 0.0))
-                
-                eff_dur = max(0.1, raw_duration - trim_start - trim_end)
-                fade_in = float(seg.get("fade_in", 0.0))
-                # Default fade_out for music stings is 2.0s for DJ ducking
-                fade_out = float(seg.get("fade_out", 2.0 if "fade_out" not in seg else seg.get("fade_out")))
-                volume = float(seg.get("volume", 1.0))
-
-                music_path = os.path.join("music", music_file) if music_file else ""
-                
-                if not os.path.exists(music_path) or music_file == "none":
-                    # Generate digital silence
-                    cmd = [
-                        "ffmpeg", "-y",
-                        "-f", "lavfi",
-                        "-i", f"anullsrc=r=48000:cl=stereo:d={eff_dur:.3f}",
-                        temp_file
-                    ]
-                else:
-                    filters = []
-                    if fade_in > 0:
-                        fade_in_dur = min(fade_in, eff_dur / 2.0)
-                        filters.append(f"afade=t=in:ss=0:d={fade_in_dur:.3f}:curve=qsin")
-                    if fade_out > 0:
-                        fade_out_dur = min(fade_out, eff_dur)
-                        st_time = max(0.0, eff_dur - fade_out_dur)
-                        filters.append(f"afade=t=out:st={st_time:.3f}:d={fade_out_dur:.3f}:curve=qsin")
-                    filters.append(f"volume={volume}")
-                    af_str = ",".join(filters)
-
-                    cmd = ["ffmpeg", "-y"]
-                    if trim_start > 0:
-                        cmd += ["-ss", f"{trim_start:.3f}"]
-                    cmd += [
-                        "-i", music_path,
-                        "-t", f"{eff_dur:.3f}",
-                        "-ar", "48000",
-                        "-ac", "2",
-                        "-af", af_str,
-                        temp_file
-                    ]
-                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                if res.returncode != 0:
-                    raise Exception(f"FFmpeg error slicing music: {res.stderr.decode('utf-8')}")
-        
-        # Concatenate them
-        if len(temp_files) == 0:
-            cmd = [
-                "ffmpeg", "-y",
-                "-f", "lavfi",
-                "-i", "anullsrc=r=48000:cl=stereo:d=1.0",
-                "-c:a", "libmp3lame",
-                "-b:a", "128k",
-                output_path
-            ]
-            subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        elif len(temp_files) == 1:
-            cmd = [
-                "ffmpeg", "-y",
-                "-i", temp_files[0],
-                "-c:a", "libmp3lame",
-                "-b:a", "128k",
-                output_path
-            ]
-            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            if res.returncode != 0:
-                raise Exception(f"FFmpeg error encoding preview: {res.stderr.decode('utf-8')}")
-        else:
-            # Check if there are any crossfades > 0
-            has_crossfade = False
-            crossfades = []
-            for idx, seg in enumerate(segments[:-1]):
-                cf = float(seg.get("crossfade", 0.0))
-                crossfades.append(cf)
-                if cf > 0:
-                    has_crossfade = True
-            
-            cmd = ["ffmpeg", "-y"]
-            for tf in temp_files:
-                cmd += ["-i", tf]
-            
-            if not has_crossfade:
-                filter_complex = "".join(f"[{i}:a]" for i in range(len(temp_files)))
-                filter_complex += f"concat=n={len(temp_files)}:v=0:a=1[out]"
+            if s_idx > 0 and segments[s_idx - 1].get("type") == "music":
+                cf_dur = float(segments[s_idx - 1].get("crossfade", 0.5))
+                t_speech = max(0.0, t_cursor - cf_dur)
+                t_speech_ms = int(round(t_speech * 1000))
+                inputs.extend(["-ss", f"{s_start:.3f}", "-t", f"{s_dur:.3f}", "-i", audio_source_path])
+                filter_parts.append(
+                    f"[{in_idx}:a]afade=t=in:ss=0:d={cf_dur:.3f},adelay={t_speech_ms}|{t_speech_ms}[sp{in_idx}];"
+                )
+                labels.append(f"[sp{in_idx}]")
+                t_cursor = t_speech + s_dur
             else:
-                # Construct chained acrossfade filters with quarter-sine curves
-                filter_parts = []
-                current_src = "[0:a]"
-                for i in range(len(temp_files) - 1):
-                    cf_dur = crossfades[i]
-                    if cf_dur > 0:
-                        fade_opts = f"d={cf_dur:.3f}:c1=qsin:c2=qsin"
-                    else:
-                        fade_opts = "ns=1"
-                    
-                    next_dest = f"[a{i+1}]" if i < len(temp_files) - 2 else "[out]"
-                    filter_parts.append(f"{current_src}[{i+1}:a]acrossfade={fade_opts}{next_dest}")
-                    current_src = f"[a{i+1}]"
-                
-                filter_complex = ";".join(filter_parts)
-            
-            cmd += [
-                "-filter_complex", filter_complex,
-                "-map", "[out]",
-                "-c:a", "libmp3lame",
-                "-b:a", "128k",
-                output_path
-            ]
-            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            if res.returncode != 0:
-                raise Exception(f"FFmpeg error concatenating preview: {res.stderr.decode('utf-8')}")
-    finally:
-        # Clean up temporary files
-        for tf in temp_files:
-            if os.path.exists(tf):
-                try:
-                    os.remove(tf)
-                except:
-                    pass
+                t_speech = t_cursor
+                t_speech_ms = int(round(t_speech * 1000))
+                inputs.extend(["-ss", f"{s_start:.3f}", "-t", f"{s_dur:.3f}", "-i", audio_source_path])
+                if t_speech_ms > 0:
+                    filter_parts.append(f"[{in_idx}:a]adelay={t_speech_ms}|{t_speech_ms}[sp{in_idx}];")
+                    labels.append(f"[sp{in_idx}]")
+                else:
+                    labels.append(f"[{in_idx}:a]")
+                t_cursor = t_speech + s_dur
+            in_idx += 1
 
-# Background thread helper for running Whisper transcription
+        elif seg_type == "music":
+            m_file = seg.get("music_file", "Howling (Sting) - Gunnar Olsen.mp3")
+            m_path = get_music_path(m_file)
+            dur_m = float(seg.get("duration", 5.5))
+            fade_out = float(seg.get("fade_out", 2.0))
+            fade_out_st = max(0.0, dur_m - fade_out)
+            silence_front = float(seg.get("silence_before", 0.2))
+
+            t_sting = t_cursor + silence_front
+            t_sting_ms = int(round(t_sting * 1000))
+
+            if not os.path.exists(m_path) or m_file == "none":
+                inputs.extend(["-f", "lavfi", "-i", f"anullsrc=r=48000:cl=stereo:d={dur_m:.3f}"])
+            else:
+                inputs.extend(["-i", m_path])
+
+            filter_parts.append(
+                f"[{in_idx}:a]atrim=0:{dur_m:.3f},afade=t=out:st={fade_out_st:.3f}:d={fade_out:.3f},adelay={t_sting_ms}|{t_sting_ms}[m{in_idx}];"
+            )
+            labels.append(f"[m{in_idx}]")
+            in_idx += 1
+            t_cursor = t_sting + dur_m
+
+    filter_parts.append(
+        f"{''.join(labels)}amix=inputs={len(labels)}:duration=longest:dropout_transition=0:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[out]"
+    )
+
+    cmd_mix = ["ffmpeg", "-y"] + inputs + [
+        "-filter_complex", "".join(filter_parts),
+        "-map", "[out]",
+        "-c:a", "libmp3lame", "-b:a", "128k",
+        output_path
+    ]
+    res_mix = subprocess.run(cmd_mix, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    if res_mix.returncode != 0:
+        raise Exception(f"FFmpeg error compiling preview: {res_mix.stderr}")
+
+
 def run_transcribe(project_id, audio_path, out_json_path, info_path):
     try:
         print(f"[{project_id}] Background Whisper transcription started on {audio_path}")
