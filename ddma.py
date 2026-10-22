@@ -63,49 +63,57 @@ def parse_time(time_str: str) -> float:
 
 def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, segments: list, total_clips: int) -> dict:
     """
-    Builds an enhanced 5-part Rough-Cut Plan segment structure for a clip:
-    1. Intro Music Sting: Pure music sting without vocal intro (e.g. Bluesy Vibes), 5.5s duration, 1.3s crossfade.
-    2. Punchline / Hook Audio Segment: 20-25s quote snapped to a complete sentence boundary.
-    3. Transition Music Sting: Show vocal tag (deepDive-strong.mp3 / deepDive-soft-ok.mp3 for clip 1 & 2), 7.5s duration, placed AFTER the hook.
-    4. Main Body Audio Segment: Starts cleanly at hook.end + 0.08s (zero hook repetition), snapped to a complete sentence end.
-    5. Outro Music Sting: 4.5s tail sting (Howling.mp3) with 0.3s crossfade.
+    Builds the canonical 4-part Rough-Cut Plan segment structure for short-form clips:
+    1. Punchline / Hook Audio Segment: 15-25s quote snapped to a complete sentence start and end.
+    2. Mid Transition Music Sting: Alternates between Bluesy Vibes and Howling (never deepDive-strong), 5.5s duration, 0.2s silence gap, 2.0s fade out, 0.5s crossfade into body speech.
+    3. Main Body Audio Segment: Starts cleanly at the next sentence start, snapped to a complete sentence end.
+    4. Outro Music Sting: deepDive-conclusion.mp3, 5.5s duration, 0.2s silence gap, 2.0s fade out.
     """
-    in_window = [s for s in segments if s.get("start", 0) >= start_time and s.get("end", 0) <= end_time + 1.0]
-    
-    # All words in window for word-level sentence boundary snapping
-    window_words = []
-    for s in in_window:
-        window_words.extend(s.get("words", []))
-    
-    # 1. Pure music sting for Segment 0 (Intro Sting at top of clip - NO vocal intro)
-    pure_stings = [
-        "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3",
-        "Howling (Sting) - Gunnar Olsen.mp3",
-        "Demilitarized Zone (Sting) - Ethan Meixsell.mp3",
-        "Double Helix (Sting) - Ethan Meixsell.mp3"
-    ]
-    intro_music = pure_stings[(clip_num - 1) % len(pure_stings)]
+    # Gather all words across segments for word-level sentence boundary snapping
+    all_words = []
+    for s in segments:
+        all_words.extend(s.get("words", []))
 
-    # 2. Extract Hook Audio (20-25s snapped to complete sentence boundary)
+    # Sentence boundary indices
+    sentence_ends = []
+    for idx, w in enumerate(all_words):
+        w_txt = w.get("word", "").strip()
+        if any(w_txt.endswith(p) for p in [".", "?", "!"]):
+            sentence_ends.append(idx)
+
+    sentence_starts = [0]
+    for idx in sentence_ends:
+        if idx + 1 < len(all_words):
+            sentence_starts.append(idx + 1)
+
+    # 1. Start boundary snapping (Clean sentence start)
+    if not all_words:
+        start_idx = 0
+        h_start = round(start_time, 2)
+    elif start_time <= 0.5 or clip_num == 1:
+        start_idx = 0
+        h_start = round(all_words[0]["start"], 2)
+    else:
+        # Closest sentence start to start_time
+        start_idx = min(sentence_starts, key=lambda idx: abs(all_words[idx]["start"] - start_time))
+        h_start = round(all_words[start_idx]["start"], 2)
+
+    # 2. Extract Hook Audio (15-25s snapped to complete sentence end)
+    target_hook_end = h_start + 20.0
     hook_segment = None
-    if window_words:
-        target_hook_end = window_words[0]["start"] + 22.0
-        best_hook_idx = 0
-        min_diff = 999999
-        for idx in range(min(15, len(window_words)-1), min(80, len(window_words))):
-            w = window_words[idx]
-            diff = abs(w["end"] - target_hook_end)
-            w_text = w.get("word", "").strip()
-            if w_text.endswith(".") or w_text.endswith("?") or w_text.endswith("!"):
-                diff -= 10.0
-            if diff < min_diff:
-                min_diff = diff
-                best_hook_idx = idx
-        
-        h_start = round(window_words[0]["start"], 2)
-        h_end = round(window_words[best_hook_idx]["end"], 2)
-        h_words = [w.get("word", "").strip() for w in window_words[:best_hook_idx+1]]
-        
+    if all_words:
+        cand_hook_ends = [idx for idx in sentence_ends if idx > start_idx]
+        if cand_hook_ends:
+            preferred = [idx for idx in cand_hook_ends if 12.0 <= (all_words[idx]["end"] - h_start) <= 28.0]
+            if preferred:
+                best_hook_idx = min(preferred, key=lambda idx: abs(all_words[idx]["end"] - target_hook_end))
+            else:
+                best_hook_idx = min(cand_hook_ends, key=lambda idx: abs(all_words[idx]["end"] - target_hook_end))
+        else:
+            best_hook_idx = min(len(all_words) - 1, start_idx + 25)
+
+        h_end = round(all_words[best_hook_idx]["end"], 2)
+        h_words = [w.get("word", "").strip() for w in all_words[start_idx : best_hook_idx + 1]]
         hook_segment = {
             "type": "audio",
             "start": h_start,
@@ -113,54 +121,60 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
             "duration": round(h_end - h_start, 2),
             "text": " ".join(h_words)
         }
+    else:
+        h_end = round(start_time + 20.0, 2)
+        hook_segment = {
+            "type": "audio",
+            "start": h_start,
+            "end": h_end,
+            "duration": round(h_end - h_start, 2),
+            "text": ""
+        }
 
-    # 3. Transition Sting after Hook: Use "Welcome to Deep Dive!" vocal tag stings HERE!
-    if clip_num in [1, 2]:
-        mid_music = "deepDive-strong.mp3" if clip_num == 1 else "deepDive-soft-ok.mp3"
-        mid_duration = 7.5
+    # 3. Mid Transition Music Sting: Alternating Bluesy Vibes and Howling
+    # Rule: NEVER use deepDive-strong in clips!
+    if clip_num % 2 == 1:
+        mid_music = "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
     else:
         mid_music = "Howling (Sting) - Gunnar Olsen.mp3"
-        mid_duration = 4.5
+    mid_duration = 5.5
 
-    # 4. Main Body Audio Segment (starts right after hook.end, ends at sentence boundary)
-    if hook_segment:
-        main_start = round(hook_segment["end"] + 0.08, 2)
+    # 4. Main Body Audio Segment: Starts at the very next sentence start, ends at sentence end
+    if all_words and hook_segment:
+        body_start_idx = best_hook_idx + 1
+        if body_start_idx < len(all_words):
+            main_start = round(all_words[body_start_idx]["start"], 2)
+        else:
+            main_start = round(h_end + 0.1, 2)
+            body_start_idx = len(all_words) - 1
+
+        cand_body_ends = [idx for idx in sentence_ends if idx >= body_start_idx]
+        if cand_body_ends:
+            best_end_idx = min(cand_body_ends, key=lambda idx: abs(all_words[idx]["end"] - end_time))
+        else:
+            best_end_idx = len(all_words) - 1
+
+        main_end = round(all_words[best_end_idx]["end"], 2)
+        body_words = [w.get("word", "").strip() for w in all_words[body_start_idx : best_end_idx + 1]]
+        main_text = " ".join(body_words)
     else:
-        main_start = round(start_time, 2)
-
-    main_end = round(end_time, 2)
-    if window_words:
-        best_end_idx = len(window_words) - 1
-        min_end_diff = 999999
-        for idx in range(max(0, len(window_words) - 60), len(window_words)):
-            w = window_words[idx]
-            diff = abs(w["end"] - end_time)
-            w_text = w.get("word", "").strip()
-            if w_text.endswith(".") or w_text.endswith("?") or w_text.endswith("!"):
-                diff -= 15.0
-            if diff < min_end_diff:
-                min_end_diff = diff
-                best_end_idx = idx
-        main_end = round(window_words[best_end_idx]["end"], 2)
-
-    body_words = [w.get("word", "").strip() for w in window_words if w.get("start", 0) >= main_start and w.get("end", 0) <= main_end + 0.5]
-    main_text = " ".join(body_words) if body_words else " ".join([s.get("text", "").strip() for s in in_window]).strip()
+        main_start = round(h_end + 0.1, 2)
+        main_end = round(end_time, 2)
+        main_text = ""
 
     # Smart Dynamic Title Extraction algorithm
-    clip_title = f"Episode 245 Part {clip_num}"
-    if window_words:
+    clip_title = f"Part {clip_num}"
+    if all_words:
+        window_words = all_words[start_idx : best_end_idx + 1]
         window_text = " ".join([w.get("word", "").strip() for w in window_words])
         sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', window_text) if s.strip()]
         
-        keywords = ["singularity", "observer", "chiral", "synchronization", "paradox", "physics", "topology", "quantum", "density", "curvature", "geometry", "information", "matter", "intelligence", "equidistance", "relativity"]
+        keywords = ["singularity", "observer", "chiral", "synchronization", "paradox", "physics", "topology", "quantum", "density", "curvature", "geometry", "information", "matter", "intelligence", "equidistance", "relativity", "autonomy", "agent", "system", "network"]
         candidate_titles = []
-        
         for s in sentences:
             clean_s = re.sub(r'\s+', ' ', s.rstrip(".?!").strip())
             s_lower = clean_s.lower()
-            
             score = sum(10 for kw in keywords if kw in s_lower)
-            
             if 15 <= len(clean_s) <= 60:
                 candidate_titles.append((score + 5, clean_s))
             elif len(clean_s) > 60:
@@ -175,7 +189,6 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
         if candidate_titles:
             candidate_titles.sort(key=lambda x: x[0], reverse=True)
             chosen = candidate_titles[0][1]
-            # Format title nicely
             words_title = chosen.split()
             formatted = []
             for w in words_title:
@@ -188,40 +201,39 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
                 formatted[0] = formatted[0].capitalize()
             clip_title = " ".join(formatted)
 
-    seg_list = []
-    if clip_num < 4:
-        seg_list.append({
-            "type": "music",
-            "music_file": intro_music,
-            "duration": 5.5,
-            "crossfade": 1.3,
-            "volume": 1.0
-        })
-    if hook_segment:
-        seg_list.append(hook_segment)
-        seg_list.append({
+    # Build canonical 4-part segment structure:
+    # 1. Hook (audio)
+    # 2. Mid Sting (music: Bluesy or Howling)
+    # 3. Body (audio)
+    # 4. Outro Sting (music: deepDive-conclusion.mp3)
+    seg_list = [
+        hook_segment,
+        {
             "type": "music",
             "music_file": mid_music,
             "duration": mid_duration,
+            "silence_before": 0.2,
+            "fade_out": 2.0,
+            "crossfade": 0.5,
+            "volume": 1.0
+        },
+        {
+            "type": "audio",
+            "start": main_start,
+            "end": main_end,
+            "duration": round(main_end - main_start, 2),
+            "text": main_text
+        },
+        {
+            "type": "music",
+            "music_file": "deepDive-conclusion.mp3",
+            "duration": 5.5,
+            "silence_before": 0.2,
+            "fade_out": 2.0,
             "crossfade": 0.0,
             "volume": 1.0
-        })
-
-    seg_list.append({
-        "type": "audio",
-        "start": main_start,
-        "end": main_end,
-        "duration": round(main_end - main_start, 2),
-        "text": main_text
-    })
-
-    seg_list.append({
-        "type": "music",
-        "music_file": "Howling (Sting) - Gunnar Olsen.mp3",
-        "duration": 4.5,
-        "crossfade": 0.3,
-        "volume": 1.0
-    })
+        }
+    ]
 
     bridge_question = f"What is the deeper secret behind Part {clip_num}?"
     if clip_num < total_clips:
@@ -230,14 +242,13 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
     return {
         "num": clip_num,
         "title": clip_title,
-        "start": round(start_time, 2),
+        "start": h_start,
         "end": main_end,
-        "duration": round(main_end - start_time, 2),
+        "duration": round(main_end - h_start, 2),
         "bridge_text": [bridge_question],
         "segments": seg_list,
         "locked": False
     }
-
 
 @app.command()
 def plan(
@@ -393,16 +404,13 @@ def plan(
             c_obj = build_rough_cut_segments(clip_num, t_curr, target_b, segments, estimated_clips)
             clips_plan.append(c_obj)
 
-            if target_b == total_duration:
+            # Move cursor based on the snapped end of the body segment
+            actual_end = c_obj["segments"][2]["end"] if len(c_obj.get("segments", [])) > 2 else target_b
+
+            if actual_end >= total_duration - 15.0 or target_b >= total_duration:
                 break
 
-            t_curr = target_b
-            clip_num += 1
-
-            if target_b == total_duration:
-                break
-
-            t_curr = target_b
+            t_curr = actual_end
             clip_num += 1
 
     # Save plan
@@ -496,135 +504,90 @@ def cut(
 
         if has_music_seg and len(segments) > 0:
             typer.echo(f"Processing Clip {c['num']} with {len(segments)} segments (including music stings)...")
-            temp_seg_files = []
+
+            def get_music_path(m_name: str) -> str:
+                m_clean = os.path.basename(m_name)
+                for cand in [
+                    os.path.join("music", m_clean),
+                    os.path.join("ddma", "music", m_clean),
+                    os.path.join("..", "ddma", "music", m_clean),
+                    os.path.join("..", "music", m_clean),
+                    os.path.join("docs", "assets", "music", m_clean)
+                ]:
+                    if os.path.exists(cand):
+                        return cand
+                return os.path.join("music", m_clean)
+
+            inputs = []
+            filter_parts = []
+            labels = []
+            in_idx = 0
+            t_cursor = 0.0
+
             for s_idx, seg in enumerate(segments):
-                t_seg = os.path.join(out_dir, f"temp_seg_{c['num']}_{s_idx}.wav")
-                temp_seg_files.append(t_seg)
-                if seg.get("type") == "music":
-                    m_file = os.path.basename(seg.get("music_file", "deepDive-soft-ok.mp3"))
-                    raw_dur = float(seg.get("duration", 5.0))
-                    t_start = float(seg.get("trim_start", 0.0))
-                    t_end = float(seg.get("trim_end", 0.0))
-                    eff_dur = max(0.1, raw_dur - t_start - t_end)
+                seg_type = seg.get("type")
+                if seg_type == "audio":
+                    s_start = float(seg.get("start", start_val))
+                    s_end = float(seg.get("end", end_val))
+                    s_dur = max(0.1, s_end - s_start)
 
-                    fade_in = float(seg.get("fade_in", 0.0))
-                    fade_out = float(seg.get("fade_out", 2.0 if "fade_out" not in seg else seg.get("fade_out")))
-                    m_vol = float(seg.get("volume", 1.0))
-                    
-                    m_path = os.path.join("music", m_file)
-                    if not os.path.exists(m_path):
-                        m_path = os.path.join("music", "deepDive-soft-ok.mp3")
-                    
-                    filters = []
-                    if fade_in > 0:
-                        fade_in_dur = min(fade_in, eff_dur / 2.0)
-                        filters.append(f"afade=t=in:ss=0:d={fade_in_dur:.3f}:curve=qsin")
-                    if fade_out > 0:
-                        fade_out_dur = min(fade_out, eff_dur)
-                        st_time = max(0.0, eff_dur - fade_out_dur)
-                        filters.append(f"afade=t=out:st={st_time:.3f}:d={fade_out_dur:.3f}:curve=qsin")
-                    filters.append(f"volume={m_vol}")
-                    af_str = ",".join(filters)
+                    if s_idx > 0 and segments[s_idx - 1].get("type") == "music":
+                        # Crossfade 0.5s into fading sting tail (no silence addition)
+                        cf_dur = float(segments[s_idx - 1].get("crossfade", 0.5))
+                        t_speech = max(0.0, t_cursor - cf_dur)
+                        t_speech_ms = int(round(t_speech * 1000))
+                        inputs.extend(["-ss", f"{s_start:.3f}", "-t", f"{s_dur:.3f}", "-i", audio])
+                        filter_parts.append(
+                            f"[{in_idx}:a]afade=t=in:ss=0:d={cf_dur:.3f},adelay={t_speech_ms}|{t_speech_ms}[sp{in_idx}];"
+                        )
+                        labels.append(f"[sp{in_idx}]")
+                        t_cursor = t_speech + s_dur
+                    else:
+                        t_speech = t_cursor
+                        t_speech_ms = int(round(t_speech * 1000))
+                        inputs.extend(["-ss", f"{s_start:.3f}", "-t", f"{s_dur:.3f}", "-i", audio])
+                        if t_speech_ms > 0:
+                            filter_parts.append(f"[{in_idx}:a]adelay={t_speech_ms}|{t_speech_ms}[sp{in_idx}];")
+                            labels.append(f"[sp{in_idx}]")
+                        else:
+                            labels.append(f"[{in_idx}:a]")
+                        t_cursor = t_speech + s_dur
+                    in_idx += 1
 
-                    cmd_m = ["ffmpeg", "-y"]
-                    if t_start > 0:
-                        cmd_m += ["-ss", f"{t_start:.3f}"]
-                    cmd_m += [
-                        "-i", m_path,
-                        "-t", f"{eff_dur:.3f}",
-                        "-ar", "48000", "-ac", "2",
-                        "-af", af_str,
-                        t_seg
-                    ]
-                    res_m = subprocess.run(cmd_m, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-                    if res_m.returncode != 0:
-                        typer.echo(f"Warning rendering music segment {s_idx} for clip {c['num']}: {res_m.stderr}", err=True)
-                else:
-                    raw_start = float(seg.get("start", start_val))
-                    raw_end = float(seg.get("end", end_val))
-                    t_start = float(seg.get("trim_start", 0.0))
-                    t_end = float(seg.get("trim_end", 0.1 if "trim_end" not in seg else seg.get("trim_end")))
+                elif seg_type == "music":
+                    m_file = seg.get("music_file", "Howling (Sting) - Gunnar Olsen.mp3")
+                    m_path = get_music_path(m_file)
+                    dur_m = float(seg.get("duration", 5.5))
+                    fade_out = float(seg.get("fade_out", 2.0))
+                    fade_out_st = max(0.0, dur_m - fade_out)
+                    silence_front = float(seg.get("silence_before", 0.2))
 
-                    eff_start = raw_start + t_start
-                    eff_end = max(eff_start + 0.1, raw_end - t_end)
-                    eff_dur = eff_end - eff_start
+                    t_sting = t_cursor + silence_front
+                    t_sting_ms = int(round(t_sting * 1000))
 
-                    fade_in = float(seg.get("fade_in", 0.0))
-                    fade_out = float(seg.get("fade_out", 0.0))
-                    s_vol = float(seg.get("volume", 1.0))
+                    inputs.extend(["-i", m_path])
+                    filter_parts.append(
+                        f"[{in_idx}:a]atrim=0:{dur_m:.3f},afade=t=out:st={fade_out_st:.3f}:d={fade_out:.3f},adelay={t_sting_ms}|{t_sting_ms}[m{in_idx}];"
+                    )
+                    labels.append(f"[m{in_idx}]")
+                    in_idx += 1
+                    t_cursor = t_sting + dur_m
 
-                    filters = []
-                    if fade_in > 0:
-                        fade_in_dur = min(fade_in, eff_dur / 2.0)
-                        filters.append(f"afade=t=in:ss=0:d={fade_in_dur:.3f}:curve=qsin")
-                    if fade_out > 0:
-                        fade_out_dur = min(fade_out, eff_dur / 2.0)
-                        st_time = max(0.0, eff_dur - fade_out_dur)
-                        filters.append(f"afade=t=out:st={st_time:.3f}:d={fade_out_dur:.3f}:curve=qsin")
-                    filters.append(f"volume={s_vol}")
-                    af_str = ",".join(filters)
+            filter_parts.append(
+                f"{''.join(labels)}amix=inputs={len(labels)}:duration=longest:dropout_transition=0:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[out]"
+            )
 
-                    cmd_a = [
-                        "ffmpeg", "-y",
-                        "-ss", f"{eff_start:.3f}",
-                        "-to", f"{eff_end:.3f}",
-                        "-i", audio,
-                        "-ar", "48000", "-ac", "2",
-                        "-af", af_str,
-                        t_seg
-                    ]
-                    res_a = subprocess.run(cmd_a, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-                    if res_a.returncode != 0:
-                        typer.echo(f"Warning rendering audio segment {s_idx} for clip {c['num']}: {res_a.stderr}", err=True)
-            
-            # Combine segment files
-            temp_concat_wav = os.path.join(out_dir, f"temp_concat_{c['num']}.wav")
-            cmd_cat = ["ffmpeg", "-y"]
-            valid_seg_files = [tf for tf in temp_seg_files if os.path.exists(tf) and os.path.getsize(tf) > 0]
-            if not valid_seg_files:
-                typer.echo(f"Error: No valid segment audio files created for clip {c['num']}", err=True)
-                continue
-
-            # Check for crossfades
-            crossfades = [float(s.get("crossfade", 0.0)) for s in segments[:-1]]
-            has_cf = any(cf > 0 for cf in crossfades)
-
-            for tf in valid_seg_files:
-                cmd_cat += ["-i", tf]
-
-            if not has_cf or len(valid_seg_files) <= 1:
-                filter_complex = "".join(f"[{i}:a]" for i in range(len(valid_seg_files)))
-                filter_complex += f"concat=n={len(valid_seg_files)}:v=0:a=1[out]"
-            else:
-                filter_parts = []
-                curr_src = "[0:a]"
-                for i in range(len(valid_seg_files) - 1):
-                    cf_dur = crossfades[i] if i < len(crossfades) else 0.0
-                    fade_opts = f"d={cf_dur:.3f}:c1=qsin:c2=qsin" if cf_dur > 0 else "ns=1"
-                    next_dest = f"[a{i+1}]" if i < len(valid_seg_files) - 2 else "[out]"
-                    filter_parts.append(f"{curr_src}[{i+1}:a]acrossfade={fade_opts}{next_dest}")
-                    curr_src = f"[a{i+1}]"
-                filter_complex = ";".join(filter_parts)
-            cmd_cat += ["-filter_complex", filter_complex, "-map", "[out]", temp_concat_wav]
-            subprocess.run(cmd_cat, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            
-            # EBU R128 Loudness Normalization to final MP3
-            cmd_norm = [
-                "ffmpeg", "-y",
-                "-i", temp_concat_wav,
-                "-af", "loudnorm=I=-16:TP=-1.5:LRA=11",
+            cmd_mix = ["ffmpeg", "-y"] + inputs + [
+                "-filter_complex", "".join(filter_parts),
+                "-map", "[out]",
                 "-c:a", "libmp3lame", "-q:a", "2",
                 out_path
             ]
-            subprocess.run(cmd_norm, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            
-            # Clean temp segment files
-            for tf in temp_seg_files + [temp_concat_wav]:
-                if os.path.exists(tf):
-                    try:
-                        os.remove(tf)
-                    except Exception:
-                        pass
+            res_mix = subprocess.run(cmd_mix, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if res_mix.returncode == 0:
+                typer.echo(f"Created {out_filename} with sample-accurate sting transitions (-16 LUFS)")
+            else:
+                typer.echo(f"Error mixing clip {c['num']}: {res_mix.stderr}", err=True)
         else:
             cmd = [
                 "ffmpeg", "-y",
@@ -921,11 +884,15 @@ def extract_clip_words(clip: dict, plan_file: str, audio_path: Optional[str] = N
                     t_cursor = 0.0
                     for idx, s in enumerate(segments):
                         dur = float(s.get("duration", 0.0))
-                        cf = float(s.get("crossfade", 0.0)) if idx < len(segments) - 1 else 0.0
                         if s.get("type") == "audio":
                             s_start = float(s.get("start", 0.0))
                             s_end = float(s.get("end", 0.0))
                             eff_dur = s_end - s_start if s_end > s_start else dur
+                            if idx > 0 and segments[idx - 1].get("type") == "music":
+                                cf = float(segments[idx - 1].get("crossfade", 0.5))
+                                t_speech_start = max(0.0, t_cursor - cf)
+                            else:
+                                t_speech_start = t_cursor
                             for w in all_ep_words:
                                 ws = float(w.get("start", 0.0))
                                 we = float(w.get("end", ws))
@@ -937,10 +904,13 @@ def extract_clip_words(clip: dict, plan_file: str, audio_path: Optional[str] = N
                                     if w_txt:
                                         words.append({
                                             "word": w_txt,
-                                            "start": round(t_cursor + rel_s, 2),
-                                            "end": round(t_cursor + rel_e, 2)
+                                            "start": round(t_speech_start + rel_s, 2),
+                                            "end": round(t_speech_start + rel_e, 2)
                                         })
-                        t_cursor += max(0.0, dur - cf)
+                            t_cursor = t_speech_start + eff_dur
+                        elif s.get("type") == "music":
+                            silence_front = float(s.get("silence_before", 0.2))
+                            t_cursor = t_cursor + silence_front + dur
                 else:
                     c_start = float(clip.get("start", 0.0))
                     c_end = float(clip.get("end", 0.0))
@@ -1252,8 +1222,7 @@ def compile_clip(
     if not os.path.exists(music):
         fallback_candidates = [
             "music/deepDive-soft-ok.mp3",
-            "music/deepDive-strong.mp3",
-            "music/deepDive-main.mp3"
+                        "music/deepDive-main.mp3"
         ]
         for cand in fallback_candidates:
             if os.path.exists(cand):

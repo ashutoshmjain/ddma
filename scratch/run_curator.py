@@ -1008,7 +1008,7 @@ def get_gemini_default_prompt():
         "3. **Bridge Text**: Provide a single bold curiosity-provoking transition question in \"bridge_text\" (a list of string(s)). This question must act as a forward-looking narrative bridge that introduces the topic/theme of the *next* clip in the storyboard (to transition the viewer's interest), rather than summarizing this current clip.\n"
         "4. **Tone & Continuity**: Reference the narrative arc from the preceding locked clips to ensure this clip continues the story logically and maintains engaging hook titles.\n"
         "5. **Standalone Thought Integrity**: Every clip MUST stand on its own as a complete, coherent, and interesting statement. Avoid creating 'part 2' or dependent continuation clips. If the preceding locked clips have already fully covered or resolved a topic, do not repeat or continue discussing it; skip ahead in the neighborhood transcript to a new high-engagement standalone concept.\n"
-        "6. **Deep Dive Welcome Music Restrictions**: The welcome music stings (`deepDive-soft-ok.mp3` and `deepDive-strong.mp3`) represent introductory/welcome sounds for the podcast. They can ONLY be used in the first or second clip of the entire episode storyboard (Clip 1 or Clip 2). Under no circumstances may they be used in Clip 3 or any subsequent clips. For subsequent clips, select from the other available music stings."
+        "6. **Deep Dive Music Sting Restrictions**: Under NO circumstances use deepDive-strong in video clips (reserved strictly for the full podcast). Clip structure is always: Hook audio segment -> Mid music sting (alternating Bluesy Vibes and Howling) -> Body audio segment -> Outro music sting (deepDive-conclusion.mp3)."
     )
 
 
@@ -1035,7 +1035,7 @@ def get_gemini_episode_default_prompt():
         "5. **Verbatim Word-Level Quote Anchors**: For each clip, output exact 3-7 word verbatim transcript quote fragments (\"start_quote\" and \"end_quote\") matching the spoken transcript text so DDMA can snap clip boundaries sample-accurately to Whisper word timestamps.\n"
         "6. **Curiosity Question Bridge Cards**: Provide a single bold, forward-looking curiosity question under \"bridge_text\" (a 1-element list of strings). This question acts as a narrative bridge introducing the topic of the NEXT clip to retain audience curiosity across transitions.\n"
         "7. **Music Sting Restrictions & Volume**: Music volume must ALWAYS be set to 1.0 (100% full volume).\n"
-        "   - **Clip 1 & Clip 2**: Assign introductory welcome stings (`deepDive-soft-ok.mp3` or `deepDive-strong.mp3`).\n"
+        "   - **Clip 1 & Clip 2**: Never use deepDive-strong in clips. Use Bluesy Vibes or Howling as mid sting, and deepDive-conclusion as outro sting.\n"
         "   - **Clip 3+**: Assign standard stings (`deepDive-main.mp3`, `Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3`, or `Cartoon Bank Heist (Sting) - Doug Maxwell_Media Right Productions.mp3`). Welcome stings are STRICTLY PROHIBITED on Clip 3+ to prevent repetitive intro audio.\n\n"
         "### 📋 OUTPUT FORMAT (JSON ARRAY ONLY):\n"
         "Return ONLY a valid JSON array of clip objects with no markdown codeblock wrapping or extra conversational text:\n"
