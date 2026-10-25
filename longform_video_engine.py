@@ -6,6 +6,7 @@ import subprocess
 import shutil
 from PIL import Image, ImageDraw, ImageFont
 import widescreen_infographics as wsi
+from manim_video_provider import ManimSceneReader
 
 def get_artifact_chyron_tag(sc, is_intro=False, is_closure=False, episode_num="248"):
     if is_intro:
@@ -907,6 +908,10 @@ def render_horizontal_podcast_video(
     last_bytes = None
     last_progress_pct = -1
 
+    manim_reader = None
+    if start_seconds >= 800.0 and start_seconds < 1400.0:
+        manim_reader = ManimSceneReader(fps=fps)
+
     try:
         for f_idx in range(total_frames):
             t = start_seconds + (f_idx / float(fps))
@@ -1125,7 +1130,10 @@ def render_horizontal_podcast_video(
             # -------------------------------------------------------------
             else:
                 # 1. Render Widescreen Graphic Stage (1920x860)
-                wide_frame = wsi.render_widescreen_infographic(sc, local_t, s_dur, ui_fonts, width=1920, height=860)
+                if manim_reader and (manim_reader.scenes[0]["start"] <= t <= manim_reader.scenes[-1]["end"]):
+                    wide_frame = manim_reader.get_frame(t)
+                else:
+                    wide_frame = wsi.render_widescreen_infographic(sc, local_t, s_dur, ui_fonts, width=1920, height=860)
                 canvas.paste(wide_frame, (0, 105))
 
             # 2. Top Single-Line Spoken Caption Ribbon (y = 20 .. 90) - RENDERED FOR ALL FRAMES (Intro, Closure & Speech)
@@ -1205,7 +1213,11 @@ def render_horizontal_podcast_video(
             pct = min(1.0, max(0.0, t / float(duration)))
 
                         # 5. Bottom-Right Artifact Chyron Tag (Broadcast Identifier)
-            tag_txt = get_artifact_chyron_tag(sc, is_intro=is_intro, is_closure=is_closure, episode_num=episode_num)
+            if manim_reader and not is_intro and not is_closure and (manim_reader.scenes[0]["start"] <= t <= manim_reader.scenes[-1]["end"]):
+                active_manim_sc = manim_reader.get_scene_for_time(t)
+                tag_txt = f"[ SCENE {active_manim_sc['num']:02d}: {active_manim_sc['title']} ]"
+            else:
+                tag_txt = get_artifact_chyron_tag(sc, is_intro=is_intro, is_closure=is_closure, episode_num=episode_num)
             if tag_txt:
                 chyron_font = ui_fonts.get("mono_18", ui_fonts.get("mono_20", ui_fonts.get("bold_18", ImageFont.load_default())))
                 bbox = draw.textbbox((1840, 1045), tag_txt, font=chyron_font, anchor="rm")
@@ -1233,6 +1245,11 @@ def render_horizontal_podcast_video(
                 pass
         raise
     finally:
+        if manim_reader:
+            try:
+                manim_reader.close()
+            except Exception:
+                pass
         if proc.stdin:
             try:
                 proc.stdin.close()

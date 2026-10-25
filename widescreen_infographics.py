@@ -252,13 +252,13 @@ def draw_host_avatar_nodes(draw, t, active_speaker=None, cy=130, fonts=None, wid
     gold = COLORS["gold"]
     dim_text = COLORS["dim"]
 
-    # 1. SATOSHA (Male Host - Inward Left at x=220)
+    # 1. SATOSHA (Female Host - Inward Left at x=220)
     lx = 220
     col_l = cyan if is_satosha else dim_text
     _draw_vector_yeti_mic(draw, lx, cy, is_active=is_satosha, color=cyan, t=t)
     draw.text((lx, cy + 34), "SATOSHA", font=font_name, fill=col_l, anchor="mm")
 
-    # 2. SATOSHI (Female Host - Inward Right at x=width-220 = 1700)
+    # 2. SATOSHI (Male Host - Inward Right at x=width-220 = 1700)
     rx = width - 220
     col_r = gold if is_satoshi else dim_text
     _draw_vector_yeti_mic(draw, rx, cy, is_active=is_satoshi, color=gold, t=t)
