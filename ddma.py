@@ -1117,7 +1117,8 @@ def build_caption_chunks(
         chunks.append({
             "start": round(grp[0]["start"], 2),
             "end": round(grp[-1]["end"], 2),
-            "text": text_line
+            "text": text_line,
+            "words": [{"word": x["word"], "start": round(x["start"], 2), "end": round(x["end"], 2)} for x in grp]
         })
 
     # Strict chaining: each event's end time = the next event's start time (no gaps, no overlaps)
@@ -1136,7 +1137,7 @@ def build_caption_chunks(
 
 
 def write_ass_file(chunks: list, ass_path: str):
-    """Write exact ASS v4+ caption file for 1080x1920 vertical canvas."""
+    """Write exact ASS v4+ caption file for 1080x1920 vertical canvas with word spotlight."""
     os.makedirs(os.path.dirname(ass_path) if os.path.dirname(ass_path) else ".", exist_ok=True)
     lines = [
         "[Script Info]",
@@ -1148,17 +1149,50 @@ def write_ass_file(chunks: list, ass_path: str):
         "",
         "[V4+ Styles]",
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-        "Style: Caption,DejaVu Sans Mono,46,&H00FFFFFF,&H000019FF,&H80000000,&H80000000,0,0,0,0,100,100,1.2,0,1,2,0,8,60,60,500,1",
+        "Style: Caption,DejaVu Sans Mono,46,&H00FFFFFF,&H000019FF,&H80000000,&H80000000,1,0,0,0,100,100,1.2,0,1,2,0,8,60,60,500,1",
         "",
         "[Events]",
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
     ]
+    c_gold = r"{\c&H000AD6FF&}"
+    c_white = r"{\c&H00FFFFFF&}"
+    c_dim = r"{\c&H00757575&}"
+
     for ch in (chunks or []):
-        start_str = format_ass_time(ch.get("start", 0.0))
-        end_str = format_ass_time(ch.get("end", 0.0))
-        txt = str(ch.get("text", "")).replace("\n", " ").strip().lower()
-        if txt:
-            lines.append(f"Dialogue: 0,{start_str},{end_str},Caption,,0,0,0,,{txt}")
+        c_start = float(ch.get("start", 0.0))
+        c_end = float(ch.get("end", c_start + 1.0))
+        words = ch.get("words")
+
+        if words and isinstance(words, list) and len(words) > 1:
+            for i, w in enumerate(words):
+                w_start_val = max(c_start, float(w.get("start", c_start)))
+                if i < len(words) - 1:
+                    w_end_val = min(c_end, max(w_start_val + 0.04, float(words[i + 1].get("start", w_start_val + 0.2))))
+                else:
+                    w_end_val = c_end
+
+                start_str = format_ass_time(w_start_val)
+                end_str = format_ass_time(w_end_val)
+
+                passed = " ".join(str(x.get("word", "")).strip().lower() for x in words[:i])
+                active = str(words[i].get("word", "")).strip().lower()
+                upcoming = " ".join(str(x.get("word", "")).strip().lower() for x in words[i + 1:])
+
+                parts = []
+                if passed:
+                    parts.append(f"{c_white}{passed}")
+                parts.append(f"{c_gold}{active}{c_white}")
+                if upcoming:
+                    parts.append(f"{c_dim}{upcoming}{c_white}")
+
+                line_txt = " ".join(parts)
+                lines.append(f"Dialogue: 0,{start_str},{end_str},Caption,,0,0,0,,{line_txt}")
+        else:
+            start_str = format_ass_time(c_start)
+            end_str = format_ass_time(c_end)
+            txt = str(ch.get("text", "")).replace("\n", " ").strip().lower()
+            if txt:
+                lines.append(f"Dialogue: 0,{start_str},{end_str},Caption,,0,0,0,,{txt}")
 
     with open(ass_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")

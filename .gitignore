@@ -27,6 +27,7 @@ music/*
 !music/title-card-music.mp3
 
 # Previews & final clips outputs
+output/
 previews/*
 !previews/.gitkeep
 clips/*

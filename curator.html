@@ -2829,15 +2829,37 @@
                 "",
                 "[V4+ Styles]",
                 "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-                "Style: Caption,DejaVu Sans Mono,46,&H00FFFFFF,&H000019FF,&H80000000,&H80000000,0,0,0,0,100,100,1.2,0,1,2,0,8,60,60,500,1",
+                "Style: Caption,DejaVu Sans Mono,46,&H00FFFFFF,&H000019FF,&H80000000,&H80000000,1,0,0,0,100,100,1.2,0,1,2,0,8,60,60,500,1",
                 "",
                 "[Events]",
                 "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
             ];
+            const c_gold = "{\\c&H000AD6FF&}";
+            const c_white = "{\\c&H00FFFFFF&}";
+            const c_dim = "{\\c&H00757575&}";
+
             for (const ch of (chunks || [])) {
-                const txt = String(ch.text || '').replace(/\s+/g, ' ').trim().toLowerCase();
-                if (txt) {
-                    header.push(`Dialogue: 0,${formatAssTimeJs(ch.start)},${formatAssTimeJs(ch.end)},Caption,,0,0,0,,${txt}`);
+                const words = ch.words;
+                if (words && Array.isArray(words) && words.length > 1) {
+                    for (let i = 0; i < words.length; i++) {
+                        const wStart = Math.max(ch.start, words[i].start);
+                        const wEnd = (i < words.length - 1) ? Math.min(ch.end, Math.max(wStart + 0.04, words[i + 1].start)) : ch.end;
+                        const passed = words.slice(0, i).map(x => (x.word || '').trim().toLowerCase()).join(' ');
+                        const active = String(words[i].word || '').trim().toLowerCase();
+                        const upcoming = words.slice(i + 1).map(x => (x.word || '').trim().toLowerCase()).join(' ');
+
+                        const parts = [];
+                        if (passed) parts.push(`${c_white}${passed}`);
+                        parts.push(`${c_gold}${active}${c_white}`);
+                        if (upcoming) parts.push(`${c_dim}${upcoming}${c_white}`);
+
+                        header.push(`Dialogue: 0,${formatAssTimeJs(wStart)},${formatAssTimeJs(wEnd)},Caption,,0,0,0,,${parts.join(' ')}`);
+                    }
+                } else {
+                    const txt = String(ch.text || '').replace(/\s+/g, ' ').trim().toLowerCase();
+                    if (txt) {
+                        header.push(`Dialogue: 0,${formatAssTimeJs(ch.start)},${formatAssTimeJs(ch.end)},Caption,,0,0,0,,${txt}`);
+                    }
                 }
             }
             return header.join('\n') + '\n';
