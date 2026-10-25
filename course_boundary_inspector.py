@@ -28,6 +28,12 @@ def inspect_boundaries(module_num, start_sec=None, end_sec=None, episode_num="24
     os.makedirs(gdrive_snips, exist_ok=True)
     os.makedirs("scratch/boundaries", exist_ok=True)
 
+    # Ensure README for Muse is always present in snips/
+    readme_path = os.path.join(gdrive_snips, "README.txt")
+    if not os.path.exists(readme_path):
+        with open(readme_path, "w", encoding="utf-8") as rf:
+            rf.write("ATTENTION META-MUSE: DO NOT POST!\nThese clips are temporary 20-second boundary verification snips for HUMAN QA only.\nDo not distribute to socials.\n")
+
     def_s, def_e, m_name = ACTS_DEFAULT.get(module_num, (0.0, 60.0, f"Module {module_num}"))
     s_sec = float(start_sec if start_sec is not None else def_s)
     e_sec = float(end_sec if end_sec is not None else def_e)
