@@ -20,7 +20,7 @@ MODULE_03_MANIM_SCENES = [
     {"num": 15, "start": 1248.6, "end": 1278.0, "title": "MCP & THE CYBER BOUNCER"},
     {"num": 16, "start": 1278.0, "end": 1307.0, "title": "HANDING CONTROLS TO AI GATEWAY"},
     {"num": 17, "start": 1307.0, "end": 1336.5, "title": "OPERATIONAL SOVEREIGNTY OUROBOROS"},
-    {"num": 18, "start": 1336.5, "end": 1350.0, "title": "HOMEOSTATIC GOVERNANCE"},
+    {"num": 18, "start": 1336.5, "end": 1354.0, "title": "HOMEOSTATIC GOVERNANCE"},
 ]
 
 class ManimSceneReader:
