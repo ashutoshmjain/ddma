@@ -1136,7 +1136,13 @@ def build_caption_chunks(
     return chunks
 
 
-def write_ass_file(chunks: list, ass_path: str, diarization_data: Optional[list] = None):
+def write_ass_file(
+    chunks: list,
+    ass_path: str,
+    diarization_data: Optional[list] = None,
+    source_offset: float = 0.0,
+    intro_offset: float = 0.0
+):
     """Write exact ASS v4+ caption file for 1080x1920 vertical canvas with word spotlight."""
     os.makedirs(os.path.dirname(ass_path) if os.path.dirname(ass_path) else ".", exist_ok=True)
     lines = [
@@ -1151,7 +1157,7 @@ def write_ass_file(chunks: list, ass_path: str, diarization_data: Optional[list]
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
         "Style: Caption,Arial,42,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,1.2,0,1,0,0,8,60,60,300,1",
         "Style: MicShape,Arial,18,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,0,0,5,40,40,60,1",
-        "Style: MicName,Arial,16,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,1.2,0,1,0,0,5,40,40,60,1",
+        "Style: MicName,Arial,18,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,1.2,0,1,0,0,5,40,40,60,1",
         "",
         "[Events]",
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
@@ -1162,18 +1168,36 @@ def write_ass_file(chunks: list, ass_path: str, diarization_data: Optional[list]
     c_dim = r"{\c&H0064748B&}"
 
     def get_speaker(t_val):
-        for seg in (diarization_data or []):
-            if seg.get("start", 0.0) <= t_val <= seg.get("end", 0.0):
+        if not diarization_data:
+            return None
+        t_audio = source_offset + max(0.0, t_val - intro_offset)
+        # 1. Exact segment match
+        for seg in diarization_data:
+            if seg.get("start", 0.0) <= t_audio <= seg.get("end", 0.0):
                 s = str(seg.get("speaker", "")).lower()
                 if "satosha" in s:
                     return "SATOSHA"
                 elif "satoshi" in s:
                     return "SATOSHI"
+        # 2. Nearest segment within 5.0s (handles pauses & trimmed gaps)
+        cand_seg = None
+        min_dist = 999.0
+        for seg in diarization_data:
+            s_s = seg.get("start", 0.0)
+            s_e = seg.get("end", 0.0)
+            dist = min(abs(s_s - t_audio), abs(s_e - t_audio))
+            if dist < min_dist:
+                min_dist = dist
+                cand_seg = seg
+        if cand_seg and min_dist <= 5.0:
+            s = str(cand_seg.get("speaker", "")).lower()
+            if "satosha" in s:
+                return "SATOSHA"
+            elif "satoshi" in s:
+                return "SATOSHI"
         return None
 
     mic_events = []
-
-
 
     for ch in (chunks or []):
         c_start = float(ch.get("start", 0.0))
@@ -1182,10 +1206,10 @@ def write_ass_file(chunks: list, ass_path: str, diarization_data: Optional[list]
         start_str = format_ass_time(c_start)
         end_str = format_ass_time(c_end)
         if spk in ("SATOSHI", "SATOSHA"):
-            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicShape,,0,0,0,,{{\\pos(960,368)\\an5\\c&H00FFFFFF&\\p1}}{mic_shape}{{\\p0}}")
-            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicName,,0,0,0,,{{\\pos(960,400)\\an5\\c&H00FFFFFF&\\b1}}{spk}")
+            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicShape,,0,0,0,,{{\\pos(960,365)\\an5\\c&H00FFFFFF&\\p1}}{mic_shape}{{\\p0}}")
+            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicName,,0,0,0,,{{\\pos(960,398)\\an5\\c&H00FFFFFF&\\b1}}{spk}")
         else:
-            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicShape,,0,0,0,,{{\\pos(960,368)\\an5\\c&H00475569&\\p1}}{mic_shape}{{\\p0}}")
+            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicShape,,0,0,0,,{{\\pos(960,365)\\an5\\c&H00475569&\\p1}}{mic_shape}{{\\p0}}")
 
         words = ch.get("words")
 
@@ -1890,24 +1914,56 @@ def compile_clip(
             body_duration=body_duration,
             has_outro=(not is_last_clip)
         )
+        cand_dirs = [
+            "scratch",
+            os.path.join("..", "scratch"),
+            os.path.join("projects", f"episode_{episode}"),
+            os.path.join("..", "projects", f"episode_{episode}"),
+            os.path.join("..", "deepDive", "src", "ddma", "docs", "episodes", str(episode)),
+            os.path.join("..", "deepDive", "book", "ddma", "docs", "episodes", str(episode)),
+            os.path.join("deepDive", "src", "ddma", "docs", "episodes", str(episode)),
+            os.path.join("deepDive", "book", "ddma", "docs", "episodes", str(episode)),
+            os.path.join("docs", "episodes", str(episode)),
+            os.path.join("..", "docs", "episodes", str(episode)),
+        ]
+        cand_files = []
+        for cd in cand_dirs:
+            cand_files.append(os.path.join(cd, f"speaker_diarization_{episode}.json"))
+            cand_files.append(os.path.join(cd, "speaker_diarization.json"))
+            cand_files.append(os.path.join(cd, "transcription.json"))
+
         diar_data = None
-        for cand_d in [
-            os.path.join("scratch", f"speaker_diarization_{episode}.json"),
-            os.path.join("projects", f"episode_{episode}", f"speaker_diarization_{episode}.json"),
-            os.path.join("projects", f"episode_{episode}", "transcription.json"),
-        ]:
-            if os.path.exists(cand_d):
+        for cd in cand_files:
+            if os.path.exists(cd):
                 try:
-                    with open(cand_d, "r", encoding="utf-8") as df:
+                    with open(cd, "r", encoding="utf-8") as df:
                         raw_d = json.load(df)
-                        diar_data = raw_d if isinstance(raw_d, list) else raw_d.get("segments", [])
-                    break
+                        segs = raw_d if isinstance(raw_d, list) else raw_d.get("segments", [])
+                        if any(s.get("speaker") for s in segs):
+                            diar_data = segs
+                            typer.echo(f"Loaded speaker diarization ({len(diar_data)} segments) from {cd}")
+                            break
+                        elif diar_data is None and segs:
+                            diar_data = segs
                 except Exception:
                     pass
 
-        write_ass_file(caption_chunks, temp_ass_path, diarization_data=diar_data)
+        source_start = float(target_clip.get("source_start", target_clip.get("start", 0.0))) if target_clip else 0.0
+        write_ass_file(
+            caption_chunks,
+            temp_ass_path,
+            diarization_data=diar_data,
+            source_offset=source_start,
+            intro_offset=intro_duration
+        )
         os.makedirs("captions", exist_ok=True)
-        write_ass_file(caption_chunks, os.path.join("captions", f"{base_name}.ass"), diarization_data=diar_data)
+        write_ass_file(
+            caption_chunks,
+            os.path.join("captions", f"{base_name}.ass"),
+            diarization_data=diar_data,
+            source_offset=source_start,
+            intro_offset=intro_duration
+        )
         typer.echo(f"Prepared {len(caption_chunks)} ASS caption events (1080x1920 vertical spec) -> {temp_ass_path}")
 
         scale_filter = f"scale={v_width}:{v_height}:force_original_aspect_ratio=decrease,pad={v_width}:{v_height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=25"
