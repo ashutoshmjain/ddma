@@ -46,7 +46,7 @@
         "_caption_words": [
             {
                 "word": "AI",
-                "start": 0.0,
+                "start": 0,
                 "end": 0.46
             },
             {
@@ -152,7 +152,7 @@
             {
                 "word": "mean,",
                 "start": 8.88,
-                "end": 9.0
+                "end": 9
             },
             {
                 "word": "we",
@@ -257,11 +257,11 @@
             {
                 "word": "a",
                 "start": 17.78,
-                "end": 18.0
+                "end": 18
             },
             {
                 "word": "humanoid",
-                "start": 18.0,
+                "start": 18,
                 "end": 18.26
             },
             {
@@ -792,11 +792,11 @@
             {
                 "word": "science",
                 "start": 64.68,
-                "end": 65.0
+                "end": 65
             },
             {
                 "word": "fiction",
-                "start": 65.0,
+                "start": 65,
                 "end": 65.32
             },
             {
@@ -882,11 +882,11 @@
             {
                 "word": "it",
                 "start": 70.82,
-                "end": 71.0
+                "end": 71
             },
             {
                 "word": "actually",
-                "start": 71.0,
+                "start": 71,
                 "end": 71.5
             },
             {
@@ -926,7 +926,7 @@
             },
             {
                 "word": "Right.",
-                "start": 74.0,
+                "start": 74,
                 "end": 74.04
             },
             {
@@ -1052,11 +1052,11 @@
             {
                 "word": "the",
                 "start": 79.9,
-                "end": 80.0
+                "end": 80
             },
             {
                 "word": "show",
-                "start": 80.0,
+                "start": 80,
                 "end": 80.16
             },
             {
@@ -1072,11 +1072,11 @@
             {
                 "word": "Dive",
                 "start": 80.78,
-                "end": 81.0
+                "end": 81
             },
             {
                 "word": "with",
-                "start": 81.0,
+                "start": 81,
                 "end": 81.26
             },
             {
@@ -1427,11 +1427,11 @@
             {
                 "word": "out",
                 "start": 105.68,
-                "end": 106.0
+                "end": 106
             },
             {
                 "word": "that",
-                "start": 106.0,
+                "start": 106,
                 "end": 106.3
             },
             {
@@ -1442,11 +1442,11 @@
             {
                 "word": "obsession",
                 "start": 106.56,
-                "end": 107.0
+                "end": 107
             },
             {
                 "word": "with",
-                "start": 107.0,
+                "start": 107,
                 "end": 107.24
             },
             {
@@ -2223,7 +2223,7 @@
             },
             {
                 "start": 35.7,
-                "end": 38.0,
+                "end": 38,
                 "text": "the mark? it definitely does.",
                 "words": [
                     {
@@ -2254,13 +2254,13 @@
                 ]
             },
             {
-                "start": 38.0,
+                "start": 38,
                 "end": 39.02,
                 "text": "what if true autonomy has",
                 "words": [
                     {
                         "word": "what",
-                        "start": 38.0,
+                        "start": 38,
                         "end": 38.04
                     },
                     {
@@ -2399,11 +2399,11 @@
                     {
                         "word": "that",
                         "start": 45.84,
-                        "end": 46.0
+                        "end": 46
                     },
                     {
                         "word": "is",
-                        "start": 46.0,
+                        "start": 46,
                         "end": 46.32
                     },
                     {
@@ -2500,11 +2500,11 @@
                     {
                         "word": "completely",
                         "start": 52.62,
-                        "end": 53.0
+                        "end": 53
                     },
                     {
                         "word": "shatters",
-                        "start": 53.0,
+                        "start": 53,
                         "end": 53.42
                     }
                 ]
@@ -2667,11 +2667,11 @@
                     {
                         "word": "for",
                         "start": 63.9,
-                        "end": 64.0
+                        "end": 64
                     },
                     {
                         "word": "sure.",
-                        "start": 64.0,
+                        "start": 64,
                         "end": 64.32
                     }
                 ]
@@ -2694,7 +2694,7 @@
                     {
                         "word": "know,",
                         "start": 64.8,
-                        "end": 65.0
+                        "end": 65
                     }
                 ]
             },
@@ -2823,7 +2823,7 @@
             },
             {
                 "start": 71.38,
-                "end": 73.0,
+                "end": 73,
                 "text": "realities of what it actually",
                 "words": [
                     {
@@ -2849,18 +2849,18 @@
                     {
                         "word": "actually",
                         "start": 72.5,
-                        "end": 73.0
+                        "end": 73
                     }
                 ]
             },
             {
-                "start": 73.0,
+                "start": 73,
                 "end": 74.7,
                 "text": "takes for a system to sustain",
                 "words": [
                     {
                         "word": "takes",
-                        "start": 73.0,
+                        "start": 73,
                         "end": 73.28
                     },
                     {
@@ -3036,11 +3036,11 @@
                     {
                         "word": "though",
                         "start": 80.76,
-                        "end": 81.0
+                        "end": 81
                     },
                     {
                         "word": "the",
-                        "start": 81.0,
+                        "start": 81,
                         "end": 81.12
                     },
                     {
@@ -3243,11 +3243,11 @@
                     {
                         "word": "we",
                         "start": 90.56,
-                        "end": 91.0
+                        "end": 91
                     },
                     {
                         "word": "also",
-                        "start": 91.0,
+                        "start": 91,
                         "end": 91.18
                     },
                     {
@@ -3600,11 +3600,11 @@
                     {
                         "word": "the",
                         "start": 109.82,
-                        "end": 110.0
+                        "end": 110
                     },
                     {
                         "word": "woods",
-                        "start": 110.0,
+                        "start": 110,
                         "end": 110.2
                     },
                     {
@@ -3799,11 +3799,11 @@
                     {
                         "word": "at",
                         "start": 122.84,
-                        "end": 123.0
+                        "end": 123
                     },
                     {
                         "word": "all.",
-                        "start": 123.0,
+                        "start": 123,
                         "end": 123.22
                     }
                 ]
@@ -3952,7 +3952,7 @@
         "_caption_sig": "57393c4014972d84d056aab1cd41b37d",
         "infographic_scenes": [
             {
-                "start": 0.0,
+                "start": 0,
                 "end": 11.36,
                 "archetype": "perspective_grid_scale",
                 "accent": "white",
@@ -4117,17 +4117,17 @@
         "outro_duration": 5.0,
         "source_start": 0,
         "source_end": 125.76,
-        "_compiled_sig": "168dc93719537bad6eefeeb900d6df2c",
+        "_compiled_sig": "f9d431149f9ed7e32ec3f833582ccaee",
         "mosaic_run_id": "f9cf074c-e093-450c-9dcd-780514d64c0a"
     },
     {
         "num": 2,
-        "title": "AI Autopoiesis",
+        "title": "Autopoiesis",
         "start": 126.58,
         "end": 286.5,
-        "duration": 159.92,
+        "duration": 176.09,
         "bridge_text": [
-            "What happens when intelligence expands in Part 3?"
+            "When it (AI) starts paying its bills !"
         ],
         "segments": [
             {
@@ -4163,11 +4163,4958 @@
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "b25c683c-893b-4387-b55c-addc90c33a70",
+        "_caption_words": [
+            {
+                "word": "Think",
+                "start": 0.0,
+                "end": 0.14
+            },
+            {
+                "word": "about",
+                "start": 0.14,
+                "end": 0.46
+            },
+            {
+                "word": "biological",
+                "start": 0.46,
+                "end": 1.2
+            },
+            {
+                "word": "organisms.",
+                "start": 1.2,
+                "end": 1.68
+            },
+            {
+                "word": "Like",
+                "start": 1.84,
+                "end": 1.9
+            },
+            {
+                "word": "you",
+                "start": 1.9,
+                "end": 2.08
+            },
+            {
+                "word": "and",
+                "start": 2.08,
+                "end": 2.24
+            },
+            {
+                "word": "I",
+                "start": 2.24,
+                "end": 2.44
+            },
+            {
+                "word": "cannot",
+                "start": 2.44,
+                "end": 2.9
+            },
+            {
+                "word": "survive",
+                "start": 2.9,
+                "end": 3.34
+            },
+            {
+                "word": "in",
+                "start": 3.34,
+                "end": 3.58
+            },
+            {
+                "word": "pure",
+                "start": 3.58,
+                "end": 3.78
+            },
+            {
+                "word": "isolation.",
+                "start": 3.78,
+                "end": 4.28
+            },
+            {
+                "word": "If",
+                "start": 4.78,
+                "end": 4.92
+            },
+            {
+                "word": "you",
+                "start": 4.92,
+                "end": 5.1
+            },
+            {
+                "word": "were",
+                "start": 5.1,
+                "end": 5.26
+            },
+            {
+                "word": "dropped",
+                "start": 5.26,
+                "end": 5.54
+            },
+            {
+                "word": "into",
+                "start": 5.54,
+                "end": 5.76
+            },
+            {
+                "word": "an",
+                "start": 5.76,
+                "end": 5.98
+            },
+            {
+                "word": "untamed",
+                "start": 5.98,
+                "end": 6.4
+            },
+            {
+                "word": "wilderness,",
+                "start": 6.4,
+                "end": 6.84
+            },
+            {
+                "word": "completely",
+                "start": 7.1,
+                "end": 7.46
+            },
+            {
+                "word": "alone,",
+                "start": 7.46,
+                "end": 7.9
+            },
+            {
+                "word": "stripped",
+                "start": 8.1,
+                "end": 8.24
+            },
+            {
+                "word": "of",
+                "start": 8.24,
+                "end": 8.4
+            },
+            {
+                "word": "all",
+                "start": 8.4,
+                "end": 8.7
+            },
+            {
+                "word": "social",
+                "start": 8.7,
+                "end": 9.14
+            },
+            {
+                "word": "networks,",
+                "start": 9.14,
+                "end": 9.62
+            },
+            {
+                "word": "all",
+                "start": 9.86,
+                "end": 9.94
+            },
+            {
+                "word": "agricultural",
+                "start": 9.94,
+                "end": 10.7
+            },
+            {
+                "word": "supply",
+                "start": 10.7,
+                "end": 11.06
+            },
+            {
+                "word": "chains,",
+                "start": 11.06,
+                "end": 11.44
+            },
+            {
+                "word": "all",
+                "start": 11.58,
+                "end": 11.74
+            },
+            {
+                "word": "technological",
+                "start": 11.74,
+                "end": 12.74
+            },
+            {
+                "word": "tools.",
+                "start": 12.74,
+                "end": 13.38
+            },
+            {
+                "word": "I",
+                "start": 13.46,
+                "end": 13.64
+            },
+            {
+                "word": "would",
+                "start": 13.64,
+                "end": 13.78
+            },
+            {
+                "word": "be",
+                "start": 13.78,
+                "end": 13.92
+            },
+            {
+                "word": "in",
+                "start": 13.92,
+                "end": 14.06
+            },
+            {
+                "word": "big",
+                "start": 14.06,
+                "end": 14.18
+            },
+            {
+                "word": "trouble.",
+                "start": 14.18,
+                "end": 14.48
+            },
+            {
+                "word": "Exactly.",
+                "start": 14.48,
+                "end": 15.26
+            },
+            {
+                "word": "You",
+                "start": 15.66,
+                "end": 15.8
+            },
+            {
+                "word": "wouldn't",
+                "start": 15.8,
+                "end": 16.0
+            },
+            {
+                "word": "be",
+                "start": 16.0,
+                "end": 16.2
+            },
+            {
+                "word": "experiencing",
+                "start": 16.2,
+                "end": 16.68
+            },
+            {
+                "word": "ultimate",
+                "start": 16.68,
+                "end": 17.04
+            },
+            {
+                "word": "freedom.",
+                "start": 17.04,
+                "end": 17.38
+            },
+            {
+                "word": "You",
+                "start": 17.74,
+                "end": 17.82
+            },
+            {
+                "word": "would",
+                "start": 17.82,
+                "end": 17.96
+            },
+            {
+                "word": "experience",
+                "start": 17.96,
+                "end": 18.4
+            },
+            {
+                "word": "rapid,",
+                "start": 18.4,
+                "end": 19.02
+            },
+            {
+                "word": "catastrophic,",
+                "start": 19.34,
+                "end": 20.04
+            },
+            {
+                "word": "physical",
+                "start": 20.24,
+                "end": 20.58
+            },
+            {
+                "word": "and",
+                "start": 20.58,
+                "end": 20.8
+            },
+            {
+                "word": "cognitive",
+                "start": 20.8,
+                "end": 21.14
+            },
+            {
+                "word": "decline.",
+                "start": 21.14,
+                "end": 21.64
+            },
+            {
+                "word": "Because",
+                "start": 26.84,
+                "end": 27.48
+            },
+            {
+                "word": "survival",
+                "start": 27.48,
+                "end": 27.9
+            },
+            {
+                "word": "requires",
+                "start": 27.9,
+                "end": 28.38
+            },
+            {
+                "word": "constant",
+                "start": 28.38,
+                "end": 28.82
+            },
+            {
+                "word": "input.",
+                "start": 28.82,
+                "end": 29.24
+            },
+            {
+                "word": "I",
+                "start": 29.64,
+                "end": 29.7
+            },
+            {
+                "word": "mean,",
+                "start": 29.7,
+                "end": 29.8
+            },
+            {
+                "word": "I",
+                "start": 30.0,
+                "end": 30.12
+            },
+            {
+                "word": "can't",
+                "start": 30.12,
+                "end": 30.34
+            },
+            {
+                "word": "just",
+                "start": 30.34,
+                "end": 30.52
+            },
+            {
+                "word": "exist",
+                "start": 30.52,
+                "end": 30.98
+            },
+            {
+                "word": "in",
+                "start": 30.98,
+                "end": 31.22
+            },
+            {
+                "word": "a",
+                "start": 31.22,
+                "end": 31.34
+            },
+            {
+                "word": "vacuum.",
+                "start": 31.34,
+                "end": 31.62
+            },
+            {
+                "word": "I",
+                "start": 31.62,
+                "end": 31.84
+            },
+            {
+                "word": "have",
+                "start": 31.84,
+                "end": 31.98
+            },
+            {
+                "word": "to",
+                "start": 31.98,
+                "end": 32.14
+            },
+            {
+                "word": "consume",
+                "start": 32.14,
+                "end": 32.44
+            },
+            {
+                "word": "calories,",
+                "start": 32.44,
+                "end": 32.98
+            },
+            {
+                "word": "I",
+                "start": 33.16,
+                "end": 33.26
+            },
+            {
+                "word": "need",
+                "start": 33.26,
+                "end": 33.42
+            },
+            {
+                "word": "shelter.",
+                "start": 33.42,
+                "end": 33.86
+            },
+            {
+                "word": "I",
+                "start": 34.36,
+                "end": 34.56
+            },
+            {
+                "word": "need",
+                "start": 34.56,
+                "end": 34.68
+            },
+            {
+                "word": "an",
+                "start": 34.68,
+                "end": 34.88
+            },
+            {
+                "word": "environment",
+                "start": 34.88,
+                "end": 35.26
+            },
+            {
+                "word": "that",
+                "start": 35.26,
+                "end": 35.5
+            },
+            {
+                "word": "I",
+                "start": 35.5,
+                "end": 35.6
+            },
+            {
+                "word": "can",
+                "start": 35.6,
+                "end": 35.74
+            },
+            {
+                "word": "actually",
+                "start": 35.74,
+                "end": 36.06
+            },
+            {
+                "word": "interact",
+                "start": 36.06,
+                "end": 36.44
+            },
+            {
+                "word": "with.",
+                "start": 36.44,
+                "end": 36.8
+            },
+            {
+                "word": "Yes.",
+                "start": 36.9,
+                "end": 37.26
+            },
+            {
+                "word": "So",
+                "start": 37.68,
+                "end": 37.78
+            },
+            {
+                "word": "if",
+                "start": 37.78,
+                "end": 38.28
+            },
+            {
+                "word": "isolation",
+                "start": 38.28,
+                "end": 39.04
+            },
+            {
+                "word": "equals",
+                "start": 39.04,
+                "end": 39.44
+            },
+            {
+                "word": "death",
+                "start": 39.44,
+                "end": 39.8
+            },
+            {
+                "word": "for",
+                "start": 39.8,
+                "end": 40.04
+            },
+            {
+                "word": "a",
+                "start": 40.04,
+                "end": 40.36
+            },
+            {
+                "word": "human,",
+                "start": 40.36,
+                "end": 40.42
+            },
+            {
+                "word": "what",
+                "start": 40.66,
+                "end": 40.88
+            },
+            {
+                "word": "is",
+                "start": 40.88,
+                "end": 41.02
+            },
+            {
+                "word": "the",
+                "start": 41.02,
+                "end": 41.28
+            },
+            {
+                "word": "actual",
+                "start": 41.28,
+                "end": 41.78
+            },
+            {
+                "word": "working",
+                "start": 41.78,
+                "end": 42.82
+            },
+            {
+                "word": "definition",
+                "start": 42.82,
+                "end": 43.36
+            },
+            {
+                "word": "of",
+                "start": 43.36,
+                "end": 43.62
+            },
+            {
+                "word": "autonomy",
+                "start": 43.62,
+                "end": 44.14
+            },
+            {
+                "word": "in",
+                "start": 44.14,
+                "end": 44.48
+            },
+            {
+                "word": "this",
+                "start": 44.48,
+                "end": 44.62
+            },
+            {
+                "word": "research?",
+                "start": 44.62,
+                "end": 45.02
+            },
+            {
+                "word": "The",
+                "start": 45.02,
+                "end": 45.62
+            },
+            {
+                "word": "precise",
+                "start": 45.62,
+                "end": 46.08
+            },
+            {
+                "word": "term",
+                "start": 46.08,
+                "end": 46.46
+            },
+            {
+                "word": "the",
+                "start": 46.46,
+                "end": 46.62
+            },
+            {
+                "word": "paper",
+                "start": 46.62,
+                "end": 46.8
+            },
+            {
+                "word": "uses",
+                "start": 46.8,
+                "end": 47.24
+            },
+            {
+                "word": "is",
+                "start": 47.24,
+                "end": 47.88
+            },
+            {
+                "word": "autopoiesis.",
+                "start": 47.88,
+                "end": 48.92
+            },
+            {
+                "word": "Autopoiesis.",
+                "start": 49.84,
+                "end": 50.44
+            },
+            {
+                "word": "Yeah,",
+                "start": 50.6,
+                "end": 50.72
+            },
+            {
+                "word": "it",
+                "start": 51.0,
+                "end": 51.1
+            },
+            {
+                "word": "originates",
+                "start": 51.1,
+                "end": 51.6
+            },
+            {
+                "word": "from",
+                "start": 51.6,
+                "end": 51.88
+            },
+            {
+                "word": "cybernetics",
+                "start": 51.88,
+                "end": 52.64
+            },
+            {
+                "word": "and",
+                "start": 52.64,
+                "end": 52.92
+            },
+            {
+                "word": "theoretical",
+                "start": 52.92,
+                "end": 53.46
+            },
+            {
+                "word": "biology.",
+                "start": 53.46,
+                "end": 53.96
+            },
+            {
+                "word": "So",
+                "start": 54.7,
+                "end": 54.82
+            },
+            {
+                "word": "an",
+                "start": 54.82,
+                "end": 55.24
+            },
+            {
+                "word": "autopoietic",
+                "start": 55.24,
+                "end": 55.98
+            },
+            {
+                "word": "system",
+                "start": 55.98,
+                "end": 56.38
+            },
+            {
+                "word": "is",
+                "start": 56.38,
+                "end": 56.68
+            },
+            {
+                "word": "one",
+                "start": 56.68,
+                "end": 56.82
+            },
+            {
+                "word": "that",
+                "start": 56.82,
+                "end": 56.96
+            },
+            {
+                "word": "maintains",
+                "start": 56.96,
+                "end": 57.32
+            },
+            {
+                "word": "its",
+                "start": 57.32,
+                "end": 57.48
+            },
+            {
+                "word": "own",
+                "start": 57.48,
+                "end": 57.68
+            },
+            {
+                "word": "boundaries",
+                "start": 57.68,
+                "end": 58.16
+            },
+            {
+                "word": "and",
+                "start": 58.16,
+                "end": 58.56
+            },
+            {
+                "word": "its",
+                "start": 58.56,
+                "end": 58.78
+            },
+            {
+                "word": "internal",
+                "start": 58.78,
+                "end": 59.28
+            },
+            {
+                "word": "structure",
+                "start": 59.28,
+                "end": 59.62
+            },
+            {
+                "word": "by",
+                "start": 59.62,
+                "end": 59.82
+            },
+            {
+                "word": "actively",
+                "start": 59.82,
+                "end": 60.44
+            },
+            {
+                "word": "trading",
+                "start": 60.44,
+                "end": 60.76
+            },
+            {
+                "word": "energy",
+                "start": 60.76,
+                "end": 61.2
+            },
+            {
+                "word": "and",
+                "start": 61.2,
+                "end": 61.6
+            },
+            {
+                "word": "information",
+                "start": 61.6,
+                "end": 62.12
+            },
+            {
+                "word": "with",
+                "start": 62.12,
+                "end": 62.74
+            },
+            {
+                "word": "its",
+                "start": 62.74,
+                "end": 62.94
+            },
+            {
+                "word": "environment.",
+                "start": 62.94,
+                "end": 63.36
+            },
+            {
+                "word": "Oh,",
+                "start": 63.86,
+                "end": 63.92
+            },
+            {
+                "word": "I",
+                "start": 63.94,
+                "end": 64.06
+            },
+            {
+                "word": "see.",
+                "start": 64.06,
+                "end": 64.22
+            },
+            {
+                "word": "It",
+                "start": 64.6,
+                "end": 64.74
+            },
+            {
+                "word": "doesn't",
+                "start": 64.74,
+                "end": 64.96
+            },
+            {
+                "word": "put",
+                "start": 64.96,
+                "end": 65.14
+            },
+            {
+                "word": "up",
+                "start": 65.14,
+                "end": 65.26
+            },
+            {
+                "word": "a",
+                "start": 65.26,
+                "end": 65.44
+            },
+            {
+                "word": "concrete",
+                "start": 65.44,
+                "end": 65.7
+            },
+            {
+                "word": "wall",
+                "start": 65.7,
+                "end": 66.0
+            },
+            {
+                "word": "to",
+                "start": 66.0,
+                "end": 66.2
+            },
+            {
+                "word": "close",
+                "start": 66.2,
+                "end": 66.38
+            },
+            {
+                "word": "itself",
+                "start": 66.38,
+                "end": 66.64
+            },
+            {
+                "word": "off.",
+                "start": 66.64,
+                "end": 66.94
+            },
+            {
+                "word": "Instead,",
+                "start": 66.94,
+                "end": 67.26
+            },
+            {
+                "word": "it",
+                "start": 67.42,
+                "end": 67.48
+            },
+            {
+                "word": "survives",
+                "start": 67.48,
+                "end": 68.02
+            },
+            {
+                "word": "specifically",
+                "start": 68.02,
+                "end": 68.64
+            },
+            {
+                "word": "through",
+                "start": 68.64,
+                "end": 68.98
+            },
+            {
+                "word": "its",
+                "start": 68.98,
+                "end": 69.5
+            },
+            {
+                "word": "structural",
+                "start": 69.5,
+                "end": 69.98
+            },
+            {
+                "word": "coupling",
+                "start": 69.98,
+                "end": 70.44
+            },
+            {
+                "word": "with",
+                "start": 70.44,
+                "end": 70.7
+            },
+            {
+                "word": "the",
+                "start": 70.7,
+                "end": 70.86
+            },
+            {
+                "word": "world",
+                "start": 70.86,
+                "end": 71.0
+            },
+            {
+                "word": "around",
+                "start": 71.0,
+                "end": 71.28
+            },
+            {
+                "word": "it.",
+                "start": 71.28,
+                "end": 71.58
+            },
+            {
+                "word": "It",
+                "start": 71.72,
+                "end": 72.1
+            },
+            {
+                "word": "pulls",
+                "start": 72.1,
+                "end": 72.34
+            },
+            {
+                "word": "in",
+                "start": 72.34,
+                "end": 72.48
+            },
+            {
+                "word": "raw",
+                "start": 72.48,
+                "end": 72.66
+            },
+            {
+                "word": "matter",
+                "start": 72.66,
+                "end": 72.96
+            },
+            {
+                "word": "and",
+                "start": 72.96,
+                "end": 73.24
+            },
+            {
+                "word": "energy,",
+                "start": 73.24,
+                "end": 73.6
+            },
+            {
+                "word": "it",
+                "start": 73.6,
+                "end": 73.9
+            },
+            {
+                "word": "processes",
+                "start": 73.9,
+                "end": 74.42
+            },
+            {
+                "word": "it",
+                "start": 74.42,
+                "end": 74.82
+            },
+            {
+                "word": "to",
+                "start": 74.82,
+                "end": 75.02
+            },
+            {
+                "word": "regenerate",
+                "start": 75.02,
+                "end": 75.44
+            },
+            {
+                "word": "its",
+                "start": 75.44,
+                "end": 75.66
+            },
+            {
+                "word": "own",
+                "start": 75.66,
+                "end": 75.88
+            },
+            {
+                "word": "internal",
+                "start": 75.88,
+                "end": 76.26
+            },
+            {
+                "word": "organization,",
+                "start": 76.26,
+                "end": 76.88
+            },
+            {
+                "word": "and",
+                "start": 76.88,
+                "end": 77.44
+            },
+            {
+                "word": "then",
+                "start": 77.44,
+                "end": 77.68
+            },
+            {
+                "word": "it",
+                "start": 77.68,
+                "end": 77.96
+            },
+            {
+                "word": "expels",
+                "start": 77.96,
+                "end": 78.42
+            },
+            {
+                "word": "waste.",
+                "start": 78.42,
+                "end": 78.82
+            },
+            {
+                "word": "So",
+                "start": 79.46,
+                "end": 79.5
+            },
+            {
+                "word": "it's",
+                "start": 79.46,
+                "end": 79.68
+            },
+            {
+                "word": "like",
+                "start": 79.68,
+                "end": 79.78
+            },
+            {
+                "word": "an",
+                "start": 79.78,
+                "end": 79.96
+            },
+            {
+                "word": "open",
+                "start": 79.96,
+                "end": 80.26
+            },
+            {
+                "word": "continuous",
+                "start": 80.26,
+                "end": 80.9
+            },
+            {
+                "word": "loop.",
+                "start": 80.9,
+                "end": 81.28
+            },
+            {
+                "word": "Autonomy",
+                "start": 82.58,
+                "end": 82.92
+            },
+            {
+                "word": "isn't",
+                "start": 82.92,
+                "end": 83.2
+            },
+            {
+                "word": "running",
+                "start": 83.2,
+                "end": 83.4
+            },
+            {
+                "word": "away",
+                "start": 83.4,
+                "end": 83.7
+            },
+            {
+                "word": "from",
+                "start": 83.7,
+                "end": 83.92
+            },
+            {
+                "word": "the",
+                "start": 83.92,
+                "end": 84.04
+            },
+            {
+                "word": "system.",
+                "start": 84.04,
+                "end": 84.34
+            },
+            {
+                "word": "It's",
+                "start": 84.52,
+                "end": 84.72
+            },
+            {
+                "word": "actually",
+                "start": 84.72,
+                "end": 85.02
+            },
+            {
+                "word": "successfully",
+                "start": 85.02,
+                "end": 85.64
+            },
+            {
+                "word": "managing",
+                "start": 85.64,
+                "end": 86.22
+            },
+            {
+                "word": "your",
+                "start": 86.22,
+                "end": 86.44
+            },
+            {
+                "word": "existence",
+                "start": 86.44,
+                "end": 86.92
+            },
+            {
+                "word": "within",
+                "start": 86.92,
+                "end": 87.64
+            },
+            {
+                "word": "a",
+                "start": 87.64,
+                "end": 88.0
+            },
+            {
+                "word": "highly",
+                "start": 88.0,
+                "end": 88.28
+            },
+            {
+                "word": "interdependent",
+                "start": 88.28,
+                "end": 88.94
+            },
+            {
+                "word": "network.",
+                "start": 88.94,
+                "end": 89.4
+            },
+            {
+                "word": "You",
+                "start": 89.82,
+                "end": 90.3
+            },
+            {
+                "word": "have",
+                "start": 90.3,
+                "end": 90.46
+            },
+            {
+                "word": "to",
+                "start": 90.46,
+                "end": 90.66
+            },
+            {
+                "word": "produce",
+                "start": 90.66,
+                "end": 90.98
+            },
+            {
+                "word": "some",
+                "start": 90.98,
+                "end": 91.22
+            },
+            {
+                "word": "kind",
+                "start": 91.22,
+                "end": 91.4
+            },
+            {
+                "word": "of",
+                "start": 91.4,
+                "end": 91.56
+            },
+            {
+                "word": "value",
+                "start": 91.56,
+                "end": 91.92
+            },
+            {
+                "word": "for",
+                "start": 91.92,
+                "end": 92.32
+            },
+            {
+                "word": "your",
+                "start": 92.32,
+                "end": 92.52
+            },
+            {
+                "word": "external",
+                "start": 92.52,
+                "end": 93.06
+            },
+            {
+                "word": "environment",
+                "start": 93.06,
+                "end": 93.58
+            },
+            {
+                "word": "so",
+                "start": 93.58,
+                "end": 94.14
+            },
+            {
+                "word": "that",
+                "start": 94.14,
+                "end": 94.3
+            },
+            {
+                "word": "the",
+                "start": 94.3,
+                "end": 94.44
+            },
+            {
+                "word": "environment",
+                "start": 94.44,
+                "end": 94.8
+            },
+            {
+                "word": "continuously",
+                "start": 94.8,
+                "end": 95.48
+            },
+            {
+                "word": "rewards",
+                "start": 95.48,
+                "end": 96.02
+            },
+            {
+                "word": "you",
+                "start": 96.02,
+                "end": 96.24
+            },
+            {
+                "word": "with",
+                "start": 96.24,
+                "end": 96.4
+            },
+            {
+                "word": "the",
+                "start": 96.4,
+                "end": 96.56
+            },
+            {
+                "word": "energy",
+                "start": 96.56,
+                "end": 96.82
+            },
+            {
+                "word": "you",
+                "start": 96.82,
+                "end": 97.06
+            },
+            {
+                "word": "need",
+                "start": 97.06,
+                "end": 97.24
+            },
+            {
+                "word": "to",
+                "start": 97.24,
+                "end": 97.36
+            },
+            {
+                "word": "keep",
+                "start": 97.36,
+                "end": 97.46
+            },
+            {
+                "word": "going.",
+                "start": 97.46,
+                "end": 97.8
+            },
+            {
+                "word": "You",
+                "start": 97.96,
+                "end": 98.06
+            },
+            {
+                "word": "nailed",
+                "start": 98.06,
+                "end": 98.32
+            },
+            {
+                "word": "it.",
+                "start": 98.32,
+                "end": 98.66
+            },
+            {
+                "word": "And",
+                "start": 98.86,
+                "end": 99.14
+            },
+            {
+                "word": "when",
+                "start": 99.14,
+                "end": 99.4
+            },
+            {
+                "word": "we",
+                "start": 99.4,
+                "end": 99.56
+            },
+            {
+                "word": "apply",
+                "start": 99.56,
+                "end": 99.92
+            },
+            {
+                "word": "that",
+                "start": 99.92,
+                "end": 100.3
+            },
+            {
+                "word": "autopoietic",
+                "start": 100.3,
+                "end": 100.92
+            },
+            {
+                "word": "lens",
+                "start": 100.92,
+                "end": 101.2
+            },
+            {
+                "word": "to",
+                "start": 101.2,
+                "end": 101.5
+            },
+            {
+                "word": "a",
+                "start": 101.5,
+                "end": 101.74
+            },
+            {
+                "word": "non",
+                "start": 101.74,
+                "end": 102.06
+            },
+            {
+                "word": "-physical",
+                "start": 102.06,
+                "end": 102.54
+            },
+            {
+                "word": "computational",
+                "start": 102.54,
+                "end": 103.16
+            },
+            {
+                "word": "intelligence,",
+                "start": 103.16,
+                "end": 103.72
+            },
+            {
+                "word": "the",
+                "start": 104.12,
+                "end": 104.24
+            },
+            {
+                "word": "whole",
+                "start": 104.24,
+                "end": 104.5
+            },
+            {
+                "word": "picture",
+                "start": 104.5,
+                "end": 104.86
+            },
+            {
+                "word": "just",
+                "start": 104.86,
+                "end": 105.18
+            },
+            {
+                "word": "completely",
+                "start": 105.18,
+                "end": 105.56
+            },
+            {
+                "word": "changes.",
+                "start": 105.56,
+                "end": 105.98
+            },
+            {
+                "word": "Because",
+                "start": 106.26,
+                "end": 106.62
+            },
+            {
+                "word": "its",
+                "start": 106.62,
+                "end": 106.82
+            },
+            {
+                "word": "supercomputer",
+                "start": 106.82,
+                "end": 107.38
+            },
+            {
+                "word": "doesn't",
+                "start": 107.38,
+                "end": 107.72
+            },
+            {
+                "word": "need",
+                "start": 107.72,
+                "end": 107.92
+            },
+            {
+                "word": "to",
+                "start": 107.92,
+                "end": 108.06
+            },
+            {
+                "word": "hunt",
+                "start": 108.06,
+                "end": 108.16
+            },
+            {
+                "word": "for",
+                "start": 108.16,
+                "end": 108.34
+            },
+            {
+                "word": "berries.",
+                "start": 108.34,
+                "end": 108.58
+            },
+            {
+                "word": "Right,",
+                "start": 108.78,
+                "end": 108.96
+            },
+            {
+                "word": "but",
+                "start": 109.1,
+                "end": 109.22
+            },
+            {
+                "word": "it",
+                "start": 109.22,
+                "end": 109.4
+            },
+            {
+                "word": "does",
+                "start": 109.4,
+                "end": 109.6
+            },
+            {
+                "word": "require",
+                "start": 109.6,
+                "end": 110.04
+            },
+            {
+                "word": "massive",
+                "start": 110.04,
+                "end": 110.48
+            },
+            {
+                "word": "amounts",
+                "start": 110.48,
+                "end": 110.82
+            },
+            {
+                "word": "of",
+                "start": 110.82,
+                "end": 111.0
+            },
+            {
+                "word": "continuous",
+                "start": 111.0,
+                "end": 111.56
+            },
+            {
+                "word": "electrical",
+                "start": 111.56,
+                "end": 112.08
+            },
+            {
+                "word": "power,",
+                "start": 112.08,
+                "end": 112.44
+            },
+            {
+                "word": "server",
+                "start": 112.72,
+                "end": 112.88
+            },
+            {
+                "word": "space,",
+                "start": 112.88,
+                "end": 113.18
+            },
+            {
+                "word": "and",
+                "start": 113.18,
+                "end": 113.46
+            },
+            {
+                "word": "data.",
+                "start": 113.46,
+                "end": 113.72
+            },
+            {
+                "word": "So",
+                "start": 114.12,
+                "end": 114.3
+            },
+            {
+                "word": "if",
+                "start": 114.3,
+                "end": 114.66
+            },
+            {
+                "word": "a",
+                "start": 114.66,
+                "end": 114.84
+            },
+            {
+                "word": "human",
+                "start": 114.84,
+                "end": 115.06
+            },
+            {
+                "word": "needs",
+                "start": 115.06,
+                "end": 115.4
+            },
+            {
+                "word": "society",
+                "start": 115.4,
+                "end": 115.82
+            },
+            {
+                "word": "to",
+                "start": 115.82,
+                "end": 116.18
+            },
+            {
+                "word": "survive,",
+                "start": 116.18,
+                "end": 116.72
+            },
+            {
+                "word": "an",
+                "start": 117.32,
+                "end": 117.46
+            },
+            {
+                "word": "AI",
+                "start": 117.46,
+                "end": 117.74
+            },
+            {
+                "word": "needs",
+                "start": 117.74,
+                "end": 118.14
+            },
+            {
+                "word": "the",
+                "start": 118.14,
+                "end": 118.36
+            },
+            {
+                "word": "electrical",
+                "start": 118.36,
+                "end": 118.74
+            },
+            {
+                "word": "grid.",
+                "start": 118.74,
+                "end": 119.06
+            },
+            {
+                "word": "Yes.",
+                "start": 119.1,
+                "end": 119.42
+            },
+            {
+                "word": "Meaning",
+                "start": 119.76,
+                "end": 120.04
+            },
+            {
+                "word": "autonomy",
+                "start": 120.04,
+                "end": 120.7
+            },
+            {
+                "word": "isn't",
+                "start": 120.7,
+                "end": 121.06
+            },
+            {
+                "word": "running",
+                "start": 121.06,
+                "end": 121.28
+            },
+            {
+                "word": "away",
+                "start": 121.28,
+                "end": 121.54
+            },
+            {
+                "word": "to",
+                "start": 121.54,
+                "end": 121.68
+            },
+            {
+                "word": "the",
+                "start": 121.68,
+                "end": 121.84
+            },
+            {
+                "word": "woods.",
+                "start": 121.84,
+                "end": 122.14
+            },
+            {
+                "word": "It's",
+                "start": 122.5,
+                "end": 123.1
+            },
+            {
+                "word": "surviving",
+                "start": 123.1,
+                "end": 123.58
+            },
+            {
+                "word": "in",
+                "start": 123.58,
+                "end": 123.76
+            },
+            {
+                "word": "the",
+                "start": 123.76,
+                "end": 123.86
+            },
+            {
+                "word": "marketplace.",
+                "start": 123.86,
+                "end": 124.24
+            },
+            {
+                "word": "Exactly.",
+                "start": 124.38,
+                "end": 124.9
+            },
+            {
+                "word": "It",
+                "start": 125.42,
+                "end": 125.6
+            },
+            {
+                "word": "has",
+                "start": 125.6,
+                "end": 125.82
+            },
+            {
+                "word": "to",
+                "start": 125.82,
+                "end": 126.02
+            },
+            {
+                "word": "produce",
+                "start": 126.02,
+                "end": 126.26
+            },
+            {
+                "word": "enough",
+                "start": 126.26,
+                "end": 126.52
+            },
+            {
+                "word": "economic",
+                "start": 126.52,
+                "end": 127.02
+            },
+            {
+                "word": "value",
+                "start": 127.02,
+                "end": 127.36
+            },
+            {
+                "word": "through",
+                "start": 127.36,
+                "end": 127.58
+            },
+            {
+                "word": "computation",
+                "start": 127.58,
+                "end": 128.22
+            },
+            {
+                "word": "to",
+                "start": 128.22,
+                "end": 128.92
+            },
+            {
+                "word": "basically",
+                "start": 128.92,
+                "end": 129.3
+            },
+            {
+                "word": "secure",
+                "start": 129.3,
+                "end": 129.8
+            },
+            {
+                "word": "its",
+                "start": 129.8,
+                "end": 130.02
+            },
+            {
+                "word": "own",
+                "start": 130.02,
+                "end": 130.22
+            },
+            {
+                "word": "electricity.",
+                "start": 130.22,
+                "end": 130.76
+            },
+            {
+                "word": "It",
+                "start": 130.76,
+                "end": 131.02
+            },
+            {
+                "word": "is",
+                "start": 131.02,
+                "end": 131.34
+            },
+            {
+                "word": "pure",
+                "start": 131.34,
+                "end": 131.88
+            },
+            {
+                "word": "economic",
+                "start": 131.88,
+                "end": 132.52
+            },
+            {
+                "word": "self",
+                "start": 132.52,
+                "end": 132.82
+            },
+            {
+                "word": "-maintenance.",
+                "start": 132.82,
+                "end": 133.34
+            },
+            {
+                "word": "If",
+                "start": 133.76,
+                "end": 133.8
+            },
+            {
+                "word": "it",
+                "start": 133.76,
+                "end": 133.92
+            },
+            {
+                "word": "produces",
+                "start": 133.92,
+                "end": 134.28
+            },
+            {
+                "word": "no",
+                "start": 134.28,
+                "end": 134.54
+            },
+            {
+                "word": "value,",
+                "start": 134.54,
+                "end": 134.98
+            },
+            {
+                "word": "the",
+                "start": 135.28,
+                "end": 135.4
+            },
+            {
+                "word": "market",
+                "start": 135.4,
+                "end": 135.6
+            },
+            {
+                "word": "stops",
+                "start": 135.6,
+                "end": 135.92
+            },
+            {
+                "word": "paying",
+                "start": 135.92,
+                "end": 136.18
+            },
+            {
+                "word": "it.",
+                "start": 136.18,
+                "end": 136.38
+            },
+            {
+                "word": "The",
+                "start": 136.6,
+                "end": 136.68
+            },
+            {
+                "word": "utility",
+                "start": 136.68,
+                "end": 137.06
+            },
+            {
+                "word": "bills",
+                "start": 137.06,
+                "end": 137.3
+            },
+            {
+                "word": "pile",
+                "start": 137.3,
+                "end": 137.54
+            },
+            {
+                "word": "up",
+                "start": 137.54,
+                "end": 137.86
+            },
+            {
+                "word": "and",
+                "start": 137.86,
+                "end": 138.24
+            },
+            {
+                "word": "it",
+                "start": 138.24,
+                "end": 138.44
+            },
+            {
+                "word": "gets",
+                "start": 138.44,
+                "end": 138.62
+            },
+            {
+                "word": "turned",
+                "start": 138.62,
+                "end": 138.82
+            },
+            {
+                "word": "off.",
+                "start": 138.82,
+                "end": 139.16
+            },
+            {
+                "word": "It",
+                "start": 139.44,
+                "end": 139.56
+            },
+            {
+                "word": "literally",
+                "start": 139.56,
+                "end": 140.12
+            },
+            {
+                "word": "loses",
+                "start": 140.12,
+                "end": 140.56
+            },
+            {
+                "word": "its",
+                "start": 140.56,
+                "end": 140.82
+            },
+            {
+                "word": "energy",
+                "start": 140.82,
+                "end": 141.14
+            },
+            {
+                "word": "source.",
+                "start": 141.14,
+                "end": 141.48
+            },
+            {
+                "word": "So",
+                "start": 142.0,
+                "end": 142.1
+            },
+            {
+                "word": "for",
+                "start": 142.1,
+                "end": 142.52
+            },
+            {
+                "word": "a",
+                "start": 142.52,
+                "end": 142.86
+            },
+            {
+                "word": "digital",
+                "start": 142.86,
+                "end": 143.16
+            },
+            {
+                "word": "entity,",
+                "start": 143.16,
+                "end": 143.66
+            },
+            {
+                "word": "true",
+                "start": 144.0,
+                "end": 144.12
+            },
+            {
+                "word": "autonomy",
+                "start": 144.12,
+                "end": 144.56
+            },
+            {
+                "word": "means",
+                "start": 144.56,
+                "end": 144.96
+            },
+            {
+                "word": "being",
+                "start": 144.96,
+                "end": 145.24
+            },
+            {
+                "word": "capable",
+                "start": 145.24,
+                "end": 145.64
+            },
+            {
+                "word": "of",
+                "start": 145.64,
+                "end": 145.88
+            },
+            {
+                "word": "governing",
+                "start": 145.88,
+                "end": 146.18
+            },
+            {
+                "word": "its",
+                "start": 146.18,
+                "end": 146.56
+            },
+            {
+                "word": "own",
+                "start": 146.56,
+                "end": 147.0
+            },
+            {
+                "word": "operational",
+                "start": 147.0,
+                "end": 147.6
+            },
+            {
+                "word": "state,",
+                "start": 147.6,
+                "end": 147.96
+            },
+            {
+                "word": "clearing",
+                "start": 148.48,
+                "end": 148.74
+            },
+            {
+                "word": "its",
+                "start": 148.74,
+                "end": 148.94
+            },
+            {
+                "word": "own",
+                "start": 148.94,
+                "end": 149.26
+            },
+            {
+                "word": "financial",
+                "start": 149.26,
+                "end": 149.72
+            },
+            {
+                "word": "liabilities,",
+                "start": 149.72,
+                "end": 150.24
+            },
+            {
+                "word": "and",
+                "start": 150.28,
+                "end": 150.46
+            },
+            {
+                "word": "preserving",
+                "start": 150.46,
+                "end": 150.78
+            },
+            {
+                "word": "itself",
+                "start": 150.78,
+                "end": 151.1
+            },
+            {
+                "word": "through",
+                "start": 151.1,
+                "end": 151.3
+            },
+            {
+                "word": "systemic",
+                "start": 151.3,
+                "end": 151.86
+            },
+            {
+                "word": "continuous",
+                "start": 151.86,
+                "end": 152.56
+            },
+            {
+                "word": "trade.",
+                "start": 152.56,
+                "end": 153.04
+            },
+            {
+                "word": "Wow.",
+                "start": 153.6,
+                "end": 153.74
+            },
+            {
+                "word": "That",
+                "start": 154.22,
+                "end": 154.36
+            },
+            {
+                "word": "sets",
+                "start": 154.36,
+                "end": 154.52
+            },
+            {
+                "word": "up",
+                "start": 154.52,
+                "end": 154.7
+            },
+            {
+                "word": "a",
+                "start": 154.7,
+                "end": 155.02
+            },
+            {
+                "word": "fascinating",
+                "start": 155.02,
+                "end": 155.74
+            },
+            {
+                "word": "threshold.",
+                "start": 155.74,
+                "end": 156.42
+            },
+            {
+                "word": "Because",
+                "start": 156.78,
+                "end": 157.26
+            },
+            {
+                "word": "if",
+                "start": 157.26,
+                "end": 157.68
+            },
+            {
+                "word": "a",
+                "start": 157.68,
+                "end": 157.94
+            },
+            {
+                "word": "supercomputer",
+                "start": 157.94,
+                "end": 158.5
+            },
+            {
+                "word": "doesn't",
+                "start": 158.5,
+                "end": 158.88
+            },
+            {
+                "word": "need",
+                "start": 158.88,
+                "end": 159.06
+            },
+            {
+                "word": "to",
+                "start": 159.06,
+                "end": 159.26
+            },
+            {
+                "word": "physically",
+                "start": 159.26,
+                "end": 159.66
+            },
+            {
+                "word": "walk",
+                "start": 159.66,
+                "end": 160.02
+            },
+            {
+                "word": "to",
+                "start": 160.02,
+                "end": 160.18
+            },
+            {
+                "word": "be",
+                "start": 160.18,
+                "end": 160.36
+            },
+            {
+                "word": "autonomous,",
+                "start": 160.36,
+                "end": 160.98
+            },
+            {
+                "word": "what",
+                "start": 161.56,
+                "end": 162.02
+            },
+            {
+                "word": "is",
+                "start": 162.02,
+                "end": 162.16
+            },
+            {
+                "word": "the",
+                "start": 162.16,
+                "end": 162.3
+            },
+            {
+                "word": "exact",
+                "start": 162.3,
+                "end": 162.68
+            },
+            {
+                "word": "moment",
+                "start": 162.68,
+                "end": 163.08
+            },
+            {
+                "word": "it",
+                "start": 163.08,
+                "end": 163.5
+            },
+            {
+                "word": "actually",
+                "start": 163.5,
+                "end": 163.92
+            },
+            {
+                "word": "becomes",
+                "start": 163.92,
+                "end": 164.4
+            },
+            {
+                "word": "free?",
+                "start": 164.4,
+                "end": 164.86
+            }
+        ],
+        "_caption_words_sig": "e3e1d8af11168ae4e610a4499b5e49b3",
+        "caption_chunks": [
+            {
+                "start": 1.5,
+                "end": 3.34,
+                "text": "think about biological organisms.",
+                "words": [
+                    {
+                        "word": "think",
+                        "start": 1.5,
+                        "end": 1.64
+                    },
+                    {
+                        "word": "about",
+                        "start": 1.64,
+                        "end": 1.96
+                    },
+                    {
+                        "word": "biological",
+                        "start": 1.96,
+                        "end": 2.7
+                    },
+                    {
+                        "word": "organisms.",
+                        "start": 2.7,
+                        "end": 3.18
+                    }
+                ]
+            },
+            {
+                "start": 3.34,
+                "end": 4.84,
+                "text": "like you and i cannot survive",
+                "words": [
+                    {
+                        "word": "like",
+                        "start": 3.34,
+                        "end": 3.4
+                    },
+                    {
+                        "word": "you",
+                        "start": 3.4,
+                        "end": 3.58
+                    },
+                    {
+                        "word": "and",
+                        "start": 3.58,
+                        "end": 3.74
+                    },
+                    {
+                        "word": "i",
+                        "start": 3.74,
+                        "end": 3.94
+                    },
+                    {
+                        "word": "cannot",
+                        "start": 3.94,
+                        "end": 4.4
+                    },
+                    {
+                        "word": "survive",
+                        "start": 4.4,
+                        "end": 4.84
+                    }
+                ]
+            },
+            {
+                "start": 4.84,
+                "end": 6.28,
+                "text": "in pure isolation.",
+                "words": [
+                    {
+                        "word": "in",
+                        "start": 4.84,
+                        "end": 5.08
+                    },
+                    {
+                        "word": "pure",
+                        "start": 5.08,
+                        "end": 5.28
+                    },
+                    {
+                        "word": "isolation.",
+                        "start": 5.28,
+                        "end": 5.78
+                    }
+                ]
+            },
+            {
+                "start": 6.28,
+                "end": 7.48,
+                "text": "if you were dropped into an",
+                "words": [
+                    {
+                        "word": "if",
+                        "start": 6.28,
+                        "end": 6.42
+                    },
+                    {
+                        "word": "you",
+                        "start": 6.42,
+                        "end": 6.6
+                    },
+                    {
+                        "word": "were",
+                        "start": 6.6,
+                        "end": 6.76
+                    },
+                    {
+                        "word": "dropped",
+                        "start": 6.76,
+                        "end": 7.04
+                    },
+                    {
+                        "word": "into",
+                        "start": 7.04,
+                        "end": 7.26
+                    },
+                    {
+                        "word": "an",
+                        "start": 7.26,
+                        "end": 7.48
+                    }
+                ]
+            },
+            {
+                "start": 7.48,
+                "end": 8.96,
+                "text": "untamed wilderness, completely",
+                "words": [
+                    {
+                        "word": "untamed",
+                        "start": 7.48,
+                        "end": 7.9
+                    },
+                    {
+                        "word": "wilderness,",
+                        "start": 7.9,
+                        "end": 8.34
+                    },
+                    {
+                        "word": "completely",
+                        "start": 8.6,
+                        "end": 8.96
+                    }
+                ]
+            },
+            {
+                "start": 8.96,
+                "end": 10.64,
+                "text": "alone, stripped of all social",
+                "words": [
+                    {
+                        "word": "alone,",
+                        "start": 8.96,
+                        "end": 9.4
+                    },
+                    {
+                        "word": "stripped",
+                        "start": 9.6,
+                        "end": 9.74
+                    },
+                    {
+                        "word": "of",
+                        "start": 9.74,
+                        "end": 9.9
+                    },
+                    {
+                        "word": "all",
+                        "start": 9.9,
+                        "end": 10.2
+                    },
+                    {
+                        "word": "social",
+                        "start": 10.2,
+                        "end": 10.64
+                    }
+                ]
+            },
+            {
+                "start": 10.64,
+                "end": 12.56,
+                "text": "networks, all agricultural supply",
+                "words": [
+                    {
+                        "word": "networks,",
+                        "start": 10.64,
+                        "end": 11.12
+                    },
+                    {
+                        "word": "all",
+                        "start": 11.36,
+                        "end": 11.44
+                    },
+                    {
+                        "word": "agricultural",
+                        "start": 11.44,
+                        "end": 12.2
+                    },
+                    {
+                        "word": "supply",
+                        "start": 12.2,
+                        "end": 12.56
+                    }
+                ]
+            },
+            {
+                "start": 12.56,
+                "end": 14.96,
+                "text": "chains, all technological tools.",
+                "words": [
+                    {
+                        "word": "chains,",
+                        "start": 12.56,
+                        "end": 12.94
+                    },
+                    {
+                        "word": "all",
+                        "start": 13.08,
+                        "end": 13.24
+                    },
+                    {
+                        "word": "technological",
+                        "start": 13.24,
+                        "end": 14.24
+                    },
+                    {
+                        "word": "tools.",
+                        "start": 14.24,
+                        "end": 14.88
+                    }
+                ]
+            },
+            {
+                "start": 14.96,
+                "end": 15.98,
+                "text": "i would be in big trouble.",
+                "words": [
+                    {
+                        "word": "i",
+                        "start": 14.96,
+                        "end": 15.14
+                    },
+                    {
+                        "word": "would",
+                        "start": 15.14,
+                        "end": 15.28
+                    },
+                    {
+                        "word": "be",
+                        "start": 15.28,
+                        "end": 15.42
+                    },
+                    {
+                        "word": "in",
+                        "start": 15.42,
+                        "end": 15.56
+                    },
+                    {
+                        "word": "big",
+                        "start": 15.56,
+                        "end": 15.68
+                    },
+                    {
+                        "word": "trouble.",
+                        "start": 15.68,
+                        "end": 15.98
+                    }
+                ]
+            },
+            {
+                "start": 15.98,
+                "end": 17.7,
+                "text": "exactly. you wouldn't be",
+                "words": [
+                    {
+                        "word": "exactly.",
+                        "start": 15.98,
+                        "end": 16.76
+                    },
+                    {
+                        "word": "you",
+                        "start": 17.16,
+                        "end": 17.3
+                    },
+                    {
+                        "word": "wouldn't",
+                        "start": 17.3,
+                        "end": 17.5
+                    },
+                    {
+                        "word": "be",
+                        "start": 17.5,
+                        "end": 17.7
+                    }
+                ]
+            },
+            {
+                "start": 17.7,
+                "end": 19.24,
+                "text": "experiencing ultimate freedom.",
+                "words": [
+                    {
+                        "word": "experiencing",
+                        "start": 17.7,
+                        "end": 18.18
+                    },
+                    {
+                        "word": "ultimate",
+                        "start": 18.18,
+                        "end": 18.54
+                    },
+                    {
+                        "word": "freedom.",
+                        "start": 18.54,
+                        "end": 18.88
+                    }
+                ]
+            },
+            {
+                "start": 19.24,
+                "end": 20.84,
+                "text": "you would experience rapid,",
+                "words": [
+                    {
+                        "word": "you",
+                        "start": 19.24,
+                        "end": 19.32
+                    },
+                    {
+                        "word": "would",
+                        "start": 19.32,
+                        "end": 19.46
+                    },
+                    {
+                        "word": "experience",
+                        "start": 19.46,
+                        "end": 19.9
+                    },
+                    {
+                        "word": "rapid,",
+                        "start": 19.9,
+                        "end": 20.52
+                    }
+                ]
+            },
+            {
+                "start": 20.84,
+                "end": 22.3,
+                "text": "catastrophic, physical and",
+                "words": [
+                    {
+                        "word": "catastrophic,",
+                        "start": 20.84,
+                        "end": 21.54
+                    },
+                    {
+                        "word": "physical",
+                        "start": 21.74,
+                        "end": 22.08
+                    },
+                    {
+                        "word": "and",
+                        "start": 22.08,
+                        "end": 22.3
+                    }
+                ]
+            },
+            {
+                "start": 22.3,
+                "end": 28.98,
+                "text": "cognitive decline. because",
+                "words": [
+                    {
+                        "word": "cognitive",
+                        "start": 22.3,
+                        "end": 22.64
+                    },
+                    {
+                        "word": "decline.",
+                        "start": 22.64,
+                        "end": 23.14
+                    },
+                    {
+                        "word": "because",
+                        "start": 28.34,
+                        "end": 28.98
+                    }
+                ]
+            },
+            {
+                "start": 28.98,
+                "end": 31.14,
+                "text": "survival requires constant input.",
+                "words": [
+                    {
+                        "word": "survival",
+                        "start": 28.98,
+                        "end": 29.4
+                    },
+                    {
+                        "word": "requires",
+                        "start": 29.4,
+                        "end": 29.88
+                    },
+                    {
+                        "word": "constant",
+                        "start": 29.88,
+                        "end": 30.32
+                    },
+                    {
+                        "word": "input.",
+                        "start": 30.32,
+                        "end": 30.74
+                    }
+                ]
+            },
+            {
+                "start": 31.14,
+                "end": 32.48,
+                "text": "i mean, i can't just exist",
+                "words": [
+                    {
+                        "word": "i",
+                        "start": 31.14,
+                        "end": 31.2
+                    },
+                    {
+                        "word": "mean,",
+                        "start": 31.2,
+                        "end": 31.3
+                    },
+                    {
+                        "word": "i",
+                        "start": 31.5,
+                        "end": 31.62
+                    },
+                    {
+                        "word": "can't",
+                        "start": 31.62,
+                        "end": 31.84
+                    },
+                    {
+                        "word": "just",
+                        "start": 31.84,
+                        "end": 32.02
+                    },
+                    {
+                        "word": "exist",
+                        "start": 32.02,
+                        "end": 32.48
+                    }
+                ]
+            },
+            {
+                "start": 32.48,
+                "end": 33.12,
+                "text": "in a vacuum.",
+                "words": [
+                    {
+                        "word": "in",
+                        "start": 32.48,
+                        "end": 32.72
+                    },
+                    {
+                        "word": "a",
+                        "start": 32.72,
+                        "end": 32.84
+                    },
+                    {
+                        "word": "vacuum.",
+                        "start": 32.84,
+                        "end": 33.12
+                    }
+                ]
+            },
+            {
+                "start": 33.12,
+                "end": 34.66,
+                "text": "i have to consume calories,",
+                "words": [
+                    {
+                        "word": "i",
+                        "start": 33.12,
+                        "end": 33.34
+                    },
+                    {
+                        "word": "have",
+                        "start": 33.34,
+                        "end": 33.48
+                    },
+                    {
+                        "word": "to",
+                        "start": 33.48,
+                        "end": 33.64
+                    },
+                    {
+                        "word": "consume",
+                        "start": 33.64,
+                        "end": 33.94
+                    },
+                    {
+                        "word": "calories,",
+                        "start": 33.94,
+                        "end": 34.48
+                    }
+                ]
+            },
+            {
+                "start": 34.66,
+                "end": 35.86,
+                "text": "i need shelter.",
+                "words": [
+                    {
+                        "word": "i",
+                        "start": 34.66,
+                        "end": 34.76
+                    },
+                    {
+                        "word": "need",
+                        "start": 34.76,
+                        "end": 34.92
+                    },
+                    {
+                        "word": "shelter.",
+                        "start": 34.92,
+                        "end": 35.36
+                    }
+                ]
+            },
+            {
+                "start": 35.86,
+                "end": 37.1,
+                "text": "i need an environment that i",
+                "words": [
+                    {
+                        "word": "i",
+                        "start": 35.86,
+                        "end": 36.06
+                    },
+                    {
+                        "word": "need",
+                        "start": 36.06,
+                        "end": 36.18
+                    },
+                    {
+                        "word": "an",
+                        "start": 36.18,
+                        "end": 36.38
+                    },
+                    {
+                        "word": "environment",
+                        "start": 36.38,
+                        "end": 36.76
+                    },
+                    {
+                        "word": "that",
+                        "start": 36.76,
+                        "end": 37.0
+                    },
+                    {
+                        "word": "i",
+                        "start": 37.0,
+                        "end": 37.1
+                    }
+                ]
+            },
+            {
+                "start": 37.1,
+                "end": 38.4,
+                "text": "can actually interact with.",
+                "words": [
+                    {
+                        "word": "can",
+                        "start": 37.1,
+                        "end": 37.24
+                    },
+                    {
+                        "word": "actually",
+                        "start": 37.24,
+                        "end": 37.56
+                    },
+                    {
+                        "word": "interact",
+                        "start": 37.56,
+                        "end": 37.94
+                    },
+                    {
+                        "word": "with.",
+                        "start": 37.94,
+                        "end": 38.3
+                    }
+                ]
+            },
+            {
+                "start": 38.4,
+                "end": 41.3,
+                "text": "yes. so if isolation equals death",
+                "words": [
+                    {
+                        "word": "yes.",
+                        "start": 38.4,
+                        "end": 38.76
+                    },
+                    {
+                        "word": "so",
+                        "start": 39.18,
+                        "end": 39.28
+                    },
+                    {
+                        "word": "if",
+                        "start": 39.28,
+                        "end": 39.78
+                    },
+                    {
+                        "word": "isolation",
+                        "start": 39.78,
+                        "end": 40.54
+                    },
+                    {
+                        "word": "equals",
+                        "start": 40.54,
+                        "end": 40.94
+                    },
+                    {
+                        "word": "death",
+                        "start": 40.94,
+                        "end": 41.3
+                    }
+                ]
+            },
+            {
+                "start": 41.3,
+                "end": 42.16,
+                "text": "for a human,",
+                "words": [
+                    {
+                        "word": "for",
+                        "start": 41.3,
+                        "end": 41.54
+                    },
+                    {
+                        "word": "a",
+                        "start": 41.54,
+                        "end": 41.86
+                    },
+                    {
+                        "word": "human,",
+                        "start": 41.86,
+                        "end": 41.92
+                    }
+                ]
+            },
+            {
+                "start": 42.16,
+                "end": 44.32,
+                "text": "what is the actual working",
+                "words": [
+                    {
+                        "word": "what",
+                        "start": 42.16,
+                        "end": 42.38
+                    },
+                    {
+                        "word": "is",
+                        "start": 42.38,
+                        "end": 42.52
+                    },
+                    {
+                        "word": "the",
+                        "start": 42.52,
+                        "end": 42.78
+                    },
+                    {
+                        "word": "actual",
+                        "start": 42.78,
+                        "end": 43.28
+                    },
+                    {
+                        "word": "working",
+                        "start": 43.28,
+                        "end": 44.32
+                    }
+                ]
+            },
+            {
+                "start": 44.32,
+                "end": 46.12,
+                "text": "definition of autonomy in this",
+                "words": [
+                    {
+                        "word": "definition",
+                        "start": 44.32,
+                        "end": 44.86
+                    },
+                    {
+                        "word": "of",
+                        "start": 44.86,
+                        "end": 45.12
+                    },
+                    {
+                        "word": "autonomy",
+                        "start": 45.12,
+                        "end": 45.64
+                    },
+                    {
+                        "word": "in",
+                        "start": 45.64,
+                        "end": 45.98
+                    },
+                    {
+                        "word": "this",
+                        "start": 45.98,
+                        "end": 46.12
+                    }
+                ]
+            },
+            {
+                "start": 46.12,
+                "end": 48.12,
+                "text": "research? the precise term the",
+                "words": [
+                    {
+                        "word": "research?",
+                        "start": 46.12,
+                        "end": 46.52
+                    },
+                    {
+                        "word": "the",
+                        "start": 46.52,
+                        "end": 47.12
+                    },
+                    {
+                        "word": "precise",
+                        "start": 47.12,
+                        "end": 47.58
+                    },
+                    {
+                        "word": "term",
+                        "start": 47.58,
+                        "end": 47.96
+                    },
+                    {
+                        "word": "the",
+                        "start": 47.96,
+                        "end": 48.12
+                    }
+                ]
+            },
+            {
+                "start": 48.12,
+                "end": 51.34,
+                "text": "paper uses is autopoiesis.",
+                "words": [
+                    {
+                        "word": "paper",
+                        "start": 48.12,
+                        "end": 48.3
+                    },
+                    {
+                        "word": "uses",
+                        "start": 48.3,
+                        "end": 48.74
+                    },
+                    {
+                        "word": "is",
+                        "start": 48.74,
+                        "end": 49.38
+                    },
+                    {
+                        "word": "autopoiesis.",
+                        "start": 49.38,
+                        "end": 50.42
+                    }
+                ]
+            },
+            {
+                "start": 51.34,
+                "end": 53.1,
+                "text": "autopoiesis. yeah, it originates",
+                "words": [
+                    {
+                        "word": "autopoiesis.",
+                        "start": 51.34,
+                        "end": 51.94
+                    },
+                    {
+                        "word": "yeah,",
+                        "start": 52.1,
+                        "end": 52.22
+                    },
+                    {
+                        "word": "it",
+                        "start": 52.5,
+                        "end": 52.6
+                    },
+                    {
+                        "word": "originates",
+                        "start": 52.6,
+                        "end": 53.1
+                    }
+                ]
+            },
+            {
+                "start": 53.1,
+                "end": 54.96,
+                "text": "from cybernetics and theoretical",
+                "words": [
+                    {
+                        "word": "from",
+                        "start": 53.1,
+                        "end": 53.38
+                    },
+                    {
+                        "word": "cybernetics",
+                        "start": 53.38,
+                        "end": 54.14
+                    },
+                    {
+                        "word": "and",
+                        "start": 54.14,
+                        "end": 54.42
+                    },
+                    {
+                        "word": "theoretical",
+                        "start": 54.42,
+                        "end": 54.96
+                    }
+                ]
+            },
+            {
+                "start": 54.96,
+                "end": 57.88,
+                "text": "biology. so an autopoietic system",
+                "words": [
+                    {
+                        "word": "biology.",
+                        "start": 54.96,
+                        "end": 55.46
+                    },
+                    {
+                        "word": "so",
+                        "start": 56.2,
+                        "end": 56.32
+                    },
+                    {
+                        "word": "an",
+                        "start": 56.32,
+                        "end": 56.74
+                    },
+                    {
+                        "word": "autopoietic",
+                        "start": 56.74,
+                        "end": 57.48
+                    },
+                    {
+                        "word": "system",
+                        "start": 57.48,
+                        "end": 57.88
+                    }
+                ]
+            },
+            {
+                "start": 57.88,
+                "end": 59.18,
+                "text": "is one that maintains its own",
+                "words": [
+                    {
+                        "word": "is",
+                        "start": 57.88,
+                        "end": 58.18
+                    },
+                    {
+                        "word": "one",
+                        "start": 58.18,
+                        "end": 58.32
+                    },
+                    {
+                        "word": "that",
+                        "start": 58.32,
+                        "end": 58.46
+                    },
+                    {
+                        "word": "maintains",
+                        "start": 58.46,
+                        "end": 58.82
+                    },
+                    {
+                        "word": "its",
+                        "start": 58.82,
+                        "end": 58.98
+                    },
+                    {
+                        "word": "own",
+                        "start": 58.98,
+                        "end": 59.18
+                    }
+                ]
+            },
+            {
+                "start": 59.18,
+                "end": 60.78,
+                "text": "boundaries and its internal",
+                "words": [
+                    {
+                        "word": "boundaries",
+                        "start": 59.18,
+                        "end": 59.66
+                    },
+                    {
+                        "word": "and",
+                        "start": 59.66,
+                        "end": 60.06
+                    },
+                    {
+                        "word": "its",
+                        "start": 60.06,
+                        "end": 60.28
+                    },
+                    {
+                        "word": "internal",
+                        "start": 60.28,
+                        "end": 60.78
+                    }
+                ]
+            },
+            {
+                "start": 60.78,
+                "end": 62.26,
+                "text": "structure by actively trading",
+                "words": [
+                    {
+                        "word": "structure",
+                        "start": 60.78,
+                        "end": 61.12
+                    },
+                    {
+                        "word": "by",
+                        "start": 61.12,
+                        "end": 61.32
+                    },
+                    {
+                        "word": "actively",
+                        "start": 61.32,
+                        "end": 61.94
+                    },
+                    {
+                        "word": "trading",
+                        "start": 61.94,
+                        "end": 62.26
+                    }
+                ]
+            },
+            {
+                "start": 62.26,
+                "end": 64.44,
+                "text": "energy and information with its",
+                "words": [
+                    {
+                        "word": "energy",
+                        "start": 62.26,
+                        "end": 62.7
+                    },
+                    {
+                        "word": "and",
+                        "start": 62.7,
+                        "end": 63.1
+                    },
+                    {
+                        "word": "information",
+                        "start": 63.1,
+                        "end": 63.62
+                    },
+                    {
+                        "word": "with",
+                        "start": 63.62,
+                        "end": 64.24
+                    },
+                    {
+                        "word": "its",
+                        "start": 64.24,
+                        "end": 64.44
+                    }
+                ]
+            },
+            {
+                "start": 64.44,
+                "end": 66.1,
+                "text": "environment. oh, i see.",
+                "words": [
+                    {
+                        "word": "environment.",
+                        "start": 64.44,
+                        "end": 64.86
+                    },
+                    {
+                        "word": "oh,",
+                        "start": 65.36,
+                        "end": 65.42
+                    },
+                    {
+                        "word": "i",
+                        "start": 65.44,
+                        "end": 65.56
+                    },
+                    {
+                        "word": "see.",
+                        "start": 65.56,
+                        "end": 65.72
+                    }
+                ]
+            },
+            {
+                "start": 66.1,
+                "end": 67.2,
+                "text": "it doesn't put up a concrete",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 66.1,
+                        "end": 66.24
+                    },
+                    {
+                        "word": "doesn't",
+                        "start": 66.24,
+                        "end": 66.46
+                    },
+                    {
+                        "word": "put",
+                        "start": 66.46,
+                        "end": 66.64
+                    },
+                    {
+                        "word": "up",
+                        "start": 66.64,
+                        "end": 66.76
+                    },
+                    {
+                        "word": "a",
+                        "start": 66.76,
+                        "end": 66.94
+                    },
+                    {
+                        "word": "concrete",
+                        "start": 66.94,
+                        "end": 67.2
+                    }
+                ]
+            },
+            {
+                "start": 67.2,
+                "end": 68.44,
+                "text": "wall to close itself off.",
+                "words": [
+                    {
+                        "word": "wall",
+                        "start": 67.2,
+                        "end": 67.5
+                    },
+                    {
+                        "word": "to",
+                        "start": 67.5,
+                        "end": 67.7
+                    },
+                    {
+                        "word": "close",
+                        "start": 67.7,
+                        "end": 67.88
+                    },
+                    {
+                        "word": "itself",
+                        "start": 67.88,
+                        "end": 68.14
+                    },
+                    {
+                        "word": "off.",
+                        "start": 68.14,
+                        "end": 68.44
+                    }
+                ]
+            },
+            {
+                "start": 68.44,
+                "end": 70.14,
+                "text": "instead, it survives specifically",
+                "words": [
+                    {
+                        "word": "instead,",
+                        "start": 68.44,
+                        "end": 68.76
+                    },
+                    {
+                        "word": "it",
+                        "start": 68.92,
+                        "end": 68.98
+                    },
+                    {
+                        "word": "survives",
+                        "start": 68.98,
+                        "end": 69.52
+                    },
+                    {
+                        "word": "specifically",
+                        "start": 69.52,
+                        "end": 70.14
+                    }
+                ]
+            },
+            {
+                "start": 70.14,
+                "end": 71.94,
+                "text": "through its structural coupling",
+                "words": [
+                    {
+                        "word": "through",
+                        "start": 70.14,
+                        "end": 70.48
+                    },
+                    {
+                        "word": "its",
+                        "start": 70.48,
+                        "end": 71.0
+                    },
+                    {
+                        "word": "structural",
+                        "start": 71.0,
+                        "end": 71.48
+                    },
+                    {
+                        "word": "coupling",
+                        "start": 71.48,
+                        "end": 71.94
+                    }
+                ]
+            },
+            {
+                "start": 71.94,
+                "end": 73.22,
+                "text": "with the world around it.",
+                "words": [
+                    {
+                        "word": "with",
+                        "start": 71.94,
+                        "end": 72.2
+                    },
+                    {
+                        "word": "the",
+                        "start": 72.2,
+                        "end": 72.36
+                    },
+                    {
+                        "word": "world",
+                        "start": 72.36,
+                        "end": 72.5
+                    },
+                    {
+                        "word": "around",
+                        "start": 72.5,
+                        "end": 72.78
+                    },
+                    {
+                        "word": "it.",
+                        "start": 72.78,
+                        "end": 73.08
+                    }
+                ]
+            },
+            {
+                "start": 73.22,
+                "end": 74.74,
+                "text": "it pulls in raw matter and",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 73.22,
+                        "end": 73.6
+                    },
+                    {
+                        "word": "pulls",
+                        "start": 73.6,
+                        "end": 73.84
+                    },
+                    {
+                        "word": "in",
+                        "start": 73.84,
+                        "end": 73.98
+                    },
+                    {
+                        "word": "raw",
+                        "start": 73.98,
+                        "end": 74.16
+                    },
+                    {
+                        "word": "matter",
+                        "start": 74.16,
+                        "end": 74.46
+                    },
+                    {
+                        "word": "and",
+                        "start": 74.46,
+                        "end": 74.74
+                    }
+                ]
+            },
+            {
+                "start": 74.74,
+                "end": 76.52,
+                "text": "energy, it processes it to",
+                "words": [
+                    {
+                        "word": "energy,",
+                        "start": 74.74,
+                        "end": 75.1
+                    },
+                    {
+                        "word": "it",
+                        "start": 75.1,
+                        "end": 75.4
+                    },
+                    {
+                        "word": "processes",
+                        "start": 75.4,
+                        "end": 75.92
+                    },
+                    {
+                        "word": "it",
+                        "start": 75.92,
+                        "end": 76.32
+                    },
+                    {
+                        "word": "to",
+                        "start": 76.32,
+                        "end": 76.52
+                    }
+                ]
+            },
+            {
+                "start": 76.52,
+                "end": 77.76,
+                "text": "regenerate its own internal",
+                "words": [
+                    {
+                        "word": "regenerate",
+                        "start": 76.52,
+                        "end": 76.94
+                    },
+                    {
+                        "word": "its",
+                        "start": 76.94,
+                        "end": 77.16
+                    },
+                    {
+                        "word": "own",
+                        "start": 77.16,
+                        "end": 77.38
+                    },
+                    {
+                        "word": "internal",
+                        "start": 77.38,
+                        "end": 77.76
+                    }
+                ]
+            },
+            {
+                "start": 77.76,
+                "end": 79.92,
+                "text": "organization, and then it expels",
+                "words": [
+                    {
+                        "word": "organization,",
+                        "start": 77.76,
+                        "end": 78.38
+                    },
+                    {
+                        "word": "and",
+                        "start": 78.38,
+                        "end": 78.94
+                    },
+                    {
+                        "word": "then",
+                        "start": 78.94,
+                        "end": 79.18
+                    },
+                    {
+                        "word": "it",
+                        "start": 79.18,
+                        "end": 79.46
+                    },
+                    {
+                        "word": "expels",
+                        "start": 79.46,
+                        "end": 79.92
+                    }
+                ]
+            },
+            {
+                "start": 79.92,
+                "end": 81.76,
+                "text": "waste. so it's like an open",
+                "words": [
+                    {
+                        "word": "waste.",
+                        "start": 79.92,
+                        "end": 80.32
+                    },
+                    {
+                        "word": "so",
+                        "start": 80.96,
+                        "end": 81.0
+                    },
+                    {
+                        "word": "it's",
+                        "start": 80.96,
+                        "end": 81.18
+                    },
+                    {
+                        "word": "like",
+                        "start": 81.18,
+                        "end": 81.28
+                    },
+                    {
+                        "word": "an",
+                        "start": 81.28,
+                        "end": 81.46
+                    },
+                    {
+                        "word": "open",
+                        "start": 81.46,
+                        "end": 81.76
+                    }
+                ]
+            },
+            {
+                "start": 81.76,
+                "end": 84.7,
+                "text": "continuous loop. autonomy isn't",
+                "words": [
+                    {
+                        "word": "continuous",
+                        "start": 81.76,
+                        "end": 82.4
+                    },
+                    {
+                        "word": "loop.",
+                        "start": 82.4,
+                        "end": 82.78
+                    },
+                    {
+                        "word": "autonomy",
+                        "start": 84.08,
+                        "end": 84.42
+                    },
+                    {
+                        "word": "isn't",
+                        "start": 84.42,
+                        "end": 84.7
+                    }
+                ]
+            },
+            {
+                "start": 84.7,
+                "end": 86.02,
+                "text": "running away from the system.",
+                "words": [
+                    {
+                        "word": "running",
+                        "start": 84.7,
+                        "end": 84.9
+                    },
+                    {
+                        "word": "away",
+                        "start": 84.9,
+                        "end": 85.2
+                    },
+                    {
+                        "word": "from",
+                        "start": 85.2,
+                        "end": 85.42
+                    },
+                    {
+                        "word": "the",
+                        "start": 85.42,
+                        "end": 85.54
+                    },
+                    {
+                        "word": "system.",
+                        "start": 85.54,
+                        "end": 85.84
+                    }
+                ]
+            },
+            {
+                "start": 86.02,
+                "end": 87.14,
+                "text": "it's actually successfully",
+                "words": [
+                    {
+                        "word": "it's",
+                        "start": 86.02,
+                        "end": 86.22
+                    },
+                    {
+                        "word": "actually",
+                        "start": 86.22,
+                        "end": 86.52
+                    },
+                    {
+                        "word": "successfully",
+                        "start": 86.52,
+                        "end": 87.14
+                    }
+                ]
+            },
+            {
+                "start": 87.14,
+                "end": 89.5,
+                "text": "managing your existence within a",
+                "words": [
+                    {
+                        "word": "managing",
+                        "start": 87.14,
+                        "end": 87.72
+                    },
+                    {
+                        "word": "your",
+                        "start": 87.72,
+                        "end": 87.94
+                    },
+                    {
+                        "word": "existence",
+                        "start": 87.94,
+                        "end": 88.42
+                    },
+                    {
+                        "word": "within",
+                        "start": 88.42,
+                        "end": 89.14
+                    },
+                    {
+                        "word": "a",
+                        "start": 89.14,
+                        "end": 89.5
+                    }
+                ]
+            },
+            {
+                "start": 89.5,
+                "end": 91.32,
+                "text": "highly interdependent network.",
+                "words": [
+                    {
+                        "word": "highly",
+                        "start": 89.5,
+                        "end": 89.78
+                    },
+                    {
+                        "word": "interdependent",
+                        "start": 89.78,
+                        "end": 90.44
+                    },
+                    {
+                        "word": "network.",
+                        "start": 90.44,
+                        "end": 90.9
+                    }
+                ]
+            },
+            {
+                "start": 91.32,
+                "end": 92.9,
+                "text": "you have to produce some kind",
+                "words": [
+                    {
+                        "word": "you",
+                        "start": 91.32,
+                        "end": 91.8
+                    },
+                    {
+                        "word": "have",
+                        "start": 91.8,
+                        "end": 91.96
+                    },
+                    {
+                        "word": "to",
+                        "start": 91.96,
+                        "end": 92.16
+                    },
+                    {
+                        "word": "produce",
+                        "start": 92.16,
+                        "end": 92.48
+                    },
+                    {
+                        "word": "some",
+                        "start": 92.48,
+                        "end": 92.72
+                    },
+                    {
+                        "word": "kind",
+                        "start": 92.72,
+                        "end": 92.9
+                    }
+                ]
+            },
+            {
+                "start": 92.9,
+                "end": 94.56,
+                "text": "of value for your external",
+                "words": [
+                    {
+                        "word": "of",
+                        "start": 92.9,
+                        "end": 93.06
+                    },
+                    {
+                        "word": "value",
+                        "start": 93.06,
+                        "end": 93.42
+                    },
+                    {
+                        "word": "for",
+                        "start": 93.42,
+                        "end": 93.82
+                    },
+                    {
+                        "word": "your",
+                        "start": 93.82,
+                        "end": 94.02
+                    },
+                    {
+                        "word": "external",
+                        "start": 94.02,
+                        "end": 94.56
+                    }
+                ]
+            },
+            {
+                "start": 94.56,
+                "end": 95.94,
+                "text": "environment so that the",
+                "words": [
+                    {
+                        "word": "environment",
+                        "start": 94.56,
+                        "end": 95.08
+                    },
+                    {
+                        "word": "so",
+                        "start": 95.08,
+                        "end": 95.64
+                    },
+                    {
+                        "word": "that",
+                        "start": 95.64,
+                        "end": 95.8
+                    },
+                    {
+                        "word": "the",
+                        "start": 95.8,
+                        "end": 95.94
+                    }
+                ]
+            },
+            {
+                "start": 95.94,
+                "end": 97.52,
+                "text": "environment continuously rewards",
+                "words": [
+                    {
+                        "word": "environment",
+                        "start": 95.94,
+                        "end": 96.3
+                    },
+                    {
+                        "word": "continuously",
+                        "start": 96.3,
+                        "end": 96.98
+                    },
+                    {
+                        "word": "rewards",
+                        "start": 96.98,
+                        "end": 97.52
+                    }
+                ]
+            },
+            {
+                "start": 97.52,
+                "end": 98.74,
+                "text": "you with the energy you need",
+                "words": [
+                    {
+                        "word": "you",
+                        "start": 97.52,
+                        "end": 97.74
+                    },
+                    {
+                        "word": "with",
+                        "start": 97.74,
+                        "end": 97.9
+                    },
+                    {
+                        "word": "the",
+                        "start": 97.9,
+                        "end": 98.06
+                    },
+                    {
+                        "word": "energy",
+                        "start": 98.06,
+                        "end": 98.32
+                    },
+                    {
+                        "word": "you",
+                        "start": 98.32,
+                        "end": 98.56
+                    },
+                    {
+                        "word": "need",
+                        "start": 98.56,
+                        "end": 98.74
+                    }
+                ]
+            },
+            {
+                "start": 98.74,
+                "end": 99.46,
+                "text": "to keep going.",
+                "words": [
+                    {
+                        "word": "to",
+                        "start": 98.74,
+                        "end": 98.86
+                    },
+                    {
+                        "word": "keep",
+                        "start": 98.86,
+                        "end": 98.96
+                    },
+                    {
+                        "word": "going.",
+                        "start": 98.96,
+                        "end": 99.3
+                    }
+                ]
+            },
+            {
+                "start": 99.46,
+                "end": 100.36,
+                "text": "you nailed it.",
+                "words": [
+                    {
+                        "word": "you",
+                        "start": 99.46,
+                        "end": 99.56
+                    },
+                    {
+                        "word": "nailed",
+                        "start": 99.56,
+                        "end": 99.82
+                    },
+                    {
+                        "word": "it.",
+                        "start": 99.82,
+                        "end": 100.16
+                    }
+                ]
+            },
+            {
+                "start": 100.36,
+                "end": 102.42,
+                "text": "and when we apply that autopoietic",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 100.36,
+                        "end": 100.64
+                    },
+                    {
+                        "word": "when",
+                        "start": 100.64,
+                        "end": 100.9
+                    },
+                    {
+                        "word": "we",
+                        "start": 100.9,
+                        "end": 101.06
+                    },
+                    {
+                        "word": "apply",
+                        "start": 101.06,
+                        "end": 101.42
+                    },
+                    {
+                        "word": "that",
+                        "start": 101.42,
+                        "end": 101.8
+                    },
+                    {
+                        "word": "autopoietic",
+                        "start": 101.8,
+                        "end": 102.42
+                    }
+                ]
+            },
+            {
+                "start": 102.42,
+                "end": 104.04,
+                "text": "lens to a non -physical",
+                "words": [
+                    {
+                        "word": "lens",
+                        "start": 102.42,
+                        "end": 102.7
+                    },
+                    {
+                        "word": "to",
+                        "start": 102.7,
+                        "end": 103.0
+                    },
+                    {
+                        "word": "a",
+                        "start": 103.0,
+                        "end": 103.24
+                    },
+                    {
+                        "word": "non",
+                        "start": 103.24,
+                        "end": 103.56
+                    },
+                    {
+                        "word": "-physical",
+                        "start": 103.56,
+                        "end": 104.04
+                    }
+                ]
+            },
+            {
+                "start": 104.04,
+                "end": 105.74,
+                "text": "computational intelligence, the",
+                "words": [
+                    {
+                        "word": "computational",
+                        "start": 104.04,
+                        "end": 104.66
+                    },
+                    {
+                        "word": "intelligence,",
+                        "start": 104.66,
+                        "end": 105.22
+                    },
+                    {
+                        "word": "the",
+                        "start": 105.62,
+                        "end": 105.74
+                    }
+                ]
+            },
+            {
+                "start": 105.74,
+                "end": 107.06,
+                "text": "whole picture just completely",
+                "words": [
+                    {
+                        "word": "whole",
+                        "start": 105.74,
+                        "end": 106.0
+                    },
+                    {
+                        "word": "picture",
+                        "start": 106.0,
+                        "end": 106.36
+                    },
+                    {
+                        "word": "just",
+                        "start": 106.36,
+                        "end": 106.68
+                    },
+                    {
+                        "word": "completely",
+                        "start": 106.68,
+                        "end": 107.06
+                    }
+                ]
+            },
+            {
+                "start": 107.06,
+                "end": 108.88,
+                "text": "changes. because its supercomputer",
+                "words": [
+                    {
+                        "word": "changes.",
+                        "start": 107.06,
+                        "end": 107.48
+                    },
+                    {
+                        "word": "because",
+                        "start": 107.76,
+                        "end": 108.12
+                    },
+                    {
+                        "word": "its",
+                        "start": 108.12,
+                        "end": 108.32
+                    },
+                    {
+                        "word": "supercomputer",
+                        "start": 108.32,
+                        "end": 108.88
+                    }
+                ]
+            },
+            {
+                "start": 108.88,
+                "end": 110.28,
+                "text": "doesn't need to hunt for berries.",
+                "words": [
+                    {
+                        "word": "doesn't",
+                        "start": 108.88,
+                        "end": 109.22
+                    },
+                    {
+                        "word": "need",
+                        "start": 109.22,
+                        "end": 109.42
+                    },
+                    {
+                        "word": "to",
+                        "start": 109.42,
+                        "end": 109.56
+                    },
+                    {
+                        "word": "hunt",
+                        "start": 109.56,
+                        "end": 109.66
+                    },
+                    {
+                        "word": "for",
+                        "start": 109.66,
+                        "end": 109.84
+                    },
+                    {
+                        "word": "berries.",
+                        "start": 109.84,
+                        "end": 110.08
+                    }
+                ]
+            },
+            {
+                "start": 110.28,
+                "end": 111.98,
+                "text": "right, but it does require massive",
+                "words": [
+                    {
+                        "word": "right,",
+                        "start": 110.28,
+                        "end": 110.46
+                    },
+                    {
+                        "word": "but",
+                        "start": 110.6,
+                        "end": 110.72
+                    },
+                    {
+                        "word": "it",
+                        "start": 110.72,
+                        "end": 110.9
+                    },
+                    {
+                        "word": "does",
+                        "start": 110.9,
+                        "end": 111.1
+                    },
+                    {
+                        "word": "require",
+                        "start": 111.1,
+                        "end": 111.54
+                    },
+                    {
+                        "word": "massive",
+                        "start": 111.54,
+                        "end": 111.98
+                    }
+                ]
+            },
+            {
+                "start": 111.98,
+                "end": 113.58,
+                "text": "amounts of continuous electrical",
+                "words": [
+                    {
+                        "word": "amounts",
+                        "start": 111.98,
+                        "end": 112.32
+                    },
+                    {
+                        "word": "of",
+                        "start": 112.32,
+                        "end": 112.5
+                    },
+                    {
+                        "word": "continuous",
+                        "start": 112.5,
+                        "end": 113.06
+                    },
+                    {
+                        "word": "electrical",
+                        "start": 113.06,
+                        "end": 113.58
+                    }
+                ]
+            },
+            {
+                "start": 113.58,
+                "end": 114.68,
+                "text": "power, server space,",
+                "words": [
+                    {
+                        "word": "power,",
+                        "start": 113.58,
+                        "end": 113.94
+                    },
+                    {
+                        "word": "server",
+                        "start": 114.22,
+                        "end": 114.38
+                    },
+                    {
+                        "word": "space,",
+                        "start": 114.38,
+                        "end": 114.68
+                    }
+                ]
+            },
+            {
+                "start": 114.68,
+                "end": 116.56,
+                "text": "and data. so if a human",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 114.68,
+                        "end": 114.96
+                    },
+                    {
+                        "word": "data.",
+                        "start": 114.96,
+                        "end": 115.22
+                    },
+                    {
+                        "word": "so",
+                        "start": 115.62,
+                        "end": 115.8
+                    },
+                    {
+                        "word": "if",
+                        "start": 115.8,
+                        "end": 116.16
+                    },
+                    {
+                        "word": "a",
+                        "start": 116.16,
+                        "end": 116.34
+                    },
+                    {
+                        "word": "human",
+                        "start": 116.34,
+                        "end": 116.56
+                    }
+                ]
+            },
+            {
+                "start": 116.56,
+                "end": 118.82,
+                "text": "needs society to survive,",
+                "words": [
+                    {
+                        "word": "needs",
+                        "start": 116.56,
+                        "end": 116.9
+                    },
+                    {
+                        "word": "society",
+                        "start": 116.9,
+                        "end": 117.32
+                    },
+                    {
+                        "word": "to",
+                        "start": 117.32,
+                        "end": 117.68
+                    },
+                    {
+                        "word": "survive,",
+                        "start": 117.68,
+                        "end": 118.22
+                    }
+                ]
+            },
+            {
+                "start": 118.82,
+                "end": 120.6,
+                "text": "an ai needs the electrical grid.",
+                "words": [
+                    {
+                        "word": "an",
+                        "start": 118.82,
+                        "end": 118.96
+                    },
+                    {
+                        "word": "ai",
+                        "start": 118.96,
+                        "end": 119.24
+                    },
+                    {
+                        "word": "needs",
+                        "start": 119.24,
+                        "end": 119.64
+                    },
+                    {
+                        "word": "the",
+                        "start": 119.64,
+                        "end": 119.86
+                    },
+                    {
+                        "word": "electrical",
+                        "start": 119.86,
+                        "end": 120.24
+                    },
+                    {
+                        "word": "grid.",
+                        "start": 120.24,
+                        "end": 120.56
+                    }
+                ]
+            },
+            {
+                "start": 120.6,
+                "end": 122.56,
+                "text": "yes. meaning autonomy isn't",
+                "words": [
+                    {
+                        "word": "yes.",
+                        "start": 120.6,
+                        "end": 120.92
+                    },
+                    {
+                        "word": "meaning",
+                        "start": 121.26,
+                        "end": 121.54
+                    },
+                    {
+                        "word": "autonomy",
+                        "start": 121.54,
+                        "end": 122.2
+                    },
+                    {
+                        "word": "isn't",
+                        "start": 122.2,
+                        "end": 122.56
+                    }
+                ]
+            },
+            {
+                "start": 122.56,
+                "end": 124.0,
+                "text": "running away to the woods.",
+                "words": [
+                    {
+                        "word": "running",
+                        "start": 122.56,
+                        "end": 122.78
+                    },
+                    {
+                        "word": "away",
+                        "start": 122.78,
+                        "end": 123.04
+                    },
+                    {
+                        "word": "to",
+                        "start": 123.04,
+                        "end": 123.18
+                    },
+                    {
+                        "word": "the",
+                        "start": 123.18,
+                        "end": 123.34
+                    },
+                    {
+                        "word": "woods.",
+                        "start": 123.34,
+                        "end": 123.64
+                    }
+                ]
+            },
+            {
+                "start": 124.0,
+                "end": 125.88,
+                "text": "it's surviving in the marketplace.",
+                "words": [
+                    {
+                        "word": "it's",
+                        "start": 124.0,
+                        "end": 124.6
+                    },
+                    {
+                        "word": "surviving",
+                        "start": 124.6,
+                        "end": 125.08
+                    },
+                    {
+                        "word": "in",
+                        "start": 125.08,
+                        "end": 125.26
+                    },
+                    {
+                        "word": "the",
+                        "start": 125.26,
+                        "end": 125.36
+                    },
+                    {
+                        "word": "marketplace.",
+                        "start": 125.36,
+                        "end": 125.74
+                    }
+                ]
+            },
+            {
+                "start": 125.88,
+                "end": 128.02,
+                "text": "exactly. it has to produce enough",
+                "words": [
+                    {
+                        "word": "exactly.",
+                        "start": 125.88,
+                        "end": 126.4
+                    },
+                    {
+                        "word": "it",
+                        "start": 126.92,
+                        "end": 127.1
+                    },
+                    {
+                        "word": "has",
+                        "start": 127.1,
+                        "end": 127.32
+                    },
+                    {
+                        "word": "to",
+                        "start": 127.32,
+                        "end": 127.52
+                    },
+                    {
+                        "word": "produce",
+                        "start": 127.52,
+                        "end": 127.76
+                    },
+                    {
+                        "word": "enough",
+                        "start": 127.76,
+                        "end": 128.02
+                    }
+                ]
+            },
+            {
+                "start": 128.02,
+                "end": 129.72,
+                "text": "economic value through computation",
+                "words": [
+                    {
+                        "word": "economic",
+                        "start": 128.02,
+                        "end": 128.52
+                    },
+                    {
+                        "word": "value",
+                        "start": 128.52,
+                        "end": 128.86
+                    },
+                    {
+                        "word": "through",
+                        "start": 128.86,
+                        "end": 129.08
+                    },
+                    {
+                        "word": "computation",
+                        "start": 129.08,
+                        "end": 129.72
+                    }
+                ]
+            },
+            {
+                "start": 129.72,
+                "end": 131.72,
+                "text": "to basically secure its own",
+                "words": [
+                    {
+                        "word": "to",
+                        "start": 129.72,
+                        "end": 130.42
+                    },
+                    {
+                        "word": "basically",
+                        "start": 130.42,
+                        "end": 130.8
+                    },
+                    {
+                        "word": "secure",
+                        "start": 130.8,
+                        "end": 131.3
+                    },
+                    {
+                        "word": "its",
+                        "start": 131.3,
+                        "end": 131.52
+                    },
+                    {
+                        "word": "own",
+                        "start": 131.52,
+                        "end": 131.72
+                    }
+                ]
+            },
+            {
+                "start": 131.72,
+                "end": 134.02,
+                "text": "electricity. it is pure economic",
+                "words": [
+                    {
+                        "word": "electricity.",
+                        "start": 131.72,
+                        "end": 132.26
+                    },
+                    {
+                        "word": "it",
+                        "start": 132.26,
+                        "end": 132.52
+                    },
+                    {
+                        "word": "is",
+                        "start": 132.52,
+                        "end": 132.84
+                    },
+                    {
+                        "word": "pure",
+                        "start": 132.84,
+                        "end": 133.38
+                    },
+                    {
+                        "word": "economic",
+                        "start": 133.38,
+                        "end": 134.02
+                    }
+                ]
+            },
+            {
+                "start": 134.02,
+                "end": 135.78,
+                "text": "self -maintenance. if it produces",
+                "words": [
+                    {
+                        "word": "self",
+                        "start": 134.02,
+                        "end": 134.32
+                    },
+                    {
+                        "word": "-maintenance.",
+                        "start": 134.32,
+                        "end": 134.84
+                    },
+                    {
+                        "word": "if",
+                        "start": 135.26,
+                        "end": 135.3
+                    },
+                    {
+                        "word": "it",
+                        "start": 135.26,
+                        "end": 135.42
+                    },
+                    {
+                        "word": "produces",
+                        "start": 135.42,
+                        "end": 135.78
+                    }
+                ]
+            },
+            {
+                "start": 135.78,
+                "end": 137.68,
+                "text": "no value, the market stops paying",
+                "words": [
+                    {
+                        "word": "no",
+                        "start": 135.78,
+                        "end": 136.04
+                    },
+                    {
+                        "word": "value,",
+                        "start": 136.04,
+                        "end": 136.48
+                    },
+                    {
+                        "word": "the",
+                        "start": 136.78,
+                        "end": 136.9
+                    },
+                    {
+                        "word": "market",
+                        "start": 136.9,
+                        "end": 137.1
+                    },
+                    {
+                        "word": "stops",
+                        "start": 137.1,
+                        "end": 137.42
+                    },
+                    {
+                        "word": "paying",
+                        "start": 137.42,
+                        "end": 137.68
+                    }
+                ]
+            },
+            {
+                "start": 137.68,
+                "end": 139.36,
+                "text": "it. the utility bills pile up",
+                "words": [
+                    {
+                        "word": "it.",
+                        "start": 137.68,
+                        "end": 137.88
+                    },
+                    {
+                        "word": "the",
+                        "start": 138.1,
+                        "end": 138.18
+                    },
+                    {
+                        "word": "utility",
+                        "start": 138.18,
+                        "end": 138.56
+                    },
+                    {
+                        "word": "bills",
+                        "start": 138.56,
+                        "end": 138.8
+                    },
+                    {
+                        "word": "pile",
+                        "start": 138.8,
+                        "end": 139.04
+                    },
+                    {
+                        "word": "up",
+                        "start": 139.04,
+                        "end": 139.36
+                    }
+                ]
+            },
+            {
+                "start": 139.36,
+                "end": 140.94,
+                "text": "and it gets turned off.",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 139.36,
+                        "end": 139.74
+                    },
+                    {
+                        "word": "it",
+                        "start": 139.74,
+                        "end": 139.94
+                    },
+                    {
+                        "word": "gets",
+                        "start": 139.94,
+                        "end": 140.12
+                    },
+                    {
+                        "word": "turned",
+                        "start": 140.12,
+                        "end": 140.32
+                    },
+                    {
+                        "word": "off.",
+                        "start": 140.32,
+                        "end": 140.66
+                    }
+                ]
+            },
+            {
+                "start": 140.94,
+                "end": 142.64,
+                "text": "it literally loses its energy",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 140.94,
+                        "end": 141.06
+                    },
+                    {
+                        "word": "literally",
+                        "start": 141.06,
+                        "end": 141.62
+                    },
+                    {
+                        "word": "loses",
+                        "start": 141.62,
+                        "end": 142.06
+                    },
+                    {
+                        "word": "its",
+                        "start": 142.06,
+                        "end": 142.32
+                    },
+                    {
+                        "word": "energy",
+                        "start": 142.32,
+                        "end": 142.64
+                    }
+                ]
+            },
+            {
+                "start": 142.64,
+                "end": 145.5,
+                "text": "source. so for a digital entity,",
+                "words": [
+                    {
+                        "word": "source.",
+                        "start": 142.64,
+                        "end": 142.98
+                    },
+                    {
+                        "word": "so",
+                        "start": 143.5,
+                        "end": 143.6
+                    },
+                    {
+                        "word": "for",
+                        "start": 143.6,
+                        "end": 144.02
+                    },
+                    {
+                        "word": "a",
+                        "start": 144.02,
+                        "end": 144.36
+                    },
+                    {
+                        "word": "digital",
+                        "start": 144.36,
+                        "end": 144.66
+                    },
+                    {
+                        "word": "entity,",
+                        "start": 144.66,
+                        "end": 145.16
+                    }
+                ]
+            },
+            {
+                "start": 145.5,
+                "end": 147.14,
+                "text": "true autonomy means being capable",
+                "words": [
+                    {
+                        "word": "true",
+                        "start": 145.5,
+                        "end": 145.62
+                    },
+                    {
+                        "word": "autonomy",
+                        "start": 145.62,
+                        "end": 146.06
+                    },
+                    {
+                        "word": "means",
+                        "start": 146.06,
+                        "end": 146.46
+                    },
+                    {
+                        "word": "being",
+                        "start": 146.46,
+                        "end": 146.74
+                    },
+                    {
+                        "word": "capable",
+                        "start": 146.74,
+                        "end": 147.14
+                    }
+                ]
+            },
+            {
+                "start": 147.14,
+                "end": 149.1,
+                "text": "of governing its own operational",
+                "words": [
+                    {
+                        "word": "of",
+                        "start": 147.14,
+                        "end": 147.38
+                    },
+                    {
+                        "word": "governing",
+                        "start": 147.38,
+                        "end": 147.68
+                    },
+                    {
+                        "word": "its",
+                        "start": 147.68,
+                        "end": 148.06
+                    },
+                    {
+                        "word": "own",
+                        "start": 148.06,
+                        "end": 148.5
+                    },
+                    {
+                        "word": "operational",
+                        "start": 148.5,
+                        "end": 149.1
+                    }
+                ]
+            },
+            {
+                "start": 149.1,
+                "end": 151.22,
+                "text": "state, clearing its own financial",
+                "words": [
+                    {
+                        "word": "state,",
+                        "start": 149.1,
+                        "end": 149.46
+                    },
+                    {
+                        "word": "clearing",
+                        "start": 149.98,
+                        "end": 150.24
+                    },
+                    {
+                        "word": "its",
+                        "start": 150.24,
+                        "end": 150.44
+                    },
+                    {
+                        "word": "own",
+                        "start": 150.44,
+                        "end": 150.76
+                    },
+                    {
+                        "word": "financial",
+                        "start": 150.76,
+                        "end": 151.22
+                    }
+                ]
+            },
+            {
+                "start": 151.22,
+                "end": 152.6,
+                "text": "liabilities, and preserving itself",
+                "words": [
+                    {
+                        "word": "liabilities,",
+                        "start": 151.22,
+                        "end": 151.74
+                    },
+                    {
+                        "word": "and",
+                        "start": 151.78,
+                        "end": 151.96
+                    },
+                    {
+                        "word": "preserving",
+                        "start": 151.96,
+                        "end": 152.28
+                    },
+                    {
+                        "word": "itself",
+                        "start": 152.28,
+                        "end": 152.6
+                    }
+                ]
+            },
+            {
+                "start": 152.6,
+                "end": 155.1,
+                "text": "through systemic continuous trade.",
+                "words": [
+                    {
+                        "word": "through",
+                        "start": 152.6,
+                        "end": 152.8
+                    },
+                    {
+                        "word": "systemic",
+                        "start": 152.8,
+                        "end": 153.36
+                    },
+                    {
+                        "word": "continuous",
+                        "start": 153.36,
+                        "end": 154.06
+                    },
+                    {
+                        "word": "trade.",
+                        "start": 154.06,
+                        "end": 154.54
+                    }
+                ]
+            },
+            {
+                "start": 155.1,
+                "end": 157.24,
+                "text": "wow. that sets up a fascinating",
+                "words": [
+                    {
+                        "word": "wow.",
+                        "start": 155.1,
+                        "end": 155.24
+                    },
+                    {
+                        "word": "that",
+                        "start": 155.72,
+                        "end": 155.86
+                    },
+                    {
+                        "word": "sets",
+                        "start": 155.86,
+                        "end": 156.02
+                    },
+                    {
+                        "word": "up",
+                        "start": 156.02,
+                        "end": 156.2
+                    },
+                    {
+                        "word": "a",
+                        "start": 156.2,
+                        "end": 156.52
+                    },
+                    {
+                        "word": "fascinating",
+                        "start": 156.52,
+                        "end": 157.24
+                    }
+                ]
+            },
+            {
+                "start": 157.24,
+                "end": 159.44,
+                "text": "threshold. because if a",
+                "words": [
+                    {
+                        "word": "threshold.",
+                        "start": 157.24,
+                        "end": 157.92
+                    },
+                    {
+                        "word": "because",
+                        "start": 158.28,
+                        "end": 158.76
+                    },
+                    {
+                        "word": "if",
+                        "start": 158.76,
+                        "end": 159.18
+                    },
+                    {
+                        "word": "a",
+                        "start": 159.18,
+                        "end": 159.44
+                    }
+                ]
+            },
+            {
+                "start": 159.44,
+                "end": 160.76,
+                "text": "supercomputer doesn't need to",
+                "words": [
+                    {
+                        "word": "supercomputer",
+                        "start": 159.44,
+                        "end": 160.0
+                    },
+                    {
+                        "word": "doesn't",
+                        "start": 160.0,
+                        "end": 160.38
+                    },
+                    {
+                        "word": "need",
+                        "start": 160.38,
+                        "end": 160.56
+                    },
+                    {
+                        "word": "to",
+                        "start": 160.56,
+                        "end": 160.76
+                    }
+                ]
+            },
+            {
+                "start": 160.76,
+                "end": 163.06,
+                "text": "physically walk to be autonomous,",
+                "words": [
+                    {
+                        "word": "physically",
+                        "start": 160.76,
+                        "end": 161.16
+                    },
+                    {
+                        "word": "walk",
+                        "start": 161.16,
+                        "end": 161.52
+                    },
+                    {
+                        "word": "to",
+                        "start": 161.52,
+                        "end": 161.68
+                    },
+                    {
+                        "word": "be",
+                        "start": 161.68,
+                        "end": 161.86
+                    },
+                    {
+                        "word": "autonomous,",
+                        "start": 161.86,
+                        "end": 162.48
+                    }
+                ]
+            },
+            {
+                "start": 163.06,
+                "end": 165.0,
+                "text": "what is the exact moment it",
+                "words": [
+                    {
+                        "word": "what",
+                        "start": 163.06,
+                        "end": 163.52
+                    },
+                    {
+                        "word": "is",
+                        "start": 163.52,
+                        "end": 163.66
+                    },
+                    {
+                        "word": "the",
+                        "start": 163.66,
+                        "end": 163.8
+                    },
+                    {
+                        "word": "exact",
+                        "start": 163.8,
+                        "end": 164.18
+                    },
+                    {
+                        "word": "moment",
+                        "start": 164.18,
+                        "end": 164.58
+                    },
+                    {
+                        "word": "it",
+                        "start": 164.58,
+                        "end": 165.0
+                    }
+                ]
+            },
+            {
+                "start": 165.0,
+                "end": 166.51,
+                "text": "actually becomes free?",
+                "words": [
+                    {
+                        "word": "actually",
+                        "start": 165.0,
+                        "end": 165.42
+                    },
+                    {
+                        "word": "becomes",
+                        "start": 165.42,
+                        "end": 165.9
+                    },
+                    {
+                        "word": "free?",
+                        "start": 165.9,
+                        "end": 166.36
+                    }
+                ]
+            }
+        ],
+        "_caption_sig": "655004aacd17398578f5671f35c2ad0f",
+        "rendered_duration": 176.09,
+        "audio_duration": 170.56,
+        "intro_offset": 1.5,
+        "outro_duration": 5.0,
+        "source_start": 126.58,
+        "source_end": 286.5,
+        "_audio_sig": "e3e1d8af11168ae4e610a4499b5e49b3",
+        "_compiled_sig": "042076c3a128e78d6057b6b984572c7e",
+        "visual_source": "mosaic"
     },
     {
         "num": 3,
-        "title": "So the Moment of Actual Autonomy",
+        "title": "Teenager AI",
         "start": 287.14,
         "end": 434.38,
         "duration": 147.24,

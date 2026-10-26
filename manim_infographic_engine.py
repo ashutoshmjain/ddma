@@ -255,21 +255,22 @@ class {scene_class_name}(Scene):
         rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
         self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
 
-        # Step 1: Robot Head Outline
-        head = RoundedRectangle(corner_radius=0.2, height=1.8, width=2.0, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.08, stroke_width=5).move_to([0, 0.3, 0])
-        eye_l = Circle(radius=0.18, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([-0.5, 0.45, 0])
-        eye_r = Circle(radius=0.18, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([0.5, 0.45, 0])
-        robot = VGroup(head, eye_l, eye_r)
+        # Step 1: Robot Head Outline (Centered at y = 0.5, bottom at y = -0.35)
+        head = RoundedRectangle(corner_radius=0.2, height=1.7, width=2.0, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.08, stroke_width=5).move_to([0, 0.5, 0])
+        eye_l = Circle(radius=0.18, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([-0.45, 0.7, 0])
+        eye_r = Circle(radius=0.18, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([0.45, 0.7, 0])
+        mouth = Line([-0.4, 0.15, 0], [0.4, 0.15, 0], color="#FFFFFF", stroke_width=4)
+        robot = VGroup(head, eye_l, eye_r, mouth)
         self.play(FadeIn(robot), run_time={t_step1:.2f})
 
-        # Step 2: Cord & Battery Indicator
-        cord = CurvedArrow([0, -0.6, 0], [1.8, -1.8, 0], color="#FFFFFF", stroke_width=6)
-        plug = Rectangle(height=0.3, width=0.5, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([1.8, -1.8, 0])
+        # Step 2: Cord & Battery Indicator (Cleanly positioned with ample clearance)
+        cord = CurvedArrow([0, -0.35, 0], [1.8, -1.5, 0], color="#FFFFFF", stroke_width=6)
+        plug = Rectangle(height=0.3, width=0.5, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([1.8, -1.5, 0])
         cord_grp = VGroup(cord, plug)
 
-        batt_box = RoundedRectangle(corner_radius=0.08, height=0.5, width=1.4, color="#FFFFFF", stroke_width=3).move_to([0, -0.15, 0])
-        batt_fill = Rectangle(height=0.36, width=0.3, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([-0.45, -0.15, 0])
-        batt_txt = Text("{lbl_b}", font="Arial", weight=BOLD, font_size=12, color="#FFFFFF").next_to(batt_box, DOWN, buff=0.12)
+        batt_box = RoundedRectangle(corner_radius=0.08, height=0.5, width=1.4, color="#FFFFFF", stroke_width=3).move_to([-1.2, -1.4, 0])
+        batt_fill = Rectangle(height=0.36, width=0.3, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([-1.65, -1.4, 0])
+        batt_txt = Text("{lbl_b}", font="Arial", weight=BOLD, font_size=14, color="#FFFFFF").next_to(batt_box, DOWN, buff=0.18)
         batt_grp = VGroup(batt_box, batt_fill, batt_txt)
         self.play(Create(cord_grp), FadeIn(batt_grp), run_time={t_step2:.2f})
 
@@ -277,7 +278,7 @@ class {scene_class_name}(Scene):
         self.play(
             eye_l.animate.set_fill(opacity=0.2),
             eye_r.animate.set_fill(opacity=0.2),
-            cord_grp.animate.rotate(0.18, about_point=[0, -0.6, 0]),
+            cord_grp.animate.rotate(0.18, about_point=[0, -0.35, 0]),
             run_time={t_kinetic:.2f}
         )
         self.wait({t_hold:.2f})

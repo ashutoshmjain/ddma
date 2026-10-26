@@ -1149,9 +1149,9 @@ def write_ass_file(chunks: list, ass_path: str, diarization_data: Optional[list]
         "",
         "[V4+ Styles]",
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-        "Style: Caption,Arial,44,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,1.2,0,1,0,0,8,60,60,260,1",
-        "Style: MicShape,Arial,20,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,0,0,9,40,40,60,1",
-        "Style: MicName,Arial,20,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,1.2,0,1,0,0,9,40,40,60,1",
+        "Style: Caption,Arial,42,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,1.2,0,1,0,0,8,60,60,300,1",
+        "Style: MicShape,Arial,18,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,0,0,5,40,40,60,1",
+        "Style: MicName,Arial,16,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,1.2,0,1,0,0,5,40,40,60,1",
         "",
         "[Events]",
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
@@ -1182,10 +1182,10 @@ def write_ass_file(chunks: list, ass_path: str, diarization_data: Optional[list]
         start_str = format_ass_time(c_start)
         end_str = format_ass_time(c_end)
         if spk in ("SATOSHI", "SATOSHA"):
-            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicShape,,0,0,0,,{{\\pos(960,110)\\an5\\c&H00FFFFFF&\\p1}}{mic_shape}{{\\p0}}")
-            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicName,,0,0,0,,{{\\pos(960,155)\\an5\\c&H00FFFFFF&\\b1}}{spk}")
+            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicShape,,0,0,0,,{{\\pos(960,368)\\an5\\c&H00FFFFFF&\\p1}}{mic_shape}{{\\p0}}")
+            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicName,,0,0,0,,{{\\pos(960,400)\\an5\\c&H00FFFFFF&\\b1}}{spk}")
         else:
-            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicShape,,0,0,0,,{{\\pos(960,110)\\an5\\c&H00475569&\\p1}}{mic_shape}{{\\p0}}")
+            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicShape,,0,0,0,,{{\\pos(960,368)\\an5\\c&H00475569&\\p1}}{mic_shape}{{\\p0}}")
 
         words = ch.get("words")
 
