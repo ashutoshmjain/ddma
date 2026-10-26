@@ -4110,14 +4110,14 @@
         ],
         "_audio_sig": "de24252185e8ebcc5e83688dd757e695",
         "audio_duration": 135.62,
-        "visual_source": "infographic",
+        "visual_source": "mosaic",
         "infographic_ready": true,
         "rendered_duration": 141.16,
         "intro_offset": 1.5,
         "outro_duration": 5.0,
         "source_start": 0,
         "source_end": 125.76,
-        "_compiled_sig": "72cc2c1e1f59c0ad05f990dd849fe439",
+        "_compiled_sig": "f9d431149f9ed7e32ec3f833582ccaee",
         "mosaic_run_id": "f9cf074c-e093-450c-9dcd-780514d64c0a",
         "_infographic_version": "v3_monochrome_no_grid"
     },
@@ -9110,8 +9110,8 @@
         "source_start": 126.58,
         "source_end": 286.5,
         "_audio_sig": "e3e1d8af11168ae4e610a4499b5e49b3",
-        "_compiled_sig": "0de1d0e885479ed10b74cbc311be6ce2",
-        "visual_source": "infographic",
+        "_compiled_sig": "c68aa2792a5769a5d5968f192db76c35",
+        "visual_source": "mosaic",
         "infographic_scenes": [
             {
                 "start": 0.0,
