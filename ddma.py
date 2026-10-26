@@ -1139,11 +1139,10 @@ def build_caption_chunks(
 def write_ass_file(
     chunks: list,
     ass_path: str,
-    diarization_data: Optional[list] = None,
-    source_offset: float = 0.0,
+    body_duration: float = 0.0,
     intro_offset: float = 0.0
 ):
-    """Write exact ASS v4+ caption file for 1080x1920 vertical canvas with word spotlight."""
+    """Write exact ASS v4+ caption file for 1080x1920 vertical canvas with creative Satosha <Blinking Mic> Satoshi header."""
     os.makedirs(os.path.dirname(ass_path) if os.path.dirname(ass_path) else ".", exist_ok=True)
     lines = [
         "[Script Info]",
@@ -1155,62 +1154,57 @@ def write_ass_file(
         "",
         "[V4+ Styles]",
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-        "Style: Caption,Arial,42,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,1.2,0,1,0,0,8,60,60,300,1",
+        "Style: Caption,Arial,42,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,1.2,0,1,0,0,8,60,60,290,1",
+        "Style: HostRibbon,Arial,17,&H00CBD5E1,&H00CBD5E1,&H00000000,&H00000000,1,0,0,0,100,100,2.5,0,1,0,0,5,40,40,60,1",
         "Style: MicShape,Arial,18,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,0,0,5,40,40,60,1",
-        "Style: MicName,Arial,18,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,1.2,0,1,0,0,5,40,40,60,1",
         "",
         "[Events]",
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
     ]
-    mic_shape = 'm -12 -28 b -12 -38 12 -38 12 -28 l 12 0 b 12 8 -12 8 -12 0 l -12 -28 m -16 -6 b -16 16 16 16 16 -6 l 18 -6 b 18 20 -18 20 -18 -6 l -16 -6 m -2 18 l 2 18 l 2 28 l 14 28 l 14 31 l -14 31 l -14 28 l -2 28'
+    mic_shape = 'm -10 -24 b -10 -32 10 -32 10 -24 l 10 0 b 10 7 -10 7 -10 0 l -10 -24 m -14 -5 b -14 13 14 13 14 -5 l 16 -5 b 16 17 -16 17 -16 -5 l -14 -5 m -2 15 l 2 15 l 2 23 l 11 23 l 11 26 l -11 26 l -11 23 l -2 23'
+    arc_l = 'm -4 -12 b -8 -6 -8 6 -4 12 l -2 10 b -5 5 -5 -5 -2 -10'
+    arc_r = 'm 4 -12 b 8 -6 8 6 4 12 l 2 10 b 5 5 5 -5 2 -10'
     c_white = r"{\c&H00FFFFFF&\b1}"
     c_silver = r"{\c&H00E2E8F0&}"
     c_dim = r"{\c&H0064748B&}"
 
-    def get_speaker(t_val):
-        if not diarization_data:
-            return None
-        t_audio = source_offset + max(0.0, t_val - intro_offset)
-        # 1. Exact segment match (Rule Engine Invariant: Satosha is MALE, Satoshi is FEMALE)
-        for seg in diarization_data:
-            if seg.get("start", 0.0) <= t_audio <= seg.get("end", 0.0):
-                s = str(seg.get("speaker", "")).lower()
-                if "satosha" in s:
-                    return "SATOSHI"  # Female host
-                elif "satoshi" in s:
-                    return "SATOSHA"  # Male host
-        # 2. Nearest segment within 5.0s (handles pauses & trimmed gaps)
-        cand_seg = None
-        min_dist = 999.0
-        for seg in diarization_data:
-            s_s = seg.get("start", 0.0)
-            s_e = seg.get("end", 0.0)
-            dist = min(abs(s_s - t_audio), abs(s_e - t_audio))
-            if dist < min_dist:
-                min_dist = dist
-                cand_seg = seg
-        if cand_seg and min_dist <= 5.0:
-            s = str(cand_seg.get("speaker", "")).lower()
-            if "satosha" in s:
-                return "SATOSHI"  # Female host
-            elif "satoshi" in s:
-                return "SATOSHA"  # Male host
-        return None
+    total_end = intro_offset + (body_duration if body_duration > 0 else (chunks[-1]["end"] if chunks else 120.0))
+    s_start_ribbon = format_ass_time(intro_offset)
+    s_end_ribbon = format_ass_time(total_end)
 
-    mic_events = []
+    # 1. Creative host typography below captions: Satosha ── <Mic> ── Satoshi
+    header_events = [
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(420,368)\\an6\\c&H00E2E8F0&\\b1\\fsp3}}SATOSHA",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(660,368)\\an4\\c&H00E2E8F0&\\b1\\fsp3}}SATOSHI",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(475,367)\\an5\\c&H00475569&}}─",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(605,367)\\an5\\c&H00475569&}}─",
+    ]
+
+    # 2. Always blinking central microphone: 0.8s period (0.48s ON bright white + waves, 0.32s OFF resting slate)
+    period = 0.8
+    t_curr = intro_offset
+    while t_curr < total_end:
+        t_on_start = t_curr
+        t_on_end = min(total_end, t_curr + 0.48)
+        t_off_start = t_on_end
+        t_off_end = min(total_end, t_curr + period)
+
+        s_on = format_ass_time(t_on_start)
+        e_on = format_ass_time(t_on_end)
+        header_events.append(f"Dialogue: 2,{s_on},{e_on},MicShape,,0,0,0,,{{\\pos(540,367)\\an5\\c&H00FFFFFF&\\p1}}{mic_shape}{{\\p0}}")
+        header_events.append(f"Dialogue: 2,{s_on},{e_on},MicShape,,0,0,0,,{{\\pos(518,367)\\an5\\c&H00FFFFFF&\\p1}}{arc_l}{{\\p0}}")
+        header_events.append(f"Dialogue: 2,{s_on},{e_on},MicShape,,0,0,0,,{{\\pos(562,367)\\an5\\c&H00FFFFFF&\\p1}}{arc_r}{{\\p0}}")
+
+        if t_off_start < t_off_end:
+            s_off = format_ass_time(t_off_start)
+            e_off = format_ass_time(t_off_end)
+            header_events.append(f"Dialogue: 2,{s_off},{e_off},MicShape,,0,0,0,,{{\\pos(540,367)\\an5\\c&H00334155&\\p1}}{mic_shape}{{\\p0}}")
+
+        t_curr += period
 
     for ch in (chunks or []):
         c_start = float(ch.get("start", 0.0))
         c_end = float(ch.get("end", c_start + 1.0))
-        spk = ch.get("speaker") or get_speaker((c_start + c_end) / 2.0)
-        start_str = format_ass_time(c_start)
-        end_str = format_ass_time(c_end)
-        if spk in ("SATOSHI", "SATOSHA"):
-            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicShape,,0,0,0,,{{\\pos(960,365)\\an5\\c&H00FFFFFF&\\p1}}{mic_shape}{{\\p0}}")
-            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicName,,0,0,0,,{{\\pos(960,398)\\an5\\c&H00FFFFFF&\\b1}}{spk}")
-        else:
-            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicShape,,0,0,0,,{{\\pos(960,365)\\an5\\c&H00475569&\\p1}}{mic_shape}{{\\p0}}")
-
         words = ch.get("words")
 
         if words and isinstance(words, list) and len(words) > 1:
@@ -1246,7 +1240,7 @@ def write_ass_file(
             if txt:
                 lines.append(f"Dialogue: 0,{start_str},{end_str},Caption,,0,0,0,,{txt}")
 
-    lines.extend(mic_events)
+    lines.extend(header_events)
     with open(ass_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
 
@@ -1914,54 +1908,17 @@ def compile_clip(
             body_duration=body_duration,
             has_outro=(not is_last_clip)
         )
-        cand_dirs = [
-            "scratch",
-            os.path.join("..", "scratch"),
-            os.path.join("projects", f"episode_{episode}"),
-            os.path.join("..", "projects", f"episode_{episode}"),
-            os.path.join("..", "deepDive", "src", "ddma", "docs", "episodes", str(episode)),
-            os.path.join("..", "deepDive", "book", "ddma", "docs", "episodes", str(episode)),
-            os.path.join("deepDive", "src", "ddma", "docs", "episodes", str(episode)),
-            os.path.join("deepDive", "book", "ddma", "docs", "episodes", str(episode)),
-            os.path.join("docs", "episodes", str(episode)),
-            os.path.join("..", "docs", "episodes", str(episode)),
-        ]
-        cand_files = []
-        for cd in cand_dirs:
-            cand_files.append(os.path.join(cd, f"speaker_diarization_{episode}.json"))
-            cand_files.append(os.path.join(cd, "speaker_diarization.json"))
-            cand_files.append(os.path.join(cd, "transcription.json"))
-
-        diar_data = None
-        for cd in cand_files:
-            if os.path.exists(cd):
-                try:
-                    with open(cd, "r", encoding="utf-8") as df:
-                        raw_d = json.load(df)
-                        segs = raw_d if isinstance(raw_d, list) else raw_d.get("segments", [])
-                        if any(s.get("speaker") for s in segs):
-                            diar_data = segs
-                            typer.echo(f"Loaded speaker diarization ({len(diar_data)} segments) from {cd}")
-                            break
-                        elif diar_data is None and segs:
-                            diar_data = segs
-                except Exception:
-                    pass
-
-        source_start = float(target_clip.get("source_start", target_clip.get("start", 0.0))) if target_clip else 0.0
         write_ass_file(
             caption_chunks,
             temp_ass_path,
-            diarization_data=diar_data,
-            source_offset=source_start,
+            body_duration=body_duration,
             intro_offset=intro_duration
         )
         os.makedirs("captions", exist_ok=True)
         write_ass_file(
             caption_chunks,
             os.path.join("captions", f"{base_name}.ass"),
-            diarization_data=diar_data,
-            source_offset=source_start,
+            body_duration=body_duration,
             intro_offset=intro_duration
         )
         typer.echo(f"Prepared {len(caption_chunks)} ASS caption events (1080x1920 vertical spec) -> {temp_ass_path}")
