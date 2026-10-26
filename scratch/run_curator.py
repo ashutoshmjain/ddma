@@ -3733,11 +3733,13 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     )
                     t_clip["_caption_sig"] = curr_caption_sig
 
+                INFOGRAPHIC_ENGINE_VERSION = "v3_monochrome_no_grid"
                 infographic_mp4 = os.path.join("clips", f"{ep_num}-{clip_num}-infographic.mp4")
                 existing_scenes = t_clip.get("infographic_scenes") or []
                 scenes_mismatch = (not existing_scenes) or (abs(float(existing_scenes[-1].get("end", 0.0)) - body_dur) > 1.5)
+                version_mismatch = (t_clip.get("_infographic_version") != INFOGRAPHIC_ENGINE_VERSION)
                 need_render_infographic = (
-                    force_regen or bool(custom_instructions) or need_audio_cut or scenes_mismatch or
+                    force_regen or bool(custom_instructions) or need_audio_cut or scenes_mismatch or version_mismatch or
                     not os.path.exists(infographic_mp4) or os.path.getsize(infographic_mp4) < 10000
                 )
 
@@ -3758,6 +3760,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 t_clip["audio_duration"] = round(body_dur, 2)
                 t_clip["visual_source"] = "infographic"
                 t_clip["infographic_ready"] = True
+                t_clip["_infographic_version"] = INFOGRAPHIC_ENGINE_VERSION
                 with open(plan_path, "w", encoding="utf-8") as pf_w:
                     json.dump(plan_data, pf_w, indent=4)
 

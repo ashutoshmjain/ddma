@@ -1171,14 +1171,14 @@ def write_ass_file(
         if not diarization_data:
             return None
         t_audio = source_offset + max(0.0, t_val - intro_offset)
-        # 1. Exact segment match
+        # 1. Exact segment match (Rule Engine Invariant: Satosha is MALE, Satoshi is FEMALE)
         for seg in diarization_data:
             if seg.get("start", 0.0) <= t_audio <= seg.get("end", 0.0):
                 s = str(seg.get("speaker", "")).lower()
                 if "satosha" in s:
-                    return "SATOSHA"
+                    return "SATOSHI"  # Female host
                 elif "satoshi" in s:
-                    return "SATOSHI"
+                    return "SATOSHA"  # Male host
         # 2. Nearest segment within 5.0s (handles pauses & trimmed gaps)
         cand_seg = None
         min_dist = 999.0
@@ -1192,9 +1192,9 @@ def write_ass_file(
         if cand_seg and min_dist <= 5.0:
             s = str(cand_seg.get("speaker", "")).lower()
             if "satosha" in s:
-                return "SATOSHA"
+                return "SATOSHI"  # Female host
             elif "satoshi" in s:
-                return "SATOSHI"
+                return "SATOSHA"  # Male host
         return None
 
     mic_events = []

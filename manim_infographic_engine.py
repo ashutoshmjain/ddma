@@ -177,16 +177,8 @@ def generate_manim_scene_python(scene_data: Dict[str, Any], scene_class_name: st
     t_kinetic = min(2.5, duration * 0.25)
     t_hold = max(1.0, duration - (t_enter + t_step1 + t_step2 + t_kinetic))
 
-    # Common subtle blueprint background grid
-    grid_init = """
-        # Subtle experimental blueprint grid (0.05 opacity)
-        grid = NumberPlane(
-            x_range=[-4, 4, 1], y_range=[-4, 4, 1],
-            background_line_style={"stroke_color": "#FFFFFF", "stroke_width": 1, "stroke_opacity": 0.05},
-            faded_line_style={"stroke_color": "#FFFFFF", "stroke_width": 0.5, "stroke_opacity": 0.02}
-        )
-        self.add(grid)
-"""
+    # Clean pure glossy black canvas with zero crosshairs or divider lines
+    grid_init = ""
 
     if archetype == "balance_scale":
         code = f"""

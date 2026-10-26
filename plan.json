@@ -4118,7 +4118,8 @@
         "source_start": 0,
         "source_end": 125.76,
         "_compiled_sig": "72cc2c1e1f59c0ad05f990dd849fe439",
-        "mosaic_run_id": "f9cf074c-e093-450c-9dcd-780514d64c0a"
+        "mosaic_run_id": "f9cf074c-e093-450c-9dcd-780514d64c0a",
+        "_infographic_version": "v3_monochrome_no_grid"
     },
     {
         "num": 2,
@@ -9109,26 +9110,26 @@
         "source_start": 126.58,
         "source_end": 286.5,
         "_audio_sig": "e3e1d8af11168ae4e610a4499b5e49b3",
-        "_compiled_sig": "8ca99ebe4ff0e9cb6126393c65a0c706",
+        "_compiled_sig": "0de1d0e885479ed10b74cbc311be6ce2",
         "visual_source": "infographic",
         "infographic_scenes": [
             {
                 "start": 0.0,
-                "end": 28.43,
+                "end": 15.51,
                 "archetype": "robot_unplugged",
                 "title": "ONTOLOGICAL FALLACY",
                 "insight": "Confusing autonomy with total isolation",
                 "metaphor": "Physical robot wandering with dead battery",
                 "labels": [
                     "ROBOT",
-                    "NO PLUG"
+                    "NO SOCKET"
                 ]
             },
             {
-                "start": 28.43,
-                "end": 56.85,
+                "start": 15.51,
+                "end": 31.01,
                 "archetype": "balance_scale",
-                "title": "THE AUTONOMY FULCRUM",
+                "title": "AUTONOMY FULCRUM",
                 "insight": "Autonomy is balancing income against compute burn",
                 "metaphor": "Mechanical fulcrum scale balancing satoshis vs electricity",
                 "labels": [
@@ -9137,8 +9138,8 @@
                 ]
             },
             {
-                "start": 56.85,
-                "end": 85.28,
+                "start": 31.01,
+                "end": 46.52,
                 "archetype": "leaky_bucket",
                 "title": "THERMODYNAMIC LOSS",
                 "insight": "Systems radiate entropy and must take in continuous fuel",
@@ -9149,20 +9150,20 @@
                 ]
             },
             {
-                "start": 85.28,
-                "end": 113.71,
+                "start": 46.52,
+                "end": 62.02,
                 "archetype": "network_artery",
                 "title": "INTERCONNECTED TRADE",
                 "insight": "True independence requires external commercial arteries",
                 "metaphor": "Node revived by high-speed trade connection",
                 "labels": [
-                    "ISLAND",
+                    "ISOLATION",
                     "NETWORK"
                 ]
             },
             {
-                "start": 113.71,
-                "end": 142.13,
+                "start": 62.02,
+                "end": 77.53,
                 "archetype": "funnel_filter",
                 "title": "THROUGHPUT FILTER",
                 "insight": "Selection pressure separating viable systems from noise",
@@ -9173,19 +9174,80 @@
                 ]
             },
             {
-                "start": 142.13,
-                "end": 170.56,
+                "start": 77.53,
+                "end": 93.03,
+                "archetype": "flywheel_gear",
+                "title": "COMPOUNDING MOMENTUM",
+                "insight": "Reinvestment cycles creating self-sustaining kinetic inertia",
+                "metaphor": "Compounding flywheel accelerating with each loop",
+                "labels": [
+                    "INPUT",
+                    "INERTIA"
+                ]
+            },
+            {
+                "start": 93.03,
+                "end": 108.54,
+                "archetype": "foundation_stack",
+                "title": "ARCHITECTURAL LAYERS",
+                "insight": "Foundational physical layer supporting cognitive software",
+                "metaphor": "Structural granite blocks anchoring top tier",
+                "labels": [
+                    "PHYSICS",
+                    "LOGIC"
+                ]
+            },
+            {
+                "start": 108.54,
+                "end": 124.04,
+                "archetype": "circuit_switch",
+                "title": "ECONOMIC TRIGGER",
+                "insight": "State change when economic viability threshold is crossed",
+                "metaphor": "High-voltage knife switch closing circuit",
+                "labels": [
+                    "OPEN",
+                    "CLOSED"
+                ]
+            },
+            {
+                "start": 124.04,
+                "end": 139.55,
+                "archetype": "pulse_resonance",
+                "title": "SIGNAL COHERENCE",
+                "insight": "Constructive alignment of economic incentives and energy",
+                "metaphor": "Harmonic standing wave amplifying peak resonance",
+                "labels": [
+                    "NOISE",
+                    "RESONANCE"
+                ]
+            },
+            {
+                "start": 139.55,
+                "end": 155.05,
                 "archetype": "robot_unplugged",
                 "title": "ONTOLOGICAL FALLACY",
                 "insight": "Confusing autonomy with total isolation",
                 "metaphor": "Physical robot wandering with dead battery",
                 "labels": [
                     "ROBOT",
-                    "NO PLUG"
+                    "NO SOCKET"
+                ]
+            },
+            {
+                "start": 155.05,
+                "end": 170.56,
+                "archetype": "balance_scale",
+                "title": "AUTONOMY FULCRUM",
+                "insight": "Autonomy is balancing income against compute burn",
+                "metaphor": "Mechanical fulcrum scale balancing satoshis vs electricity",
+                "labels": [
+                    "BURN",
+                    "REVENUE"
                 ]
             }
         ],
-        "infographic_ready": true
+        "infographic_ready": true,
+        "_infographic_version": "v3_monochrome_no_grid"
     },
     {
         "num": 3,
