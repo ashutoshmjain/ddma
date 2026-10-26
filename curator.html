@@ -2540,7 +2540,7 @@
             if (!window.location.protocol.startsWith('http')) return;
             const theme = localStorage.getItem('ddma-theme') || 'midnight';
             const format = localStorage.getItem('ddma-export-format') || 'audio';
-            const res = localStorage.getItem('ddma-video-res') || '740x740';
+            const res = localStorage.getItem('ddma-video-res') || '1080x1080';
             const bg = localStorage.getItem('ddma-video-bg') || 'black';
             
             const settings = {
@@ -2587,7 +2587,7 @@
                     videoSettingsArea.style.display = 'none';
                 }
                 
-                const savedRes = localStorage.getItem('ddma-video-res') || '740x740';
+                const savedRes = localStorage.getItem('ddma-video-res') || '1080x1080';
                 videoResolutionSelector.value = savedRes;
                 
                 const savedBg = localStorage.getItem('ddma-video-bg') || 'black';
@@ -3309,7 +3309,7 @@
                 videoSettingsArea.style.display = 'none';
             }
             
-            const savedRes = localStorage.getItem('ddma-video-res') || '740x740';
+            const savedRes = localStorage.getItem('ddma-video-res') || '1080x1080';
             videoResolutionSelector.value = savedRes;
             
             const savedBg = localStorage.getItem('ddma-video-bg') || 'black';
@@ -5960,7 +5960,7 @@
 
             // Read settings from localStorage
             const format = localStorage.getItem('ddma-export-format') || 'audio';
-            const res = localStorage.getItem('ddma-video-res') || '740x740';
+            const res = localStorage.getItem('ddma-video-res') || '1080x1080';
             const bg = localStorage.getItem('ddma-video-bg') || 'black';
 
             fetch(`/export-project-clip?id=${activeProjectId}`, {
@@ -6961,7 +6961,7 @@
                 let infographicBtnHtml = "";
                 if (isLocked) {
                     if (isCompilingInfographic) {
-                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-success" id="infographicCardBtn_${index}" style="font-weight: 600; cursor: wait;" disabled title="Rendering Local 740×740 Dan Koe Infographic &amp; 1080×1920 Captions...">⏳ Rendering...</button>`;
+                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-success" id="infographicCardBtn_${index}" style="font-weight: 600; cursor: wait;" disabled title="Rendering 1080×1080 Manim Pedagogical Infographic &amp; 1080×1920 Captions...">⏳ Rendering...</button>`;
                     } else if (hasInfographicRender) {
                         const activeStyle = isInfographicActive
                             ? 'font-weight: 700; box-shadow: 0 0 0 2px #38bdf8;'
@@ -6972,7 +6972,7 @@
                             : 'Click to switch Active Master to Local Infographic (updates clips/' + episodeNum + '-' + clip.num + '.mp4 &amp; deepDive) • Right-click to re-render';
                         infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-success" id="infographicCardBtn_${index}" style="${activeStyle}" title="${activeTip}">${activeLabel}</button>`;
                     } else {
-                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-purple" id="infographicCardBtn_${index}" style="font-weight: 600;" title="Left-click: 1-click render Local 740×740 Dan Koe Infographic + 1080×1920 Captions ($0 cost) • Right-click: Custom visual instructions">✨ Infographic</button>`;
+                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-purple" id="infographicCardBtn_${index}" style="font-weight: 600;" title="Left-click: 1-click render 1080×1080 Manim Pedagogical Infographic (Feynman/Needham Standard) • Right-click: Custom visual instructions">✨ Infographic</button>`;
                     }
                 } else {
                     infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-gray" style="font-weight: 600; opacity: 0.4; cursor: not-allowed;" disabled title="Lock clip first to enable Local Infographic">✨ Infographic</button>`;
@@ -7270,16 +7270,16 @@
                             btn.innerHTML = '⏳ Rendering...';
                             btn.disabled = true;
                             btn.style.cursor = 'wait';
-                            updateStateBar(`Rendering Local 740×740 Dan Koe Infographic & 1080×1920 Captions for Part ${clip.num}: "${clip.title}"...`);
+                            updateStateBar(`Rendering 1080×1080 Manim Pedagogical Infographic & 1080×1920 Captions for Part ${clip.num}: "${clip.title}"...`);
                             
                             const epNum = activeProjectId.replace('episode_', '');
                             openVideoModalLoading(
-                                `✨ LOCAL DAN KOE INFOGRAPHIC - Part ${clip.num}: ${clip.title}`,
-                                `✨ 740×740 Neon Wireframe Engine → 1080×1920 Vertical + Burned ASS Captions ($0 Cost) • clips/${epNum}-${clip.num}.mp4`,
-                                `Rendering Local Dan Koe Infographic (Part ${clip.num})...`,
+                                `✨ MANIM PEDAGOGICAL INFOGRAPHIC - Part ${clip.num}: ${clip.title}`,
+                                `✨ 1080×1080 Manim Vector Engine → 1080×1920 Vertical + Burned ASS Captions • clips/${epNum}-${clip.num}.mp4`,
+                                `Rendering Manim Pedagogical Infographic (Part ${clip.num})...`,
                                 forceRegen
-                                    ? `Generating fresh scene storyboard, rendering 740×740 neon vectors, and burning 1080×1920 captions...`
-                                    : `Verifying 740×740 infographic & assembling 1080×1920 captioned vertical Short...`
+                                    ? `Generating fresh pedagogical storyboard, compiling 1080×1080 Manim scenes, and burning 1080×1920 captions...`
+                                    : `Verifying 1080×1080 Manim infographic & assembling 1080×1920 captioned vertical Short...`
                             );
                             
                             fetch(`/render-local-infographic?id=${activeProjectId}&num=${clip.num}&force=${forceRegen ? 'true' : 'false'}`, {
@@ -7302,8 +7302,8 @@
                                 const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
                                 openVideoModal(
                                     freshVideoUrl,
-                                    `✨ LOCAL DAN KOE INFOGRAPHIC (1080×1920 + Captions) - Part ${clip.num}: ${clip.title}`,
-                                    `✨ 740×740 Neon Wireframe Engine (${data.scenes_count || 12} scenes) + Burned ASS Captions • clips/${epNum}-${clip.num}.mp4`
+                                    `✨ MANIM PEDAGOGICAL INFOGRAPHIC (1080×1920 + Captions) - Part ${clip.num}: ${clip.title}`,
+                                    `✨ 1080×1080 Manim Vector Engine (${data.scenes_count || 5} scenes) + Burned ASS Captions • clips/${epNum}-${clip.num}.mp4`
                                 );
                                 updateStateBar(`Playing Local Dan Koe Infographic video for Part ${clip.num}`);
                             })
@@ -7344,8 +7344,8 @@
                             e.preventDefault();
                             e.stopPropagation();
                             const customDir = prompt(
-                                `✨ Re-Render Local Dan Koe Infographic — Part ${clip.num} ("${clip.title}")\n\n` +
-                                `Enter optional custom visual metaphors/instructions (or leave blank to force a fresh storyboard & 740×740 render):`,
+                                `✨ Re-Render Manim Pedagogical Infographic — Part ${clip.num} ("${clip.title}")\n\n` +
+                                `Enter optional custom visual metaphors/instructions (or leave blank to force a fresh storyboard & 1080×1080 Manim render):`,
                                 ""
                             );
                             if (customDir === null) return;

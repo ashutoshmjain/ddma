@@ -738,12 +738,12 @@ def mux_clip(
     except Exception:
         pass
 
-    # Mux using FFmpeg color source filter to generate a 740x740 black video dynamically at standard 30fps
+    # Mux using FFmpeg color source filter to generate a 1080x1080 black video dynamically at standard 30fps
     if a_dur:
         cmd = [
             "ffmpeg", "-y",
             "-f", "lavfi",
-            "-i", f"color=c=black:s=740x740:r=30:d={a_dur:.3f}",
+            "-i", f"color=c=black:s=1080x1080:r=30:d={a_dur:.3f}",
             "-i", audio_path,
             "-r", "30",
             "-c:v", "libx264",
@@ -758,7 +758,7 @@ def mux_clip(
         cmd = [
             "ffmpeg", "-y",
             "-f", "lavfi",
-            "-i", "color=c=black:s=740x740:r=30",
+            "-i", "color=c=black:s=1080x1080:r=30",
             "-i", audio_path,
             "-r", "30",
             "-c:v", "libx264",
@@ -1415,7 +1415,7 @@ def compile_clip(
             typer.echo(f"Generating clean draft body video ({a_dur_fresh:.2f}s) from fresh audio clip...")
             cmd_remux = [
                 "ffmpeg", "-y",
-                "-f", "lavfi", "-i", f"color=c=black:s=740x740:r={fps_str}:d={a_dur_fresh:.3f}",
+                "-f", "lavfi", "-i", f"color=c=black:s=1080x1080:r={fps_str}:d={a_dur_fresh:.3f}",
                 "-i", fresh_audio_path,
                 "-r", fps_str,
                 "-c:v", "libx264", "-tune", "stillimage", "-pix_fmt", "yuv420p",
@@ -1494,7 +1494,7 @@ def compile_clip(
 
         # Open image canvas with clean solid charcoal background
         from PIL import Image, ImageDraw, ImageFont
-        width, height = 740, 740
+        width, height = 1080, 1080
         bg_color = (18, 18, 18)
         image = Image.new("RGBA", (width, height), bg_color)
 
@@ -1616,8 +1616,8 @@ def compile_clip(
         fps_str = "25"
         tb_den = "90000"
         ar_str = "48000"
-        v_width = 740
-        v_height = 740
+        v_width = 1080
+        v_height = 1080
         v_dur = None
         a_dur = None
 
@@ -1647,8 +1647,8 @@ def compile_clip(
                 
                 if codec_type == "video":
                      v_dur = dur_sec
-                     v_width = int(stream.get("width") or 740)
-                     v_height = int(stream.get("height") or 740)
+                     v_width = int(stream.get("width") or 1080)
+                     v_height = int(stream.get("height") or 1080)
                      avg_fps = stream.get("avg_frame_rate")
                      r_fps = stream.get("r_frame_rate")
                      fps_str = avg_fps if avg_fps and avg_fps != "0/0" else r_fps

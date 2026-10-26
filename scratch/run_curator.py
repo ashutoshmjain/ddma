@@ -2963,7 +2963,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 clip_num = json_data.get("clip_num", 1)
                 title = json_data.get("title", f"Clip-{clip_num}")
                 export_format = json_data.get("export_format", "audio")
-                resolution = json_data.get("resolution", "740x740")
+                resolution = json_data.get("resolution", "1080x1080")
                 bg_color = json_data.get("bg_color", "black")
                 
                 os.makedirs("clips", exist_ok=True)
@@ -3625,6 +3625,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 import importlib
                 import ddma as ddma_mod
                 import infographic_engine
+                import manim_infographic_engine
                 importlib.reload(infographic_engine)
 
                 plan_path = os.path.join("projects", project_id, "plan.json")
@@ -3744,13 +3745,14 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     settings = load_settings()
                     api_key = settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
                     g_mod = genai if (HAS_GENAI and configure_gemini(api_key)) else None
-                    scenes = infographic_engine.generate_infographic_storyboard(
+                    scenes = manim_infographic_engine.generate_pedagogical_storyboard(
                         t_clip, body_duration=body_dur, intro_offset=1.5,
                         custom_instructions=custom_instructions, genai_mod=g_mod,
                         force_regenerate=True
                     )
-                    print(f"[{project_id}][Clip {clip_num}] Rendering local 740x740 Dan Koe infographic ({len(scenes)} scenes)...")
-                    infographic_engine.render_infographic_mp4(scenes, clip_mp3, infographic_mp4, duration=body_dur)
+                    t_clip["infographic_scenes"] = scenes
+                    print(f"[{project_id}][Clip {clip_num}] Rendering 1080x1080 Manim Pedagogical Infographic ({len(scenes)} scenes)...")
+                    manim_infographic_engine.render_manim_infographic_mp4(scenes, clip_mp3, infographic_mp4, duration=body_dur)
 
                 t_clip["_audio_sig"] = curr_audio_sig
                 t_clip["audio_duration"] = round(body_dur, 2)
@@ -3781,7 +3783,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     "success": True,
                     "infographic_file": infographic_mp4,
                     "scenes_count": len(t_clip.get("infographic_scenes", [])),
-                    "message": "Local 740x740 Infographic rendered and compiled into 1080x1920 captioned video!"
+                    "message": "1080x1080 Manim Pedagogical Infographic rendered and compiled into 1080x1920 captioned video!"
                 }).encode('utf-8'))
                 return
             except Exception as e:
@@ -4350,7 +4352,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     settings_data = {
                         "theme": "midnight",
                         "export_format": "audio",
-                        "resolution": "740x740",
+                        "resolution": "1080x1080",
                         "bg_color": "black"
                     }
                 self.send_response(200)
