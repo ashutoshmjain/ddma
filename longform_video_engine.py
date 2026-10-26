@@ -421,9 +421,9 @@ def classify_audio_speakers_fast(audio_path, segments, cached_path=None):
         if len(pitches) >= 4:
             med_f0 = float(np.median(pitches))
             if med_f0 <= 140.0:
-                candidate = "satosha"
+                candidate = "satoshi"  # Male: Satoshi (Gold / Right)
             elif med_f0 >= 170.0:
-                candidate = "satoshi"
+                candidate = "satosha"  # Female: Satosha (Cyan / Left)
 
         # User rule: "When in doubt, DO NOT SWITCH"
         if candidate and candidate != current_spk:
@@ -449,10 +449,10 @@ def classify_audio_speakers_fast(audio_path, segments, cached_path=None):
             runs.append(cur_run)
 
         smoothed = []
-        stable_spk = runs[0][0].get("speaker", "satosha")
+        stable_spk = runs[0][0].get("speaker", "satoshi")
         for r in runs:
             r_dur = float(r[-1].get("end", 0.0)) - float(r[0].get("start", 0.0))
-            r_spk = r[0].get("speaker", "satosha")
+            r_spk = r[0].get("speaker", "satoshi")
             if r_dur >= 5.0 and r_spk != stable_spk:
                 stable_spk = r_spk
             for s in r:
@@ -868,7 +868,7 @@ def render_horizontal_podcast_video(
             "words": words
         })
 
-    # Diarize and label speakers (Satosha = Male, Satoshi = Female)
+    # Diarize and label speakers (Satoshi = Male, Satosha = Female)
     diarize_cache = os.path.join(os.path.dirname(out_mp4_path), f"speaker_diarization_{episode_num}.json")
     flattened_segments = classify_audio_speakers_fast(audio_path, flattened_segments, cached_path=diarize_cache)
 
@@ -909,8 +909,8 @@ def render_horizontal_podcast_video(
     last_progress_pct = -1
 
     manim_reader = None
-    if start_seconds >= 800.0 and start_seconds < 1400.0:
-        manim_reader = ManimSceneReader(fps=fps)
+    if start_seconds is not None and start_seconds >= 800.0 and start_seconds < 2000.0:
+        manim_reader = ManimSceneReader(fps=fps, start_seconds=start_seconds)
 
     try:
         for f_idx in range(total_frames):

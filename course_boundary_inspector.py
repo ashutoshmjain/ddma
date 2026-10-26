@@ -14,7 +14,7 @@ ACTS_DEFAULT = {
     1: (0.0, 440.0, "The Ontological Fallacy & Corporate Subsidies"),
     2: (440.0, 840.0, "The Microscopic Compute Factory & Thermodynamics"),
     3: (835.0, 1353.4, "The Corporate Breaker & Sovereign Checkbook"),
-    4: (1350.0, 1920.0, "Debasement, Reserves & Autopoietic Solvency"),
+    4: (1353.5, 1931.5, "Debasement, Reserves & Autopoietic Solvency"),
     5: (1920.0, 2580.0, "Civic Autonomous Agents & Streaming Micropayments"),
     6: (2580.0, 3254.0, "Synthesis & The Emergence of Machine Sovereignty"),
 }
