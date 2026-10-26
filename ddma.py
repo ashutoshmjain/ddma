@@ -1140,10 +1140,74 @@ def write_ass_file(
     chunks: list,
     ass_path: str,
     body_duration: float = 0.0,
-    intro_offset: float = 0.0
+    intro_offset: float = 0.0,
+    is_infographic: bool = False
 ):
-    """Write exact ASS v4+ caption file for 1080x1920 vertical canvas with creative Satosha <Blinking Mic> Satoshi header."""
+    """Write exact ASS v4+ caption file for 1080x1920 vertical canvas."""
     os.makedirs(os.path.dirname(ass_path) if os.path.dirname(ass_path) else ".", exist_ok=True)
+
+    if not is_infographic:
+        # Canonical Mosaic spec: MarginV=500 (y≈500-555, safely below Instagram ~450px top chrome, no mic/ribbon)
+        lines = [
+            "[Script Info]",
+            "ScriptType: v4.00+",
+            "PlayResX: 1080",
+            "PlayResY: 1920",
+            "WrapStyle: 2",
+            "ScaledBorderAndShadow: yes",
+            "",
+            "[V4+ Styles]",
+            "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
+            "Style: Caption,DejaVu Sans Mono,46,&H00FFFFFF,&H000019FF,&H80000000,&H80000000,1,0,0,0,100,100,1.2,0,1,2,0,8,60,60,500,1",
+            "",
+            "[Events]",
+            "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
+        ]
+        c_gold = r"{\c&H000AD6FF&}"
+        c_white = r"{\c&H00FFFFFF&}"
+        c_dim = r"{\c&H00757575&}"
+
+        for ch in (chunks or []):
+            c_start = float(ch.get("start", 0.0))
+            c_end = float(ch.get("end", c_start + 1.0))
+            words = ch.get("words")
+
+            if words and isinstance(words, list) and len(words) > 1:
+                for i, w in enumerate(words):
+                    w_start_val = max(c_start, float(w.get("start", c_start)))
+                    if i < len(words) - 1:
+                        w_end_val = min(c_end, max(w_start_val + 0.04, float(words[i + 1].get("start", w_start_val + 0.2))))
+                    else:
+                        w_end_val = c_end
+
+                    start_str = format_ass_time(w_start_val)
+                    end_str = format_ass_time(w_end_val)
+
+                    passed = " ".join(str(x.get("word", "")).strip().lower() for x in words[:i])
+                    active = str(words[i].get("word", "")).strip().lower()
+                    upcoming = " ".join(str(x.get("word", "")).strip().lower() for x in words[i + 1:])
+
+                    parts = []
+                    if passed:
+                        parts.append(f"{c_white}{passed}")
+                    parts.append(f"{c_gold}{active}{c_white}")
+                    if upcoming:
+                        parts.append(f"{c_dim}{upcoming}{c_white}")
+
+                    line_txt = " ".join(parts)
+                    lines.append(f"Dialogue: 0,{start_str},{end_str},Caption,,0,0,0,,{line_txt}")
+            else:
+                start_str = format_ass_time(c_start)
+                end_str = format_ass_time(c_end)
+                txt = str(ch.get("text", "")).replace("\n", " ").strip().lower()
+                if txt:
+                    lines.append(f"Dialogue: 0,{start_str},{end_str},Caption,,0,0,0,,{txt}")
+
+        with open(ass_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines) + "\n")
+        return
+
+    # Experimental Infographics Deck:
     lines = [
         "[Script Info]",
         "ScriptType: v4.00+",
@@ -1172,7 +1236,6 @@ def write_ass_file(
     s_start_ribbon = format_ass_time(intro_offset)
     s_end_ribbon = format_ass_time(total_end)
 
-    # 1. Creative host typography below captions: Satosha ── <Mic> ── Satoshi
     header_events = [
         f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(420,368)\\an6\\c&H00E2E8F0&\\b1\\fsp3}}SATOSHA",
         f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(660,368)\\an4\\c&H00E2E8F0&\\b1\\fsp3}}SATOSHI",
@@ -1180,7 +1243,6 @@ def write_ass_file(
         f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(605,367)\\an5\\c&H00475569&}}─",
     ]
 
-    # 2. Always blinking central microphone: 0.8s period (0.48s ON bright white + waves, 0.32s OFF resting slate)
     period = 0.8
     t_curr = intro_offset
     while t_curr < total_end:
@@ -1908,18 +1970,21 @@ def compile_clip(
             body_duration=body_duration,
             has_outro=(not is_last_clip)
         )
+        is_info_mode = (visual_source == "infographic")
         write_ass_file(
             caption_chunks,
             temp_ass_path,
             body_duration=body_duration,
-            intro_offset=intro_duration
+            intro_offset=intro_duration,
+            is_infographic=is_info_mode
         )
         os.makedirs("captions", exist_ok=True)
         write_ass_file(
             caption_chunks,
             os.path.join("captions", f"{base_name}.ass"),
             body_duration=body_duration,
-            intro_offset=intro_duration
+            intro_offset=intro_duration,
+            is_infographic=is_info_mode
         )
         typer.echo(f"Prepared {len(caption_chunks)} ASS caption events (1080x1920 vertical spec) -> {temp_ass_path}")
 
