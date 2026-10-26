@@ -1,7 +1,9 @@
 """
 manim_infographic_engine.py - Elegant Manim Pedagogy Engine for DDMA Short Clips
-Renders 1080x1080 square vector animations based on Richard Feynman physical intuitions
-and Tristan Needham geometric transformations, completely avoiding AI "Performance Theater".
+Renders 1080x1080 pure monochrome white-on-black vector animations based on Richard Feynman
+physical intuitions and Tristan Needham geometric transformations.
+Enforces the 15-second pacing rule, pure shining white vector aesthetics, zero color clutter,
+and seamless relay handoff transitions on a pure glossy black (#000000) canvas.
 """
 
 import os
@@ -11,7 +13,7 @@ import subprocess
 import tempfile
 from typing import List, Dict, Any, Optional
 
-# Manim Configuration for Native 1080x1080 Square Viewport
+# Manim Configuration for Native 1080x1080 Pure Glossy Black Viewport
 MANIM_HEADER = """
 from manim import *
 
@@ -19,13 +21,13 @@ config.pixel_width = 1080
 config.pixel_height = 1080
 config.frame_width = 8.0
 config.frame_height = 8.0
-config.background_color = "#090E1A"
+config.background_color = "#000000"
 config.frame_rate = 30
 """
 
 # Supported Pedagogical Archetypes
 PEDAGOGICAL_ARCHETYPES = [
-    "balance_scale",          # Fulcrum, trade-offs, revenue vs burn
+    "balance_scale",          # Fulcrum, economic equilibrium, burn vs revenue
     "leaky_bucket",           # Thermodynamic loss, inflow vs drainage
     "funnel_filter",          # Bottlenecks, selection, throughput compression
     "flywheel_gear",          # Compounding loops, rotational inertia, acceleration
@@ -33,6 +35,7 @@ PEDAGOGICAL_ARCHETYPES = [
     "foundation_stack",       # Solid base vs fragile top layers
     "robot_unplugged",        # The physical robot fallacy (dead battery, missing plug)
     "circuit_switch",         # Logic gate, threshold barrier, state trigger
+    "pulse_resonance",        # Frequency alignment, acoustic harmony, signal clarity
 ]
 
 
@@ -46,13 +49,13 @@ def generate_pedagogical_storyboard(
 ) -> List[Dict[str, Any]]:
     """
     Generate or retrieve cached Feynman/Needham pedagogical scenes for a 2-3 min clip.
-    Strictly follows the Pacing Rule (~2 animations per minute = 4-6 scenes total).
+    Follows the 15-second pacing rule (~4 visual changes per minute = 8-12 scenes total).
     """
     existing = clip_obj.get("infographic_scenes")
     if (
         existing
         and isinstance(existing, list)
-        and len(existing) >= 3
+        and len(existing) >= 6
         and not force_regenerate
         and not custom_instructions
     ):
@@ -63,24 +66,25 @@ def generate_pedagogical_storyboard(
     title = clip_obj.get("title", "Deep Dive")
     chunks = clip_obj.get("caption_chunks") or []
     
-    # Extract transcript text and word timestamps
+    # Extract transcript text and timed windows
     transcript_text = " ".join(ch.get("text", "") for ch in chunks) if chunks else clip_obj.get("text", "")
 
-    # Calculate optimal scene count: ~25s per scene (2 animations per minute)
-    num_scenes = max(3, min(6, int(round(body_duration / 25.0))))
+    # Calculate optimal scene count: ~15s per scene (Mosaic standard: 8-12 scenes for 120-180s)
+    num_scenes = max(5, min(12, int(round(body_duration / 15.0))))
     target_scene_dur = body_duration / float(num_scenes)
 
     scenes = None
     if genai_mod is not None:
         try:
             prompt = (
-                f"You are a master scientific visualizer designing an educational Manim animation for a 2-3 minute video clip.\n"
+                f"You are a master scientific visualizer designing an educational Manim animation for a short video clip.\n"
                 f"Topic: '{title}'. Total Clip Duration: {body_duration:.2f} seconds.\n\n"
                 f"Transcript Dialogue:\n{transcript_text}\n\n"
-                f"PEDAGOGICAL PRINCIPLES (The Feynman & Tristan Needham Standard):\n"
-                f"1. AVOID 'Performance Theater': Do not suggest random floating numbers, spinning gears, or meaningless shapes.\n"
-                f"2. Figurative Physical Metaphors: Every scene must use an everyday physical object (scale, leaking pipe, battery plug, trade road, funnel).\n"
-                f"3. Strictly {num_scenes} continuous scenes (~{target_scene_dur:.1f}s each), from 0.0 to {body_duration:.2f}s.\n"
+                f"PEDAGOGICAL & VISUAL RULES (The Feynman & Needham Pure White-on-Black Standard):\n"
+                f"1. PURE MONOCHROME: All graphics are shining white (#FFFFFF) on pure black (#000000). Zero colors.\n"
+                f"2. PACING: Strictly {num_scenes} continuous scenes (~{target_scene_dur:.1f}s each), from 0.0 to {body_duration:.2f}s.\n"
+                f"3. NO PERFORMANCE THEATER: Avoid random floating equations or meaningless clutter. Use bold, tangible physical metaphors.\n"
+                f"4. PHYSICAL METAPHORS: Every scene must use everyday physics (fulcrum scale, leaking pipe, disconnected cord, trade arteries, funnel filter, flywheel).\n"
                 f"Allowed archetypes: {', '.join(PEDAGOGICAL_ARCHETYPES)}\n"
                 f"{('- Special instructions: ' + custom_instructions) if custom_instructions else ''}\n\n"
                 f"Return ONLY a valid JSON array of {num_scenes} objects with schema:\n"
@@ -91,7 +95,7 @@ def generate_pedagogical_storyboard(
                 f'    "archetype": "...",\n'
                 f'    "title": "SHORT TITLE (1-3 WORDS)",\n'
                 f'    "insight": "Core pedagogical insight in one sentence",\n'
-                f'    "metaphor": "Concrete physical analogy (e.g. Robot running out of battery without wall plug)",\n'
+                f'    "metaphor": "Concrete physical analogy",\n'
                 f'    "labels": ["LEFT_LABEL", "RIGHT_LABEL"]\n'
                 f'  }}\n'
                 f']'
@@ -106,7 +110,7 @@ def generate_pedagogical_storyboard(
                     elif "```" in raw:
                         raw = raw.split("```")[1].split("```")[0].strip()
                     parsed = json.loads(raw)
-                    if isinstance(parsed, list) and len(parsed) >= 2:
+                    if isinstance(parsed, list) and len(parsed) >= 4:
                         scenes = parsed
                         break
                 except Exception as m_err:
@@ -116,14 +120,18 @@ def generate_pedagogical_storyboard(
             print(f"[Manim Engine] AI storyboard generation failed: {e}")
 
     # Fallback heuristic storyboard if AI unavailable or invalid
-    if not scenes or len(scenes) < 2:
+    if not scenes or len(scenes) < 4:
         scenes = []
         archetype_cycle = [
-            ("robot_unplugged", "ONTOLOGICAL FALLACY", "Confusing autonomy with total isolation", "Physical robot wandering with dead battery", ["ROBOT", "NO PLUG"]),
-            ("balance_scale", "THE AUTONOMY FULCRUM", "Autonomy is balancing income against compute burn", "Mechanical fulcrum scale balancing satoshis vs electricity", ["BURN", "REVENUE"]),
+            ("robot_unplugged", "ONTOLOGICAL FALLACY", "Confusing autonomy with total isolation", "Physical robot wandering with dead battery", ["ROBOT", "NO SOCKET"]),
+            ("balance_scale", "AUTONOMY FULCRUM", "Autonomy is balancing income against compute burn", "Mechanical fulcrum scale balancing satoshis vs electricity", ["BURN", "REVENUE"]),
             ("leaky_bucket", "THERMODYNAMIC LOSS", "Systems radiate entropy and must take in continuous fuel", "Reservoir leaking fluid with active replacement pump", ["ENTROPY", "INFLOW"]),
-            ("network_artery", "INTERCONNECTED TRADE", "True independence requires external commercial arteries", "Node revived by high-speed trade connection", ["ISLAND", "NETWORK"]),
-            ("funnel_filter", "THROUGHPUT FILTER", "Selection pressure separating viable systems from noise", "Aperture funnel concentrating high-signal flow", ["NOISE", "SIGNAL"])
+            ("network_artery", "INTERCONNECTED TRADE", "True independence requires external commercial arteries", "Node revived by high-speed trade connection", ["ISOLATION", "NETWORK"]),
+            ("funnel_filter", "THROUGHPUT FILTER", "Selection pressure separating viable systems from noise", "Aperture funnel concentrating high-signal flow", ["NOISE", "SIGNAL"]),
+            ("flywheel_gear", "COMPOUNDING MOMENTUM", "Reinvestment cycles creating self-sustaining kinetic inertia", "Compounding flywheel accelerating with each loop", ["INPUT", "INERTIA"]),
+            ("foundation_stack", "ARCHITECTURAL LAYERS", "Foundational physical layer supporting cognitive software", "Structural granite blocks anchoring top tier", ["PHYSICS", "LOGIC"]),
+            ("circuit_switch", "ECONOMIC TRIGGER", "State change when economic viability threshold is crossed", "High-voltage knife switch closing circuit", ["OPEN", "CLOSED"]),
+            ("pulse_resonance", "SIGNAL COHERENCE", "Constructive alignment of economic incentives and energy", "Harmonic standing wave amplifying peak resonance", ["NOISE", "RESONANCE"]),
         ]
         for i in range(num_scenes):
             s_t = round(i * target_scene_dur, 2)
@@ -150,8 +158,11 @@ def generate_pedagogical_storyboard(
 
 def generate_manim_scene_python(scene_data: Dict[str, Any], scene_class_name: str, duration: float) -> str:
     """
-    Generate Python Manim code for a single 1080x1080 scene adhering to
-    the Feynman & Tristan Needham standard.
+    Generate Python Manim code for a single 1080x1080 scene adhering strictly to:
+    1. Pure monochrome shining white (#FFFFFF) on pure black (#000000).
+    2. Subtle background blueprint grid (opacity 0.05).
+    3. 15-second pacing with 2-3 micro-beats (reveals every 2-4 seconds).
+    4. Seamless relay handoff.
     """
     archetype = scene_data.get("archetype", "balance_scale")
     title_text = scene_data.get("title", "DEEP DIVE").upper()
@@ -159,43 +170,54 @@ def generate_manim_scene_python(scene_data: Dict[str, Any], scene_class_name: st
     lbl_a = labels[0] if len(labels) > 0 else "INPUT"
     lbl_b = labels[1] if len(labels) > 1 else "OUTPUT"
 
-    # Micro-beat timings calculated from scene duration
-    t_enter = min(1.2, duration * 0.15)
-    t_stage1 = min(1.5, duration * 0.25)
-    t_kinetic = min(2.0, duration * 0.35)
-    t_hold = max(1.0, duration - (t_enter + t_stage1 + t_kinetic))
+    # Micro-beat timings (~15s total duration)
+    t_enter = min(1.0, duration * 0.12)
+    t_step1 = min(2.0, duration * 0.22)
+    t_step2 = min(2.5, duration * 0.25)
+    t_kinetic = min(2.5, duration * 0.25)
+    t_hold = max(1.0, duration - (t_enter + t_step1 + t_step2 + t_kinetic))
+
+    # Common subtle blueprint background grid
+    grid_init = """
+        # Subtle experimental blueprint grid (0.05 opacity)
+        grid = NumberPlane(
+            x_range=[-4, 4, 1], y_range=[-4, 4, 1],
+            background_line_style={"stroke_color": "#FFFFFF", "stroke_width": 1, "stroke_opacity": 0.05},
+            faded_line_style={"stroke_color": "#FFFFFF", "stroke_width": 0.5, "stroke_opacity": 0.02}
+        )
+        self.add(grid)
+"""
 
     if archetype == "balance_scale":
         code = f"""
 class {scene_class_name}(Scene):
-    def construct(self):
-        # 1. Header
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#F8FAFC")
-        title.to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#00E5FF", stroke_width=3).next_to(title, DOWN, buff=0.15)
+    def construct(self):{grid_init}
+        # 1. Header (y = 3.2)
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
+        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
         self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
 
-        # 2. Fulcrum & Beam
-        fulcrum = Polygon([-0.4, -1.2, 0], [0.4, -1.2, 0], [0, -0.6, 0], color="#64748B", fill_color="#334155", fill_opacity=1.0)
-        beam = RoundedRectangle(corner_radius=0.08, height=0.16, width=5.4, color="#00E5FF", fill_color="#00E5FF", fill_opacity=1.0).move_to([0, -0.5, 0])
-        self.play(FadeIn(fulcrum), GrowFromCenter(beam), run_time={t_stage1:.2f})
+        # 2. Step 1: Fulcrum & Beam
+        fulcrum = Polygon([-0.4, -1.2, 0], [0.4, -1.2, 0], [0, -0.6, 0], color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.15, stroke_width=4)
+        beam = RoundedRectangle(corner_radius=0.06, height=0.14, width=5.4, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([0, -0.5, 0])
+        self.play(FadeIn(fulcrum), GrowFromCenter(beam), run_time={t_step1:.2f})
 
-        # 3. Weights on Pans
-        left_box = RoundedRectangle(corner_radius=0.12, height=1.1, width=1.6, color="#EF4444", fill_color="#1E1015", fill_opacity=0.9, stroke_width=4).move_to([-1.9, 0.15, 0])
-        left_txt = Text("{lbl_a}", font="Arial", weight=BOLD, font_size=15, color="#FCA5A5").move_to(left_box.get_center())
+        # 3. Step 2: Weights on Pans (White wireframe containers)
+        left_box = RoundedRectangle(corner_radius=0.1, height=1.1, width=1.6, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.1, stroke_width=4).move_to([-1.9, 0.15, 0])
+        left_txt = Text("{lbl_a}", font="Arial", weight=BOLD, font_size=15, color="#FFFFFF").move_to(left_box.get_center())
         left_grp = VGroup(left_box, left_txt)
 
-        right_box = RoundedRectangle(corner_radius=0.12, height=1.1, width=1.6, color="#10B981", fill_color="#0C1E14", fill_opacity=0.9, stroke_width=4).move_to([1.9, 0.15, 0])
-        right_txt = Text("{lbl_b}", font="Arial", weight=BOLD, font_size=15, color="#86EFAC").move_to(right_box.get_center())
+        right_box = RoundedRectangle(corner_radius=0.1, height=1.1, width=1.6, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.2, stroke_width=5).move_to([1.9, 0.15, 0])
+        right_txt = Text("{lbl_b}", font="Arial", weight=BOLD, font_size=15, color="#FFFFFF").move_to(right_box.get_center())
         right_grp = VGroup(right_box, right_txt)
 
-        self.play(FadeIn(left_grp, shift=DOWN*0.4), FadeIn(right_grp, shift=DOWN*0.4), run_time={t_stage1:.2f})
+        self.play(FadeIn(left_grp, shift=DOWN*0.3), FadeIn(right_grp, shift=DOWN*0.3), run_time={t_step2:.2f})
 
-        # 4. Kinetic Transformation: Weight shifts and fulcrum tilts
+        # 4. Kinetic Transformation: Beam tilts and weights shift
         self.play(
             Rotate(beam, angle=14 * DEGREES, about_point=[0, -0.6, 0]),
-            left_grp.animate.shift(DOWN * 0.5 + RIGHT * 0.05),
-            right_grp.animate.shift(UP * 0.5 + LEFT * 0.05),
+            left_grp.animate.shift(DOWN * 0.45 + RIGHT * 0.05),
+            right_grp.animate.shift(UP * 0.45 + LEFT * 0.05),
             run_time={t_kinetic:.2f}
         )
         self.wait({t_hold:.2f})
@@ -203,64 +225,59 @@ class {scene_class_name}(Scene):
     elif archetype == "leaky_bucket":
         code = f"""
 class {scene_class_name}(Scene):
-    def construct(self):
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#F8FAFC")
-        title.to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#F59E0B", stroke_width=3).next_to(title, DOWN, buff=0.15)
+    def construct(self):{grid_init}
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
+        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
         self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
 
-        # Reservoir Vessel
+        # Step 1: Reservoir Vessel
         p1, p2, p3, p4 = [-1.5, 1.0, 0], [-1.2, -1.5, 0], [1.2, -1.5, 0], [1.5, 1.0, 0]
-        vessel = VMobject(color="#64748B", stroke_width=5).set_points_as_corners([p1, p2, p3, p4])
-        water = Polygon([-1.1, -1.4, 0], [1.1, -1.4, 0], [1.25, 0.0, 0], [-1.25, 0.0, 0], color="#00E5FF", fill_color="#083344", fill_opacity=0.8, stroke_width=0)
-        self.play(Create(vessel), FadeIn(water), run_time={t_stage1:.2f})
+        vessel = VMobject(color="#FFFFFF", stroke_width=5).set_points_as_corners([p1, p2, p3, p4])
+        water = Polygon([-1.1, -1.4, 0], [1.1, -1.4, 0], [1.25, 0.0, 0], [-1.25, 0.0, 0], color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.25, stroke_width=0)
+        self.play(Create(vessel), FadeIn(water), run_time={t_step1:.2f})
 
-        # Inflow Pipe (Top) and Leak Drop (Bottom)
-        inflow = Arrow(UP * 2.2, UP * 0.4, color="#10B981", stroke_width=6)
-        in_lbl = Text("{lbl_b}", font="Arial", weight=BOLD, font_size=15, color="#86EFAC").next_to(inflow, RIGHT, buff=0.2)
-        
-        leak = Arrow(DOWN * 1.5, DOWN * 2.5, color="#EF4444", stroke_width=6)
-        leak_lbl = Text("{lbl_a}", font="Arial", weight=BOLD, font_size=15, color="#FCA5A5").next_to(leak, RIGHT, buff=0.2)
+        # Step 2: Inflow & Leak Indicators
+        inflow = Arrow(UP * 2.2, UP * 0.4, color="#FFFFFF", stroke_width=6)
+        in_lbl = Text("{lbl_b}", font="Arial", weight=BOLD, font_size=15, color="#FFFFFF").next_to(inflow, RIGHT, buff=0.2)
+        leak = Arrow(DOWN * 1.5, DOWN * 2.5, color="#FFFFFF", stroke_width=6)
+        leak_lbl = Text("{lbl_a}", font="Arial", weight=BOLD, font_size=15, color="#FFFFFF").next_to(leak, RIGHT, buff=0.2)
+        self.play(GrowArrow(inflow), FadeIn(in_lbl), GrowArrow(leak), FadeIn(leak_lbl), run_time={t_step2:.2f})
 
-        self.play(GrowArrow(inflow), FadeIn(in_lbl), GrowArrow(leak), FadeIn(leak_lbl), run_time={t_stage1:.2f})
-
-        # Kinetic Pulse: Level adjusts
-        self.play(water.animate.scale(1.15, about_point=[0, -1.4, 0]), run_time={t_kinetic:.2f})
+        # Step 3: Kinetic Water Level Pulse
+        self.play(water.animate.scale(1.2, about_point=[0, -1.4, 0]), run_time={t_kinetic:.2f})
         self.wait({t_hold:.2f})
 """
     elif archetype == "robot_unplugged":
         code = f"""
 class {scene_class_name}(Scene):
-    def construct(self):
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#F8FAFC")
-        title.to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#EF4444", stroke_width=3).next_to(title, DOWN, buff=0.15)
+    def construct(self):{grid_init}
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
+        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
         self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
 
-        # Robot Silhouette / Head Core
-        head = RoundedRectangle(corner_radius=0.2, height=1.8, width=2.0, color="#64748B", fill_color="#1E293B", fill_opacity=0.9, stroke_width=5).move_to([0, 0.3, 0])
-        eye_l = Circle(radius=0.18, color="#00E5FF", fill_color="#00E5FF", fill_opacity=1.0).move_to([-0.5, 0.45, 0])
-        eye_r = Circle(radius=0.18, color="#00E5FF", fill_color="#00E5FF", fill_opacity=1.0).move_to([0.5, 0.45, 0])
+        # Step 1: Robot Head Outline
+        head = RoundedRectangle(corner_radius=0.2, height=1.8, width=2.0, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.08, stroke_width=5).move_to([0, 0.3, 0])
+        eye_l = Circle(radius=0.18, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([-0.5, 0.45, 0])
+        eye_r = Circle(radius=0.18, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([0.5, 0.45, 0])
         robot = VGroup(head, eye_l, eye_r)
+        self.play(FadeIn(robot), run_time={t_step1:.2f})
 
-        # Hanging Loose Cord & Battery Gauge
-        cord = CurvedArrow([0, -0.6, 0], [1.8, -1.8, 0], color="#F59E0B", stroke_width=6)
-        plug = Rectangle(height=0.3, width=0.5, color="#F59E0B", fill_color="#F59E0B", fill_opacity=1.0).move_to([1.8, -1.8, 0])
+        # Step 2: Cord & Battery Indicator
+        cord = CurvedArrow([0, -0.6, 0], [1.8, -1.8, 0], color="#FFFFFF", stroke_width=6)
+        plug = Rectangle(height=0.3, width=0.5, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([1.8, -1.8, 0])
         cord_grp = VGroup(cord, plug)
 
-        batt_box = RoundedRectangle(corner_radius=0.08, height=0.5, width=1.4, color="#EF4444", stroke_width=3).move_to([0, -0.15, 0])
-        batt_fill = Rectangle(height=0.36, width=0.3, color="#EF4444", fill_color="#EF4444", fill_opacity=1.0).move_to([-0.45, -0.15, 0])
-        batt_txt = Text("EMPTY", font="Arial", weight=BOLD, font_size=12, color="#FCA5A5").next_to(batt_box, DOWN, buff=0.12)
+        batt_box = RoundedRectangle(corner_radius=0.08, height=0.5, width=1.4, color="#FFFFFF", stroke_width=3).move_to([0, -0.15, 0])
+        batt_fill = Rectangle(height=0.36, width=0.3, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([-0.45, -0.15, 0])
+        batt_txt = Text("{lbl_b}", font="Arial", weight=BOLD, font_size=12, color="#FFFFFF").next_to(batt_box, DOWN, buff=0.12)
         batt_grp = VGroup(batt_box, batt_fill, batt_txt)
+        self.play(Create(cord_grp), FadeIn(batt_grp), run_time={t_step2:.2f})
 
-        self.play(FadeIn(robot), run_time={t_stage1:.2f})
-        self.play(Create(cord_grp), FadeIn(batt_grp), run_time={t_stage1:.2f})
-
-        # Kinetic Flash: Eyes dim and cord swings searching
+        # Step 3: Kinetic Search (Cord swings, eyes dim)
         self.play(
-            eye_l.animate.set_color("#334155"),
-            eye_r.animate.set_color("#334155"),
-            cord_grp.animate.rotate(0.15, about_point=[0, -0.6, 0]),
+            eye_l.animate.set_fill(opacity=0.2),
+            eye_r.animate.set_fill(opacity=0.2),
+            cord_grp.animate.rotate(0.18, about_point=[0, -0.6, 0]),
             run_time={t_kinetic:.2f}
         )
         self.wait({t_hold:.2f})
@@ -268,33 +285,109 @@ class {scene_class_name}(Scene):
     elif archetype == "network_artery":
         code = f"""
 class {scene_class_name}(Scene):
-    def construct(self):
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#F8FAFC")
-        title.to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#10B981", stroke_width=3).next_to(title, DOWN, buff=0.15)
+    def construct(self):{grid_init}
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
+        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
         self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
 
-        # Center Island Node
-        center_node = Circle(radius=0.7, color="#00E5FF", fill_color="#083344", fill_opacity=0.9, stroke_width=5).move_to([0, -0.2, 0])
-        center_lbl = Text("AUTONOMY", font="Arial", weight=BOLD, font_size=13, color="#F8FAFC").move_to(center_node.get_center())
+        # Step 1: Center Core Node
+        center_node = Circle(radius=0.7, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.15, stroke_width=5).move_to([0, -0.2, 0])
+        center_lbl = Text("{lbl_a}", font="Arial", weight=BOLD, font_size=13, color="#FFFFFF").move_to(center_node.get_center())
         c_grp = VGroup(center_node, center_lbl)
 
-        # 3 Satellite Network Hubs
+        # Step 2: Satellite Hubs
         pos = [[-2.4, 0.8, 0], [2.4, 0.8, 0], [0, -2.1, 0]]
-        nodes = []
-        lines = []
+        nodes, lines = [], []
         for p in pos:
-            n = Circle(radius=0.45, color="#F59E0B", fill_color="#451A03", fill_opacity=0.9, stroke_width=4).move_to(p)
-            l = Line(center_node.get_center(), n.get_center(), color="#334155", stroke_width=3)
+            n = Circle(radius=0.45, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.2, stroke_width=4).move_to(p)
+            l = Line(center_node.get_center(), n.get_center(), color="#FFFFFF", stroke_width=2, stroke_opacity=0.4)
             nodes.append(n)
             lines.append(l)
 
-        self.play(FadeIn(c_grp), *[Create(l) for l in lines], *[FadeIn(n) for n in nodes], run_time={t_stage1:.2f})
+        self.play(FadeIn(c_grp), *[Create(l) for l in lines], *[FadeIn(n) for n in nodes], run_time={t_step1:.2f})
 
-        # Kinetic Pulse: High-speed trade pulse activates
+        # Step 3: Artery Activation Pulse
         self.play(
-            *[l.animate.set_color("#10B981").set_stroke(width=6) for l in lines],
-            center_node.animate.set_color("#10B981"),
+            *[l.animate.set_stroke(width=6, opacity=1.0) for l in lines],
+            center_node.animate.set_fill(opacity=0.35),
+            run_time={t_kinetic:.2f}
+        )
+        self.wait({t_hold:.2f})
+"""
+    elif archetype == "flywheel_gear":
+        code = f"""
+class {scene_class_name}(Scene):
+    def construct(self):{grid_init}
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
+        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
+        self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
+
+        # Step 1: Concentric Rings & Core
+        outer_ring = Circle(radius=1.8, color="#FFFFFF", stroke_width=6).move_to([0, -0.3, 0])
+        inner_ring = Circle(radius=1.1, color="#FFFFFF", stroke_width=4).move_to([0, -0.3, 0])
+        core = Circle(radius=0.4, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([0, -0.3, 0])
+        spokes = VGroup(*[Line([0, -0.3, 0], [0 + 1.8 * np.cos(a), -0.3 + 1.8 * np.sin(a), 0], color="#FFFFFF", stroke_width=3) for a in [0, PI/3, 2*PI/3, PI, 4*PI/3, 5*PI/3]])
+        flywheel = VGroup(outer_ring, inner_ring, core, spokes)
+        self.play(Create(outer_ring), Create(inner_ring), FadeIn(core), run_time={t_step1:.2f})
+
+        # Step 2: Inertia Arrows
+        arc1 = CurvedArrow([-1.9, 0.4, 0], [0, 1.6, 0], color="#FFFFFF", stroke_width=6)
+        arc2 = CurvedArrow([1.9, -1.0, 0], [0, -2.2, 0], color="#FFFFFF", stroke_width=6)
+        lbl = Text("{lbl_b}", font="Arial", weight=BOLD, font_size=15, color="#FFFFFF").next_to(outer_ring, RIGHT, buff=0.3)
+        self.play(Create(spokes), Create(arc1), Create(arc2), FadeIn(lbl), run_time={t_step2:.2f})
+
+        # Step 3: Rotational Acceleration
+        self.play(Rotate(flywheel, angle=2 * PI, about_point=[0, -0.3, 0]), run_time={t_kinetic:.2f})
+        self.wait({t_hold:.2f})
+"""
+    elif archetype == "foundation_stack":
+        code = f"""
+class {scene_class_name}(Scene):
+    def construct(self):{grid_init}
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
+        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
+        self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
+
+        # Step 1: Heavy Granite Base
+        base = RoundedRectangle(corner_radius=0.08, height=0.9, width=4.8, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.3, stroke_width=6).move_to([0, -1.8, 0])
+        base_lbl = Text("{lbl_a}", font="Arial", weight=BOLD, font_size=16, color="#FFFFFF").move_to(base.get_center())
+        base_grp = VGroup(base, base_lbl)
+        self.play(FadeIn(base_grp, shift=UP*0.4), run_time={t_step1:.2f})
+
+        # Step 2: Middle Architecture Tier
+        mid = RoundedRectangle(corner_radius=0.08, height=0.8, width=3.4, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.18, stroke_width=4).move_to([0, -0.8, 0])
+        top = RoundedRectangle(corner_radius=0.08, height=0.8, width=2.0, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.08, stroke_width=3).move_to([0, 0.2, 0])
+        top_lbl = Text("{lbl_b}", font="Arial", weight=BOLD, font_size=14, color="#FFFFFF").move_to(top.get_center())
+        self.play(FadeIn(mid, shift=DOWN*0.3), FadeIn(top, shift=DOWN*0.3), FadeIn(top_lbl), run_time={t_step2:.2f})
+
+        # Step 3: Foundation Structural Lock
+        self.play(base.animate.set_stroke(width=8), run_time={t_kinetic:.2f})
+        self.wait({t_hold:.2f})
+"""
+    elif archetype == "circuit_switch":
+        code = f"""
+class {scene_class_name}(Scene):
+    def construct(self):{grid_init}
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
+        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
+        self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
+
+        # Step 1: Terminals
+        t_left = Circle(radius=0.25, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([-1.6, -0.4, 0])
+        t_right = Circle(radius=0.25, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([1.6, -0.4, 0])
+        wire_l = Line([-3.2, -0.4, 0], [-1.6, -0.4, 0], color="#FFFFFF", stroke_width=5)
+        wire_r = Line([1.6, -0.4, 0], [3.2, -0.4, 0], color="#FFFFFF", stroke_width=5)
+        knife = Line([-1.6, -0.4, 0], [1.2, 1.0, 0], color="#FFFFFF", stroke_width=7)
+        self.play(Create(wire_l), Create(wire_r), FadeIn(t_left), FadeIn(t_right), Create(knife), run_time={t_step1:.2f})
+
+        # Step 2: State Labels
+        lbl_open = Text("{lbl_a}", font="Arial", weight=BOLD, font_size=14, color="#FFFFFF").next_to(knife, UP, buff=0.2)
+        self.play(FadeIn(lbl_open), run_time={t_step2:.2f})
+
+        # Step 3: Kinetic Switch Closure
+        self.play(
+            Rotate(knife, angle=-24 * DEGREES, about_point=[-1.6, -0.4, 0]),
+            lbl_open.animate.set_color("#FFFFFF"),
             run_time={t_kinetic:.2f}
         )
         self.wait({t_hold:.2f})
@@ -302,27 +395,26 @@ class {scene_class_name}(Scene):
     else:  # funnel_filter or default
         code = f"""
 class {scene_class_name}(Scene):
-    def construct(self):
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#F8FAFC")
-        title.to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#38BDF8", stroke_width=3).next_to(title, DOWN, buff=0.15)
+    def construct(self):{grid_init}
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
+        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
         self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
 
-        # Funnel Aperture
+        # Step 1: Funnel Sieve
         p1, p2, p3, p4 = [-2.2, 1.2, 0], [-0.5, -0.8, 0], [0.5, -0.8, 0], [2.2, 1.2, 0]
-        funnel = VMobject(color="#64748B", stroke_width=5).set_points_as_corners([p1, p2, p3, p4])
-        stem_l = Line([-0.5, -0.8, 0], [-0.5, -1.8, 0], color="#64748B", stroke_width=5)
-        stem_r = Line([0.5, -0.8, 0], [0.5, -1.8, 0], color="#64748B", stroke_width=5)
-        self.play(Create(funnel), Create(stem_l), Create(stem_r), run_time={t_stage1:.2f})
+        funnel = VMobject(color="#FFFFFF", stroke_width=5).set_points_as_corners([p1, p2, p3, p4])
+        stem_l = Line([-0.5, -0.8, 0], [-0.5, -1.8, 0], color="#FFFFFF", stroke_width=5)
+        stem_r = Line([0.5, -0.8, 0], [0.5, -1.8, 0], color="#FFFFFF", stroke_width=5)
+        self.play(Create(funnel), Create(stem_l), Create(stem_r), run_time={t_step1:.2f})
 
-        # Particles Entering
-        dots_in = VGroup(*[Circle(radius=0.12, color="#EF4444", fill_color="#EF4444", fill_opacity=1.0).move_to([x, 0.8, 0]) for x in [-1.6, -0.8, 0, 0.8, 1.6]])
-        lbl_in = Text("{lbl_a}", font="Arial", weight=BOLD, font_size=14, color="#FCA5A5").next_to(dots_in, UP, buff=0.15)
-        self.play(FadeIn(dots_in), FadeIn(lbl_in), run_time={t_stage1:.2f})
+        # Step 2: Incoming Dots
+        dots_in = VGroup(*[Circle(radius=0.14, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.5).move_to([x, 0.8, 0]) for x in [-1.6, -0.8, 0, 0.8, 1.6]])
+        lbl_in = Text("{lbl_a}", font="Arial", weight=BOLD, font_size=14, color="#FFFFFF").next_to(dots_in, UP, buff=0.15)
+        self.play(FadeIn(dots_in), FadeIn(lbl_in), run_time={t_step2:.2f})
 
-        # Kinetic Squeeze: Filtered beam exits
-        out_arrow = Arrow([0, -0.8, 0], [0, -2.4, 0], color="#10B981", stroke_width=8)
-        lbl_out = Text("{lbl_b}", font="Arial", weight=BOLD, font_size=14, color="#86EFAC").next_to(out_arrow, RIGHT, buff=0.2)
+        # Step 3: Filtered Concentration
+        out_arrow = Arrow([0, -0.8, 0], [0, -2.4, 0], color="#FFFFFF", stroke_width=8)
+        lbl_out = Text("{lbl_b}", font="Arial", weight=BOLD, font_size=14, color="#FFFFFF").next_to(out_arrow, RIGHT, buff=0.2)
         self.play(GrowArrow(out_arrow), FadeIn(lbl_out), dots_in.animate.shift(DOWN * 0.8), run_time={t_kinetic:.2f})
         self.wait({t_hold:.2f})
 """
@@ -337,7 +429,7 @@ def render_manim_infographic_mp4(
     fps: int = 30,
 ) -> str:
     """
-    Compile full Manim educational script, render 1080x1080 MP4 scenes, and mux audio.
+    Compile full Manim educational script, render 1080x1080 pure white-on-black MP4 scenes, and mux audio.
     """
     if duration is None or duration <= 0:
         try:
@@ -369,12 +461,10 @@ def render_manim_infographic_mp4(
     with open(python_script_path, "w", encoding="utf-8") as f:
         f.write("\n".join(script_lines))
 
-    print(f"[Manim Engine] Compiling {len(scenes)} scenes to 1080x1080 via ManimCE...")
+    print(f"[Manim Engine] Compiling {len(scenes)} scenes (pure white on #000000 black) via ManimCE...")
     
     rendered_clips = []
     for idx, cls_name in enumerate(scene_classes):
-        out_sub_mp4 = os.path.join(temp_dir, f"scene_{idx + 1:02d}.mp4")
-        # Run Manim directly
         cmd_manim = [
             sys.executable, "-m", "manim",
             "-qh",
@@ -438,5 +528,5 @@ def render_manim_infographic_mp4(
     if proc_mux.returncode != 0:
         raise Exception(f"Final audio mux failed: {proc_mux.stderr}")
 
-    print(f"[Manim Engine] Successfully generated 1080x1080 pedagogical infographic: {out_mp4_path}")
+    print(f"[Manim Engine] Successfully generated 1080x1080 pure monochrome infographic: {out_mp4_path}")
     return out_mp4_path

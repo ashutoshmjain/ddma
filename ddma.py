@@ -1136,7 +1136,7 @@ def build_caption_chunks(
     return chunks
 
 
-def write_ass_file(chunks: list, ass_path: str):
+def write_ass_file(chunks: list, ass_path: str, diarization_data: Optional[list] = None):
     """Write exact ASS v4+ caption file for 1080x1920 vertical canvas with word spotlight."""
     os.makedirs(os.path.dirname(ass_path) if os.path.dirname(ass_path) else ".", exist_ok=True)
     lines = [
@@ -1149,18 +1149,44 @@ def write_ass_file(chunks: list, ass_path: str):
         "",
         "[V4+ Styles]",
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-        "Style: Caption,DejaVu Sans Mono,46,&H00FFFFFF,&H000019FF,&H80000000,&H80000000,1,0,0,0,100,100,1.2,0,1,2,0,8,60,60,500,1",
+        "Style: Caption,Arial,44,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,1.2,0,1,0,0,8,60,60,260,1",
+        "Style: MicShape,Arial,20,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,0,0,9,40,40,60,1",
+        "Style: MicName,Arial,20,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,1.2,0,1,0,0,9,40,40,60,1",
         "",
         "[Events]",
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
     ]
-    c_gold = r"{\c&H000AD6FF&}"
-    c_white = r"{\c&H00FFFFFF&}"
-    c_dim = r"{\c&H00757575&}"
+    mic_shape = 'm -12 -28 b -12 -38 12 -38 12 -28 l 12 0 b 12 8 -12 8 -12 0 l -12 -28 m -16 -6 b -16 16 16 16 16 -6 l 18 -6 b 18 20 -18 20 -18 -6 l -16 -6 m -2 18 l 2 18 l 2 28 l 14 28 l 14 31 l -14 31 l -14 28 l -2 28'
+    c_white = r"{\c&H00FFFFFF&\b1}"
+    c_silver = r"{\c&H00E2E8F0&}"
+    c_dim = r"{\c&H0064748B&}"
+
+    def get_speaker(t_val):
+        for seg in (diarization_data or []):
+            if seg.get("start", 0.0) <= t_val <= seg.get("end", 0.0):
+                s = str(seg.get("speaker", "")).lower()
+                if "satosha" in s:
+                    return "SATOSHA"
+                elif "satoshi" in s:
+                    return "SATOSHI"
+        return None
+
+    mic_events = []
+
+
 
     for ch in (chunks or []):
         c_start = float(ch.get("start", 0.0))
         c_end = float(ch.get("end", c_start + 1.0))
+        spk = ch.get("speaker") or get_speaker((c_start + c_end) / 2.0)
+        start_str = format_ass_time(c_start)
+        end_str = format_ass_time(c_end)
+        if spk in ("SATOSHI", "SATOSHA"):
+            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicShape,,0,0,0,,{{\\pos(960,110)\\an5\\c&H00FFFFFF&\\p1}}{mic_shape}{{\\p0}}")
+            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicName,,0,0,0,,{{\\pos(960,155)\\an5\\c&H00FFFFFF&\\b1}}{spk}")
+        else:
+            mic_events.append(f"Dialogue: 1,{start_str},{end_str},MicShape,,0,0,0,,{{\\pos(960,110)\\an5\\c&H00475569&\\p1}}{mic_shape}{{\\p0}}")
+
         words = ch.get("words")
 
         if words and isinstance(words, list) and len(words) > 1:
@@ -1180,13 +1206,15 @@ def write_ass_file(chunks: list, ass_path: str):
 
                 parts = []
                 if passed:
-                    parts.append(f"{c_white}{passed}")
-                parts.append(f"{c_gold}{active}{c_white}")
+                    parts.append(f"{c_silver}{passed} ")
+                parts.append(f"{c_white}{active}")
                 if upcoming:
-                    parts.append(f"{c_dim}{upcoming}{c_white}")
+                    parts.append(f" {c_dim}{upcoming}")
 
-                line_txt = " ".join(parts)
-                lines.append(f"Dialogue: 0,{start_str},{end_str},Caption,,0,0,0,,{line_txt}")
+                line_txt = "".join(parts)
+                w_start_str = format_ass_time(w_start_val)
+                w_end_str = format_ass_time(w_end_val)
+                lines.append(f"Dialogue: 0,{w_start_str},{w_end_str},Caption,,0,0,0,,{line_txt}")
         else:
             start_str = format_ass_time(c_start)
             end_str = format_ass_time(c_end)
@@ -1194,6 +1222,7 @@ def write_ass_file(chunks: list, ass_path: str):
             if txt:
                 lines.append(f"Dialogue: 0,{start_str},{end_str},Caption,,0,0,0,,{txt}")
 
+    lines.extend(mic_events)
     with open(ass_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
 
@@ -1495,7 +1524,7 @@ def compile_clip(
         # Open image canvas with clean solid charcoal background
         from PIL import Image, ImageDraw, ImageFont
         width, height = 1080, 1080
-        bg_color = (18, 18, 18)
+        bg_color = (0, 0, 0, 255)
         image = Image.new("RGBA", (width, height), bg_color)
 
         draw_overlay = ImageDraw.Draw(image)
@@ -1755,7 +1784,7 @@ def compile_clip(
                 bridge_text = f"What is the deeper secret behind Part {num}?"
 
             # Generate outro image with semi-transparent charcoal banner
-            img_outro = Image.new("RGBA", (v_width, v_height), color=(18, 18, 18, 255))
+            img_outro = Image.new("RGBA", (v_width, v_height), color=(0, 0, 0, 255))
             draw_outro = ImageDraw.Draw(img_outro)
             
             font_path_outro = find_system_fonts()[0]
@@ -1804,7 +1833,8 @@ def compile_clip(
             box_h_outro = max(240, total_h_outro + 80)
             x0_out = (v_width - box_w_outro) // 2
             y0_out = (v_height - box_h_outro) // 2
-            draw_outro.rounded_rectangle([(x0_out, y0_out), (x0_out + box_w_outro, y0_out + box_h_outro)], radius=15, fill=(28, 28, 28, 230))
+            # Minimalist Pure Black & White: No grey box, pure white typography on pure #000000 black
+            # (No rounded rectangle container)
 
             curr_y_outro = (v_height - total_h_outro) // 2
             for idx, line in enumerate(lines_outro):
@@ -1812,6 +1842,11 @@ def compile_clip(
                 w = bbox[2] - bbox[0]
                 draw_outro.text(((v_width - w) // 2, curr_y_outro), line, font=font_outro, fill=(255, 255, 255, 255))
                 curr_y_outro += line_heights_outro[idx] + line_spacing_outro
+
+            # Subtle thin pure white divider rule
+            rule_y = curr_y_outro + 25
+            cx = v_width // 2
+            draw_outro.line([(cx - 70, rule_y), (cx + 70, rule_y)], fill=(255, 255, 255, 180), width=2)
 
             img_outro.convert("RGB").save(temp_img_outro_path)
 
@@ -1855,14 +1890,29 @@ def compile_clip(
             body_duration=body_duration,
             has_outro=(not is_last_clip)
         )
-        write_ass_file(caption_chunks, temp_ass_path)
+        diar_data = None
+        for cand_d in [
+            os.path.join("scratch", f"speaker_diarization_{episode}.json"),
+            os.path.join("projects", f"episode_{episode}", f"speaker_diarization_{episode}.json"),
+            os.path.join("projects", f"episode_{episode}", "transcription.json"),
+        ]:
+            if os.path.exists(cand_d):
+                try:
+                    with open(cand_d, "r", encoding="utf-8") as df:
+                        raw_d = json.load(df)
+                        diar_data = raw_d if isinstance(raw_d, list) else raw_d.get("segments", [])
+                    break
+                except Exception:
+                    pass
+
+        write_ass_file(caption_chunks, temp_ass_path, diarization_data=diar_data)
         os.makedirs("captions", exist_ok=True)
-        write_ass_file(caption_chunks, os.path.join("captions", f"{base_name}.ass"))
+        write_ass_file(caption_chunks, os.path.join("captions", f"{base_name}.ass"), diarization_data=diar_data)
         typer.echo(f"Prepared {len(caption_chunks)} ASS caption events (1080x1920 vertical spec) -> {temp_ass_path}")
 
         scale_filter = f"scale={v_width}:{v_height}:force_original_aspect_ratio=decrease,pad={v_width}:{v_height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=25"
         body_v_filter = f"{scale_filter}{body_v_extra_filter},settb=1/90000"
-        vertical_burn_filter = f"scale=1000:1000:flags=lanczos,pad=1080:1920:40:560:color=black,subtitles=filename={temp_ass_path}:fontsdir={fonts_dir},setsar=1"
+        vertical_burn_filter = f"scale=1080:1080:force_original_aspect_ratio=decrease,pad=1080:1920:0:420:color=black,subtitles=filename={temp_ass_path}:fontsdir={fonts_dir},setsar=1"
 
         def build_concat_cmd(crf_val: int):
             if not is_last_clip and os.path.exists(temp_outro_video_path):
