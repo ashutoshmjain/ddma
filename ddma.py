@@ -1162,8 +1162,6 @@ def write_ass_file(
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
     ]
     mic_shape = 'm -10 -24 b -10 -32 10 -32 10 -24 l 10 0 b 10 7 -10 7 -10 0 l -10 -24 m -14 -5 b -14 13 14 13 14 -5 l 16 -5 b 16 17 -16 17 -16 -5 l -14 -5 m -2 15 l 2 15 l 2 23 l 11 23 l 11 26 l -11 26 l -11 23 l -2 23'
-    arc_l = 'm -4 -12 b -8 -6 -8 6 -4 12 l -2 10 b -5 5 -5 -5 -2 -10'
-    arc_r = 'm 4 -12 b 8 -6 8 6 4 12 l 2 10 b 5 5 5 -5 2 -10'
     c_gold = r"{\c&H000AD6FF&}"
     c_white = r"{\c&H00FFFFFF&}"
     c_dim = r"{\c&H00757575&}"
@@ -1172,12 +1170,14 @@ def write_ass_file(
     s_start_ribbon = format_ass_time(intro_offset)
     s_end_ribbon = format_ass_time(total_end)
 
-    # Broadcast studio header ribbon at y=370 (ABOVE captions at y=465..520)
+    # Broadcast studio header ribbon brought slightly down to y=405 (cleanly above captions at y=465..515)
+    y_ribbon = 405
+    y_mic = 404
     header_events = [
-        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(420,370)\\an6\\c&H00E2E8F0&\\b1\\fsp3}}SATOSHA",
-        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(660,370)\\an4\\c&H00E2E8F0&\\b1\\fsp3}}SATOSHI",
-        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(475,369)\\an5\\c&H00475569&}}─",
-        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(605,369)\\an5\\c&H00475569&}}─",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(420,{y_ribbon})\\an6\\c&H00E2E8F0&\\b1\\fsp3}}SATOSHA",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(660,{y_ribbon})\\an4\\c&H00E2E8F0&\\b1\\fsp3}}SATOSHI",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(475,{y_mic})\\an5\\c&H00475569&}}─",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(605,{y_mic})\\an5\\c&H00475569&}}─",
     ]
 
     period = 0.8
@@ -1190,14 +1190,12 @@ def write_ass_file(
 
         s_on = format_ass_time(t_on_start)
         e_on = format_ass_time(t_on_end)
-        header_events.append(f"Dialogue: 2,{s_on},{e_on},MicShape,,0,0,0,,{{\\pos(540,369)\\an5\\c&H00FFFFFF&\\p1}}{mic_shape}{{\\p0}}")
-        header_events.append(f"Dialogue: 2,{s_on},{e_on},MicShape,,0,0,0,,{{\\pos(518,369)\\an5\\c&H00FFFFFF&\\p1}}{arc_l}{{\\p0}}")
-        header_events.append(f"Dialogue: 2,{s_on},{e_on},MicShape,,0,0,0,,{{\\pos(562,369)\\an5\\c&H00FFFFFF&\\p1}}{arc_r}{{\\p0}}")
+        header_events.append(f"Dialogue: 2,{s_on},{e_on},MicShape,,0,0,0,,{{\\pos(540,{y_mic})\\an5\\fscx60\\fscy60\\c&H00FFFFFF&\\p1}}{mic_shape}{{\\p0}}")
 
         if t_off_start < t_off_end:
             s_off = format_ass_time(t_off_start)
             e_off = format_ass_time(t_off_end)
-            header_events.append(f"Dialogue: 2,{s_off},{e_off},MicShape,,0,0,0,,{{\\pos(540,369)\\an5\\c&H00334155&\\p1}}{mic_shape}{{\\p0}}")
+            header_events.append(f"Dialogue: 2,{s_off},{e_off},MicShape,,0,0,0,,{{\\pos(540,{y_mic})\\an5\\fscx60\\fscy60\\c&H00334155&\\p1}}{mic_shape}{{\\p0}}")
 
         t_curr += period
 
