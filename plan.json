@@ -14054,8 +14054,132 @@
         "source_start": 287.14,
         "source_end": 434.38,
         "_audio_sig": "0745ca9895ca238bb9fcb316c3b47ca0",
-        "_compiled_sig": "9ec5d8a4f4a0bc0791671a0de371a7ac",
-        "visual_source": "mosaic"
+        "_compiled_sig": "fbd5967cb060bf0c0ae12bfa848f335f",
+        "visual_source": "infographic",
+        "infographic_scenes": [
+            {
+                "start": 0.0,
+                "end": 15.74,
+                "archetype": "robot_unplugged",
+                "title": "ONTOLOGICAL FALLACY",
+                "insight": "Confusing autonomy with total isolation",
+                "metaphor": "Physical robot wandering with dead battery",
+                "labels": [
+                    "ROBOT",
+                    "NO SOCKET"
+                ]
+            },
+            {
+                "start": 15.74,
+                "end": 31.48,
+                "archetype": "balance_scale",
+                "title": "AUTONOMY FULCRUM",
+                "insight": "Autonomy is balancing income against compute burn",
+                "metaphor": "Mechanical fulcrum scale balancing satoshis vs electricity",
+                "labels": [
+                    "BURN",
+                    "REVENUE"
+                ]
+            },
+            {
+                "start": 31.48,
+                "end": 47.23,
+                "archetype": "leaky_bucket",
+                "title": "THERMODYNAMIC LOSS",
+                "insight": "Systems radiate entropy and must take in continuous fuel",
+                "metaphor": "Reservoir leaking fluid with active replacement pump",
+                "labels": [
+                    "ENTROPY",
+                    "INFLOW"
+                ]
+            },
+            {
+                "start": 47.23,
+                "end": 62.97,
+                "archetype": "network_artery",
+                "title": "INTERCONNECTED TRADE",
+                "insight": "True independence requires external commercial arteries",
+                "metaphor": "Node revived by high-speed trade connection",
+                "labels": [
+                    "ISOLATION",
+                    "NETWORK"
+                ]
+            },
+            {
+                "start": 62.97,
+                "end": 78.71,
+                "archetype": "funnel_filter",
+                "title": "THROUGHPUT FILTER",
+                "insight": "Selection pressure separating viable systems from noise",
+                "metaphor": "Aperture funnel concentrating high-signal flow",
+                "labels": [
+                    "NOISE",
+                    "SIGNAL"
+                ]
+            },
+            {
+                "start": 78.71,
+                "end": 94.45,
+                "archetype": "flywheel_gear",
+                "title": "COMPOUNDING MOMENTUM",
+                "insight": "Reinvestment cycles creating self-sustaining kinetic inertia",
+                "metaphor": "Compounding flywheel accelerating with each loop",
+                "labels": [
+                    "INPUT",
+                    "INERTIA"
+                ]
+            },
+            {
+                "start": 94.45,
+                "end": 110.19,
+                "archetype": "foundation_stack",
+                "title": "ARCHITECTURAL LAYERS",
+                "insight": "Foundational physical layer supporting cognitive software",
+                "metaphor": "Structural granite blocks anchoring top tier",
+                "labels": [
+                    "PHYSICS",
+                    "LOGIC"
+                ]
+            },
+            {
+                "start": 110.19,
+                "end": 125.94,
+                "archetype": "circuit_switch",
+                "title": "ECONOMIC TRIGGER",
+                "insight": "State change when economic viability threshold is crossed",
+                "metaphor": "High-voltage knife switch closing circuit",
+                "labels": [
+                    "OPEN",
+                    "CLOSED"
+                ]
+            },
+            {
+                "start": 125.94,
+                "end": 141.68,
+                "archetype": "pulse_resonance",
+                "title": "SIGNAL COHERENCE",
+                "insight": "Constructive alignment of economic incentives and energy",
+                "metaphor": "Harmonic standing wave amplifying peak resonance",
+                "labels": [
+                    "NOISE",
+                    "RESONANCE"
+                ]
+            },
+            {
+                "start": 141.68,
+                "end": 157.42,
+                "archetype": "robot_unplugged",
+                "title": "ONTOLOGICAL FALLACY",
+                "insight": "Confusing autonomy with total isolation",
+                "metaphor": "Physical robot wandering with dead battery",
+                "labels": [
+                    "ROBOT",
+                    "NO SOCKET"
+                ]
+            }
+        ],
+        "infographic_ready": true,
+        "_infographic_version": "v3_monochrome_no_grid"
     },
     {
         "num": 4,

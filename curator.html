@@ -8367,6 +8367,369 @@
                 btn.classList.toggle('active', isNowOpen);
             }
         });
+
+
+        // ==========================================
+        // INFOGRAPHIC STORYBOARD MODAL & EXTERNAL EDITOR
+        // ==========================================
+        let activeStoryboardClipIdx = null;
+        let activeStoryboardData = null;
+
+        const storyboardModalOverlay = document.getElementById('infographicStoryboardModalOverlay');
+        const closeStoryboardModalBtn = document.getElementById('closeStoryboardModalBtn');
+        const cancelStoryboardModalBtn = document.getElementById('cancelStoryboardModalBtn');
+        const openStoryboardInEditorBtn = document.getElementById('openStoryboardInEditorBtn');
+        const syncStoryboardFromDiskBtn = document.getElementById('syncStoryboardFromDiskBtn');
+        const regenStoryboardBtn = document.getElementById('regenStoryboardBtn');
+        const saveStoryboardModalBtn = document.getElementById('saveStoryboardModalBtn');
+        const renderStoryboardModalBtn = document.getElementById('renderStoryboardModalBtn');
+        const storyboardCardsContainer = document.getElementById('storyboardCardsContainer');
+        const storyboardJsonContainer = document.getElementById('storyboardJsonContainer');
+        const storyboardJsonTextarea = document.getElementById('storyboardJsonTextarea');
+        const storyboardTabCardsBtn = document.getElementById('storyboardTabCardsBtn');
+        const storyboardTabJsonBtn = document.getElementById('storyboardTabJsonBtn');
+        const storyboardModalTitle = document.getElementById('storyboardModalTitle');
+        const storyboardFilePathBadge = document.getElementById('storyboardFilePathBadge');
+        const storyboardModalStatus = document.getElementById('storyboardModalStatus');
+
+        const PEDAGOGICAL_ARCHETYPES_LIST = [
+            "balance_scale", "leaky_bucket", "funnel_filter", "flywheel_gear",
+            "network_artery", "foundation_stack", "robot_unplugged", "circuit_switch", "pulse_resonance"
+        ];
+
+        function closeStoryboardModal() {
+            if (storyboardModalOverlay) storyboardModalOverlay.classList.remove('active');
+            activeStoryboardClipIdx = null;
+            activeStoryboardData = null;
+        }
+
+        if (closeStoryboardModalBtn) closeStoryboardModalBtn.addEventListener('click', closeStoryboardModal);
+        if (cancelStoryboardModalBtn) cancelStoryboardModalBtn.addEventListener('click', closeStoryboardModal);
+        if (storyboardModalOverlay) {
+            storyboardModalOverlay.addEventListener('click', (e) => {
+                if (e.target === storyboardModalOverlay) closeStoryboardModal();
+            });
+        }
+
+        if (storyboardTabCardsBtn && storyboardTabJsonBtn) {
+            storyboardTabCardsBtn.addEventListener('click', () => {
+                storyboardTabCardsBtn.style.background = 'var(--bg-color)';
+                storyboardTabCardsBtn.style.color = 'var(--text-main)';
+                storyboardTabCardsBtn.style.borderColor = 'var(--border-color)';
+                storyboardTabJsonBtn.style.background = 'transparent';
+                storyboardTabJsonBtn.style.color = 'var(--text-muted)';
+                storyboardTabJsonBtn.style.borderColor = 'transparent';
+                storyboardCardsContainer.style.display = 'flex';
+                storyboardJsonContainer.style.display = 'none';
+            });
+
+            storyboardTabJsonBtn.addEventListener('click', () => {
+                if (activeStoryboardData) {
+                    storyboardJsonTextarea.value = JSON.stringify(activeStoryboardData, null, 2);
+                }
+                storyboardTabJsonBtn.style.background = 'var(--bg-color)';
+                storyboardTabJsonBtn.style.color = 'var(--text-main)';
+                storyboardTabJsonBtn.style.borderColor = 'var(--border-color)';
+                storyboardTabCardsBtn.style.background = 'transparent';
+                storyboardTabCardsBtn.style.color = 'var(--text-muted)';
+                storyboardTabCardsBtn.style.borderColor = 'transparent';
+                storyboardCardsContainer.style.display = 'none';
+                storyboardJsonContainer.style.display = 'flex';
+            });
+        }
+
+        function renderStoryboardSceneCards(sbData) {
+            if (!storyboardCardsContainer) return;
+            storyboardCardsContainer.innerHTML = '';
+            const scenes = (sbData && sbData.scenes) || [];
+            if (!scenes.length) {
+                storyboardCardsContainer.innerHTML = '<div style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No scenes generated yet. Click "Reset to Fresh Storyboard" or open in external editor.</div>';
+                return;
+            }
+
+            scenes.forEach((sc, i) => {
+                const card = document.createElement('div');
+                card.style.cssText = 'background: var(--panel-bg-darker); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.8rem 1rem; display: flex; flex-direction: column; gap: 0.5rem;';
+
+                const header = document.createElement('div');
+                header.style.cssText = 'display: flex; justify-content: space-between; align-items: center;';
+
+                const timeBadge = document.createElement('span');
+                timeBadge.style.cssText = 'font-family: var(--font-mono); font-size: 0.74rem; font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3);';
+                timeBadge.textContent = `Scene ${i + 1}: ${Number(sc.start).toFixed(1)}s - ${Number(sc.end).toFixed(1)}s (${(Number(sc.end) - Number(sc.start)).toFixed(1)}s)`;
+
+                const archSelect = document.createElement('select');
+                archSelect.style.cssText = 'font-size: 0.74rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 4px; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;';
+                PEDAGOGICAL_ARCHETYPES_LIST.forEach(arch => {
+                    const opt = document.createElement('option');
+                    opt.value = arch;
+                    opt.textContent = arch;
+                    if (arch === sc.archetype) opt.selected = true;
+                    archSelect.appendChild(opt);
+                });
+                archSelect.addEventListener('change', () => {
+                    sc.archetype = archSelect.value;
+                    if (storyboardJsonTextarea) storyboardJsonTextarea.value = JSON.stringify(activeStoryboardData, null, 2);
+                });
+
+                header.appendChild(timeBadge);
+                header.appendChild(archSelect);
+
+                const row2 = document.createElement('div');
+                row2.style.cssText = 'display: flex; gap: 0.8rem; align-items: center;';
+
+                const titleInput = document.createElement('input');
+                titleInput.type = 'text';
+                titleInput.value = sc.title || '';
+                titleInput.placeholder = 'Scene Title (1-3 bold words)';
+                titleInput.style.cssText = 'flex: 1; font-weight: 700; font-size: 0.8rem; padding: 0.35rem 0.6rem; border-radius: 4px; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; text-transform: uppercase;';
+                titleInput.addEventListener('input', () => {
+                    sc.title = titleInput.value.toUpperCase();
+                    if (storyboardJsonTextarea) storyboardJsonTextarea.value = JSON.stringify(activeStoryboardData, null, 2);
+                });
+
+                const labelsInput = document.createElement('input');
+                labelsInput.type = 'text';
+                labelsInput.value = (sc.labels || []).join(', ');
+                labelsInput.placeholder = 'Labels (comma-separated, e.g. BURN, REVENUE)';
+                labelsInput.style.cssText = 'flex: 1; font-size: 0.74rem; padding: 0.35rem 0.6rem; border-radius: 4px; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-muted); outline: none; text-transform: uppercase;';
+                labelsInput.addEventListener('input', () => {
+                    sc.labels = labelsInput.value.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+                    if (storyboardJsonTextarea) storyboardJsonTextarea.value = JSON.stringify(activeStoryboardData, null, 2);
+                });
+
+                row2.appendChild(titleInput);
+                row2.appendChild(labelsInput);
+
+                const insightText = document.createElement('div');
+                insightText.style.cssText = 'font-size: 0.72rem; color: var(--text-muted); line-height: 1.35;';
+                insightText.textContent = sc.insight || sc.subtitle || sc.metaphor || 'Pedagogical conceptual reveal';
+
+                card.appendChild(header);
+                card.appendChild(row2);
+                card.appendChild(insightText);
+                storyboardCardsContainer.appendChild(card);
+            });
+        }
+
+        function openStoryboardModal(clipIdx, forceRegen = false) {
+            const clip = clips[clipIdx];
+            if (!clip || !activeProjectId) return;
+            activeStoryboardClipIdx = clipIdx;
+
+            if (storyboardModalTitle) {
+                storyboardModalTitle.textContent = `🎨 INFOGRAPHIC STORYBOARD — Part ${clip.num}: ${clip.title}`;
+            }
+            if (storyboardModalStatus) {
+                storyboardModalStatus.textContent = `Loading storyboard for Part ${clip.num}...`;
+            }
+            if (storyboardModalOverlay) storyboardModalOverlay.classList.add('active');
+
+            fetch(`/get-storyboard?id=${activeProjectId}&num=${clip.num}&force=${forceRegen ? 'true' : 'false'}`)
+                .then(r => {
+                    if (!r.ok) throw new Error("Could not load storyboard.");
+                    return r.json();
+                })
+                .then(data => {
+                    activeStoryboardData = data.storyboard;
+                    if (storyboardFilePathBadge) {
+                        storyboardFilePathBadge.textContent = data.filepath || `projects/${activeProjectId}/storyboards/clip_${clip.num}_storyboard.json`;
+                        storyboardFilePathBadge.title = data.filepath || '';
+                    }
+                    if (storyboardJsonTextarea) {
+                        storyboardJsonTextarea.value = JSON.stringify(activeStoryboardData, null, 2);
+                    }
+                    renderStoryboardSceneCards(activeStoryboardData);
+                    if (storyboardModalStatus) {
+                        const sceneCount = (activeStoryboardData.scenes || []).length;
+                        storyboardModalStatus.textContent = `Loaded ${sceneCount} pedagogical scenes. Edit in gVim (:w to save) or cards above.`;
+                    }
+                })
+                .catch(err => {
+                    if (storyboardModalStatus) storyboardModalStatus.textContent = `Error: ${err.message}`;
+                });
+        }
+        window.openStoryboardModal = openStoryboardModal;
+
+        if (openStoryboardInEditorBtn) {
+            openStoryboardInEditorBtn.addEventListener('click', () => {
+                if (activeStoryboardClipIdx === null || !clips[activeStoryboardClipIdx] || !activeProjectId) return;
+                const clip = clips[activeStoryboardClipIdx];
+                if (storyboardModalStatus) storyboardModalStatus.textContent = `Opening Part ${clip.num} storyboard in external editor...`;
+
+                fetch(`/open-storyboard-in-editor?id=${activeProjectId}&num=${clip.num}`, {
+                    method: 'POST'
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        if (storyboardModalStatus) {
+                            storyboardModalStatus.textContent = `📂 Opened in ${data.editor || 'external editor'}. Type :w in Vim, then switch back to tab (auto-syncs) or click [Sync Disk].`;
+                        }
+                        updateStateBar(`📂 Opened Clip ${clip.num} Storyboard in ${data.editor || 'external editor'}. Save with :w and return.`);
+                    } else {
+                        throw new Error(data.error || 'Failed to open editor');
+                    }
+                })
+                .catch(err => {
+                    alert('Could not launch external editor: ' + err.message);
+                });
+            });
+        }
+
+        function syncStoryboardFromDisk(silent = false) {
+            if (activeStoryboardClipIdx === null || !clips[activeStoryboardClipIdx] || !activeProjectId) return;
+            const clip = clips[activeStoryboardClipIdx];
+            if (!storyboardModalOverlay || !storyboardModalOverlay.classList.contains('active')) return;
+
+            fetch(`/sync-storyboard?id=${activeProjectId}&num=${clip.num}`, {
+                method: 'POST'
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success && data.storyboard) {
+                    activeStoryboardData = data.storyboard;
+                    if (storyboardJsonTextarea) {
+                        storyboardJsonTextarea.value = JSON.stringify(activeStoryboardData, null, 2);
+                    }
+                    renderStoryboardSceneCards(activeStoryboardData);
+                    clip.infographic_scenes = data.storyboard.scenes;
+                    if (storyboardModalStatus) {
+                        storyboardModalStatus.textContent = `🔄 Synced Part ${clip.num} storyboard from disk (:w)! Total scenes: ${data.scene_count}`;
+                    }
+                    if (!silent) updateStateBar(`🔄 Synced Clip ${clip.num} storyboard from disk.`);
+                }
+            })
+            .catch(err => {
+                if (!silent) console.warn("Storyboard sync error:", err.message);
+            });
+        }
+
+        if (syncStoryboardFromDiskBtn) {
+            syncStoryboardFromDiskBtn.addEventListener('click', () => syncStoryboardFromDisk(false));
+        }
+
+        if (regenStoryboardBtn) {
+            regenStoryboardBtn.addEventListener('click', () => {
+                if (activeStoryboardClipIdx === null) return;
+                const ok = confirm("Reset storyboard to freshly generated Feynman-Needham scenes?");
+                if (ok) openStoryboardModal(activeStoryboardClipIdx, true);
+            });
+        }
+
+        if (saveStoryboardModalBtn) {
+            saveStoryboardModalBtn.addEventListener('click', () => {
+                if (activeStoryboardClipIdx === null || !clips[activeStoryboardClipIdx] || !activeProjectId) return;
+                const clip = clips[activeStoryboardClipIdx];
+
+                if (storyboardJsonContainer && storyboardJsonContainer.style.display !== 'none' && storyboardJsonTextarea) {
+                    try {
+                        activeStoryboardData = JSON.parse(storyboardJsonTextarea.value);
+                    } catch (pe) {
+                        alert("Invalid JSON in editor: " + pe.message);
+                        return;
+                    }
+                }
+
+                if (storyboardModalStatus) storyboardModalStatus.textContent = `Saving storyboard to disk...`;
+
+                fetch(`/save-storyboard?id=${activeProjectId}&num=${clip.num}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(activeStoryboardData)
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        clip.infographic_scenes = activeStoryboardData.scenes;
+                        renderStoryboardSceneCards(activeStoryboardData);
+                        if (storyboardModalStatus) storyboardModalStatus.textContent = `💾 Storyboard saved to disk successfully!`;
+                        updateStateBar(`💾 Saved Clip ${clip.num} storyboard to disk.`);
+                    } else {
+                        throw new Error(data.error || 'Failed to save');
+                    }
+                })
+                .catch(err => {
+                    alert("Error saving storyboard: " + err.message);
+                });
+            });
+        }
+
+        if (renderStoryboardModalBtn) {
+            renderStoryboardModalBtn.addEventListener('click', () => {
+                if (activeStoryboardClipIdx === null || !clips[activeStoryboardClipIdx]) return;
+                const clipIdx = activeStoryboardClipIdx;
+                const clip = clips[clipIdx];
+                const btn = document.getElementById(`infographicCardBtn_${clipIdx}`);
+                closeStoryboardModal();
+
+                if (btn) {
+                    const epNum = activeProjectId.replace('episode_', '');
+                    window.activeCompilingInfographics = window.activeCompilingInfographics || {};
+                    window.activeCompilingInfographics[clip.num] = true;
+                    btn.innerHTML = '⏳ Rendering...';
+                    btn.disabled = true;
+                    btn.style.cursor = 'wait';
+                    updateStateBar(`Rendering 1080x1080 Manim Pedagogical Infographic for Part ${clip.num}: "${clip.title}"...`);
+
+                    openVideoModalLoading(
+                        `🎨 MANIM PEDAGOGICAL INFOGRAPHIC - Part ${clip.num}: ${clip.title}`,
+                        `⚡ 1080x1080 Manim Vector Engine • 1080x1920 Vertical + Burned ASS Captions • clips/${epNum}-${clip.num}.mp4`,
+                        `Rendering Manim Pedagogical Infographic (Part ${clip.num})...`,
+                        `Compiling 1080x1080 Manim scenes from custom storyboard and burning 1080x1920 vertical captions...`
+                    );
+
+                    fetch(`/render-local-infographic?id=${activeProjectId}&num=${clip.num}&force=true`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ directive: "" })
+                    })
+                    .then(res => {
+                        if (!res.ok) return res.json().then(d => { throw new Error(d.error || "Infographic render failed"); });
+                        return res.json();
+                    })
+                    .then(data => {
+                        clip.infographic_ready = true;
+                        clip.visual_source = "infographic";
+                        if (window.clipStatusesCache) {
+                            window.clipStatusesCache[clip.num] = window.clipStatusesCache[clip.num] || {};
+                            window.clipStatusesCache[clip.num].has_infographic_file = true;
+                            window.clipStatusesCache[clip.num].video_state = 'compiled';
+                        }
+                        const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
+                        openVideoModal(
+                            freshVideoUrl,
+                            `🎨 MANIM PEDAGOGICAL INFOGRAPHIC - Part ${clip.num}: ${clip.title}`,
+                            `⚡ 1080x1080 Manim Vector Engine • 1080x1920 Vertical + Burned ASS Captions • clips/${epNum}-${clip.num}.mp4`
+                        );
+                        updateStateBar(`✅ Finished Manim Pedagogical Infographic for Part ${clip.num}!`);
+                        delete window.activeCompilingInfographics[clip.num];
+                        if (btn) {
+                            btn.innerHTML = '🎨 Infographic ★';
+                            btn.style.fontWeight = '700';
+                            btn.style.boxShadow = '0 0 0 2px #38bdf8';
+                            btn.disabled = false;
+                            btn.style.cursor = '';
+                        }
+                    })
+                    .catch(err => {
+                        delete window.activeCompilingInfographics[clip.num];
+                        alert("Infographic Render Failed: " + err.message);
+                        if (btn) {
+                            btn.innerHTML = '🎨 Infographic';
+                            btn.disabled = false;
+                            btn.style.cursor = '';
+                        }
+                        updateStateBar(`❌ Infographic render failed: ${err.message}`);
+                    });
+                }
+            });
+        }
+
+        window.addEventListener('focus', () => {
+            syncStoryboardFromDisk(true);
+        });
+
 </script>
 </body>
 </html>
