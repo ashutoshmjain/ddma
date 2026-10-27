@@ -7440,13 +7440,17 @@
                                     window.clipStatusesCache[clip.num].has_infographic_file = true;
                                     window.clipStatusesCache[clip.num].video_state = 'compiled';
                                 }
-                                const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
+                                const freshVideoUrl = (data && data.video_url)
+                                    ? (data.video_url + '?t=' + Date.now())
+                                    : ((clip.visual_source === 'manim' || clip.visual_source === 'infographic')
+                                        ? `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now()
+                                        : `/clips/${epNum}-${clip.num}-manim.mp4?t=` + Date.now());
                                 openVideoModal(
                                     freshVideoUrl,
-                                    `✨ MANIM PEDAGOGICAL INFOGRAPHIC (1080×1920 + Captions) - Part ${clip.num}: ${clip.title}`,
-                                    `✨ 1080×1080 Manim Vector Engine (${data.scenes_count || 5} scenes) + Burned ASS Captions • clips/${epNum}-${clip.num}.mp4`
+                                    `✨ MANIM PEDAGOGICAL VIDEO (740×740 + Captions) - Part ${clip.num}: ${clip.title}`,
+                                    `✨ 740×740 Manim Vector Engine (${data.scenes_count || 5} scenes) + Burned ASS Captions • clips/${epNum}-${clip.num}-manim.mp4`
                                 );
-                                updateStateBar(`Playing Local Dan Koe Infographic video for Part ${clip.num}`);
+                                updateStateBar(`Playing Manim Pedagogical video for Part ${clip.num}`);
                             })
                             .catch(err => {
                                 closeVideoModal();
@@ -8761,17 +8765,23 @@
                     })
                     .then(data => {
                         clip.infographic_ready = true;
-                        clip.visual_source = "infographic";
+                        if (data && data.active_master) {
+                            clip.visual_source = data.active_master;
+                        }
                         if (window.clipStatusesCache) {
                             window.clipStatusesCache[clip.num] = window.clipStatusesCache[clip.num] || {};
                             window.clipStatusesCache[clip.num].has_infographic_file = true;
                             window.clipStatusesCache[clip.num].video_state = 'compiled';
                         }
-                        const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
+                        const freshVideoUrl = (data && data.video_url)
+                            ? (data.video_url + '?t=' + Date.now())
+                            : ((clip.visual_source === 'manim' || clip.visual_source === 'infographic')
+                                ? `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now()
+                                : `/clips/${epNum}-${clip.num}-manim.mp4?t=` + Date.now());
                         openVideoModal(
                             freshVideoUrl,
-                            `🎨 MANIM PEDAGOGICAL INFOGRAPHIC - Part ${clip.num}: ${clip.title}`,
-                            `⚡ 1080x1080 Manim Vector Engine • 1080x1920 Vertical + Burned ASS Captions • clips/${epNum}-${clip.num}.mp4`
+                            `🎨 MANIM PEDAGOGICAL VIDEO (740×740 + Captions) - Part ${clip.num}: ${clip.title}`,
+                            `⚡ 740×740 Manim Vector Engine • 1080×1920 Vertical + Burned ASS Captions • clips/${epNum}-${clip.num}-manim.mp4`
                         );
                         updateStateBar(`✅ Finished Manim Pedagogical Infographic for Part ${clip.num}!`);
                         delete window.activeCompilingInfographics[clip.num];

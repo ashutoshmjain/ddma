@@ -4110,8 +4110,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps({
                     "success": True,
                     "infographic_file": infographic_mp4,
+                    "video_url": f"/clips/{ep_num}-{clip_num}-manim.mp4",
+                    "active_master": t_clip.get("visual_source", "mosaic"),
                     "scenes_count": len(t_clip.get("infographic_scenes", [])),
-                    "message": "1080x1080 Manim Pedagogical Infographic rendered and compiled into 1080x1920 captioned video!"
+                    "message": "740x740 Manim Pedagogical Video rendered and compiled into 1080x1920 captioned video!"
                 }).encode('utf-8'))
                 return
             except Exception as e:

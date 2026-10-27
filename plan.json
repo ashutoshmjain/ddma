@@ -9293,7 +9293,6 @@
             }
         ],
         "locked": true,
-        "mosaic_run_id": "6f157e24-25c7-495d-b2e2-8b5ec4492906",
         "_caption_words": [
             {
                 "word": "Well,",
@@ -14054,8 +14053,8 @@
         "source_start": 287.14,
         "source_end": 434.38,
         "_audio_sig": "0745ca9895ca238bb9fcb316c3b47ca0",
-        "_compiled_sig": "fbd5967cb060bf0c0ae12bfa848f335f",
-        "visual_source": "infographic",
+        "_compiled_sig": "28636e25edc6c10c89237a25f2ce130c",
+        "visual_source": "mosaic",
         "infographic_scenes": [
             {
                 "start": 0.0,
@@ -14179,7 +14178,8 @@
             }
         ],
         "infographic_ready": true,
-        "_infographic_version": "v3_monochrome_no_grid"
+        "_infographic_version": "v3_monochrome_no_grid",
+        "mosaic_run_id": "629f9501-ebe1-4b8f-be13-baac48a20cb4"
     },
     {
         "num": 4,
