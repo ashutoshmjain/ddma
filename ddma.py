@@ -1140,74 +1140,10 @@ def write_ass_file(
     chunks: list,
     ass_path: str,
     body_duration: float = 0.0,
-    intro_offset: float = 0.0,
-    is_infographic: bool = False
+    intro_offset: float = 0.0
 ):
-    """Write exact ASS v4+ caption file for 1080x1920 vertical canvas."""
+    """Write exact ASS v4+ caption file for 1080x1920 vertical canvas with studio ribbon above captions."""
     os.makedirs(os.path.dirname(ass_path) if os.path.dirname(ass_path) else ".", exist_ok=True)
-
-    if not is_infographic:
-        # Canonical Mosaic spec: MarginV=500 (y≈500-555, safely below Instagram ~450px top chrome, no mic/ribbon)
-        lines = [
-            "[Script Info]",
-            "ScriptType: v4.00+",
-            "PlayResX: 1080",
-            "PlayResY: 1920",
-            "WrapStyle: 2",
-            "ScaledBorderAndShadow: yes",
-            "",
-            "[V4+ Styles]",
-            "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-            "Style: Caption,DejaVu Sans Mono,46,&H00FFFFFF,&H000019FF,&H80000000,&H80000000,1,0,0,0,100,100,1.2,0,1,2,0,8,60,60,500,1",
-            "",
-            "[Events]",
-            "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
-        ]
-        c_gold = r"{\c&H000AD6FF&}"
-        c_white = r"{\c&H00FFFFFF&}"
-        c_dim = r"{\c&H00757575&}"
-
-        for ch in (chunks or []):
-            c_start = float(ch.get("start", 0.0))
-            c_end = float(ch.get("end", c_start + 1.0))
-            words = ch.get("words")
-
-            if words and isinstance(words, list) and len(words) > 1:
-                for i, w in enumerate(words):
-                    w_start_val = max(c_start, float(w.get("start", c_start)))
-                    if i < len(words) - 1:
-                        w_end_val = min(c_end, max(w_start_val + 0.04, float(words[i + 1].get("start", w_start_val + 0.2))))
-                    else:
-                        w_end_val = c_end
-
-                    start_str = format_ass_time(w_start_val)
-                    end_str = format_ass_time(w_end_val)
-
-                    passed = " ".join(str(x.get("word", "")).strip().lower() for x in words[:i])
-                    active = str(words[i].get("word", "")).strip().lower()
-                    upcoming = " ".join(str(x.get("word", "")).strip().lower() for x in words[i + 1:])
-
-                    parts = []
-                    if passed:
-                        parts.append(f"{c_white}{passed}")
-                    parts.append(f"{c_gold}{active}{c_white}")
-                    if upcoming:
-                        parts.append(f"{c_dim}{upcoming}{c_white}")
-
-                    line_txt = " ".join(parts)
-                    lines.append(f"Dialogue: 0,{start_str},{end_str},Caption,,0,0,0,,{line_txt}")
-            else:
-                start_str = format_ass_time(c_start)
-                end_str = format_ass_time(c_end)
-                txt = str(ch.get("text", "")).replace("\n", " ").strip().lower()
-                if txt:
-                    lines.append(f"Dialogue: 0,{start_str},{end_str},Caption,,0,0,0,,{txt}")
-
-        with open(ass_path, "w", encoding="utf-8") as f:
-            f.write("\n".join(lines) + "\n")
-        return
-
-    # Experimental Infographics Deck:
     lines = [
         "[Script Info]",
         "ScriptType: v4.00+",
@@ -1218,7 +1154,7 @@ def write_ass_file(
         "",
         "[V4+ Styles]",
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-        "Style: Caption,Arial,42,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,1.2,0,1,0,0,8,60,60,290,1",
+        "Style: Caption,DejaVu Sans Mono,46,&H00FFFFFF,&H000019FF,&H80000000,&H80000000,1,0,0,0,100,100,1.2,0,1,2,0,8,60,60,465,1",
         "Style: HostRibbon,Arial,17,&H00CBD5E1,&H00CBD5E1,&H00000000,&H00000000,1,0,0,0,100,100,2.5,0,1,0,0,5,40,40,60,1",
         "Style: MicShape,Arial,18,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,0,0,5,40,40,60,1",
         "",
@@ -1228,19 +1164,20 @@ def write_ass_file(
     mic_shape = 'm -10 -24 b -10 -32 10 -32 10 -24 l 10 0 b 10 7 -10 7 -10 0 l -10 -24 m -14 -5 b -14 13 14 13 14 -5 l 16 -5 b 16 17 -16 17 -16 -5 l -14 -5 m -2 15 l 2 15 l 2 23 l 11 23 l 11 26 l -11 26 l -11 23 l -2 23'
     arc_l = 'm -4 -12 b -8 -6 -8 6 -4 12 l -2 10 b -5 5 -5 -5 -2 -10'
     arc_r = 'm 4 -12 b 8 -6 8 6 4 12 l 2 10 b 5 5 5 -5 2 -10'
-    c_white = r"{\c&H00FFFFFF&\b1}"
-    c_silver = r"{\c&H00E2E8F0&}"
-    c_dim = r"{\c&H0064748B&}"
+    c_gold = r"{\c&H000AD6FF&}"
+    c_white = r"{\c&H00FFFFFF&}"
+    c_dim = r"{\c&H00757575&}"
 
     total_end = intro_offset + (body_duration if body_duration > 0 else (chunks[-1]["end"] if chunks else 120.0))
     s_start_ribbon = format_ass_time(intro_offset)
     s_end_ribbon = format_ass_time(total_end)
 
+    # Broadcast studio header ribbon at y=370 (ABOVE captions at y=465..520)
     header_events = [
-        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(420,368)\\an6\\c&H00E2E8F0&\\b1\\fsp3}}SATOSHA",
-        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(660,368)\\an4\\c&H00E2E8F0&\\b1\\fsp3}}SATOSHI",
-        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(475,367)\\an5\\c&H00475569&}}─",
-        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(605,367)\\an5\\c&H00475569&}}─",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(420,370)\\an6\\c&H00E2E8F0&\\b1\\fsp3}}SATOSHA",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(660,370)\\an4\\c&H00E2E8F0&\\b1\\fsp3}}SATOSHI",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(475,369)\\an5\\c&H00475569&}}─",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},HostRibbon,,0,0,0,,{{\\pos(605,369)\\an5\\c&H00475569&}}─",
     ]
 
     period = 0.8
@@ -1253,14 +1190,14 @@ def write_ass_file(
 
         s_on = format_ass_time(t_on_start)
         e_on = format_ass_time(t_on_end)
-        header_events.append(f"Dialogue: 2,{s_on},{e_on},MicShape,,0,0,0,,{{\\pos(540,367)\\an5\\c&H00FFFFFF&\\p1}}{mic_shape}{{\\p0}}")
-        header_events.append(f"Dialogue: 2,{s_on},{e_on},MicShape,,0,0,0,,{{\\pos(518,367)\\an5\\c&H00FFFFFF&\\p1}}{arc_l}{{\\p0}}")
-        header_events.append(f"Dialogue: 2,{s_on},{e_on},MicShape,,0,0,0,,{{\\pos(562,367)\\an5\\c&H00FFFFFF&\\p1}}{arc_r}{{\\p0}}")
+        header_events.append(f"Dialogue: 2,{s_on},{e_on},MicShape,,0,0,0,,{{\\pos(540,369)\\an5\\c&H00FFFFFF&\\p1}}{mic_shape}{{\\p0}}")
+        header_events.append(f"Dialogue: 2,{s_on},{e_on},MicShape,,0,0,0,,{{\\pos(518,369)\\an5\\c&H00FFFFFF&\\p1}}{arc_l}{{\\p0}}")
+        header_events.append(f"Dialogue: 2,{s_on},{e_on},MicShape,,0,0,0,,{{\\pos(562,369)\\an5\\c&H00FFFFFF&\\p1}}{arc_r}{{\\p0}}")
 
         if t_off_start < t_off_end:
             s_off = format_ass_time(t_off_start)
             e_off = format_ass_time(t_off_end)
-            header_events.append(f"Dialogue: 2,{s_off},{e_off},MicShape,,0,0,0,,{{\\pos(540,367)\\an5\\c&H00334155&\\p1}}{mic_shape}{{\\p0}}")
+            header_events.append(f"Dialogue: 2,{s_off},{e_off},MicShape,,0,0,0,,{{\\pos(540,369)\\an5\\c&H00334155&\\p1}}{mic_shape}{{\\p0}}")
 
         t_curr += period
 
@@ -1286,15 +1223,13 @@ def write_ass_file(
 
                 parts = []
                 if passed:
-                    parts.append(f"{c_silver}{passed} ")
-                parts.append(f"{c_white}{active}")
+                    parts.append(f"{c_white}{passed}")
+                parts.append(f"{c_gold}{active}{c_white}")
                 if upcoming:
-                    parts.append(f" {c_dim}{upcoming}")
+                    parts.append(f"{c_dim}{upcoming}{c_white}")
 
-                line_txt = "".join(parts)
-                w_start_str = format_ass_time(w_start_val)
-                w_end_str = format_ass_time(w_end_val)
-                lines.append(f"Dialogue: 0,{w_start_str},{w_end_str},Caption,,0,0,0,,{line_txt}")
+                line_txt = " ".join(parts)
+                lines.append(f"Dialogue: 0,{start_str},{end_str},Caption,,0,0,0,,{line_txt}")
         else:
             start_str = format_ass_time(c_start)
             end_str = format_ass_time(c_end)
@@ -1350,7 +1285,8 @@ def compile_clip(
     font_path: Optional[str] = typer.Option(None, help="Optional path to custom TrueType font"),
     backup: bool = typer.Option(True, help="Create a backup of the original master clip"),
     episode_title: str = typer.Option("Life, Death and the Lysosome", help="Title of the episode"),
-    force_draft: bool = typer.Option(False, help="Force black canvas draft body compilation even if Mosaic video exists")
+    force_draft: bool = typer.Option(False, help="Force black canvas draft body compilation even if Mosaic video exists"),
+    source: Optional[str] = typer.Option(None, "--source", "-s", help="Visual source engine: 'mosaic' or 'manim'")
 ):
     """
     Mux and compile a clip with dynamic title card intro and finished Mosaic video.
@@ -1377,6 +1313,7 @@ def compile_clip(
     if hasattr(backup, 'default'): backup = bool(backup.default)
     if hasattr(episode_title, 'default'): episode_title = str(episode_title.default)
     if hasattr(force_draft, 'default'): force_draft = bool(force_draft.default)
+    if hasattr(source, 'default'): source = source.default
 
     temp_img_path = f"temp_title_{num}.png"
     intro_video_path = f"temp_intro_{num}.mp4"
@@ -1461,26 +1398,48 @@ def compile_clip(
 
     target_clip = next((c for c in plan_data if c.get("num") == num), None)
     mosaic_run_id = target_clip.get("mosaic_run_id") if target_clip else None
-    visual_source = target_clip.get("visual_source") if target_clip else None
-
-    infographic_path = f"clips/{episode}-{num}-infographic.mp4"
-    mosaic_path = f"clips/{episode}-{num}-mosaic-{mosaic_run_id}.mp4" if mosaic_run_id else ""
-
-    if visual_source == "infographic" and os.path.exists(infographic_path):
-        backup_path = infographic_path
-        has_motion_source = True
-    elif visual_source == "mosaic" and mosaic_path and os.path.exists(mosaic_path):
-        backup_path = mosaic_path
-        has_motion_source = True
-    elif os.path.exists(infographic_path):
-        backup_path = infographic_path
-        has_motion_source = True
-    elif mosaic_path and os.path.exists(mosaic_path):
-        backup_path = mosaic_path
-        has_motion_source = True
+    
+    # Active master setting from plan.json
+    active_master_src = str(target_clip.get("visual_source", "mosaic") if target_clip else "mosaic").lower()
+    if active_master_src in ("infographic", "manim"):
+        active_master_src = "manim"
     else:
-        backup_path = f"clips/{episode}-{num}.mp4"
-        has_motion_source = False
+        active_master_src = "mosaic"
+
+    # Explicit compile source override if passed via CLI, else active_master_src
+    if source:
+        compile_source = "manim" if str(source).lower() in ("manim", "infographic") else "mosaic"
+    else:
+        compile_source = active_master_src
+
+    infographic_candidates = [
+        f"clips/{episode}-{num}-infographic.mp4",
+        f"clips/{episode}-{num}-manim.mp4",
+    ]
+    mosaic_candidates = []
+    if mosaic_run_id:
+        mosaic_candidates.append(f"clips/{episode}-{num}-mosaic-{mosaic_run_id}.mp4")
+    mosaic_candidates.extend([
+        f"clips/{episode}-{num}-original.mp4",
+        f"clips/{episode}-{num}-mosaic.mp4",
+    ])
+
+    if compile_source == "manim":
+        chosen_body = next((p for p in infographic_candidates if os.path.exists(p) and os.path.getsize(p) > 10000), None)
+        if chosen_body:
+            backup_path = chosen_body
+            has_motion_source = True
+        else:
+            backup_path = f"clips/{episode}-{num}.mp4"
+            has_motion_source = False
+    else:
+        chosen_body = next((p for p in mosaic_candidates if os.path.exists(p) and os.path.getsize(p) > 10000), None)
+        if chosen_body:
+            backup_path = chosen_body
+            has_motion_source = True
+        else:
+            backup_path = f"clips/{episode}-{num}.mp4"
+            has_motion_source = False
 
     # Check for freshly cut audio clip (e.g. clips/245-1-*.mp3) and remux audio track
     audio_pattern1 = os.path.join(master_dir, f"{episode}-{num}-*.mp3")
@@ -1828,6 +1787,8 @@ def compile_clip(
         os.makedirs(out_dir, exist_ok=True)
         out_filename = f"{base_name}.mp4"
         out_path = os.path.join(out_dir, out_filename)
+        variant_filename = f"{episode}-{num}-{compile_source}.mp4"
+        variant_path = os.path.join(out_dir, variant_filename)
 
         sorted_clips = sorted(plan_data, key=lambda x: x["num"])
         is_last_clip = (sorted_clips[-1]["num"] == num)
@@ -1970,27 +1931,25 @@ def compile_clip(
             body_duration=body_duration,
             has_outro=(not is_last_clip)
         )
-        is_info_mode = (visual_source == "infographic")
+        is_info_mode = (compile_source == "manim")
         write_ass_file(
             caption_chunks,
             temp_ass_path,
             body_duration=body_duration,
-            intro_offset=intro_duration,
-            is_infographic=is_info_mode
+            intro_offset=intro_duration
         )
         os.makedirs("captions", exist_ok=True)
         write_ass_file(
             caption_chunks,
             os.path.join("captions", f"{base_name}.ass"),
             body_duration=body_duration,
-            intro_offset=intro_duration,
-            is_infographic=is_info_mode
+            intro_offset=intro_duration
         )
         typer.echo(f"Prepared {len(caption_chunks)} ASS caption events (1080x1920 vertical spec) -> {temp_ass_path}")
 
         scale_filter = f"scale={v_width}:{v_height}:force_original_aspect_ratio=decrease,pad={v_width}:{v_height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=25"
         body_v_filter = f"{scale_filter}{body_v_extra_filter},settb=1/90000"
-        vertical_burn_filter = f"scale=1080:1080:force_original_aspect_ratio=decrease,pad=1080:1920:0:420:color=black,subtitles=filename={temp_ass_path}:fontsdir={fonts_dir},setsar=1"
+        vertical_burn_filter = f"scale=740:740:force_original_aspect_ratio=decrease,pad=1080:1920:170:590:color=black,subtitles=filename={temp_ass_path}:fontsdir={fonts_dir},setsar=1"
 
         def build_concat_cmd(crf_val: int):
             if not is_last_clip and os.path.exists(temp_outro_video_path):
@@ -2018,7 +1977,7 @@ def compile_clip(
                     "-c:a", "aac",
                     "-b:a", "128k",
                     "-movflags", "+faststart",
-                    out_path
+                    variant_path
                 ]
             else:
                 return [
@@ -2040,17 +1999,17 @@ def compile_clip(
                     "-c:a", "aac",
                     "-b:a", "128k",
                     "-movflags", "+faststart",
-                    out_path
+                    variant_path
                 ]
 
-        typer.echo(f"Compiling 1080x1920 vertical video with burned ASS captions into {out_path}...")
+        typer.echo(f"Compiling 1080x1920 vertical video with burned ASS captions into {variant_path}...")
         current_crf = 20
         res_concat = subprocess.run(build_concat_cmd(current_crf), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         # Enforce <= 20 MB Nostr free upload cap by raising CRF if needed
         max_bytes = 20 * 1024 * 1024
-        while res_concat.returncode == 0 and os.path.exists(out_path) and os.path.getsize(out_path) > max_bytes and current_crf < 30:
-            size_mb = os.path.getsize(out_path) / (1024 * 1024)
+        while res_concat.returncode == 0 and os.path.exists(variant_path) and os.path.getsize(variant_path) > max_bytes and current_crf < 30:
+            size_mb = os.path.getsize(variant_path) / (1024 * 1024)
             current_crf += 4
             typer.echo(f"Render size ({size_mb:.2f} MB) exceeds 20 MB cap; re-encoding with CRF {current_crf}...")
             res_concat = subprocess.run(build_concat_cmd(current_crf), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -2058,16 +2017,26 @@ def compile_clip(
         if res_concat.returncode == 0:
             typer.echo(f"Successfully compiled clip: {out_path}")
             
-            # Sync compiled clip to canonical deepDive publication repo if present
-            if episode:
-                deepdive_clips_dir = os.path.abspath(os.path.join("..", "deepDive", "src", "ddma", "docs", "episodes", str(episode), "clips"))
-                if os.path.exists(os.path.dirname(deepdive_clips_dir)):
-                    os.makedirs(deepdive_clips_dir, exist_ok=True)
-                    try:
-                        shutil.copy2(out_path, os.path.join(deepdive_clips_dir, out_filename))
-                        typer.echo(f"Synced compiled clip to {os.path.join(deepdive_clips_dir, out_filename)}")
-                    except Exception as e:
-                        typer.echo(f"Warning: Could not sync to deepDive clips: {e}")
+            # Safeguard: If active master, update master out_path and sync to deepDive
+            is_active_master = (compile_source == active_master_src)
+            if is_active_master:
+                try:
+                    shutil.copy2(variant_path, out_path)
+                except Exception:
+                    pass
+                if episode:
+                    deepdive_clips_dir = os.path.abspath(os.path.join("..", "deepDive", "src", "ddma", "docs", "episodes", str(episode), "clips"))
+                    if os.path.exists(os.path.dirname(deepdive_clips_dir)):
+                        os.makedirs(deepdive_clips_dir, exist_ok=True)
+                        dest_file = os.path.join(deepdive_clips_dir, out_filename)
+                        try:
+                            shutil.copy2(variant_path, dest_file)
+                            typer.echo(f"Synced ACTIVE MASTER ({compile_source}) to deepDive publication repo -> {dest_file}")
+                        except Exception as e:
+                            typer.echo(f"Warning: Could not sync to deepDive clips: {e}")
+            else:
+                typer.echo(f"[SAFEGUARD] Compiled '{compile_source}' preview to {variant_path}.")
+                typer.echo(f"[SAFEGUARD] deepDive publication repo was NOT modified (active master is locked to '{active_master_src}').")
             
             # Verification checklist (1080x1920 DAR 9:16, <=180s, <=20MB, |rendered_duration - mp4 duration| <= 2s) and reconcile plan.json
             try:
@@ -2075,7 +2044,7 @@ def compile_clip(
                     "ffprobe", "-v", "error",
                     "-select_streams", "v:0",
                     "-show_entries", "stream=width,height,display_aspect_ratio:format=duration,size",
-                    "-of", "json", out_path
+                    "-of", "json", variant_path
                 ]
                 ver_res = subprocess.run(cmd_verify, stdout=subprocess.PIPE, text=True)
                 if ver_res.returncode == 0:
@@ -2083,7 +2052,7 @@ def compile_clip(
                     v_stream = (ver_data.get("streams") or [{}])[0]
                     v_fmt = ver_data.get("format") or {}
                     final_dur = round(float(v_fmt.get("duration", 0.0)), 2)
-                    final_size_mb = round(float(v_fmt.get("size", os.path.getsize(out_path))) / (1024 * 1024), 2)
+                    final_size_mb = round(float(v_fmt.get("size", os.path.getsize(variant_path))) / (1024 * 1024), 2)
                     out_w = int(v_stream.get("width", 0))
                     out_h = int(v_stream.get("height", 0))
                     out_dar = v_stream.get("display_aspect_ratio", "")

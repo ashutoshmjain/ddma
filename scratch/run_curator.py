@@ -3573,6 +3573,94 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
                 return
 
+        elif parsed_url.path == '/set-active-master':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            req_source = params.get('source', ['mosaic'])[0].lower()
+            try:
+                if not project_id or not clip_num:
+                    raise Exception("Missing project id or clip number.")
+                
+                source = "manim" if req_source in ("infographic", "manim") else "mosaic"
+                ep_num = project_id.replace('episode_', '')
+                plan_path = os.path.join("projects", project_id, "plan.json")
+                if not os.path.exists(plan_path):
+                    plan_path = "plan.json"
+
+                with open(plan_path, "r", encoding="utf-8") as f:
+                    plan_data = json.load(f)
+                
+                t_clip = next((c for c in plan_data if str(c.get("num")) == str(clip_num)), None)
+                if not t_clip:
+                    raise Exception(f"Clip {clip_num} not found in plan.")
+
+                t_clip["visual_source"] = source
+                with open(plan_path, "w", encoding="utf-8") as f:
+                    json.dump(plan_data, f, indent=4)
+
+                docs_plan = os.path.join("docs", "episodes", ep_num, "plan.json")
+                if os.path.exists(docs_plan):
+                    try:
+                        with open(docs_plan, "w", encoding="utf-8") as f:
+                            json.dump(plan_data, f, indent=4)
+                    except Exception:
+                        pass
+
+                # Resolve variant source file
+                variant_candidates = [
+                    os.path.join("clips", f"{ep_num}-{clip_num}-{source}.mp4"),
+                ]
+                if source == "manim":
+                    variant_candidates.append(os.path.join("clips", f"{ep_num}-{clip_num}-infographic.mp4"))
+                elif source == "mosaic":
+                    m_run_id = t_clip.get("mosaic_run_id")
+                    if m_run_id:
+                        variant_candidates.append(os.path.join("clips", f"{ep_num}-{clip_num}-mosaic-{m_run_id}.mp4"))
+                    variant_candidates.append(os.path.join("clips", f"{ep_num}-{clip_num}-original.mp4"))
+
+                chosen_variant = None
+                for cand in variant_candidates:
+                    if os.path.exists(cand) and os.path.getsize(cand) > 10000:
+                        chosen_variant = cand
+                        break
+
+                synced_deepdive = False
+                if chosen_variant:
+                    target_mp4 = os.path.join("clips", f"{ep_num}-{clip_num}.mp4")
+                    shutil.copy2(chosen_variant, target_mp4)
+                    
+                    deepdive_clips_dir = os.path.abspath(os.path.join("..", "deepDive", "src", "ddma", "docs", "episodes", str(ep_num), "clips"))
+                    if os.path.exists(os.path.dirname(deepdive_clips_dir)):
+                        os.makedirs(deepdive_clips_dir, exist_ok=True)
+                        dest_deepdive = os.path.join(deepdive_clips_dir, f"{ep_num}-{clip_num}.mp4")
+                        shutil.copy2(target_mp4, dest_deepdive)
+                        synced_deepdive = True
+                        print(f"[{project_id}][Clip {clip_num}] Promoted {source} to ACTIVE MASTER -> synced to deepDive: {dest_deepdive}")
+                else:
+                    # If variant file doesn't exist yet, trigger compile-clip with this source
+                    print(f"[{project_id}][Clip {clip_num}] Compiling fresh {source} as active master...")
+                    subprocess.run([sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", plan_path, "--source", source], check=True)
+                    synced_deepdive = True
+
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "success": True,
+                    "active_master": source,
+                    "synced_deepdive": synced_deepdive,
+                    "message": f"Active master switched to {source}."
+                }).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                return
+
         elif parsed_url.path == '/compile-clip':
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
@@ -3659,6 +3747,9 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                 # 2. Synchronously compile intro card, equalized master body, and outro curiosity card
                 cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", plan_path]
+                if req_source:
+                    src_flag = "manim" if req_source in ("infographic", "manim") else "mosaic"
+                    cmd.extend(["--source", src_flag])
                 if is_draft:
                     cmd.append("--force-draft")
                 print(f"[{project_id}][Clip {clip_num}] Starting synchronous compilation: {' '.join(cmd)}")
@@ -3991,7 +4082,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                 t_clip["_audio_sig"] = curr_audio_sig
                 t_clip["audio_duration"] = round(body_dur, 2)
-                t_clip["visual_source"] = "infographic"
+                if not t_clip.get("visual_source"):
+                    t_clip["visual_source"] = "manim"
                 t_clip["infographic_ready"] = True
                 t_clip["_infographic_version"] = INFOGRAPHIC_ENGINE_VERSION
                 with open(plan_path, "w", encoding="utf-8") as pf_w:
@@ -4006,7 +4098,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         pass
 
                 # 3. Compile 1080x1920 vertical captioned video with the 740x740 infographic
-                cmd_comp = [sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", plan_path]
+                cmd_comp = [sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", plan_path, "--source", "manim"]
                 proc = subprocess.run(cmd_comp, capture_output=True, text=True, cwd=".")
                 if proc.returncode != 0:
                     raise Exception(f"compile-clip failed: {proc.stderr}")
@@ -4446,10 +4538,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                     
                                     if file.endswith(".mp3"):
                                         clip_statuses[clip_num]["has_audio"] = True
-                                    elif file.endswith("-infographic.mp4"):
+                                    elif file.endswith("-infographic.mp4") or file.endswith("-manim.mp4"):
                                         clip_statuses[clip_num]["video_state"] = "compiled"
                                         clip_statuses[clip_num]["has_infographic_file"] = True
-                                    elif file.endswith("-original.mp4") or "-mosaic-" in file:
+                                    elif file.endswith("-original.mp4") or "-mosaic-" in file or file.endswith("-mosaic.mp4"):
                                         clip_statuses[clip_num]["video_state"] = "compiled"
                                         clip_statuses[clip_num]["has_mosaic_file"] = True
                                     elif file.endswith(".mp4"):

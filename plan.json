@@ -4114,7 +4114,7 @@
         "infographic_ready": true,
         "rendered_duration": 141.16,
         "intro_offset": 1.5,
-        "outro_duration": 5,
+        "outro_duration": 5.0,
         "source_start": 0,
         "source_end": 125.76,
         "_compiled_sig": "f9d431149f9ed7e32ec3f833582ccaee",
@@ -9106,11 +9106,11 @@
         "rendered_duration": 176.09,
         "audio_duration": 170.56,
         "intro_offset": 1.5,
-        "outro_duration": 5,
+        "outro_duration": 5.0,
         "source_start": 126.58,
         "source_end": 286.5,
         "_audio_sig": "e3e1d8af11168ae4e610a4499b5e49b3",
-        "_compiled_sig": "c68aa2792a5769a5d5968f192db76c35",
+        "_compiled_sig": "b2638095444338ed37caff3d12177b4c",
         "visual_source": "mosaic",
         "infographic_scenes": [
             {

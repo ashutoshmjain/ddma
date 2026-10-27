@@ -1997,10 +1997,10 @@
             <div class="export-modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem;">
                 <div>
                     <h3 id="storyboardModalTitle" style="margin: 0; color: #38bdf8; display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 1.15rem; font-weight: 700;">
-                        🎨 INFOGRAPHIC PEDAGOGICAL STORYBOARD
+                        🎨 MANIM PEDAGOGICAL STORYBOARD
                     </h3>
                     <span style="font-size: 0.72rem; color: var(--text-muted);">
-                        Feynman-Needham Standard • 1080×1080 Pure Monochrome on Black • 15s Scene Pacing • Super-Dumb Figurative Visuals
+                        Feynman-Needham Standard • 740×740 Pure Monochrome on Black • 15s Scene Pacing • Super-Dumb Figurative Visuals
                     </span>
                 </div>
                 <button class="icon-btn" id="closeStoryboardModalBtn" style="font-size: 1.2rem; cursor: pointer; background: transparent; border: none; color: var(--text-muted);">✖</button>
@@ -2055,7 +2055,7 @@
                     <button class="btn btn-secondary" id="cancelStoryboardModalBtn">Close</button>
                     <button class="btn btn-secondary" id="saveStoryboardModalBtn" style="font-weight: 600;">💾 Save Storyboard</button>
                     <button class="btn btn-primary" id="renderStoryboardModalBtn" style="background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); border: none; font-weight: 700;">
-                        ⚡ Render Infographic
+                        ⚡ Render Manim Video
                     </button>
                 </div>
             </div>
@@ -3239,7 +3239,28 @@
             }
 
             // Auto-sync when user switches back from Vim window into the browser tab
-            window.addEventListener('focus', () => {
+            // PROMOTE VISUAL SOURCE TO ACTIVE MASTER FOR DEEPDIVE PUBLICATION
+        function setActiveMaster(projectId, clipNum, source, callback) {
+            updateStateBar(`Promoting ${source.toUpperCase()} to Active Master for Part ${clipNum}...`);
+            fetch(`/set-active-master?id=${projectId}&num=${clipNum}&source=${source}`, {
+                method: 'POST'
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) throw new Error(data.error);
+                updateStateBar(`✅ Part ${clipNum} Active Master set to ${source.toUpperCase()}! Synced to deepDive.`);
+                const clip = (currentProjectClips || []).find(c => String(c.num) === String(clipNum));
+                if (clip) clip.visual_source = source;
+                renderClipsList();
+                if (callback) callback();
+            })
+            .catch(err => {
+                alert("Failed to set Active Master: " + err.message);
+                updateStateBar("Ready");
+            });
+        }
+
+        window.addEventListener('focus', () => {
                 syncTranscriptFromDisk(true);
             });
 
@@ -7074,28 +7095,28 @@
                     ? `<button class="btn btn-mini btn-card-video btn-status-warning" id="playVideoBtn_${index}" style="font-weight:600; cursor: wait;" disabled title="Compiling Draft preview...">⏳ Compiling...</button>`
                     : `<button class="btn btn-mini btn-card-video btn-status-warning" id="playVideoBtn_${index}" style="font-weight:600;" title="Play 1-click Black Canvas Baseline preview (Intro 2s + Black Canvas Audio Body + Outro 5s)">📹 Draft</button>`;
                 
-                const activeVisualSource = clip.visual_source || (hasInfographicRender ? 'infographic' : (hasMosaicRender ? 'mosaic' : ''));
-                const isInfographicActive = hasInfographicRender && activeVisualSource === 'infographic';
+                const activeVisualSource = clip.visual_source || (hasInfographicRender ? 'manim' : (hasMosaicRender ? 'mosaic' : ''));
+                const isInfographicActive = hasInfographicRender && (activeVisualSource === 'infographic' || activeVisualSource === 'manim');
                 const isMosaicActive = (hasMosaicRender || mosaicState === 'completed') && activeVisualSource === 'mosaic';
 
                 let infographicBtnHtml = "";
                 if (isLocked) {
                     if (isCompilingInfographic) {
-                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-success" id="infographicCardBtn_${index}" style="font-weight: 600; cursor: wait;" disabled title="Rendering 1080×1080 Manim Pedagogical Infographic &amp; 1080×1920 Captions...">⏳ Rendering...</button>`;
+                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-success" id="infographicCardBtn_${index}" style="font-weight: 600; cursor: wait;" disabled title="Rendering 740×740 Manim Pedagogical Video &amp; 1080×1920 Captions...">⏳ Rendering...</button>`;
                     } else if (hasInfographicRender) {
                         const activeStyle = isInfographicActive
                             ? 'font-weight: 700; box-shadow: 0 0 0 2px #38bdf8;'
                             : 'font-weight: 600; opacity: 0.78;';
-                        const activeLabel = isInfographicActive ? '🟢 Infographic ✓' : '🟢 Infographic';
+                        const activeLabel = isInfographicActive ? '🟢 Manim ✓' : '🟢 Manim';
                         const activeTip = isInfographicActive
-                            ? 'ACTIVE MASTER for deepDive / shutri.com • Left-click to play • Right-click for custom instructions / re-render'
-                            : 'Click to switch Active Master to Local Infographic (updates clips/' + episodeNum + '-' + clip.num + '.mp4 &amp; deepDive) • Right-click to re-render';
+                            ? 'ACTIVE MASTER for deepDive / shutri.com • Left-click to play • Right-click to open Storyboard Designer'
+                            : 'Cached locally • Click to switch Active Master to Manim (updates deepDive) • Right-click for Storyboard';
                         infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-success" id="infographicCardBtn_${index}" style="${activeStyle}" title="${activeTip}">${activeLabel}</button>`;
                     } else {
-                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-purple" id="infographicCardBtn_${index}" style="font-weight: 600;" title="Left-click: 1-click render 1080×1080 Manim Pedagogical Infographic (Feynman/Needham Standard) • Right-click: Custom visual instructions">✨ Infographic</button>`;
+                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-purple" id="infographicCardBtn_${index}" style="font-weight: 600;" title="Left-click: 1-click render 740×740 Manim Pedagogical Video (Feynman/Needham Standard) • Right-click: Open Storyboard Designer">✨ Manim</button>`;
                     }
                 } else {
-                    infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-gray" style="font-weight: 600; opacity: 0.4; cursor: not-allowed;" disabled title="Lock clip first to enable Local Infographic">✨ Infographic</button>`;
+                    infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-gray" style="font-weight: 600; opacity: 0.4; cursor: not-allowed;" disabled title="Lock clip first to enable Manim Video">✨ Manim</button>`;
                 }
 
                 let mosaicBtnHtml = "";
@@ -7439,7 +7460,7 @@
                                 if (liveBtn) {
                                     liveBtn.classList.remove('btn-status-purple', 'btn-status-gray');
                                     liveBtn.classList.add('btn-status-success');
-                                    liveBtn.innerHTML = (clip.visual_source === 'infographic') ? '🟢 Infographic ✓' : '🟢 Infographic';
+                                    liveBtn.innerHTML = (clip.visual_source === 'infographic') ? '🟢 Manim ✓' : '🟢 Manim';
                                     liveBtn.style.fontWeight = (clip.visual_source === 'infographic') ? '700' : '600';
                                     liveBtn.style.boxShadow = (clip.visual_source === 'infographic') ? '0 0 0 2px #38bdf8' : '';
                                     liveBtn.style.opacity = (clip.visual_source === 'infographic') ? '1' : '0.78';
@@ -7457,7 +7478,37 @@
 
                         infographicBtnEl.addEventListener('click', function(e) {
                             e.stopPropagation();
-                            runLocalInfographic(this, false, "");
+                            const epNum = activeProjectId.replace('episode_', '');
+                            if (hasInfographicRender) {
+                                if (!isInfographicActive) {
+                                    const promote = confirm(
+                                        `Part ${clip.num} ("${clip.title}"):\n\n` +
+                                        `Would you like to set MANIM as the ACTIVE MASTER?\n\n` +
+                                        `• Click [OK] to promote Manim as Active Master (syncs to deepDive publication repo).\n` +
+                                        `• Click [Cancel] to just preview the Manim video without changing Active Master.`
+                                    );
+                                    if (promote) {
+                                        setActiveMaster(activeProjectId, clip.num, 'manim', () => {
+                                            openVideoModal(
+                                                `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now(),
+                                                `✨ MANIM PEDAGOGICAL VIDEO (ACTIVE MASTER) - Part ${clip.num}: ${clip.title}`,
+                                                `✨ 740×740 Manim Vector Engine + Burned ASS Captions • clips/${epNum}-${clip.num}.mp4`
+                                            );
+                                        });
+                                        return;
+                                    }
+                                }
+                                const vidUrl = isInfographicActive
+                                    ? `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now()
+                                    : `/clips/${epNum}-${clip.num}-manim.mp4?t=` + Date.now();
+                                openVideoModal(
+                                    vidUrl,
+                                    `✨ MANIM PEDAGOGICAL VIDEO - Part ${clip.num}: ${clip.title}`,
+                                    `✨ 740×740 Manim Vector Engine + Burned ASS Captions • clips/${epNum}-${clip.num}-manim.mp4`
+                                );
+                            } else {
+                                runLocalInfographic(this, false, "");
+                            }
                         });
 
                         infographicBtnEl.addEventListener('contextmenu', function(e) {
@@ -7491,6 +7542,26 @@
                             const hasMosaic = Boolean(clip.mosaic_run_id);
                             
                             if (hasMosaic) {
+                                const epNum = activeProjectId.replace('episode_', '');
+                                if (!isMosaicActive && (hasInfographicRender || clip.visual_source === 'manim' || clip.visual_source === 'infographic')) {
+                                    const promote = confirm(
+                                        `Part ${clip.num} ("${clip.title}"):\n\n` +
+                                        `Would you like to set MOSAIC as the ACTIVE MASTER?\n\n` +
+                                        `• Click [OK] to promote Mosaic as Active Master (syncs to deepDive publication repo).\n` +
+                                        `• Click [Cancel] to just preview the Mosaic video without changing Active Master.`
+                                    );
+                                    if (promote) {
+                                        setActiveMaster(activeProjectId, clip.num, 'mosaic', () => {
+                                            openVideoModal(
+                                                `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now(),
+                                                `🌌 MASTER MOSAIC VIDEO (ACTIVE MASTER) - Part ${clip.num}: ${clip.title}`,
+                                                `✨ Master Video with Mosaic Motion Graphics • clips/${epNum}-${clip.num}.mp4`
+                                            );
+                                        });
+                                        return;
+                                    }
+                                }
+
                                 const useExisting = confirm(
                                     `Part ${clip.num} ("${clip.title}") has an existing Mosaic video render!\n\n` +
                                     `• Click [OK] to assemble and preview the Master Video with the existing Mosaic graphics (Free / 0 API Cost).\n` +
@@ -7553,7 +7624,7 @@
                                             liveBtn.style.cursor = '';
                                         }
                                         if (otherInfoBtn && clip.visual_source === 'mosaic' && otherInfoBtn.classList.contains('btn-status-success')) {
-                                            otherInfoBtn.innerHTML = '🟢 Infographic';
+                                            otherInfoBtn.innerHTML = '🟢 Manim';
                                             otherInfoBtn.style.fontWeight = '600';
                                             otherInfoBtn.style.boxShadow = '';
                                             otherInfoBtn.style.opacity = '0.78';
@@ -8705,7 +8776,7 @@
                         updateStateBar(`✅ Finished Manim Pedagogical Infographic for Part ${clip.num}!`);
                         delete window.activeCompilingInfographics[clip.num];
                         if (btn) {
-                            btn.innerHTML = '🎨 Infographic ★';
+                            btn.innerHTML = '🎨 Manim ★';
                             btn.style.fontWeight = '700';
                             btn.style.boxShadow = '0 0 0 2px #38bdf8';
                             btn.disabled = false;
@@ -8716,7 +8787,7 @@
                         delete window.activeCompilingInfographics[clip.num];
                         alert("Infographic Render Failed: " + err.message);
                         if (btn) {
-                            btn.innerHTML = '🎨 Infographic';
+                            btn.innerHTML = '🎨 Manim';
                             btn.disabled = false;
                             btn.style.cursor = '';
                         }

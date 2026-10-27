@@ -17,8 +17,8 @@ from typing import List, Dict, Any, Optional
 MANIM_HEADER = """
 from manim import *
 
-config.pixel_width = 1080
-config.pixel_height = 1080
+config.pixel_width = 740
+config.pixel_height = 740
 config.frame_width = 8.0
 config.frame_height = 8.0
 config.background_color = "#000000"
