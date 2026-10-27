@@ -1100,6 +1100,88 @@ You MUST respond with a single JSON object for Clip {clip_num} matching the sche
     return prompt
 
 
+
+def get_storyboard_filepath(project_id: str, clip_num) -> str:
+    project_dir = os.path.join("projects", project_id)
+    storyboards_dir = os.path.join(project_dir, "storyboards")
+    os.makedirs(storyboards_dir, exist_ok=True)
+    return os.path.join(storyboards_dir, f"clip_{clip_num}_storyboard.json")
+
+
+def generate_or_load_storyboard_data(project_id: str, clip_num, force_regen: bool = False, custom_directive: str = "") -> dict:
+    filepath = get_storyboard_filepath(project_id, clip_num)
+    
+    if os.path.exists(filepath) and not force_regen and not custom_directive:
+        try:
+            with open(filepath, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if data.get("scenes") and len(data.get("scenes")) >= 2:
+                    return data
+        except Exception:
+            pass
+
+    plan_path = os.path.join("projects", project_id, "plan.json")
+    if not os.path.exists(plan_path):
+        plan_path = "plan.json"
+    with open(plan_path, "r", encoding="utf-8") as pf:
+        plan_data = json.load(pf)
+    t_clip = next((c for c in plan_data if str(c.get("num")) == str(clip_num)), None)
+    if not t_clip:
+        raise Exception(f"Clip {clip_num} not found in plan {plan_path}")
+
+    body_dur = float(t_clip.get("audio_duration") or t_clip.get("duration") or 120.0)
+    existing_scenes = t_clip.get("infographic_scenes") or []
+    
+    if existing_scenes and not force_regen and not custom_directive:
+        scenes = existing_scenes
+    else:
+        import manim_infographic_engine
+        settings = load_settings()
+        api_key = settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
+        g_mod = genai if (HAS_GENAI and configure_gemini(api_key)) else None
+        scenes = manim_infographic_engine.generate_pedagogical_storyboard(
+            t_clip, body_duration=body_dur, intro_offset=1.5,
+            custom_instructions=custom_directive, genai_mod=g_mod,
+            force_regenerate=force_regen
+        )
+        t_clip["infographic_scenes"] = scenes
+        with open(plan_path, "w", encoding="utf-8") as pf_w:
+            json.dump(plan_data, pf_w, indent=4)
+
+    storyboard_obj = {
+        "_rule_engine": {
+            "standard": "Feynman-Needham Pedagogical Standard",
+            "canvas": "1080x1080 square Manim window, centered at y in [420, 1500] on 1080x1920 vertical canvas",
+            "theme": "Pure Monochrome Shining White (#FFFFFF, #E2E8F0) on Black Glossy Background (#000000)",
+            "pacing": "Minimum 2-4 visual changes per minute (~15-second pacing, 8-12 scenes for 120-180s clip)",
+            "visual_philosophy": "Super-Dumb bold figurative storytelling. Zero small telemetry/data clutter.",
+            "line_weights": "Bold 4px-14px lines with luminous glows. No super-thin lines.",
+            "safe_zones": "Captions at y≈500..555. Top chrome y in [0, 450] strictly clear.",
+            "archetypes_guide": {
+                "balance_scale": "Fulcrum, economic equilibrium, burn vs revenue",
+                "leaky_bucket": "Thermodynamic loss, inflow vs drainage",
+                "funnel_filter": "Bottlenecks, selection, throughput compression",
+                "flywheel_gear": "Compounding loops, rotational inertia, acceleration",
+                "network_artery": "Interconnection, trade routes vs isolation fallacy",
+                "foundation_stack": "Solid base vs fragile top layers",
+                "robot_unplugged": "The physical robot fallacy (dead battery, missing plug)",
+                "circuit_switch": "Logic gate, threshold barrier, state trigger",
+                "pulse_resonance": "Frequency alignment, acoustic harmony, signal clarity"
+            }
+        },
+        "clip_num": int(clip_num),
+        "clip_title": t_clip.get("title", ""),
+        "total_duration": round(body_dur, 2),
+        "custom_directive": custom_directive,
+        "scenes": scenes
+    }
+
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(storyboard_obj, f, indent=2)
+
+    return storyboard_obj
+
+
 class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
@@ -3599,6 +3681,145 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
                 return
 
+        elif parsed_url.path == '/open-storyboard-in-editor':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            try:
+                if not project_id or not clip_num:
+                    raise Exception("Missing project id or clip number.")
+                filepath = get_storyboard_filepath(project_id, clip_num)
+                if not os.path.exists(filepath):
+                    generate_or_load_storyboard_data(project_id, clip_num)
+                
+                settings = load_settings()
+                editor_cmd = settings.get("external_editor") or os.environ.get("VISUAL") or os.environ.get("EDITOR") or "gvim"
+                try:
+                    cmd_args = shlex.split(editor_cmd, posix=(os.name != 'nt'))
+                except Exception:
+                    cmd_args = [editor_cmd]
+                
+                if shutil.which(cmd_args[0]) is None:
+                    local_gvim = os.path.expandvars(r'%LOCALAPPDATA%\Programs\Vim\gvim.exe')
+                    local_vim = os.path.expandvars(r'%LOCALAPPDATA%\Programs\Vim\vim.exe')
+                    if 'gvim' in cmd_args[0].lower() and os.path.exists(local_gvim):
+                        cmd_args[0] = local_gvim
+                    elif 'vim' in cmd_args[0].lower() and os.path.exists(local_vim):
+                        cmd_args[0] = local_vim
+
+                cmd_args = [arg for arg in cmd_args if arg not in ('-f', '--nofork')]
+                cmd_args.append(filepath)
+                print(f"[{project_id}][Clip {clip_num}] Launching external editor on storyboard: {cmd_args}")
+                
+                if os.name == 'nt':
+                    editor_exe = cmd_args[0]
+                    remaining_args = " ".join([f'"{a}"' for a in cmd_args[1:]])
+                    ps_cmd = f"Start-Process -FilePath '{editor_exe}' -ArgumentList '{remaining_args}'"
+                    subprocess.Popen(["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", ps_cmd])
+                else:
+                    subprocess.Popen(cmd_args)
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "success": True,
+                    "filepath": filepath,
+                    "filename": os.path.basename(filepath),
+                    "editor": editor_cmd,
+                    "message": f"Opened {os.path.basename(filepath)} in {editor_cmd}."
+                }).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                return
+
+        elif parsed_url.path == '/sync-storyboard':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            try:
+                filepath = get_storyboard_filepath(project_id, clip_num)
+                if not os.path.exists(filepath):
+                    raise Exception(f"Storyboard file {filepath} not found on disk.")
+                
+                with open(filepath, "r", encoding="utf-8") as f:
+                    sb = json.load(f)
+                
+                scenes = sb.get("scenes") or []
+                if not scenes:
+                    raise Exception("No scenes found in storyboard file.")
+                
+                plan_path = os.path.join("projects", project_id, "plan.json")
+                if not os.path.exists(plan_path):
+                    plan_path = "plan.json"
+                with open(plan_path, "r", encoding="utf-8") as pf:
+                    plan_data = json.load(pf)
+                t_clip = next((c for c in plan_data if str(c.get("num")) == str(clip_num)), None)
+                if t_clip:
+                    t_clip["infographic_scenes"] = scenes
+                    with open(plan_path, "w", encoding="utf-8") as pf_w:
+                        json.dump(plan_data, pf_w, indent=4)
+                
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "success": True,
+                    "storyboard": sb,
+                    "scene_count": len(scenes)
+                }).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                return
+
+        elif parsed_url.path == '/save-storyboard':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            try:
+                content_len = int(self.headers.get('Content-Length', 0))
+                raw_body = self.rfile.read(content_len).decode('utf-8')
+                sb_data = json.loads(raw_body)
+                
+                filepath = get_storyboard_filepath(project_id, clip_num)
+                with open(filepath, "w", encoding="utf-8") as f:
+                    json.dump(sb_data, f, indent=2)
+                
+                scenes = sb_data.get("scenes") or []
+                plan_path = os.path.join("projects", project_id, "plan.json")
+                if not os.path.exists(plan_path):
+                    plan_path = "plan.json"
+                with open(plan_path, "r", encoding="utf-8") as pf:
+                    plan_data = json.load(pf)
+                t_clip = next((c for c in plan_data if str(c.get("num")) == str(clip_num)), None)
+                if t_clip and scenes:
+                    t_clip["infographic_scenes"] = scenes
+                    with open(plan_path, "w", encoding="utf-8") as pf_w:
+                        json.dump(plan_data, pf_w, indent=4)
+
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                return
+
         elif parsed_url.path == '/render-local-infographic':
             try:
                 query = parse_qs(parsed_url.query)
@@ -3742,6 +3963,18 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     force_regen or bool(custom_instructions) or need_audio_cut or scenes_mismatch or version_mismatch or
                     not os.path.exists(infographic_mp4) or os.path.getsize(infographic_mp4) < 10000
                 )
+
+                                # Check for on-disk storyboard file from external editor
+                sb_disk_path = get_storyboard_filepath(project_id, clip_num)
+                if os.path.exists(sb_disk_path):
+                    try:
+                        with open(sb_disk_path, "r", encoding="utf-8") as sbf:
+                            sb_disk_data = json.load(sbf)
+                            if sb_disk_data.get("scenes"):
+                                t_clip["infographic_scenes"] = sb_disk_data["scenes"]
+                                print(f"[{project_id}][Clip {clip_num}] Using storyboard from disk: {sb_disk_path} ({len(sb_disk_data['scenes'])} scenes)")
+                    except Exception as e_sb:
+                        print(f"Warning reading storyboard from {sb_disk_path}: {e_sb}")
 
                 if need_render_infographic:
                     settings = load_settings()
@@ -4344,6 +4577,34 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(files).encode('utf-8'))
             return
             
+        elif parsed_url.path == '/get-storyboard':
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            force_regen = params.get('force', ['false'])[0].lower() in ('true', '1')
+            try:
+                if not project_id or not clip_num:
+                    raise Exception("Missing project id or clip number.")
+                sb = generate_or_load_storyboard_data(project_id, clip_num, force_regen=force_regen)
+                filepath = get_storyboard_filepath(project_id, clip_num)
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({
+                    "success": True,
+                    "storyboard": sb,
+                    "filepath": filepath,
+                    "filename": os.path.basename(filepath)
+                }).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+                return
+
         elif parsed_url.path == '/get-settings':
             try:
                 settings_path = "settings.json"

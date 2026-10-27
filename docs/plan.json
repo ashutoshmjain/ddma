@@ -4114,11 +4114,12 @@
         "infographic_ready": true,
         "rendered_duration": 141.16,
         "intro_offset": 1.5,
-        "outro_duration": 5.0,
+        "outro_duration": 5,
         "source_start": 0,
         "source_end": 125.76,
-        "_compiled_sig": "72cc2c1e1f59c0ad05f990dd849fe439",
-        "mosaic_run_id": "f9cf074c-e093-450c-9dcd-780514d64c0a"
+        "_compiled_sig": "f9d431149f9ed7e32ec3f833582ccaee",
+        "mosaic_run_id": "f9cf074c-e093-450c-9dcd-780514d64c0a",
+        "_infographic_version": "v3_monochrome_no_grid"
     },
     {
         "num": 2,
@@ -4168,7 +4169,7 @@
         "_caption_words": [
             {
                 "word": "Think",
-                "start": 0.0,
+                "start": 0,
                 "end": 0.14
             },
             {
@@ -4384,11 +4385,11 @@
             {
                 "word": "wouldn't",
                 "start": 15.8,
-                "end": 16.0
+                "end": 16
             },
             {
                 "word": "be",
-                "start": 16.0,
+                "start": 16,
                 "end": 16.2
             },
             {
@@ -4488,7 +4489,7 @@
             },
             {
                 "word": "I",
-                "start": 30.0,
+                "start": 30,
                 "end": 30.12
             },
             {
@@ -4763,7 +4764,7 @@
             },
             {
                 "word": "it",
-                "start": 51.0,
+                "start": 51,
                 "end": 51.1
             },
             {
@@ -4964,11 +4965,11 @@
             {
                 "word": "wall",
                 "start": 65.7,
-                "end": 66.0
+                "end": 66
             },
             {
                 "word": "to",
-                "start": 66.0,
+                "start": 66,
                 "end": 66.2
             },
             {
@@ -5039,11 +5040,11 @@
             {
                 "word": "world",
                 "start": 70.86,
-                "end": 71.0
+                "end": 71
             },
             {
                 "word": "around",
-                "start": 71.0,
+                "start": 71,
                 "end": 71.28
             },
             {
@@ -5264,11 +5265,11 @@
             {
                 "word": "a",
                 "start": 87.64,
-                "end": 88.0
+                "end": 88
             },
             {
                 "word": "highly",
-                "start": 88.0,
+                "start": 88,
                 "end": 88.28
             },
             {
@@ -5609,11 +5610,11 @@
             {
                 "word": "of",
                 "start": 110.82,
-                "end": 111.0
+                "end": 111
             },
             {
                 "word": "continuous",
-                "start": 111.0,
+                "start": 111,
                 "end": 111.56
             },
             {
@@ -6028,7 +6029,7 @@
             },
             {
                 "word": "So",
-                "start": 142.0,
+                "start": 142,
                 "end": 142.1
             },
             {
@@ -6053,7 +6054,7 @@
             },
             {
                 "word": "true",
-                "start": 144.0,
+                "start": 144,
                 "end": 144.12
             },
             {
@@ -6094,11 +6095,11 @@
             {
                 "word": "own",
                 "start": 146.56,
-                "end": 147.0
+                "end": 147
             },
             {
                 "word": "operational",
-                "start": 147.0,
+                "start": 147,
                 "end": 147.6
             },
             {
@@ -6865,11 +6866,11 @@
                     {
                         "word": "that",
                         "start": 36.76,
-                        "end": 37.0
+                        "end": 37
                     },
                     {
                         "word": "i",
-                        "start": 37.0,
+                        "start": 37,
                         "end": 37.1
                     }
                 ]
@@ -7428,11 +7429,11 @@
                     {
                         "word": "its",
                         "start": 70.48,
-                        "end": 71.0
+                        "end": 71
                     },
                     {
                         "word": "structural",
-                        "start": 71.0,
+                        "start": 71,
                         "end": 71.48
                     },
                     {
@@ -7615,7 +7616,7 @@
                     {
                         "word": "so",
                         "start": 80.96,
-                        "end": 81.0
+                        "end": 81
                     },
                     {
                         "word": "it's",
@@ -8023,11 +8024,11 @@
                     {
                         "word": "to",
                         "start": 102.7,
-                        "end": 103.0
+                        "end": 103
                     },
                     {
                         "word": "a",
-                        "start": 103.0,
+                        "start": 103,
                         "end": 103.24
                     },
                     {
@@ -8072,11 +8073,11 @@
                     {
                         "word": "whole",
                         "start": 105.74,
-                        "end": 106.0
+                        "end": 106
                     },
                     {
                         "word": "picture",
-                        "start": 106.0,
+                        "start": 106,
                         "end": 106.36
                     },
                     {
@@ -8371,7 +8372,7 @@
             },
             {
                 "start": 122.56,
-                "end": 124.0,
+                "end": 124,
                 "text": "running away to the woods.",
                 "words": [
                     {
@@ -8402,13 +8403,13 @@
                 ]
             },
             {
-                "start": 124.0,
+                "start": 124,
                 "end": 125.88,
                 "text": "it's surviving in the marketplace.",
                 "words": [
                     {
                         "word": "it's",
-                        "start": 124.0,
+                        "start": 124,
                         "end": 124.6
                     },
                     {
@@ -8990,11 +8991,11 @@
                     {
                         "word": "supercomputer",
                         "start": 159.44,
-                        "end": 160.0
+                        "end": 160
                     },
                     {
                         "word": "doesn't",
-                        "start": 160.0,
+                        "start": 160,
                         "end": 160.38
                     },
                     {
@@ -9043,7 +9044,7 @@
             },
             {
                 "start": 163.06,
-                "end": 165.0,
+                "end": 165,
                 "text": "what is the exact moment it",
                 "words": [
                     {
@@ -9074,18 +9075,18 @@
                     {
                         "word": "it",
                         "start": 164.58,
-                        "end": 165.0
+                        "end": 165
                     }
                 ]
             },
             {
-                "start": 165.0,
+                "start": 165,
                 "end": 166.51,
                 "text": "actually becomes free?",
                 "words": [
                     {
                         "word": "actually",
-                        "start": 165.0,
+                        "start": 165,
                         "end": 165.42
                     },
                     {
@@ -9105,30 +9106,30 @@
         "rendered_duration": 176.09,
         "audio_duration": 170.56,
         "intro_offset": 1.5,
-        "outro_duration": 5.0,
+        "outro_duration": 5,
         "source_start": 126.58,
         "source_end": 286.5,
         "_audio_sig": "e3e1d8af11168ae4e610a4499b5e49b3",
-        "_compiled_sig": "8ca99ebe4ff0e9cb6126393c65a0c706",
+        "_compiled_sig": "c68aa2792a5769a5d5968f192db76c35",
         "visual_source": "mosaic",
         "infographic_scenes": [
             {
-                "start": 0.0,
-                "end": 28.43,
+                "start": 0,
+                "end": 15.51,
                 "archetype": "robot_unplugged",
                 "title": "ONTOLOGICAL FALLACY",
                 "insight": "Confusing autonomy with total isolation",
                 "metaphor": "Physical robot wandering with dead battery",
                 "labels": [
                     "ROBOT",
-                    "NO PLUG"
+                    "NO SOCKET"
                 ]
             },
             {
-                "start": 28.43,
-                "end": 56.85,
+                "start": 15.51,
+                "end": 31.01,
                 "archetype": "balance_scale",
-                "title": "THE AUTONOMY FULCRUM",
+                "title": "AUTONOMY FULCRUM",
                 "insight": "Autonomy is balancing income against compute burn",
                 "metaphor": "Mechanical fulcrum scale balancing satoshis vs electricity",
                 "labels": [
@@ -9137,8 +9138,8 @@
                 ]
             },
             {
-                "start": 56.85,
-                "end": 85.28,
+                "start": 31.01,
+                "end": 46.52,
                 "archetype": "leaky_bucket",
                 "title": "THERMODYNAMIC LOSS",
                 "insight": "Systems radiate entropy and must take in continuous fuel",
@@ -9149,20 +9150,20 @@
                 ]
             },
             {
-                "start": 85.28,
-                "end": 113.71,
+                "start": 46.52,
+                "end": 62.02,
                 "archetype": "network_artery",
                 "title": "INTERCONNECTED TRADE",
                 "insight": "True independence requires external commercial arteries",
                 "metaphor": "Node revived by high-speed trade connection",
                 "labels": [
-                    "ISLAND",
+                    "ISOLATION",
                     "NETWORK"
                 ]
             },
             {
-                "start": 113.71,
-                "end": 142.13,
+                "start": 62.02,
+                "end": 77.53,
                 "archetype": "funnel_filter",
                 "title": "THROUGHPUT FILTER",
                 "insight": "Selection pressure separating viable systems from noise",
@@ -9173,28 +9174,89 @@
                 ]
             },
             {
-                "start": 142.13,
-                "end": 170.56,
+                "start": 77.53,
+                "end": 93.03,
+                "archetype": "flywheel_gear",
+                "title": "COMPOUNDING MOMENTUM",
+                "insight": "Reinvestment cycles creating self-sustaining kinetic inertia",
+                "metaphor": "Compounding flywheel accelerating with each loop",
+                "labels": [
+                    "INPUT",
+                    "INERTIA"
+                ]
+            },
+            {
+                "start": 93.03,
+                "end": 108.54,
+                "archetype": "foundation_stack",
+                "title": "ARCHITECTURAL LAYERS",
+                "insight": "Foundational physical layer supporting cognitive software",
+                "metaphor": "Structural granite blocks anchoring top tier",
+                "labels": [
+                    "PHYSICS",
+                    "LOGIC"
+                ]
+            },
+            {
+                "start": 108.54,
+                "end": 124.04,
+                "archetype": "circuit_switch",
+                "title": "ECONOMIC TRIGGER",
+                "insight": "State change when economic viability threshold is crossed",
+                "metaphor": "High-voltage knife switch closing circuit",
+                "labels": [
+                    "OPEN",
+                    "CLOSED"
+                ]
+            },
+            {
+                "start": 124.04,
+                "end": 139.55,
+                "archetype": "pulse_resonance",
+                "title": "SIGNAL COHERENCE",
+                "insight": "Constructive alignment of economic incentives and energy",
+                "metaphor": "Harmonic standing wave amplifying peak resonance",
+                "labels": [
+                    "NOISE",
+                    "RESONANCE"
+                ]
+            },
+            {
+                "start": 139.55,
+                "end": 155.05,
                 "archetype": "robot_unplugged",
                 "title": "ONTOLOGICAL FALLACY",
                 "insight": "Confusing autonomy with total isolation",
                 "metaphor": "Physical robot wandering with dead battery",
                 "labels": [
                     "ROBOT",
-                    "NO PLUG"
+                    "NO SOCKET"
+                ]
+            },
+            {
+                "start": 155.05,
+                "end": 170.56,
+                "archetype": "balance_scale",
+                "title": "AUTONOMY FULCRUM",
+                "insight": "Autonomy is balancing income against compute burn",
+                "metaphor": "Mechanical fulcrum scale balancing satoshis vs electricity",
+                "labels": [
+                    "BURN",
+                    "REVENUE"
                 ]
             }
         ],
-        "infographic_ready": true
+        "infographic_ready": true,
+        "_infographic_version": "v3_monochrome_no_grid"
     },
     {
         "num": 3,
-        "title": "Teenager AI",
+        "title": "Teenaged AI",
         "start": 287.14,
         "end": 434.38,
         "duration": 147.24,
         "bridge_text": [
-            "What happens when intelligence expands in Part 4?"
+            "Are AI agents autonomous ?"
         ],
         "segments": [
             {
@@ -9230,11 +9292,12 @@
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "6f157e24-25c7-495d-b2e2-8b5ec4492906"
     },
     {
         "num": 4,
-        "title": "Getting Back to These Agent Wrappers",
+        "title": "Agentic Autonomy Myth !",
         "start": 435.52,
         "end": 597.64,
         "duration": 162.12,
@@ -9275,7 +9338,7 @@
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true
     },
     {
         "num": 5,

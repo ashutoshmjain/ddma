@@ -1872,6 +1872,28 @@
                         </div>
                     </div>
 
+                        <!-- External Editor Selection -->
+                        <div style="background: var(--panel-bg-darker); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                            <label style="font-size: 0.82rem; font-weight: 700; margin-bottom: 0.4rem; display: block; color: var(--text-main);">EXTERNAL EDITOR (TRANSCRIPTS & STORYBOARDS)</label>
+                            <span style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.8rem; display: block;">Default editor launched when opening transcripts or Infographic storyboards.</span>
+                            <div style="display: flex; gap: 0.8rem; width: 100%;">
+                                <div class="music-editor-field" style="flex: 1;">
+                                    <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Editor Tool / Executable:</label>
+                                    <select id="externalEditorPresetSelector" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;">
+                                        <option value="gvim">gVim (Default - GUI Vim)</option>
+                                        <option value="code">VS Code (code)</option>
+                                        <option value="notepad">Windows Notepad</option>
+                                        <option value="cursor">Cursor</option>
+                                        <option value="custom">Custom Command...</option>
+                                    </select>
+                                </div>
+                                <div class="music-editor-field" id="customEditorField" style="flex: 1; display: none;">
+                                    <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Custom Executable Name / Path:</label>
+                                    <input type="text" id="externalEditorCustomInput" value="gvim" placeholder="e.g. gvim, code, nvim-qt" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                                </div>
+                            </div>
+                        </div>
+
                     <!-- Global Music Library -->
                     <div style="background: var(--panel-bg-darker); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
@@ -1965,6 +1987,77 @@
             <div class="export-actions" style="margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem; display: flex; justify-content: flex-end; gap: 0.8rem;">
                 <button class="btn btn-secondary" onclick="document.getElementById('settingsModalOverlay').classList.remove('active')" style="font-weight: 600; padding: 0.6rem 1.2rem;">Cancel</button>
                 <button class="btn btn-primary" id="saveSettingsBtn" style="font-weight: 600; padding: 0.6rem 1.5rem; background-image: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Infographic Pedagogical Storyboard Modal -->
+    <div class="export-modal-overlay" id="infographicStoryboardModalOverlay">
+        <div class="export-modal" style="max-width: 950px; width: 94vw; max-height: 90vh; height: 90vh; display: flex; flex-direction: column; padding: 1.5rem; box-sizing: border-box; gap: 0.8rem; border-radius: 12px; background: var(--panel-bg);">
+            <div class="export-modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem;">
+                <div>
+                    <h3 id="storyboardModalTitle" style="margin: 0; color: #38bdf8; display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); font-size: 1.15rem; font-weight: 700;">
+                        🎨 INFOGRAPHIC PEDAGOGICAL STORYBOARD
+                    </h3>
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">
+                        Feynman-Needham Standard • 1080×1080 Pure Monochrome on Black • 15s Scene Pacing • Super-Dumb Figurative Visuals
+                    </span>
+                </div>
+                <button class="icon-btn" id="closeStoryboardModalBtn" style="font-size: 1.2rem; cursor: pointer; background: transparent; border: none; color: var(--text-muted);">✖</button>
+            </div>
+
+            <!-- Action Toolbar for External Editor & Sync -->
+            <div style="display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg-darker); padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid var(--border-color); gap: 0.8rem; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <button class="btn btn-primary btn-mini" id="openStoryboardInEditorBtn" style="background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); border: none; font-weight: 600; padding: 0.45rem 0.9rem;">
+                        📂 Open in gVim / External Editor
+                    </button>
+                    <button class="btn btn-secondary btn-mini" id="syncStoryboardFromDiskBtn" style="font-weight: 600; padding: 0.45rem 0.8rem;">
+                        🔄 Sync Disk (:w)
+                    </button>
+                    <button class="btn btn-secondary btn-mini" id="regenStoryboardBtn" style="font-weight: 600; padding: 0.45rem 0.8rem; opacity: 0.85;">
+                        ⚡ Reset to Fresh Storyboard
+                    </button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span id="storyboardFilePathBadge" style="font-size: 0.68rem; font-family: var(--font-mono); color: var(--text-muted); background: var(--bg-color); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-color); max-width: 380px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        projects/.../clip_X_storyboard.json
+                    </span>
+                </div>
+            </div>
+
+            <!-- View Toggle: Visual Scenes Cards vs Full JSON / Rule Engine -->
+            <div style="display: flex; gap: 0.4rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
+                <button type="button" class="btn btn-mini" id="storyboardTabCardsBtn" style="font-weight: 600; background: var(--bg-color); color: var(--text-main); border: 1px solid var(--border-color);">
+                    📋 Visual Scene Cards
+                </button>
+                <button type="button" class="btn btn-mini" id="storyboardTabJsonBtn" style="font-weight: 600; background: transparent; color: var(--text-muted); border: 1px solid transparent;">
+                    📄 Full JSON & Rule Engine View
+                </button>
+            </div>
+
+            <!-- Scene Cards Container -->
+            <div id="storyboardCardsContainer" style="flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 0.6rem; padding-right: 0.3rem;">
+                <!-- Dynamically populated scene cards -->
+            </div>
+
+            <!-- JSON Editor Container -->
+            <div id="storyboardJsonContainer" style="flex: 1; min-height: 0; display: none; flex-direction: column; gap: 0.4rem;">
+                <textarea id="storyboardJsonTextarea" style="width: 100%; height: 100%; min-height: 280px; background: #0b0f19; color: #f1f5f9; border: 1px solid var(--border-color); border-radius: 6px; padding: 0.75rem; font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.45; resize: none; box-sizing: border-box; outline: none;"></textarea>
+            </div>
+
+            <!-- Footer -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.8rem; margin-top: auto;">
+                <span id="storyboardModalStatus" style="font-size: 0.75rem; color: var(--text-muted);">
+                    Edit directly in gVim (:w to save) or edit the scene cards above.
+                </span>
+                <div style="display: flex; gap: 0.6rem;">
+                    <button class="btn btn-secondary" id="cancelStoryboardModalBtn">Close</button>
+                    <button class="btn btn-secondary" id="saveStoryboardModalBtn" style="font-weight: 600;">💾 Save Storyboard</button>
+                    <button class="btn btn-primary" id="renderStoryboardModalBtn" style="background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); border: none; font-weight: 700;">
+                        ⚡ Render Infographic
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -2554,7 +2647,8 @@
                 mosaic_captions_node_id: localStorage.getItem('ddma-mosaic-captions-node-id') || '',
                 gemini_api_key: localStorage.getItem('ddma-gemini-api-key') || '',
                 mosaic_default_prompt: localStorage.getItem('ddma-mosaic-default-prompt') || '',
-                gemini_remix_prompt_template: localStorage.getItem('ddma-gemini-default-prompt') || ''
+                gemini_remix_prompt_template: localStorage.getItem('ddma-gemini-default-prompt') || '',
+                external_editor: localStorage.getItem('ddma-external-editor') || 'gvim'
             };
             
             fetch('/save-settings', {
@@ -2648,6 +2742,7 @@
                         localStorage.setItem('ddma-gemini-api-key', data.gemini_api_key || '');
                         localStorage.setItem('ddma-mosaic-default-prompt', data.mosaic_default_prompt || '');
                         localStorage.setItem('ddma-gemini-default-prompt', data.gemini_remix_prompt_template || '');
+                        localStorage.setItem('ddma-external-editor', data.external_editor || 'gvim');
                     })
                     .catch(err => {
                         console.warn("Could not load settings from server, using local fallback:", err);
@@ -3332,6 +3427,21 @@
             const epPromptEl = document.getElementById('settingsGeminiEpisodeDefaultPrompt');
             if (epPromptEl) epPromptEl.value = localStorage.getItem('ddma-gemini-episode-default-prompt') || '';
 
+                        const extEditorPreset = document.getElementById('externalEditorPresetSelector');
+            const extEditorField = document.getElementById('customEditorField');
+            const extEditorInput = document.getElementById('externalEditorCustomInput');
+            if (extEditorPreset) {
+                const savedExtEditor = localStorage.getItem('ddma-external-editor') || 'gvim';
+                if (['gvim', 'code', 'notepad', 'cursor'].includes(savedExtEditor)) {
+                    extEditorPreset.value = savedExtEditor;
+                    if (extEditorField) extEditorField.style.display = 'none';
+                } else {
+                    extEditorPreset.value = 'custom';
+                    if (extEditorField) extEditorField.style.display = 'flex';
+                    if (extEditorInput) extEditorInput.value = savedExtEditor;
+                }
+            }
+
             renderSettingsMusicList();
             settingsModalOverlay.classList.add('active');
         }
@@ -3415,6 +3525,16 @@
             }
 
             saveSettingsBtn.addEventListener('click', () => {
+                // External Editor setting
+                const extEditorSelector = document.getElementById('externalEditorPresetSelector');
+                const extEditorCustom = document.getElementById('externalEditorCustomInput');
+                let chosenEditor = 'gvim';
+                if (extEditorSelector) {
+                    chosenEditor = (extEditorSelector.value === 'custom' && extEditorCustom) ? (extEditorCustom.value.trim() || 'gvim') : extEditorSelector.value;
+                }
+                localStorage.setItem('ddma-external-editor', chosenEditor);
+
+
                 // Standard unified theme active
 
                 const format = exportFormatSelector.value;
@@ -7343,13 +7463,8 @@
                         infographicBtnEl.addEventListener('contextmenu', function(e) {
                             e.preventDefault();
                             e.stopPropagation();
-                            const customDir = prompt(
-                                `✨ Re-Render Manim Pedagogical Infographic — Part ${clip.num} ("${clip.title}")\n\n` +
-                                `Enter optional custom visual metaphors/instructions (or leave blank to force a fresh storyboard & 1080×1080 Manim render):`,
-                                ""
-                            );
-                            if (customDir === null) return;
-                            runLocalInfographic(this, true, customDir.trim());
+                            // Right-click opens the complete Storyboard Designer & External Editor Modal
+                            openStoryboardModal(index);
                         });
                     }
 
