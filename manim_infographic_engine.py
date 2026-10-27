@@ -126,7 +126,7 @@ def generate_pedagogical_storyboard(
             ("robot_unplugged", "ONTOLOGICAL FALLACY", "Confusing autonomy with total isolation", "Physical robot wandering with dead battery", ["ROBOT", "NO SOCKET"]),
             ("balance_scale", "AUTONOMY FULCRUM", "Autonomy is balancing income against compute burn", "Mechanical fulcrum scale balancing satoshis vs electricity", ["BURN", "REVENUE"]),
             ("leaky_bucket", "THERMODYNAMIC LOSS", "Systems radiate entropy and must take in continuous fuel", "Reservoir leaking fluid with active replacement pump", ["ENTROPY", "INFLOW"]),
-            ("network_artery", "INTERCONNECTED TRADE", "True independence requires external commercial arteries", "Node revived by high-speed trade connection", ["ISOLATION", "NETWORK"]),
+            ("network_artery", "INTERCONNECTED TRADE", "True independence requires external commercial arteries", "Node revived by high-speed trade connection", ["ISOLATION", "COMPUTE", "CAPITAL", "DATA"]),
             ("funnel_filter", "THROUGHPUT FILTER", "Selection pressure separating viable systems from noise", "Aperture funnel concentrating high-signal flow", ["NOISE", "SIGNAL"]),
             ("flywheel_gear", "COMPOUNDING MOMENTUM", "Reinvestment cycles creating self-sustaining kinetic inertia", "Compounding flywheel accelerating with each loop", ["INPUT", "INERTIA"]),
             ("foundation_stack", "ARCHITECTURAL LAYERS", "Foundational physical layer supporting cognitive software", "Structural granite blocks anchoring top tier", ["PHYSICS", "LOGIC"]),
@@ -169,6 +169,15 @@ def generate_manim_scene_python(scene_data: Dict[str, Any], scene_class_name: st
     labels = scene_data.get("labels", ["STATE A", "STATE B"])
     lbl_a = labels[0] if len(labels) > 0 else "INPUT"
     lbl_b = labels[1] if len(labels) > 1 else "OUTPUT"
+    sat_a = "COMPUTE"
+    sat_b = "CAPITAL"
+    sat_c = "DATA"
+    if len(labels) > 1 and labels[1] != "NETWORK":
+        sat_a = labels[1]
+    if len(labels) > 2:
+        sat_b = labels[2]
+    if len(labels) > 3:
+        sat_c = labels[3]
 
     # Micro-beat timings (~15s total duration)
     t_enter = min(1.0, duration * 0.12)
@@ -284,25 +293,35 @@ class {scene_class_name}(Scene):
         self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
 
         # Step 1: Center Core Node
-        center_node = Circle(radius=0.7, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.15, stroke_width=5).move_to([0, -0.2, 0])
+        center_node = Circle(radius=0.75, color="#FFFFFF", fill_color="#000000", fill_opacity=0.9, stroke_width=5).move_to([0, -0.2, 0])
         center_lbl = Text("{lbl_a}", font="Arial", weight=BOLD, font_size=13, color="#FFFFFF").move_to(center_node.get_center())
         c_grp = VGroup(center_node, center_lbl)
 
-        # Step 2: Satellite Hubs
+        # Step 2: Satellite Hubs with Bold White Labels
         pos = [[-2.4, 0.8, 0], [2.4, 0.8, 0], [0, -2.1, 0]]
-        nodes, lines = [], []
-        for p in pos:
-            n = Circle(radius=0.45, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.2, stroke_width=4).move_to(p)
+        sat_labels = ["{sat_a}", "{sat_b}", "{sat_c}"]
+        nodes, lines, node_labels = [], [], []
+        for p, txt in zip(pos, sat_labels):
+            n = Circle(radius=0.55, color="#FFFFFF", fill_color="#000000", fill_opacity=0.9, stroke_width=4).move_to(p)
+            nl = Text(txt, font="Arial", weight=BOLD, font_size=11, color="#FFFFFF").move_to(p)
             l = Line(center_node.get_center(), n.get_center(), color="#FFFFFF", stroke_width=2, stroke_opacity=0.4)
             nodes.append(n)
+            node_labels.append(nl)
             lines.append(l)
 
-        self.play(FadeIn(c_grp), *[Create(l) for l in lines], *[FadeIn(n) for n in nodes], run_time={t_step1:.2f})
+        self.play(
+            FadeIn(c_grp),
+            *[Create(l) for l in lines],
+            *[FadeIn(n) for n in nodes],
+            *[FadeIn(nl) for nl in node_labels],
+            run_time={t_step1:.2f}
+        )
 
         # Step 3: Artery Activation Pulse
         self.play(
             *[l.animate.set_stroke(width=6, opacity=1.0) for l in lines],
-            center_node.animate.set_fill(opacity=0.35),
+            center_node.animate.set_stroke(width=7),
+            *[n.animate.set_stroke(width=6) for n in nodes],
             run_time={t_kinetic:.2f}
         )
         self.wait({t_hold:.2f})
