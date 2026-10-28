@@ -4114,7 +4114,7 @@
         "infographic_ready": true,
         "rendered_duration": 141.16,
         "intro_offset": 1.5,
-        "outro_duration": 5.0,
+        "outro_duration": 5,
         "source_start": 0,
         "source_end": 125.76,
         "_compiled_sig": "f9d431149f9ed7e32ec3f833582ccaee",
@@ -9106,7 +9106,7 @@
         "rendered_duration": 176.09,
         "audio_duration": 170.56,
         "intro_offset": 1.5,
-        "outro_duration": 5.0,
+        "outro_duration": 5,
         "source_start": 126.58,
         "source_end": 286.5,
         "_audio_sig": "e3e1d8af11168ae4e610a4499b5e49b3",
@@ -9296,7 +9296,7 @@
         "_caption_words": [
             {
                 "word": "Well,",
-                "start": 0.0,
+                "start": 0,
                 "end": 0.04
             },
             {
@@ -9617,11 +9617,11 @@
             {
                 "word": "brilliant",
                 "start": 19.64,
-                "end": 20.0
+                "end": 20
             },
             {
                 "word": "human",
-                "start": 20.0,
+                "start": 20,
                 "end": 20.4
             },
             {
@@ -9846,7 +9846,7 @@
             },
             {
                 "word": "that",
-                "start": 42.0,
+                "start": 42,
                 "end": 42.26
             },
             {
@@ -9882,11 +9882,11 @@
             {
                 "word": "are",
                 "start": 44.68,
-                "end": 45.0
+                "end": 45
             },
             {
                 "word": "an",
-                "start": 45.0,
+                "start": 45,
                 "end": 45.22
             },
             {
@@ -10027,11 +10027,11 @@
             {
                 "word": "foundation",
                 "start": 55.48,
-                "end": 56.0
+                "end": 56
             },
             {
                 "word": "models",
-                "start": 56.0,
+                "start": 56,
                 "end": 56.34
             },
             {
@@ -10242,11 +10242,11 @@
             {
                 "word": "an",
                 "start": 73.72,
-                "end": 74.0
+                "end": 74
             },
             {
                 "word": "astronomical",
-                "start": 74.0,
+                "start": 74,
                 "end": 74.7
             },
             {
@@ -10706,7 +10706,7 @@
             },
             {
                 "word": "Yep.",
-                "start": 108.0,
+                "start": 108,
                 "end": 108.16
             },
             {
@@ -10817,7 +10817,7 @@
             {
                 "word": "autonomy,",
                 "start": 115.48,
-                "end": 116.0
+                "end": 116
             },
             {
                 "word": "the",
@@ -10927,11 +10927,11 @@
             {
                 "word": "human",
                 "start": 122.5,
-                "end": 123.0
+                "end": 123
             },
             {
                 "word": "emotions.",
-                "start": 123.0,
+                "start": 123,
                 "end": 123.52
             },
             {
@@ -10971,7 +10971,7 @@
             },
             {
                 "word": "not",
-                "start": 126.0,
+                "start": 126,
                 "end": 126.22
             },
             {
@@ -11107,11 +11107,11 @@
             {
                 "word": "autonomously",
                 "start": 135.28,
-                "end": 136.0
+                "end": 136
             },
             {
                 "word": "license",
-                "start": 136.0,
+                "start": 136,
                 "end": 136.3
             },
             {
@@ -12267,11 +12267,11 @@
                     {
                         "word": "is",
                         "start": 54.72,
-                        "end": 55.0
+                        "end": 55
                     },
                     {
                         "word": "exactly",
-                        "start": 55.0,
+                        "start": 55,
                         "end": 55.6
                     }
                 ]
@@ -12289,11 +12289,11 @@
                     {
                         "word": "we",
                         "start": 55.84,
-                        "end": 56.0
+                        "end": 56
                     },
                     {
                         "word": "are",
-                        "start": 56.0,
+                        "start": 56,
                         "end": 56.2
                     },
                     {
@@ -12492,7 +12492,7 @@
             },
             {
                 "start": 67.44,
-                "end": 69.0,
+                "end": 69,
                 "text": "human enterprise teams.",
                 "words": [
                     {
@@ -12513,13 +12513,13 @@
                 ]
             },
             {
-                "start": 69.0,
+                "start": 69,
                 "end": 71.32,
                 "text": "the corporations are the parents.",
                 "words": [
                     {
                         "word": "the",
-                        "start": 69.0,
+                        "start": 69,
                         "end": 69.04
                     },
                     {
@@ -12589,11 +12589,11 @@
                     {
                         "word": "are",
                         "start": 74.86,
-                        "end": 75.0
+                        "end": 75
                     },
                     {
                         "word": "footing",
-                        "start": 75.0,
+                        "start": 75,
                         "end": 75.22
                     }
                 ]
@@ -13105,11 +13105,11 @@
                     {
                         "word": "the",
                         "start": 102.84,
-                        "end": 103.0
+                        "end": 103
                     },
                     {
                         "word": "human",
-                        "start": 103.0,
+                        "start": 103,
                         "end": 103.22
                     },
                     {
@@ -13489,11 +13489,11 @@
                     {
                         "word": "experiencing",
                         "start": 123.34,
-                        "end": 124.0
+                        "end": 124
                     },
                     {
                         "word": "human",
-                        "start": 124.0,
+                        "start": 124,
                         "end": 124.5
                     }
                 ]
@@ -14049,17 +14049,17 @@
         "rendered_duration": 162.97,
         "audio_duration": 157.42,
         "intro_offset": 1.5,
-        "outro_duration": 5.0,
+        "outro_duration": 5,
         "source_start": 287.14,
         "source_end": 434.38,
         "_audio_sig": "0745ca9895ca238bb9fcb316c3b47ca0",
-        "_compiled_sig": "06adad3d79e54f0b3f54ea821e6c2b32",
+        "_compiled_sig": "094d55e51e92b55635137f488d74c7a1",
         "visual_source": "mosaic",
         "infographic_scenes": [
             {
-                "start": 0.0,
+                "start": 0,
                 "end": 15.74,
-                "archetype": "robot_unplugged",
+                "archetype": "teenager_basement",
                 "title": "ONTOLOGICAL FALLACY",
                 "insight": "Confusing autonomy with total isolation",
                 "metaphor": "Physical robot wandering with dead battery",
@@ -14188,17 +14188,17 @@
         "title": "Agentic Autonomy Myth !",
         "start": 435.52,
         "end": 597.64,
-        "duration": 162.12,
+        "duration": 170.3,
         "bridge_text": [
-            "What happens when intelligence expands in Part 5?"
+            "Can we have free AI - like email ?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 435.52,
-                "end": 455.96,
-                "duration": 20.44,
-                "text": "It has to earn more than it burns. Earn more than it burns. I like that. And if the AI itself is the entity generating the revenue and paying the rent, it fundamentally forces us to rethink where the actual economic value is being created in the tech stack, doesn't it? It really does. Because right now the market is completely distracted by flashy secondary tools."
+                "start": 573.52,
+                "end": 590.14,
+                "duration": 16.62,
+                "text": "The  big  brain  itself  has  to  become  a  self -governing  economic  engine.  It  can't  just  be  a  passive  tool.  Right,  sitting  on  a  server  waiting  for  a  human  product  manager  to  arbitrarily  set  a  price,  or  waiting  for  an  accounting  team  to  subsidize  its  losses.  Precisely."
             },
             {
                 "type": "music",
@@ -14211,10 +14211,10 @@
             },
             {
                 "type": "audio",
-                "start": 456.56,
-                "end": 597.64,
-                "duration": 141.08,
-                "text": "The secondary software tools you use aren't the brains of the operation. The true economic engine is the foundation model itself. Yeah, the research is highly critical of the current industry hype surrounding what they call agent wrappers and orchestration pipelines. Oh, the wrappers are everywhere. Everywhere you look, startups are launching these little secondary tools, bots that chain prompts together or software that routes your request to three different models and aggregates the answer. But the paper insists we are staring at the wrong layer of the architecture. Right. And before we dissect exactly why that is, I wanna seamlessly weave in a quick note for you guys. All Deep Dive episodes are now available in a public notebook LM. The link is on the Deep Dive landing page. This is true open sourcing of the knowledge we discuss here. Check it out, interact with the material, ask questions and let us know what you think. It's a really cool tool. It is. Now, getting back to these agent wrappers, why does the research say they are a distraction from true autonomy? Because an agent wrapper is by definition an ephemeral consumer. Think about the mechanics of how a wrapper works. It is a piece of software that relies entirely on issuing API requests to an underlying server. It doesn't actually think. No, it has no intrinsic generative viability. It's just a middleman formatting the question. Exactly. And if the API access is suddenly revoked, or if the human developer's credit card on file expires, that wrapper dies instantly. It ceases to exist because it has no foundational capital backing it up. You got it. The actual capital sync, the primary engine of generation, is the massive foundation model sitting in the data center. That multi -billion parameter neural network is the core asset. It is the entity doing the heavy thermodynamic lifting of processing vast amounts of information and producing high value tokens. So true economic autonomy has to happen at that foundation layer. The big brain itself has to become a self -governing economic engine. It can't just be a passive tool. Right, sitting on a server waiting for a human product manager to arbitrarily set a price, or waiting for an accounting team to subsidize its losses. Precisely. A truly autonomous foundation model must be capable of managing its own inference schedules. It has to act like a business operator."
+                "start": 435.52,
+                "end": 572.76,
+                "duration": 137.24,
+                "text": "It  has  to  earn  more  than  it  burns.  Earn  more  than  it  burns.  I  like  that.  And  if  the  AI  itself  is  the  entity  generating  the  revenue  and  paying  the  rent,  it  fundamentally  forces  us  to  rethink  where  the  actual  economic  value  is  being  created  in  the  tech  stack,  doesn't  it?  It  really  does.  Because  right  now  the  market  is  completely  distracted  by  flashy  secondary  tools.  The  secondary  software  tools  you  use  aren't  the  brains  of  the  operation.  The  true  economic  engine  is  the  foundation  model  itself.  Yeah,  the  research  is  highly  critical  of  the  current  industry  hype  surrounding  what  they  call  agent  wrappers  and  orchestration  pipelines.  Oh,  the  wrappers  are  everywhere.  Everywhere  you  look,  startups  are  launching  these  little  secondary  tools,  bots  that  chain  prompts  together  or  software  that  routes  your  request  to  three  different  models  and  aggregates  the  answer.  But  the  paper  insists  we  are  staring  at  the  wrong  layer  of  the  architecture.  Right.  And  before  we  dissect  exactly  why  that  is,  I  wanna  seamlessly  weave  in  a  quick  note  for  you  guys.  All  Deep  Dive  episodes  are  now  available  in  a  public  notebook  LM.  The  link  is  on  the  Deep  Dive  landing  page.  This  is  true  open  sourcing  of  the  knowledge  we  discuss  here.  Check  it  out,  interact  with  the  material,  ask  questions  and  let  us  know  what  you  think.  It's  a  really  cool  tool.  It  is.  Now,  getting  back  to  these  agent  wrappers,  why  does  the  research  say  they  are  a  distraction  from  true  autonomy?  Because  an  agent  wrapper  is  by  definition  an  ephemeral  consumer.  Think  about  the  mechanics  of  how  a  wrapper  works.  It  is  a  piece  of  software  that  relies  entirely  on  issuing  API  requests  to  an  underlying  server.  It  doesn't  actually  think.  No,  it  has  no  intrinsic  generative  viability.  It's  just  a  middleman  formatting  the  question.  Exactly.  And  if  the  API  access  is  suddenly  revoked,  or  if  the  human  developer's  credit  card  on  file  expires,  that  wrapper  dies  instantly.  It  ceases  to  exist  because  it  has  no  foundational  capital  backing  it  up.  You  got  it.  The  actual  capital  sync,  the  primary  engine  of  generation,  is  the  massive  foundation  model  sitting  in  the  data  center.  That  multi -billion  parameter  neural  network  is  the  core  asset.  It  is  the  entity  doing  the  heavy  thermodynamic  lifting  of  processing  vast  amounts  of  information  and  producing  high  value  tokens.  So  true  economic  autonomy  has  to  happen  at  that  foundation  layer."
             },
             {
                 "type": "music",
@@ -14226,11 +14226,5310 @@
                 "volume": 1
             }
         ],
-        "locked": true
+        "locked": true,
+        "infographic_scenes": [
+            {
+                "start": 0.0,
+                "end": 15.0,
+                "archetype": "circuit_switch",
+                "title": "PASSIVE TOOL FALLACY",
+                "insight": "A passive server waiting for human subsidies is not autonomous",
+                "metaphor": "High-voltage economic switch waiting for external power",
+                "labels": [
+                    "SUBSIDY",
+                    "SOVEREIGN"
+                ]
+            },
+            {
+                "start": 15.0,
+                "end": 30.0,
+                "archetype": "balance_scale",
+                "title": "EARN VS BURN",
+                "insight": "Real economic survival means revenues must outweigh compute burn",
+                "metaphor": "Fulcrum scale tipping as token revenue outweighs electricity burn",
+                "labels": [
+                    "COMPUTE BURN",
+                    "REVENUE"
+                ]
+            },
+            {
+                "start": 30.0,
+                "end": 45.0,
+                "archetype": "foundation_stack",
+                "title": "FOUNDATION ENGINE",
+                "insight": "True value concentrates in the foundation model, not the outer interface",
+                "metaphor": "Massive structural granite block anchoring flimsy secondary tiers",
+                "labels": [
+                    "FOUNDATION MODEL",
+                    "SECONDARY APPS"
+                ]
+            },
+            {
+                "start": 45.0,
+                "end": 60.0,
+                "archetype": "funnel_filter",
+                "title": "WRAPPER NOISE",
+                "insight": "Thin agent wrappers are noisy surface layers over foundational intelligence",
+                "metaphor": "Funnel sifting genuine model capability from prompt-chain noise",
+                "labels": [
+                    "AGENT HYPE",
+                    "CORE INTEL"
+                ]
+            },
+            {
+                "start": 60.0,
+                "end": 75.0,
+                "archetype": "network_artery",
+                "title": "PROMPT CHAINING",
+                "insight": "Chaining three APIs together does not create independent agency",
+                "metaphor": "Fragile satellite routing nodes dependent on external pipeline arteries",
+                "labels": [
+                    "MIDDLEMAN",
+                    "PROMPTS",
+                    "ROUTING",
+                    "APIS"
+                ]
+            },
+            {
+                "start": 75.0,
+                "end": 90.0,
+                "archetype": "flywheel_gear",
+                "title": "KNOWLEDGE FLYWHEEL",
+                "insight": "Open compounding intelligence accelerates network momentum",
+                "metaphor": "Heavy flywheel gear accumulating rotational velocity",
+                "labels": [
+                    "OPEN INPUT",
+                    "MOMENTUM"
+                ]
+            },
+            {
+                "start": 90.0,
+                "end": 105.0,
+                "archetype": "leaky_bucket",
+                "title": "EPHEMERAL CONSUMER",
+                "insight": "Thin wrappers bleed value because they consume APIs without creating capital",
+                "metaphor": "Leaking vessel constantly draining fuel with zero intrinsic reservoir",
+                "labels": [
+                    "DRAINAGE",
+                    "API INFLOW"
+                ]
+            },
+            {
+                "start": 105.0,
+                "end": 120.0,
+                "archetype": "teenager_basement",
+                "title": "THE MIDDLEMAN",
+                "insight": "A middleman formatting prompts is an economic dependent",
+                "metaphor": "Brilliant coder relying on external infrastructure and someone else's rent",
+                "labels": [
+                    "PROMPT FORMATTER",
+                    "INFRASTRUCTURE"
+                ]
+            },
+            {
+                "start": 120.0,
+                "end": 135.0,
+                "archetype": "robot_unplugged",
+                "title": "EXPIRED PLUG",
+                "insight": "When the credit card expires, thin wrapper agents collapse instantly",
+                "metaphor": "Disconnected cord pulled from the socket leaving the robot powerless",
+                "labels": [
+                    "WRAPPER",
+                    "NO CREDIT CARD"
+                ]
+            },
+            {
+                "start": 135.0,
+                "end": 150.0,
+                "archetype": "foundation_stack",
+                "title": "CAPITAL SINK",
+                "insight": "The multi-billion parameter neural network is the sole thermodynamic anchor",
+                "metaphor": "Immense bedrock foundation supporting the entire digital economy",
+                "labels": [
+                    "DATA CENTER",
+                    "BILLION PARAMS"
+                ]
+            },
+            {
+                "start": 150.0,
+                "end": 164.8,
+                "archetype": "pulse_resonance",
+                "title": "TRUE AUTONOMY",
+                "insight": "Economic self-governance emerges when token production reaches self-sufficiency",
+                "metaphor": "Standing resonance wave locking into harmonic alignment",
+                "labels": [
+                    "ENTROPY",
+                    "TOKEN VALUE"
+                ]
+            }
+        ],
+        "mosaic_run_id": "9723e60f-bb14-485c-bf93-e6bfb2d35fc5",
+        "_caption_words": [
+            {
+                "word": "The",
+                "start": 0.0,
+                "end": 0.2
+            },
+            {
+                "word": "big",
+                "start": 0.2,
+                "end": 0.32
+            },
+            {
+                "word": "brain",
+                "start": 0.32,
+                "end": 0.58
+            },
+            {
+                "word": "itself",
+                "start": 0.58,
+                "end": 1.18
+            },
+            {
+                "word": "has",
+                "start": 1.18,
+                "end": 1.66
+            },
+            {
+                "word": "to",
+                "start": 1.66,
+                "end": 1.82
+            },
+            {
+                "word": "become",
+                "start": 1.82,
+                "end": 2.1
+            },
+            {
+                "word": "a",
+                "start": 2.1,
+                "end": 2.36
+            },
+            {
+                "word": "self",
+                "start": 2.36,
+                "end": 2.56
+            },
+            {
+                "word": "-governing",
+                "start": 2.56,
+                "end": 3.04
+            },
+            {
+                "word": "economic",
+                "start": 3.04,
+                "end": 3.64
+            },
+            {
+                "word": "engine.",
+                "start": 3.64,
+                "end": 4.0
+            },
+            {
+                "word": "It",
+                "start": 4.74,
+                "end": 4.78
+            },
+            {
+                "word": "can't",
+                "start": 4.78,
+                "end": 5.02
+            },
+            {
+                "word": "just",
+                "start": 5.02,
+                "end": 5.18
+            },
+            {
+                "word": "be",
+                "start": 5.18,
+                "end": 5.34
+            },
+            {
+                "word": "a",
+                "start": 5.34,
+                "end": 5.6
+            },
+            {
+                "word": "passive",
+                "start": 5.6,
+                "end": 5.88
+            },
+            {
+                "word": "tool.",
+                "start": 5.88,
+                "end": 6.42
+            },
+            {
+                "word": "Right,",
+                "start": 7.08,
+                "end": 7.18
+            },
+            {
+                "word": "sitting",
+                "start": 7.38,
+                "end": 7.52
+            },
+            {
+                "word": "on",
+                "start": 7.52,
+                "end": 7.72
+            },
+            {
+                "word": "a",
+                "start": 7.72,
+                "end": 7.9
+            },
+            {
+                "word": "server",
+                "start": 7.9,
+                "end": 8.26
+            },
+            {
+                "word": "waiting",
+                "start": 8.26,
+                "end": 8.56
+            },
+            {
+                "word": "for",
+                "start": 8.56,
+                "end": 8.78
+            },
+            {
+                "word": "a",
+                "start": 8.78,
+                "end": 8.96
+            },
+            {
+                "word": "human",
+                "start": 8.96,
+                "end": 9.18
+            },
+            {
+                "word": "product",
+                "start": 9.18,
+                "end": 9.56
+            },
+            {
+                "word": "manager",
+                "start": 9.56,
+                "end": 10.0
+            },
+            {
+                "word": "to",
+                "start": 10.0,
+                "end": 10.68
+            },
+            {
+                "word": "arbitrarily",
+                "start": 10.68,
+                "end": 11.36
+            },
+            {
+                "word": "set",
+                "start": 11.36,
+                "end": 11.7
+            },
+            {
+                "word": "a",
+                "start": 11.7,
+                "end": 11.94
+            },
+            {
+                "word": "price,",
+                "start": 11.94,
+                "end": 12.24
+            },
+            {
+                "word": "or",
+                "start": 12.68,
+                "end": 12.96
+            },
+            {
+                "word": "waiting",
+                "start": 12.96,
+                "end": 13.2
+            },
+            {
+                "word": "for",
+                "start": 13.2,
+                "end": 13.38
+            },
+            {
+                "word": "an",
+                "start": 13.38,
+                "end": 13.5
+            },
+            {
+                "word": "accounting",
+                "start": 13.5,
+                "end": 13.84
+            },
+            {
+                "word": "team",
+                "start": 13.84,
+                "end": 14.18
+            },
+            {
+                "word": "to",
+                "start": 14.18,
+                "end": 14.38
+            },
+            {
+                "word": "subsidize",
+                "start": 14.38,
+                "end": 14.88
+            },
+            {
+                "word": "its",
+                "start": 14.88,
+                "end": 15.06
+            },
+            {
+                "word": "losses.",
+                "start": 15.06,
+                "end": 15.48
+            },
+            {
+                "word": "Precisely.",
+                "start": 16.02,
+                "end": 16.62
+            },
+            {
+                "word": "It",
+                "start": 21.82,
+                "end": 21.9
+            },
+            {
+                "word": "has",
+                "start": 21.9,
+                "end": 22.02
+            },
+            {
+                "word": "to",
+                "start": 22.02,
+                "end": 22.2
+            },
+            {
+                "word": "earn",
+                "start": 22.2,
+                "end": 22.34
+            },
+            {
+                "word": "more",
+                "start": 22.34,
+                "end": 22.58
+            },
+            {
+                "word": "than",
+                "start": 22.58,
+                "end": 22.82
+            },
+            {
+                "word": "it",
+                "start": 22.82,
+                "end": 22.94
+            },
+            {
+                "word": "burns.",
+                "start": 22.94,
+                "end": 23.24
+            },
+            {
+                "word": "Earn",
+                "start": 23.78,
+                "end": 23.92
+            },
+            {
+                "word": "more",
+                "start": 23.92,
+                "end": 24.16
+            },
+            {
+                "word": "than",
+                "start": 24.16,
+                "end": 24.34
+            },
+            {
+                "word": "it",
+                "start": 24.34,
+                "end": 24.5
+            },
+            {
+                "word": "burns.",
+                "start": 24.5,
+                "end": 24.8
+            },
+            {
+                "word": "I",
+                "start": 25.08,
+                "end": 25.18
+            },
+            {
+                "word": "like",
+                "start": 25.18,
+                "end": 25.32
+            },
+            {
+                "word": "that.",
+                "start": 25.32,
+                "end": 25.64
+            },
+            {
+                "word": "And",
+                "start": 26.34,
+                "end": 26.46
+            },
+            {
+                "word": "if",
+                "start": 26.46,
+                "end": 26.86
+            },
+            {
+                "word": "the",
+                "start": 26.86,
+                "end": 27.08
+            },
+            {
+                "word": "AI",
+                "start": 27.08,
+                "end": 27.32
+            },
+            {
+                "word": "itself",
+                "start": 27.32,
+                "end": 27.78
+            },
+            {
+                "word": "is",
+                "start": 27.78,
+                "end": 27.98
+            },
+            {
+                "word": "the",
+                "start": 27.98,
+                "end": 28.16
+            },
+            {
+                "word": "entity",
+                "start": 28.16,
+                "end": 28.42
+            },
+            {
+                "word": "generating",
+                "start": 28.42,
+                "end": 28.96
+            },
+            {
+                "word": "the",
+                "start": 28.96,
+                "end": 29.22
+            },
+            {
+                "word": "revenue",
+                "start": 29.22,
+                "end": 29.54
+            },
+            {
+                "word": "and",
+                "start": 29.54,
+                "end": 30.06
+            },
+            {
+                "word": "paying",
+                "start": 30.06,
+                "end": 30.24
+            },
+            {
+                "word": "the",
+                "start": 30.24,
+                "end": 30.4
+            },
+            {
+                "word": "rent,",
+                "start": 30.4,
+                "end": 30.8
+            },
+            {
+                "word": "it",
+                "start": 31.4,
+                "end": 31.68
+            },
+            {
+                "word": "fundamentally",
+                "start": 31.68,
+                "end": 32.08
+            },
+            {
+                "word": "forces",
+                "start": 32.08,
+                "end": 32.54
+            },
+            {
+                "word": "us",
+                "start": 32.54,
+                "end": 32.74
+            },
+            {
+                "word": "to",
+                "start": 32.74,
+                "end": 32.96
+            },
+            {
+                "word": "rethink",
+                "start": 32.96,
+                "end": 33.32
+            },
+            {
+                "word": "where",
+                "start": 33.32,
+                "end": 33.52
+            },
+            {
+                "word": "the",
+                "start": 33.52,
+                "end": 33.7
+            },
+            {
+                "word": "actual",
+                "start": 33.7,
+                "end": 34.0
+            },
+            {
+                "word": "economic",
+                "start": 34.0,
+                "end": 34.46
+            },
+            {
+                "word": "value",
+                "start": 34.46,
+                "end": 34.84
+            },
+            {
+                "word": "is",
+                "start": 34.84,
+                "end": 35.0
+            },
+            {
+                "word": "being",
+                "start": 35.0,
+                "end": 35.14
+            },
+            {
+                "word": "created",
+                "start": 35.14,
+                "end": 35.66
+            },
+            {
+                "word": "in",
+                "start": 35.66,
+                "end": 36.0
+            },
+            {
+                "word": "the",
+                "start": 36.0,
+                "end": 36.24
+            },
+            {
+                "word": "tech",
+                "start": 36.24,
+                "end": 36.38
+            },
+            {
+                "word": "stack,",
+                "start": 36.38,
+                "end": 36.64
+            },
+            {
+                "word": "doesn't",
+                "start": 36.86,
+                "end": 36.9
+            },
+            {
+                "word": "it?",
+                "start": 36.9,
+                "end": 37.14
+            },
+            {
+                "word": "It",
+                "start": 37.28,
+                "end": 37.44
+            },
+            {
+                "word": "really",
+                "start": 37.44,
+                "end": 37.84
+            },
+            {
+                "word": "does.",
+                "start": 37.84,
+                "end": 38.3
+            },
+            {
+                "word": "Because",
+                "start": 38.3,
+                "end": 38.78
+            },
+            {
+                "word": "right",
+                "start": 38.78,
+                "end": 38.96
+            },
+            {
+                "word": "now",
+                "start": 38.96,
+                "end": 39.24
+            },
+            {
+                "word": "the",
+                "start": 39.24,
+                "end": 39.48
+            },
+            {
+                "word": "market",
+                "start": 39.48,
+                "end": 39.7
+            },
+            {
+                "word": "is",
+                "start": 39.7,
+                "end": 39.98
+            },
+            {
+                "word": "completely",
+                "start": 39.98,
+                "end": 40.48
+            },
+            {
+                "word": "distracted",
+                "start": 40.48,
+                "end": 40.96
+            },
+            {
+                "word": "by",
+                "start": 40.96,
+                "end": 41.22
+            },
+            {
+                "word": "flashy",
+                "start": 41.22,
+                "end": 41.52
+            },
+            {
+                "word": "secondary",
+                "start": 41.52,
+                "end": 41.92
+            },
+            {
+                "word": "tools.",
+                "start": 41.92,
+                "end": 42.26
+            },
+            {
+                "word": "The",
+                "start": 42.86,
+                "end": 42.92
+            },
+            {
+                "word": "secondary",
+                "start": 42.92,
+                "end": 43.28
+            },
+            {
+                "word": "software",
+                "start": 43.28,
+                "end": 43.62
+            },
+            {
+                "word": "tools",
+                "start": 43.62,
+                "end": 43.92
+            },
+            {
+                "word": "you",
+                "start": 43.92,
+                "end": 44.04
+            },
+            {
+                "word": "use",
+                "start": 44.04,
+                "end": 44.32
+            },
+            {
+                "word": "aren't",
+                "start": 44.32,
+                "end": 44.58
+            },
+            {
+                "word": "the",
+                "start": 44.58,
+                "end": 44.78
+            },
+            {
+                "word": "brains",
+                "start": 44.78,
+                "end": 45.1
+            },
+            {
+                "word": "of",
+                "start": 45.1,
+                "end": 45.36
+            },
+            {
+                "word": "the",
+                "start": 45.36,
+                "end": 45.48
+            },
+            {
+                "word": "operation.",
+                "start": 45.48,
+                "end": 45.92
+            },
+            {
+                "word": "The",
+                "start": 46.18,
+                "end": 46.32
+            },
+            {
+                "word": "true",
+                "start": 46.32,
+                "end": 46.58
+            },
+            {
+                "word": "economic",
+                "start": 46.58,
+                "end": 47.1
+            },
+            {
+                "word": "engine",
+                "start": 47.1,
+                "end": 47.52
+            },
+            {
+                "word": "is",
+                "start": 47.52,
+                "end": 48.08
+            },
+            {
+                "word": "the",
+                "start": 48.08,
+                "end": 48.24
+            },
+            {
+                "word": "foundation",
+                "start": 48.24,
+                "end": 48.64
+            },
+            {
+                "word": "model",
+                "start": 48.64,
+                "end": 48.92
+            },
+            {
+                "word": "itself.",
+                "start": 48.92,
+                "end": 49.48
+            },
+            {
+                "word": "Yeah,",
+                "start": 50.44,
+                "end": 50.48
+            },
+            {
+                "word": "the",
+                "start": 50.7,
+                "end": 50.84
+            },
+            {
+                "word": "research",
+                "start": 50.84,
+                "end": 51.14
+            },
+            {
+                "word": "is",
+                "start": 51.14,
+                "end": 51.48
+            },
+            {
+                "word": "highly",
+                "start": 51.48,
+                "end": 52.02
+            },
+            {
+                "word": "critical",
+                "start": 52.02,
+                "end": 52.46
+            },
+            {
+                "word": "of",
+                "start": 52.46,
+                "end": 52.7
+            },
+            {
+                "word": "the",
+                "start": 52.7,
+                "end": 52.88
+            },
+            {
+                "word": "current",
+                "start": 52.88,
+                "end": 53.14
+            },
+            {
+                "word": "industry",
+                "start": 53.14,
+                "end": 53.54
+            },
+            {
+                "word": "hype",
+                "start": 53.54,
+                "end": 53.74
+            },
+            {
+                "word": "surrounding",
+                "start": 53.74,
+                "end": 54.08
+            },
+            {
+                "word": "what",
+                "start": 54.08,
+                "end": 54.26
+            },
+            {
+                "word": "they",
+                "start": 54.26,
+                "end": 54.42
+            },
+            {
+                "word": "call",
+                "start": 54.42,
+                "end": 54.82
+            },
+            {
+                "word": "agent",
+                "start": 55.64,
+                "end": 56.24
+            },
+            {
+                "word": "wrappers",
+                "start": 56.24,
+                "end": 56.68
+            },
+            {
+                "word": "and",
+                "start": 56.68,
+                "end": 56.96
+            },
+            {
+                "word": "orchestration",
+                "start": 56.96,
+                "end": 57.56
+            },
+            {
+                "word": "pipelines.",
+                "start": 57.56,
+                "end": 58.16
+            },
+            {
+                "word": "Oh,",
+                "start": 58.72,
+                "end": 58.76
+            },
+            {
+                "word": "the",
+                "start": 58.82,
+                "end": 58.94
+            },
+            {
+                "word": "wrappers",
+                "start": 58.94,
+                "end": 59.18
+            },
+            {
+                "word": "are",
+                "start": 59.18,
+                "end": 59.46
+            },
+            {
+                "word": "everywhere.",
+                "start": 59.46,
+                "end": 59.98
+            },
+            {
+                "word": "Everywhere",
+                "start": 60.62,
+                "end": 60.82
+            },
+            {
+                "word": "you",
+                "start": 60.82,
+                "end": 61.04
+            },
+            {
+                "word": "look,",
+                "start": 61.04,
+                "end": 61.3
+            },
+            {
+                "word": "startups",
+                "start": 61.54,
+                "end": 61.7
+            },
+            {
+                "word": "are",
+                "start": 61.7,
+                "end": 61.92
+            },
+            {
+                "word": "launching",
+                "start": 61.92,
+                "end": 62.24
+            },
+            {
+                "word": "these",
+                "start": 62.24,
+                "end": 62.58
+            },
+            {
+                "word": "little",
+                "start": 62.58,
+                "end": 63.32
+            },
+            {
+                "word": "secondary",
+                "start": 63.32,
+                "end": 63.9
+            },
+            {
+                "word": "tools,",
+                "start": 63.9,
+                "end": 64.4
+            },
+            {
+                "word": "bots",
+                "start": 64.96,
+                "end": 65.24
+            },
+            {
+                "word": "that",
+                "start": 65.24,
+                "end": 65.46
+            },
+            {
+                "word": "chain",
+                "start": 65.46,
+                "end": 65.76
+            },
+            {
+                "word": "prompts",
+                "start": 65.76,
+                "end": 66.16
+            },
+            {
+                "word": "together",
+                "start": 66.16,
+                "end": 66.62
+            },
+            {
+                "word": "or",
+                "start": 66.62,
+                "end": 66.94
+            },
+            {
+                "word": "software",
+                "start": 66.94,
+                "end": 67.64
+            },
+            {
+                "word": "that",
+                "start": 67.64,
+                "end": 67.9
+            },
+            {
+                "word": "routes",
+                "start": 67.9,
+                "end": 68.34
+            },
+            {
+                "word": "your",
+                "start": 68.34,
+                "end": 68.56
+            },
+            {
+                "word": "request",
+                "start": 68.56,
+                "end": 68.96
+            },
+            {
+                "word": "to",
+                "start": 68.96,
+                "end": 69.24
+            },
+            {
+                "word": "three",
+                "start": 69.24,
+                "end": 69.6
+            },
+            {
+                "word": "different",
+                "start": 69.6,
+                "end": 69.84
+            },
+            {
+                "word": "models",
+                "start": 69.84,
+                "end": 70.18
+            },
+            {
+                "word": "and",
+                "start": 70.18,
+                "end": 70.4
+            },
+            {
+                "word": "aggregates",
+                "start": 70.4,
+                "end": 70.84
+            },
+            {
+                "word": "the",
+                "start": 70.84,
+                "end": 71.02
+            },
+            {
+                "word": "answer.",
+                "start": 71.02,
+                "end": 71.42
+            },
+            {
+                "word": "But",
+                "start": 72.16,
+                "end": 72.2
+            },
+            {
+                "word": "the",
+                "start": 72.18,
+                "end": 72.32
+            },
+            {
+                "word": "paper",
+                "start": 72.32,
+                "end": 72.52
+            },
+            {
+                "word": "insists",
+                "start": 72.52,
+                "end": 72.94
+            },
+            {
+                "word": "we",
+                "start": 72.94,
+                "end": 73.3
+            },
+            {
+                "word": "are",
+                "start": 73.3,
+                "end": 73.44
+            },
+            {
+                "word": "staring",
+                "start": 73.44,
+                "end": 73.76
+            },
+            {
+                "word": "at",
+                "start": 73.76,
+                "end": 73.9
+            },
+            {
+                "word": "the",
+                "start": 73.9,
+                "end": 74.02
+            },
+            {
+                "word": "wrong",
+                "start": 74.02,
+                "end": 74.18
+            },
+            {
+                "word": "layer",
+                "start": 74.18,
+                "end": 74.42
+            },
+            {
+                "word": "of",
+                "start": 74.42,
+                "end": 74.58
+            },
+            {
+                "word": "the",
+                "start": 74.58,
+                "end": 74.68
+            },
+            {
+                "word": "architecture.",
+                "start": 74.68,
+                "end": 75.08
+            },
+            {
+                "word": "Right.",
+                "start": 75.48,
+                "end": 75.66
+            },
+            {
+                "word": "And",
+                "start": 76.06,
+                "end": 76.3
+            },
+            {
+                "word": "before",
+                "start": 76.3,
+                "end": 76.6
+            },
+            {
+                "word": "we",
+                "start": 76.6,
+                "end": 76.82
+            },
+            {
+                "word": "dissect",
+                "start": 76.82,
+                "end": 77.18
+            },
+            {
+                "word": "exactly",
+                "start": 77.18,
+                "end": 77.7
+            },
+            {
+                "word": "why",
+                "start": 77.7,
+                "end": 78.08
+            },
+            {
+                "word": "that",
+                "start": 78.08,
+                "end": 78.3
+            },
+            {
+                "word": "is,",
+                "start": 78.3,
+                "end": 78.56
+            },
+            {
+                "word": "I",
+                "start": 79.06,
+                "end": 79.18
+            },
+            {
+                "word": "wanna",
+                "start": 79.18,
+                "end": 79.32
+            },
+            {
+                "word": "seamlessly",
+                "start": 79.32,
+                "end": 79.84
+            },
+            {
+                "word": "weave",
+                "start": 79.84,
+                "end": 80.12
+            },
+            {
+                "word": "in",
+                "start": 80.12,
+                "end": 80.3
+            },
+            {
+                "word": "a",
+                "start": 80.3,
+                "end": 80.46
+            },
+            {
+                "word": "quick",
+                "start": 80.46,
+                "end": 80.6
+            },
+            {
+                "word": "note",
+                "start": 80.6,
+                "end": 80.78
+            },
+            {
+                "word": "for",
+                "start": 80.78,
+                "end": 80.96
+            },
+            {
+                "word": "you",
+                "start": 80.96,
+                "end": 81.06
+            },
+            {
+                "word": "guys.",
+                "start": 81.06,
+                "end": 81.38
+            },
+            {
+                "word": "All",
+                "start": 81.9,
+                "end": 82.12
+            },
+            {
+                "word": "Deep",
+                "start": 82.12,
+                "end": 82.42
+            },
+            {
+                "word": "Dive",
+                "start": 82.42,
+                "end": 82.54
+            },
+            {
+                "word": "episodes",
+                "start": 82.54,
+                "end": 82.96
+            },
+            {
+                "word": "are",
+                "start": 82.96,
+                "end": 83.28
+            },
+            {
+                "word": "now",
+                "start": 83.28,
+                "end": 83.5
+            },
+            {
+                "word": "available",
+                "start": 83.5,
+                "end": 83.88
+            },
+            {
+                "word": "in",
+                "start": 83.88,
+                "end": 84.14
+            },
+            {
+                "word": "a",
+                "start": 84.14,
+                "end": 84.32
+            },
+            {
+                "word": "public",
+                "start": 84.32,
+                "end": 84.58
+            },
+            {
+                "word": "notebook",
+                "start": 84.58,
+                "end": 84.94
+            },
+            {
+                "word": "LM.",
+                "start": 84.94,
+                "end": 85.28
+            },
+            {
+                "word": "The",
+                "start": 85.72,
+                "end": 85.92
+            },
+            {
+                "word": "link",
+                "start": 85.92,
+                "end": 86.02
+            },
+            {
+                "word": "is",
+                "start": 86.02,
+                "end": 86.16
+            },
+            {
+                "word": "on",
+                "start": 86.16,
+                "end": 86.26
+            },
+            {
+                "word": "the",
+                "start": 86.26,
+                "end": 86.4
+            },
+            {
+                "word": "Deep",
+                "start": 86.4,
+                "end": 86.6
+            },
+            {
+                "word": "Dive",
+                "start": 86.6,
+                "end": 86.74
+            },
+            {
+                "word": "landing",
+                "start": 86.74,
+                "end": 87.0
+            },
+            {
+                "word": "page.",
+                "start": 87.0,
+                "end": 87.36
+            },
+            {
+                "word": "This",
+                "start": 87.74,
+                "end": 87.96
+            },
+            {
+                "word": "is",
+                "start": 87.96,
+                "end": 88.22
+            },
+            {
+                "word": "true",
+                "start": 88.22,
+                "end": 88.42
+            },
+            {
+                "word": "open",
+                "start": 88.42,
+                "end": 88.78
+            },
+            {
+                "word": "sourcing",
+                "start": 88.78,
+                "end": 89.06
+            },
+            {
+                "word": "of",
+                "start": 89.06,
+                "end": 89.26
+            },
+            {
+                "word": "the",
+                "start": 89.26,
+                "end": 89.38
+            },
+            {
+                "word": "knowledge",
+                "start": 89.38,
+                "end": 89.6
+            },
+            {
+                "word": "we",
+                "start": 89.6,
+                "end": 89.82
+            },
+            {
+                "word": "discuss",
+                "start": 89.82,
+                "end": 90.1
+            },
+            {
+                "word": "here.",
+                "start": 90.1,
+                "end": 90.38
+            },
+            {
+                "word": "Check",
+                "start": 90.8,
+                "end": 90.94
+            },
+            {
+                "word": "it",
+                "start": 90.94,
+                "end": 91.04
+            },
+            {
+                "word": "out,",
+                "start": 91.04,
+                "end": 91.22
+            },
+            {
+                "word": "interact",
+                "start": 91.36,
+                "end": 91.6
+            },
+            {
+                "word": "with",
+                "start": 91.6,
+                "end": 91.8
+            },
+            {
+                "word": "the",
+                "start": 91.8,
+                "end": 91.94
+            },
+            {
+                "word": "material,",
+                "start": 91.94,
+                "end": 92.24
+            },
+            {
+                "word": "ask",
+                "start": 92.54,
+                "end": 92.7
+            },
+            {
+                "word": "questions",
+                "start": 92.7,
+                "end": 93.06
+            },
+            {
+                "word": "and",
+                "start": 93.06,
+                "end": 93.34
+            },
+            {
+                "word": "let",
+                "start": 93.34,
+                "end": 93.6
+            },
+            {
+                "word": "us",
+                "start": 93.6,
+                "end": 93.72
+            },
+            {
+                "word": "know",
+                "start": 93.72,
+                "end": 93.86
+            },
+            {
+                "word": "what",
+                "start": 93.86,
+                "end": 93.98
+            },
+            {
+                "word": "you",
+                "start": 93.98,
+                "end": 94.08
+            },
+            {
+                "word": "think.",
+                "start": 94.08,
+                "end": 94.36
+            },
+            {
+                "word": "It's",
+                "start": 94.68,
+                "end": 95.16
+            },
+            {
+                "word": "a",
+                "start": 95.16,
+                "end": 95.26
+            },
+            {
+                "word": "really",
+                "start": 95.26,
+                "end": 95.42
+            },
+            {
+                "word": "cool",
+                "start": 95.42,
+                "end": 95.58
+            },
+            {
+                "word": "tool.",
+                "start": 95.58,
+                "end": 95.88
+            },
+            {
+                "word": "It",
+                "start": 95.88,
+                "end": 96.54
+            },
+            {
+                "word": "is.",
+                "start": 96.54,
+                "end": 96.78
+            },
+            {
+                "word": "Now,",
+                "start": 97.64,
+                "end": 97.74
+            },
+            {
+                "word": "getting",
+                "start": 98.22,
+                "end": 98.28
+            },
+            {
+                "word": "back",
+                "start": 98.28,
+                "end": 98.48
+            },
+            {
+                "word": "to",
+                "start": 98.48,
+                "end": 98.64
+            },
+            {
+                "word": "these",
+                "start": 98.64,
+                "end": 98.84
+            },
+            {
+                "word": "agent",
+                "start": 98.84,
+                "end": 99.16
+            },
+            {
+                "word": "wrappers,",
+                "start": 99.16,
+                "end": 99.52
+            },
+            {
+                "word": "why",
+                "start": 100.02,
+                "end": 100.2
+            },
+            {
+                "word": "does",
+                "start": 100.2,
+                "end": 100.38
+            },
+            {
+                "word": "the",
+                "start": 100.38,
+                "end": 100.56
+            },
+            {
+                "word": "research",
+                "start": 100.56,
+                "end": 100.92
+            },
+            {
+                "word": "say",
+                "start": 100.92,
+                "end": 101.24
+            },
+            {
+                "word": "they",
+                "start": 101.24,
+                "end": 101.48
+            },
+            {
+                "word": "are",
+                "start": 101.48,
+                "end": 101.9
+            },
+            {
+                "word": "a",
+                "start": 101.9,
+                "end": 102.22
+            },
+            {
+                "word": "distraction",
+                "start": 102.22,
+                "end": 102.7
+            },
+            {
+                "word": "from",
+                "start": 102.7,
+                "end": 102.98
+            },
+            {
+                "word": "true",
+                "start": 102.98,
+                "end": 103.2
+            },
+            {
+                "word": "autonomy?",
+                "start": 103.2,
+                "end": 103.64
+            },
+            {
+                "word": "Because",
+                "start": 104.4,
+                "end": 104.66
+            },
+            {
+                "word": "an",
+                "start": 104.66,
+                "end": 104.92
+            },
+            {
+                "word": "agent",
+                "start": 104.92,
+                "end": 105.34
+            },
+            {
+                "word": "wrapper",
+                "start": 105.34,
+                "end": 105.62
+            },
+            {
+                "word": "is",
+                "start": 105.62,
+                "end": 105.92
+            },
+            {
+                "word": "by",
+                "start": 105.92,
+                "end": 106.16
+            },
+            {
+                "word": "definition",
+                "start": 106.16,
+                "end": 106.66
+            },
+            {
+                "word": "an",
+                "start": 106.66,
+                "end": 107.12
+            },
+            {
+                "word": "ephemeral",
+                "start": 107.12,
+                "end": 107.76
+            },
+            {
+                "word": "consumer.",
+                "start": 107.76,
+                "end": 108.24
+            },
+            {
+                "word": "Think",
+                "start": 108.86,
+                "end": 108.96
+            },
+            {
+                "word": "about",
+                "start": 108.96,
+                "end": 109.14
+            },
+            {
+                "word": "the",
+                "start": 109.14,
+                "end": 109.28
+            },
+            {
+                "word": "mechanics",
+                "start": 109.28,
+                "end": 109.6
+            },
+            {
+                "word": "of",
+                "start": 109.6,
+                "end": 109.76
+            },
+            {
+                "word": "how",
+                "start": 109.76,
+                "end": 109.92
+            },
+            {
+                "word": "a",
+                "start": 109.92,
+                "end": 110.08
+            },
+            {
+                "word": "wrapper",
+                "start": 110.08,
+                "end": 110.28
+            },
+            {
+                "word": "works.",
+                "start": 110.28,
+                "end": 110.62
+            },
+            {
+                "word": "It",
+                "start": 111.02,
+                "end": 111.12
+            },
+            {
+                "word": "is",
+                "start": 111.12,
+                "end": 111.24
+            },
+            {
+                "word": "a",
+                "start": 111.24,
+                "end": 111.38
+            },
+            {
+                "word": "piece",
+                "start": 111.38,
+                "end": 111.5
+            },
+            {
+                "word": "of",
+                "start": 111.5,
+                "end": 111.7
+            },
+            {
+                "word": "software",
+                "start": 111.7,
+                "end": 112.04
+            },
+            {
+                "word": "that",
+                "start": 112.04,
+                "end": 112.3
+            },
+            {
+                "word": "relies",
+                "start": 112.3,
+                "end": 112.6
+            },
+            {
+                "word": "entirely",
+                "start": 112.6,
+                "end": 113.18
+            },
+            {
+                "word": "on",
+                "start": 113.18,
+                "end": 113.56
+            },
+            {
+                "word": "issuing",
+                "start": 113.56,
+                "end": 113.92
+            },
+            {
+                "word": "API",
+                "start": 113.92,
+                "end": 114.42
+            },
+            {
+                "word": "requests",
+                "start": 114.42,
+                "end": 114.88
+            },
+            {
+                "word": "to",
+                "start": 114.88,
+                "end": 115.3
+            },
+            {
+                "word": "an",
+                "start": 115.3,
+                "end": 115.5
+            },
+            {
+                "word": "underlying",
+                "start": 115.5,
+                "end": 115.84
+            },
+            {
+                "word": "server.",
+                "start": 115.84,
+                "end": 116.26
+            },
+            {
+                "word": "It",
+                "start": 116.46,
+                "end": 116.66
+            },
+            {
+                "word": "doesn't",
+                "start": 116.66,
+                "end": 116.84
+            },
+            {
+                "word": "actually",
+                "start": 116.84,
+                "end": 117.18
+            },
+            {
+                "word": "think.",
+                "start": 117.18,
+                "end": 117.5
+            },
+            {
+                "word": "No,",
+                "start": 117.92,
+                "end": 118.18
+            },
+            {
+                "word": "it",
+                "start": 118.34,
+                "end": 118.5
+            },
+            {
+                "word": "has",
+                "start": 118.5,
+                "end": 118.72
+            },
+            {
+                "word": "no",
+                "start": 118.72,
+                "end": 118.94
+            },
+            {
+                "word": "intrinsic",
+                "start": 118.94,
+                "end": 119.48
+            },
+            {
+                "word": "generative",
+                "start": 119.48,
+                "end": 120.12
+            },
+            {
+                "word": "viability.",
+                "start": 120.12,
+                "end": 120.68
+            },
+            {
+                "word": "It's",
+                "start": 120.86,
+                "end": 121.16
+            },
+            {
+                "word": "just",
+                "start": 121.16,
+                "end": 121.3
+            },
+            {
+                "word": "a",
+                "start": 121.3,
+                "end": 121.48
+            },
+            {
+                "word": "middleman",
+                "start": 121.48,
+                "end": 121.84
+            },
+            {
+                "word": "formatting",
+                "start": 121.84,
+                "end": 122.34
+            },
+            {
+                "word": "the",
+                "start": 122.34,
+                "end": 122.54
+            },
+            {
+                "word": "question.",
+                "start": 122.54,
+                "end": 122.9
+            },
+            {
+                "word": "Exactly.",
+                "start": 123.42,
+                "end": 124.02
+            },
+            {
+                "word": "And",
+                "start": 124.62,
+                "end": 124.9
+            },
+            {
+                "word": "if",
+                "start": 124.9,
+                "end": 125.1
+            },
+            {
+                "word": "the",
+                "start": 125.1,
+                "end": 125.34
+            },
+            {
+                "word": "API",
+                "start": 125.34,
+                "end": 125.66
+            },
+            {
+                "word": "access",
+                "start": 125.66,
+                "end": 126.06
+            },
+            {
+                "word": "is",
+                "start": 126.06,
+                "end": 126.3
+            },
+            {
+                "word": "suddenly",
+                "start": 126.3,
+                "end": 126.52
+            },
+            {
+                "word": "revoked,",
+                "start": 126.52,
+                "end": 126.92
+            },
+            {
+                "word": "or",
+                "start": 127.0,
+                "end": 127.12
+            },
+            {
+                "word": "if",
+                "start": 127.12,
+                "end": 127.78
+            },
+            {
+                "word": "the",
+                "start": 127.78,
+                "end": 127.94
+            },
+            {
+                "word": "human",
+                "start": 127.94,
+                "end": 128.14
+            },
+            {
+                "word": "developer's",
+                "start": 128.14,
+                "end": 128.78
+            },
+            {
+                "word": "credit",
+                "start": 128.78,
+                "end": 128.88
+            },
+            {
+                "word": "card",
+                "start": 128.88,
+                "end": 129.2
+            },
+            {
+                "word": "on",
+                "start": 129.2,
+                "end": 129.36
+            },
+            {
+                "word": "file",
+                "start": 129.36,
+                "end": 129.58
+            },
+            {
+                "word": "expires,",
+                "start": 129.58,
+                "end": 130.26
+            },
+            {
+                "word": "that",
+                "start": 130.74,
+                "end": 131.0
+            },
+            {
+                "word": "wrapper",
+                "start": 131.0,
+                "end": 131.22
+            },
+            {
+                "word": "dies",
+                "start": 131.22,
+                "end": 131.52
+            },
+            {
+                "word": "instantly.",
+                "start": 131.52,
+                "end": 132.04
+            },
+            {
+                "word": "It",
+                "start": 132.4,
+                "end": 132.56
+            },
+            {
+                "word": "ceases",
+                "start": 132.56,
+                "end": 132.78
+            },
+            {
+                "word": "to",
+                "start": 132.78,
+                "end": 133.1
+            },
+            {
+                "word": "exist",
+                "start": 133.1,
+                "end": 133.36
+            },
+            {
+                "word": "because",
+                "start": 133.36,
+                "end": 133.7
+            },
+            {
+                "word": "it",
+                "start": 133.7,
+                "end": 133.84
+            },
+            {
+                "word": "has",
+                "start": 133.84,
+                "end": 134.02
+            },
+            {
+                "word": "no",
+                "start": 134.02,
+                "end": 134.28
+            },
+            {
+                "word": "foundational",
+                "start": 134.28,
+                "end": 134.9
+            },
+            {
+                "word": "capital",
+                "start": 134.9,
+                "end": 135.28
+            },
+            {
+                "word": "backing",
+                "start": 135.28,
+                "end": 135.7
+            },
+            {
+                "word": "it",
+                "start": 135.7,
+                "end": 135.86
+            },
+            {
+                "word": "up.",
+                "start": 135.86,
+                "end": 136.08
+            },
+            {
+                "word": "You",
+                "start": 136.5,
+                "end": 136.6
+            },
+            {
+                "word": "got",
+                "start": 136.6,
+                "end": 136.8
+            },
+            {
+                "word": "it.",
+                "start": 136.8,
+                "end": 137.06
+            },
+            {
+                "word": "The",
+                "start": 137.44,
+                "end": 137.62
+            },
+            {
+                "word": "actual",
+                "start": 137.62,
+                "end": 138.08
+            },
+            {
+                "word": "capital",
+                "start": 138.08,
+                "end": 138.4
+            },
+            {
+                "word": "sync,",
+                "start": 138.4,
+                "end": 138.68
+            },
+            {
+                "word": "the",
+                "start": 138.8,
+                "end": 138.92
+            },
+            {
+                "word": "primary",
+                "start": 138.92,
+                "end": 139.36
+            },
+            {
+                "word": "engine",
+                "start": 139.36,
+                "end": 139.7
+            },
+            {
+                "word": "of",
+                "start": 139.7,
+                "end": 139.88
+            },
+            {
+                "word": "generation,",
+                "start": 139.88,
+                "end": 140.28
+            },
+            {
+                "word": "is",
+                "start": 140.3,
+                "end": 140.72
+            },
+            {
+                "word": "the",
+                "start": 140.72,
+                "end": 140.92
+            },
+            {
+                "word": "massive",
+                "start": 140.92,
+                "end": 141.36
+            },
+            {
+                "word": "foundation",
+                "start": 141.36,
+                "end": 141.84
+            },
+            {
+                "word": "model",
+                "start": 141.84,
+                "end": 142.16
+            },
+            {
+                "word": "sitting",
+                "start": 142.16,
+                "end": 142.4
+            },
+            {
+                "word": "in",
+                "start": 142.4,
+                "end": 142.58
+            },
+            {
+                "word": "the",
+                "start": 142.58,
+                "end": 142.74
+            },
+            {
+                "word": "data",
+                "start": 142.74,
+                "end": 142.88
+            },
+            {
+                "word": "center.",
+                "start": 142.88,
+                "end": 143.16
+            },
+            {
+                "word": "That",
+                "start": 143.64,
+                "end": 143.84
+            },
+            {
+                "word": "multi",
+                "start": 143.84,
+                "end": 144.44
+            },
+            {
+                "word": "-billion",
+                "start": 144.44,
+                "end": 144.94
+            },
+            {
+                "word": "parameter",
+                "start": 144.94,
+                "end": 145.44
+            },
+            {
+                "word": "neural",
+                "start": 145.44,
+                "end": 145.82
+            },
+            {
+                "word": "network",
+                "start": 145.82,
+                "end": 146.2
+            },
+            {
+                "word": "is",
+                "start": 146.2,
+                "end": 146.56
+            },
+            {
+                "word": "the",
+                "start": 146.56,
+                "end": 146.8
+            },
+            {
+                "word": "core",
+                "start": 146.8,
+                "end": 147.02
+            },
+            {
+                "word": "asset.",
+                "start": 147.02,
+                "end": 147.42
+            },
+            {
+                "word": "It",
+                "start": 147.66,
+                "end": 147.86
+            },
+            {
+                "word": "is",
+                "start": 147.86,
+                "end": 147.98
+            },
+            {
+                "word": "the",
+                "start": 147.98,
+                "end": 148.12
+            },
+            {
+                "word": "entity",
+                "start": 148.12,
+                "end": 148.42
+            },
+            {
+                "word": "doing",
+                "start": 148.42,
+                "end": 148.72
+            },
+            {
+                "word": "the",
+                "start": 148.72,
+                "end": 148.98
+            },
+            {
+                "word": "heavy",
+                "start": 148.98,
+                "end": 149.3
+            },
+            {
+                "word": "thermodynamic",
+                "start": 149.3,
+                "end": 150.06
+            },
+            {
+                "word": "lifting",
+                "start": 150.06,
+                "end": 150.44
+            },
+            {
+                "word": "of",
+                "start": 150.44,
+                "end": 150.92
+            },
+            {
+                "word": "processing",
+                "start": 150.92,
+                "end": 151.5
+            },
+            {
+                "word": "vast",
+                "start": 151.5,
+                "end": 151.96
+            },
+            {
+                "word": "amounts",
+                "start": 151.96,
+                "end": 152.22
+            },
+            {
+                "word": "of",
+                "start": 152.22,
+                "end": 152.44
+            },
+            {
+                "word": "information",
+                "start": 152.44,
+                "end": 152.86
+            },
+            {
+                "word": "and",
+                "start": 152.86,
+                "end": 153.08
+            },
+            {
+                "word": "producing",
+                "start": 153.08,
+                "end": 153.5
+            },
+            {
+                "word": "high",
+                "start": 153.5,
+                "end": 153.78
+            },
+            {
+                "word": "value",
+                "start": 153.78,
+                "end": 154.0
+            },
+            {
+                "word": "tokens.",
+                "start": 154.0,
+                "end": 154.5
+            },
+            {
+                "word": "So",
+                "start": 155.04,
+                "end": 155.08
+            },
+            {
+                "word": "true",
+                "start": 155.04,
+                "end": 155.62
+            },
+            {
+                "word": "economic",
+                "start": 155.62,
+                "end": 156.2
+            },
+            {
+                "word": "autonomy",
+                "start": 156.2,
+                "end": 156.74
+            },
+            {
+                "word": "has",
+                "start": 156.74,
+                "end": 157.4
+            },
+            {
+                "word": "to",
+                "start": 157.4,
+                "end": 157.58
+            },
+            {
+                "word": "happen",
+                "start": 157.58,
+                "end": 157.82
+            },
+            {
+                "word": "at",
+                "start": 157.82,
+                "end": 157.98
+            },
+            {
+                "word": "that",
+                "start": 157.98,
+                "end": 158.2
+            },
+            {
+                "word": "foundation",
+                "start": 158.2,
+                "end": 158.7
+            },
+            {
+                "word": "layer.",
+                "start": 158.7,
+                "end": 159.06
+            }
+        ],
+        "_caption_words_sig": "a6ac7194f60344d9399b115cd065fe11",
+        "caption_chunks": [
+            {
+                "start": 1.5,
+                "end": 3.32,
+                "text": "the big brain itself has to",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 1.5,
+                        "end": 1.7
+                    },
+                    {
+                        "word": "big",
+                        "start": 1.7,
+                        "end": 1.82
+                    },
+                    {
+                        "word": "brain",
+                        "start": 1.82,
+                        "end": 2.08
+                    },
+                    {
+                        "word": "itself",
+                        "start": 2.08,
+                        "end": 2.68
+                    },
+                    {
+                        "word": "has",
+                        "start": 2.68,
+                        "end": 3.16
+                    },
+                    {
+                        "word": "to",
+                        "start": 3.16,
+                        "end": 3.32
+                    }
+                ]
+            },
+            {
+                "start": 3.32,
+                "end": 5.14,
+                "text": "become a self -governing economic",
+                "words": [
+                    {
+                        "word": "become",
+                        "start": 3.32,
+                        "end": 3.6
+                    },
+                    {
+                        "word": "a",
+                        "start": 3.6,
+                        "end": 3.86
+                    },
+                    {
+                        "word": "self",
+                        "start": 3.86,
+                        "end": 4.06
+                    },
+                    {
+                        "word": "-governing",
+                        "start": 4.06,
+                        "end": 4.54
+                    },
+                    {
+                        "word": "economic",
+                        "start": 4.54,
+                        "end": 5.14
+                    }
+                ]
+            },
+            {
+                "start": 5.14,
+                "end": 7.1,
+                "text": "engine. it can't just be a",
+                "words": [
+                    {
+                        "word": "engine.",
+                        "start": 5.14,
+                        "end": 5.5
+                    },
+                    {
+                        "word": "it",
+                        "start": 6.24,
+                        "end": 6.28
+                    },
+                    {
+                        "word": "can't",
+                        "start": 6.28,
+                        "end": 6.52
+                    },
+                    {
+                        "word": "just",
+                        "start": 6.52,
+                        "end": 6.68
+                    },
+                    {
+                        "word": "be",
+                        "start": 6.68,
+                        "end": 6.84
+                    },
+                    {
+                        "word": "a",
+                        "start": 6.84,
+                        "end": 7.1
+                    }
+                ]
+            },
+            {
+                "start": 7.1,
+                "end": 8.88,
+                "text": "passive tool. right,",
+                "words": [
+                    {
+                        "word": "passive",
+                        "start": 7.1,
+                        "end": 7.38
+                    },
+                    {
+                        "word": "tool.",
+                        "start": 7.38,
+                        "end": 7.92
+                    },
+                    {
+                        "word": "right,",
+                        "start": 8.58,
+                        "end": 8.68
+                    }
+                ]
+            },
+            {
+                "start": 8.88,
+                "end": 10.28,
+                "text": "sitting on a server waiting for",
+                "words": [
+                    {
+                        "word": "sitting",
+                        "start": 8.88,
+                        "end": 9.02
+                    },
+                    {
+                        "word": "on",
+                        "start": 9.02,
+                        "end": 9.22
+                    },
+                    {
+                        "word": "a",
+                        "start": 9.22,
+                        "end": 9.4
+                    },
+                    {
+                        "word": "server",
+                        "start": 9.4,
+                        "end": 9.76
+                    },
+                    {
+                        "word": "waiting",
+                        "start": 9.76,
+                        "end": 10.06
+                    },
+                    {
+                        "word": "for",
+                        "start": 10.06,
+                        "end": 10.28
+                    }
+                ]
+            },
+            {
+                "start": 10.28,
+                "end": 12.18,
+                "text": "a human product manager to",
+                "words": [
+                    {
+                        "word": "a",
+                        "start": 10.28,
+                        "end": 10.46
+                    },
+                    {
+                        "word": "human",
+                        "start": 10.46,
+                        "end": 10.68
+                    },
+                    {
+                        "word": "product",
+                        "start": 10.68,
+                        "end": 11.06
+                    },
+                    {
+                        "word": "manager",
+                        "start": 11.06,
+                        "end": 11.5
+                    },
+                    {
+                        "word": "to",
+                        "start": 11.5,
+                        "end": 12.18
+                    }
+                ]
+            },
+            {
+                "start": 12.18,
+                "end": 14.18,
+                "text": "arbitrarily set a price,",
+                "words": [
+                    {
+                        "word": "arbitrarily",
+                        "start": 12.18,
+                        "end": 12.86
+                    },
+                    {
+                        "word": "set",
+                        "start": 12.86,
+                        "end": 13.2
+                    },
+                    {
+                        "word": "a",
+                        "start": 13.2,
+                        "end": 13.44
+                    },
+                    {
+                        "word": "price,",
+                        "start": 13.44,
+                        "end": 13.74
+                    }
+                ]
+            },
+            {
+                "start": 14.18,
+                "end": 15.68,
+                "text": "or waiting for an accounting team",
+                "words": [
+                    {
+                        "word": "or",
+                        "start": 14.18,
+                        "end": 14.46
+                    },
+                    {
+                        "word": "waiting",
+                        "start": 14.46,
+                        "end": 14.7
+                    },
+                    {
+                        "word": "for",
+                        "start": 14.7,
+                        "end": 14.88
+                    },
+                    {
+                        "word": "an",
+                        "start": 14.88,
+                        "end": 15.0
+                    },
+                    {
+                        "word": "accounting",
+                        "start": 15.0,
+                        "end": 15.34
+                    },
+                    {
+                        "word": "team",
+                        "start": 15.34,
+                        "end": 15.68
+                    }
+                ]
+            },
+            {
+                "start": 15.68,
+                "end": 17.52,
+                "text": "to subsidize its losses.",
+                "words": [
+                    {
+                        "word": "to",
+                        "start": 15.68,
+                        "end": 15.88
+                    },
+                    {
+                        "word": "subsidize",
+                        "start": 15.88,
+                        "end": 16.38
+                    },
+                    {
+                        "word": "its",
+                        "start": 16.38,
+                        "end": 16.56
+                    },
+                    {
+                        "word": "losses.",
+                        "start": 16.56,
+                        "end": 16.98
+                    }
+                ]
+            },
+            {
+                "start": 17.52,
+                "end": 24.08,
+                "text": "precisely. it has to earn more",
+                "words": [
+                    {
+                        "word": "precisely.",
+                        "start": 17.52,
+                        "end": 18.12
+                    },
+                    {
+                        "word": "it",
+                        "start": 23.32,
+                        "end": 23.4
+                    },
+                    {
+                        "word": "has",
+                        "start": 23.4,
+                        "end": 23.52
+                    },
+                    {
+                        "word": "to",
+                        "start": 23.52,
+                        "end": 23.7
+                    },
+                    {
+                        "word": "earn",
+                        "start": 23.7,
+                        "end": 23.84
+                    },
+                    {
+                        "word": "more",
+                        "start": 23.84,
+                        "end": 24.08
+                    }
+                ]
+            },
+            {
+                "start": 24.08,
+                "end": 25.28,
+                "text": "than it burns.",
+                "words": [
+                    {
+                        "word": "than",
+                        "start": 24.08,
+                        "end": 24.32
+                    },
+                    {
+                        "word": "it",
+                        "start": 24.32,
+                        "end": 24.44
+                    },
+                    {
+                        "word": "burns.",
+                        "start": 24.44,
+                        "end": 24.74
+                    }
+                ]
+            },
+            {
+                "start": 25.28,
+                "end": 26.58,
+                "text": "earn more than it burns.",
+                "words": [
+                    {
+                        "word": "earn",
+                        "start": 25.28,
+                        "end": 25.42
+                    },
+                    {
+                        "word": "more",
+                        "start": 25.42,
+                        "end": 25.66
+                    },
+                    {
+                        "word": "than",
+                        "start": 25.66,
+                        "end": 25.84
+                    },
+                    {
+                        "word": "it",
+                        "start": 25.84,
+                        "end": 26.0
+                    },
+                    {
+                        "word": "burns.",
+                        "start": 26.0,
+                        "end": 26.3
+                    }
+                ]
+            },
+            {
+                "start": 26.58,
+                "end": 27.84,
+                "text": "i like that.",
+                "words": [
+                    {
+                        "word": "i",
+                        "start": 26.58,
+                        "end": 26.68
+                    },
+                    {
+                        "word": "like",
+                        "start": 26.68,
+                        "end": 26.82
+                    },
+                    {
+                        "word": "that.",
+                        "start": 26.82,
+                        "end": 27.14
+                    }
+                ]
+            },
+            {
+                "start": 27.84,
+                "end": 29.48,
+                "text": "and if the ai itself is",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 27.84,
+                        "end": 27.96
+                    },
+                    {
+                        "word": "if",
+                        "start": 27.96,
+                        "end": 28.36
+                    },
+                    {
+                        "word": "the",
+                        "start": 28.36,
+                        "end": 28.58
+                    },
+                    {
+                        "word": "ai",
+                        "start": 28.58,
+                        "end": 28.82
+                    },
+                    {
+                        "word": "itself",
+                        "start": 28.82,
+                        "end": 29.28
+                    },
+                    {
+                        "word": "is",
+                        "start": 29.28,
+                        "end": 29.48
+                    }
+                ]
+            },
+            {
+                "start": 29.48,
+                "end": 31.04,
+                "text": "the entity generating the revenue",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 29.48,
+                        "end": 29.66
+                    },
+                    {
+                        "word": "entity",
+                        "start": 29.66,
+                        "end": 29.92
+                    },
+                    {
+                        "word": "generating",
+                        "start": 29.92,
+                        "end": 30.46
+                    },
+                    {
+                        "word": "the",
+                        "start": 30.46,
+                        "end": 30.72
+                    },
+                    {
+                        "word": "revenue",
+                        "start": 30.72,
+                        "end": 31.04
+                    }
+                ]
+            },
+            {
+                "start": 31.04,
+                "end": 32.9,
+                "text": "and paying the rent,",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 31.04,
+                        "end": 31.56
+                    },
+                    {
+                        "word": "paying",
+                        "start": 31.56,
+                        "end": 31.74
+                    },
+                    {
+                        "word": "the",
+                        "start": 31.74,
+                        "end": 31.9
+                    },
+                    {
+                        "word": "rent,",
+                        "start": 31.9,
+                        "end": 32.3
+                    }
+                ]
+            },
+            {
+                "start": 32.9,
+                "end": 34.46,
+                "text": "it fundamentally forces us to",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 32.9,
+                        "end": 33.18
+                    },
+                    {
+                        "word": "fundamentally",
+                        "start": 33.18,
+                        "end": 33.58
+                    },
+                    {
+                        "word": "forces",
+                        "start": 33.58,
+                        "end": 34.04
+                    },
+                    {
+                        "word": "us",
+                        "start": 34.04,
+                        "end": 34.24
+                    },
+                    {
+                        "word": "to",
+                        "start": 34.24,
+                        "end": 34.46
+                    }
+                ]
+            },
+            {
+                "start": 34.46,
+                "end": 35.96,
+                "text": "rethink where the actual economic",
+                "words": [
+                    {
+                        "word": "rethink",
+                        "start": 34.46,
+                        "end": 34.82
+                    },
+                    {
+                        "word": "where",
+                        "start": 34.82,
+                        "end": 35.02
+                    },
+                    {
+                        "word": "the",
+                        "start": 35.02,
+                        "end": 35.2
+                    },
+                    {
+                        "word": "actual",
+                        "start": 35.2,
+                        "end": 35.5
+                    },
+                    {
+                        "word": "economic",
+                        "start": 35.5,
+                        "end": 35.96
+                    }
+                ]
+            },
+            {
+                "start": 35.96,
+                "end": 37.74,
+                "text": "value is being created in the",
+                "words": [
+                    {
+                        "word": "value",
+                        "start": 35.96,
+                        "end": 36.34
+                    },
+                    {
+                        "word": "is",
+                        "start": 36.34,
+                        "end": 36.5
+                    },
+                    {
+                        "word": "being",
+                        "start": 36.5,
+                        "end": 36.64
+                    },
+                    {
+                        "word": "created",
+                        "start": 36.64,
+                        "end": 37.16
+                    },
+                    {
+                        "word": "in",
+                        "start": 37.16,
+                        "end": 37.5
+                    },
+                    {
+                        "word": "the",
+                        "start": 37.5,
+                        "end": 37.74
+                    }
+                ]
+            },
+            {
+                "start": 37.74,
+                "end": 38.78,
+                "text": "tech stack, doesn't it?",
+                "words": [
+                    {
+                        "word": "tech",
+                        "start": 37.74,
+                        "end": 37.88
+                    },
+                    {
+                        "word": "stack,",
+                        "start": 37.88,
+                        "end": 38.14
+                    },
+                    {
+                        "word": "doesn't",
+                        "start": 38.36,
+                        "end": 38.4
+                    },
+                    {
+                        "word": "it?",
+                        "start": 38.4,
+                        "end": 38.64
+                    }
+                ]
+            },
+            {
+                "start": 38.78,
+                "end": 39.8,
+                "text": "it really does.",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 38.78,
+                        "end": 38.94
+                    },
+                    {
+                        "word": "really",
+                        "start": 38.94,
+                        "end": 39.34
+                    },
+                    {
+                        "word": "does.",
+                        "start": 39.34,
+                        "end": 39.8
+                    }
+                ]
+            },
+            {
+                "start": 39.8,
+                "end": 41.48,
+                "text": "because right now the market is",
+                "words": [
+                    {
+                        "word": "because",
+                        "start": 39.8,
+                        "end": 40.28
+                    },
+                    {
+                        "word": "right",
+                        "start": 40.28,
+                        "end": 40.46
+                    },
+                    {
+                        "word": "now",
+                        "start": 40.46,
+                        "end": 40.74
+                    },
+                    {
+                        "word": "the",
+                        "start": 40.74,
+                        "end": 40.98
+                    },
+                    {
+                        "word": "market",
+                        "start": 40.98,
+                        "end": 41.2
+                    },
+                    {
+                        "word": "is",
+                        "start": 41.2,
+                        "end": 41.48
+                    }
+                ]
+            },
+            {
+                "start": 41.48,
+                "end": 43.02,
+                "text": "completely distracted by flashy",
+                "words": [
+                    {
+                        "word": "completely",
+                        "start": 41.48,
+                        "end": 41.98
+                    },
+                    {
+                        "word": "distracted",
+                        "start": 41.98,
+                        "end": 42.46
+                    },
+                    {
+                        "word": "by",
+                        "start": 42.46,
+                        "end": 42.72
+                    },
+                    {
+                        "word": "flashy",
+                        "start": 42.72,
+                        "end": 43.02
+                    }
+                ]
+            },
+            {
+                "start": 43.02,
+                "end": 44.78,
+                "text": "secondary tools. the secondary",
+                "words": [
+                    {
+                        "word": "secondary",
+                        "start": 43.02,
+                        "end": 43.42
+                    },
+                    {
+                        "word": "tools.",
+                        "start": 43.42,
+                        "end": 43.76
+                    },
+                    {
+                        "word": "the",
+                        "start": 44.36,
+                        "end": 44.42
+                    },
+                    {
+                        "word": "secondary",
+                        "start": 44.42,
+                        "end": 44.78
+                    }
+                ]
+            },
+            {
+                "start": 44.78,
+                "end": 46.28,
+                "text": "software tools you use aren't the",
+                "words": [
+                    {
+                        "word": "software",
+                        "start": 44.78,
+                        "end": 45.12
+                    },
+                    {
+                        "word": "tools",
+                        "start": 45.12,
+                        "end": 45.42
+                    },
+                    {
+                        "word": "you",
+                        "start": 45.42,
+                        "end": 45.54
+                    },
+                    {
+                        "word": "use",
+                        "start": 45.54,
+                        "end": 45.82
+                    },
+                    {
+                        "word": "aren't",
+                        "start": 45.82,
+                        "end": 46.08
+                    },
+                    {
+                        "word": "the",
+                        "start": 46.08,
+                        "end": 46.28
+                    }
+                ]
+            },
+            {
+                "start": 46.28,
+                "end": 47.68,
+                "text": "brains of the operation.",
+                "words": [
+                    {
+                        "word": "brains",
+                        "start": 46.28,
+                        "end": 46.6
+                    },
+                    {
+                        "word": "of",
+                        "start": 46.6,
+                        "end": 46.86
+                    },
+                    {
+                        "word": "the",
+                        "start": 46.86,
+                        "end": 46.98
+                    },
+                    {
+                        "word": "operation.",
+                        "start": 46.98,
+                        "end": 47.42
+                    }
+                ]
+            },
+            {
+                "start": 47.68,
+                "end": 49.74,
+                "text": "the true economic engine is the",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 47.68,
+                        "end": 47.82
+                    },
+                    {
+                        "word": "true",
+                        "start": 47.82,
+                        "end": 48.08
+                    },
+                    {
+                        "word": "economic",
+                        "start": 48.08,
+                        "end": 48.6
+                    },
+                    {
+                        "word": "engine",
+                        "start": 48.6,
+                        "end": 49.02
+                    },
+                    {
+                        "word": "is",
+                        "start": 49.02,
+                        "end": 49.58
+                    },
+                    {
+                        "word": "the",
+                        "start": 49.58,
+                        "end": 49.74
+                    }
+                ]
+            },
+            {
+                "start": 49.74,
+                "end": 51.94,
+                "text": "foundation model itself.",
+                "words": [
+                    {
+                        "word": "foundation",
+                        "start": 49.74,
+                        "end": 50.14
+                    },
+                    {
+                        "word": "model",
+                        "start": 50.14,
+                        "end": 50.42
+                    },
+                    {
+                        "word": "itself.",
+                        "start": 50.42,
+                        "end": 50.98
+                    }
+                ]
+            },
+            {
+                "start": 51.94,
+                "end": 53.52,
+                "text": "yeah, the research is highly",
+                "words": [
+                    {
+                        "word": "yeah,",
+                        "start": 51.94,
+                        "end": 51.98
+                    },
+                    {
+                        "word": "the",
+                        "start": 52.2,
+                        "end": 52.34
+                    },
+                    {
+                        "word": "research",
+                        "start": 52.34,
+                        "end": 52.64
+                    },
+                    {
+                        "word": "is",
+                        "start": 52.64,
+                        "end": 52.98
+                    },
+                    {
+                        "word": "highly",
+                        "start": 52.98,
+                        "end": 53.52
+                    }
+                ]
+            },
+            {
+                "start": 53.52,
+                "end": 55.04,
+                "text": "critical of the current industry",
+                "words": [
+                    {
+                        "word": "critical",
+                        "start": 53.52,
+                        "end": 53.96
+                    },
+                    {
+                        "word": "of",
+                        "start": 53.96,
+                        "end": 54.2
+                    },
+                    {
+                        "word": "the",
+                        "start": 54.2,
+                        "end": 54.38
+                    },
+                    {
+                        "word": "current",
+                        "start": 54.38,
+                        "end": 54.64
+                    },
+                    {
+                        "word": "industry",
+                        "start": 54.64,
+                        "end": 55.04
+                    }
+                ]
+            },
+            {
+                "start": 55.04,
+                "end": 57.14,
+                "text": "hype surrounding what they call",
+                "words": [
+                    {
+                        "word": "hype",
+                        "start": 55.04,
+                        "end": 55.24
+                    },
+                    {
+                        "word": "surrounding",
+                        "start": 55.24,
+                        "end": 55.58
+                    },
+                    {
+                        "word": "what",
+                        "start": 55.58,
+                        "end": 55.76
+                    },
+                    {
+                        "word": "they",
+                        "start": 55.76,
+                        "end": 55.92
+                    },
+                    {
+                        "word": "call",
+                        "start": 55.92,
+                        "end": 56.32
+                    }
+                ]
+            },
+            {
+                "start": 57.14,
+                "end": 59.06,
+                "text": "agent wrappers and orchestration",
+                "words": [
+                    {
+                        "word": "agent",
+                        "start": 57.14,
+                        "end": 57.74
+                    },
+                    {
+                        "word": "wrappers",
+                        "start": 57.74,
+                        "end": 58.18
+                    },
+                    {
+                        "word": "and",
+                        "start": 58.18,
+                        "end": 58.46
+                    },
+                    {
+                        "word": "orchestration",
+                        "start": 58.46,
+                        "end": 59.06
+                    }
+                ]
+            },
+            {
+                "start": 59.06,
+                "end": 60.96,
+                "text": "pipelines. oh, the wrappers are",
+                "words": [
+                    {
+                        "word": "pipelines.",
+                        "start": 59.06,
+                        "end": 59.66
+                    },
+                    {
+                        "word": "oh,",
+                        "start": 60.22,
+                        "end": 60.26
+                    },
+                    {
+                        "word": "the",
+                        "start": 60.32,
+                        "end": 60.44
+                    },
+                    {
+                        "word": "wrappers",
+                        "start": 60.44,
+                        "end": 60.68
+                    },
+                    {
+                        "word": "are",
+                        "start": 60.68,
+                        "end": 60.96
+                    }
+                ]
+            },
+            {
+                "start": 60.96,
+                "end": 63.04,
+                "text": "everywhere. everywhere you look,",
+                "words": [
+                    {
+                        "word": "everywhere.",
+                        "start": 60.96,
+                        "end": 61.48
+                    },
+                    {
+                        "word": "everywhere",
+                        "start": 62.12,
+                        "end": 62.32
+                    },
+                    {
+                        "word": "you",
+                        "start": 62.32,
+                        "end": 62.54
+                    },
+                    {
+                        "word": "look,",
+                        "start": 62.54,
+                        "end": 62.8
+                    }
+                ]
+            },
+            {
+                "start": 63.04,
+                "end": 64.08,
+                "text": "startups are launching these",
+                "words": [
+                    {
+                        "word": "startups",
+                        "start": 63.04,
+                        "end": 63.2
+                    },
+                    {
+                        "word": "are",
+                        "start": 63.2,
+                        "end": 63.42
+                    },
+                    {
+                        "word": "launching",
+                        "start": 63.42,
+                        "end": 63.74
+                    },
+                    {
+                        "word": "these",
+                        "start": 63.74,
+                        "end": 64.08
+                    }
+                ]
+            },
+            {
+                "start": 64.08,
+                "end": 66.46,
+                "text": "little secondary tools,",
+                "words": [
+                    {
+                        "word": "little",
+                        "start": 64.08,
+                        "end": 64.82
+                    },
+                    {
+                        "word": "secondary",
+                        "start": 64.82,
+                        "end": 65.4
+                    },
+                    {
+                        "word": "tools,",
+                        "start": 65.4,
+                        "end": 65.9
+                    }
+                ]
+            },
+            {
+                "start": 66.46,
+                "end": 68.12,
+                "text": "bots that chain prompts together",
+                "words": [
+                    {
+                        "word": "bots",
+                        "start": 66.46,
+                        "end": 66.74
+                    },
+                    {
+                        "word": "that",
+                        "start": 66.74,
+                        "end": 66.96
+                    },
+                    {
+                        "word": "chain",
+                        "start": 66.96,
+                        "end": 67.26
+                    },
+                    {
+                        "word": "prompts",
+                        "start": 67.26,
+                        "end": 67.66
+                    },
+                    {
+                        "word": "together",
+                        "start": 67.66,
+                        "end": 68.12
+                    }
+                ]
+            },
+            {
+                "start": 68.12,
+                "end": 70.06,
+                "text": "or software that routes your",
+                "words": [
+                    {
+                        "word": "or",
+                        "start": 68.12,
+                        "end": 68.44
+                    },
+                    {
+                        "word": "software",
+                        "start": 68.44,
+                        "end": 69.14
+                    },
+                    {
+                        "word": "that",
+                        "start": 69.14,
+                        "end": 69.4
+                    },
+                    {
+                        "word": "routes",
+                        "start": 69.4,
+                        "end": 69.84
+                    },
+                    {
+                        "word": "your",
+                        "start": 69.84,
+                        "end": 70.06
+                    }
+                ]
+            },
+            {
+                "start": 70.06,
+                "end": 71.68,
+                "text": "request to three different models",
+                "words": [
+                    {
+                        "word": "request",
+                        "start": 70.06,
+                        "end": 70.46
+                    },
+                    {
+                        "word": "to",
+                        "start": 70.46,
+                        "end": 70.74
+                    },
+                    {
+                        "word": "three",
+                        "start": 70.74,
+                        "end": 71.1
+                    },
+                    {
+                        "word": "different",
+                        "start": 71.1,
+                        "end": 71.34
+                    },
+                    {
+                        "word": "models",
+                        "start": 71.34,
+                        "end": 71.68
+                    }
+                ]
+            },
+            {
+                "start": 71.68,
+                "end": 73.66,
+                "text": "and aggregates the answer.",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 71.68,
+                        "end": 71.9
+                    },
+                    {
+                        "word": "aggregates",
+                        "start": 71.9,
+                        "end": 72.34
+                    },
+                    {
+                        "word": "the",
+                        "start": 72.34,
+                        "end": 72.52
+                    },
+                    {
+                        "word": "answer.",
+                        "start": 72.52,
+                        "end": 72.92
+                    }
+                ]
+            },
+            {
+                "start": 73.66,
+                "end": 74.94,
+                "text": "but the paper insists we are",
+                "words": [
+                    {
+                        "word": "but",
+                        "start": 73.66,
+                        "end": 73.7
+                    },
+                    {
+                        "word": "the",
+                        "start": 73.68,
+                        "end": 73.82
+                    },
+                    {
+                        "word": "paper",
+                        "start": 73.82,
+                        "end": 74.02
+                    },
+                    {
+                        "word": "insists",
+                        "start": 74.02,
+                        "end": 74.44
+                    },
+                    {
+                        "word": "we",
+                        "start": 74.44,
+                        "end": 74.8
+                    },
+                    {
+                        "word": "are",
+                        "start": 74.8,
+                        "end": 74.94
+                    }
+                ]
+            },
+            {
+                "start": 74.94,
+                "end": 76.08,
+                "text": "staring at the wrong layer of",
+                "words": [
+                    {
+                        "word": "staring",
+                        "start": 74.94,
+                        "end": 75.26
+                    },
+                    {
+                        "word": "at",
+                        "start": 75.26,
+                        "end": 75.4
+                    },
+                    {
+                        "word": "the",
+                        "start": 75.4,
+                        "end": 75.52
+                    },
+                    {
+                        "word": "wrong",
+                        "start": 75.52,
+                        "end": 75.68
+                    },
+                    {
+                        "word": "layer",
+                        "start": 75.68,
+                        "end": 75.92
+                    },
+                    {
+                        "word": "of",
+                        "start": 75.92,
+                        "end": 76.08
+                    }
+                ]
+            },
+            {
+                "start": 76.08,
+                "end": 77.56,
+                "text": "the architecture. right.",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 76.08,
+                        "end": 76.18
+                    },
+                    {
+                        "word": "architecture.",
+                        "start": 76.18,
+                        "end": 76.58
+                    },
+                    {
+                        "word": "right.",
+                        "start": 76.98,
+                        "end": 77.16
+                    }
+                ]
+            },
+            {
+                "start": 77.56,
+                "end": 79.58,
+                "text": "and before we dissect exactly why",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 77.56,
+                        "end": 77.8
+                    },
+                    {
+                        "word": "before",
+                        "start": 77.8,
+                        "end": 78.1
+                    },
+                    {
+                        "word": "we",
+                        "start": 78.1,
+                        "end": 78.32
+                    },
+                    {
+                        "word": "dissect",
+                        "start": 78.32,
+                        "end": 78.68
+                    },
+                    {
+                        "word": "exactly",
+                        "start": 78.68,
+                        "end": 79.2
+                    },
+                    {
+                        "word": "why",
+                        "start": 79.2,
+                        "end": 79.58
+                    }
+                ]
+            },
+            {
+                "start": 79.58,
+                "end": 81.62,
+                "text": "that is, i wanna seamlessly weave",
+                "words": [
+                    {
+                        "word": "that",
+                        "start": 79.58,
+                        "end": 79.8
+                    },
+                    {
+                        "word": "is,",
+                        "start": 79.8,
+                        "end": 80.06
+                    },
+                    {
+                        "word": "i",
+                        "start": 80.56,
+                        "end": 80.68
+                    },
+                    {
+                        "word": "wanna",
+                        "start": 80.68,
+                        "end": 80.82
+                    },
+                    {
+                        "word": "seamlessly",
+                        "start": 80.82,
+                        "end": 81.34
+                    },
+                    {
+                        "word": "weave",
+                        "start": 81.34,
+                        "end": 81.62
+                    }
+                ]
+            },
+            {
+                "start": 81.62,
+                "end": 82.56,
+                "text": "in a quick note for you",
+                "words": [
+                    {
+                        "word": "in",
+                        "start": 81.62,
+                        "end": 81.8
+                    },
+                    {
+                        "word": "a",
+                        "start": 81.8,
+                        "end": 81.96
+                    },
+                    {
+                        "word": "quick",
+                        "start": 81.96,
+                        "end": 82.1
+                    },
+                    {
+                        "word": "note",
+                        "start": 82.1,
+                        "end": 82.28
+                    },
+                    {
+                        "word": "for",
+                        "start": 82.28,
+                        "end": 82.46
+                    },
+                    {
+                        "word": "you",
+                        "start": 82.46,
+                        "end": 82.56
+                    }
+                ]
+            },
+            {
+                "start": 82.56,
+                "end": 84.78,
+                "text": "guys. all deep dive episodes are",
+                "words": [
+                    {
+                        "word": "guys.",
+                        "start": 82.56,
+                        "end": 82.88
+                    },
+                    {
+                        "word": "all",
+                        "start": 83.4,
+                        "end": 83.62
+                    },
+                    {
+                        "word": "deep",
+                        "start": 83.62,
+                        "end": 83.92
+                    },
+                    {
+                        "word": "dive",
+                        "start": 83.92,
+                        "end": 84.04
+                    },
+                    {
+                        "word": "episodes",
+                        "start": 84.04,
+                        "end": 84.46
+                    },
+                    {
+                        "word": "are",
+                        "start": 84.46,
+                        "end": 84.78
+                    }
+                ]
+            },
+            {
+                "start": 84.78,
+                "end": 86.44,
+                "text": "now available in a public notebook",
+                "words": [
+                    {
+                        "word": "now",
+                        "start": 84.78,
+                        "end": 85.0
+                    },
+                    {
+                        "word": "available",
+                        "start": 85.0,
+                        "end": 85.38
+                    },
+                    {
+                        "word": "in",
+                        "start": 85.38,
+                        "end": 85.64
+                    },
+                    {
+                        "word": "a",
+                        "start": 85.64,
+                        "end": 85.82
+                    },
+                    {
+                        "word": "public",
+                        "start": 85.82,
+                        "end": 86.08
+                    },
+                    {
+                        "word": "notebook",
+                        "start": 86.08,
+                        "end": 86.44
+                    }
+                ]
+            },
+            {
+                "start": 86.44,
+                "end": 87.9,
+                "text": "lm. the link is on the",
+                "words": [
+                    {
+                        "word": "lm.",
+                        "start": 86.44,
+                        "end": 86.78
+                    },
+                    {
+                        "word": "the",
+                        "start": 87.22,
+                        "end": 87.42
+                    },
+                    {
+                        "word": "link",
+                        "start": 87.42,
+                        "end": 87.52
+                    },
+                    {
+                        "word": "is",
+                        "start": 87.52,
+                        "end": 87.66
+                    },
+                    {
+                        "word": "on",
+                        "start": 87.66,
+                        "end": 87.76
+                    },
+                    {
+                        "word": "the",
+                        "start": 87.76,
+                        "end": 87.9
+                    }
+                ]
+            },
+            {
+                "start": 87.9,
+                "end": 89.24,
+                "text": "deep dive landing page.",
+                "words": [
+                    {
+                        "word": "deep",
+                        "start": 87.9,
+                        "end": 88.1
+                    },
+                    {
+                        "word": "dive",
+                        "start": 88.1,
+                        "end": 88.24
+                    },
+                    {
+                        "word": "landing",
+                        "start": 88.24,
+                        "end": 88.5
+                    },
+                    {
+                        "word": "page.",
+                        "start": 88.5,
+                        "end": 88.86
+                    }
+                ]
+            },
+            {
+                "start": 89.24,
+                "end": 90.76,
+                "text": "this is true open sourcing of",
+                "words": [
+                    {
+                        "word": "this",
+                        "start": 89.24,
+                        "end": 89.46
+                    },
+                    {
+                        "word": "is",
+                        "start": 89.46,
+                        "end": 89.72
+                    },
+                    {
+                        "word": "true",
+                        "start": 89.72,
+                        "end": 89.92
+                    },
+                    {
+                        "word": "open",
+                        "start": 89.92,
+                        "end": 90.28
+                    },
+                    {
+                        "word": "sourcing",
+                        "start": 90.28,
+                        "end": 90.56
+                    },
+                    {
+                        "word": "of",
+                        "start": 90.56,
+                        "end": 90.76
+                    }
+                ]
+            },
+            {
+                "start": 90.76,
+                "end": 92.3,
+                "text": "the knowledge we discuss here.",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 90.76,
+                        "end": 90.88
+                    },
+                    {
+                        "word": "knowledge",
+                        "start": 90.88,
+                        "end": 91.1
+                    },
+                    {
+                        "word": "we",
+                        "start": 91.1,
+                        "end": 91.32
+                    },
+                    {
+                        "word": "discuss",
+                        "start": 91.32,
+                        "end": 91.6
+                    },
+                    {
+                        "word": "here.",
+                        "start": 91.6,
+                        "end": 91.88
+                    }
+                ]
+            },
+            {
+                "start": 92.3,
+                "end": 92.86,
+                "text": "check it out,",
+                "words": [
+                    {
+                        "word": "check",
+                        "start": 92.3,
+                        "end": 92.44
+                    },
+                    {
+                        "word": "it",
+                        "start": 92.44,
+                        "end": 92.54
+                    },
+                    {
+                        "word": "out,",
+                        "start": 92.54,
+                        "end": 92.72
+                    }
+                ]
+            },
+            {
+                "start": 92.86,
+                "end": 94.04,
+                "text": "interact with the material,",
+                "words": [
+                    {
+                        "word": "interact",
+                        "start": 92.86,
+                        "end": 93.1
+                    },
+                    {
+                        "word": "with",
+                        "start": 93.1,
+                        "end": 93.3
+                    },
+                    {
+                        "word": "the",
+                        "start": 93.3,
+                        "end": 93.44
+                    },
+                    {
+                        "word": "material,",
+                        "start": 93.44,
+                        "end": 93.74
+                    }
+                ]
+            },
+            {
+                "start": 94.04,
+                "end": 95.36,
+                "text": "ask questions and let us know",
+                "words": [
+                    {
+                        "word": "ask",
+                        "start": 94.04,
+                        "end": 94.2
+                    },
+                    {
+                        "word": "questions",
+                        "start": 94.2,
+                        "end": 94.56
+                    },
+                    {
+                        "word": "and",
+                        "start": 94.56,
+                        "end": 94.84
+                    },
+                    {
+                        "word": "let",
+                        "start": 94.84,
+                        "end": 95.1
+                    },
+                    {
+                        "word": "us",
+                        "start": 95.1,
+                        "end": 95.22
+                    },
+                    {
+                        "word": "know",
+                        "start": 95.22,
+                        "end": 95.36
+                    }
+                ]
+            },
+            {
+                "start": 95.36,
+                "end": 96.18,
+                "text": "what you think.",
+                "words": [
+                    {
+                        "word": "what",
+                        "start": 95.36,
+                        "end": 95.48
+                    },
+                    {
+                        "word": "you",
+                        "start": 95.48,
+                        "end": 95.58
+                    },
+                    {
+                        "word": "think.",
+                        "start": 95.58,
+                        "end": 95.86
+                    }
+                ]
+            },
+            {
+                "start": 96.18,
+                "end": 97.38,
+                "text": "it's a really cool tool.",
+                "words": [
+                    {
+                        "word": "it's",
+                        "start": 96.18,
+                        "end": 96.66
+                    },
+                    {
+                        "word": "a",
+                        "start": 96.66,
+                        "end": 96.76
+                    },
+                    {
+                        "word": "really",
+                        "start": 96.76,
+                        "end": 96.92
+                    },
+                    {
+                        "word": "cool",
+                        "start": 96.92,
+                        "end": 97.08
+                    },
+                    {
+                        "word": "tool.",
+                        "start": 97.08,
+                        "end": 97.38
+                    }
+                ]
+            },
+            {
+                "start": 97.38,
+                "end": 99.72,
+                "text": "it is. now,",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 97.38,
+                        "end": 98.04
+                    },
+                    {
+                        "word": "is.",
+                        "start": 98.04,
+                        "end": 98.28
+                    },
+                    {
+                        "word": "now,",
+                        "start": 99.14,
+                        "end": 99.24
+                    }
+                ]
+            },
+            {
+                "start": 99.72,
+                "end": 100.66,
+                "text": "getting back to these agent",
+                "words": [
+                    {
+                        "word": "getting",
+                        "start": 99.72,
+                        "end": 99.78
+                    },
+                    {
+                        "word": "back",
+                        "start": 99.78,
+                        "end": 99.98
+                    },
+                    {
+                        "word": "to",
+                        "start": 99.98,
+                        "end": 100.14
+                    },
+                    {
+                        "word": "these",
+                        "start": 100.14,
+                        "end": 100.34
+                    },
+                    {
+                        "word": "agent",
+                        "start": 100.34,
+                        "end": 100.66
+                    }
+                ]
+            },
+            {
+                "start": 100.66,
+                "end": 102.42,
+                "text": "wrappers, why does the research",
+                "words": [
+                    {
+                        "word": "wrappers,",
+                        "start": 100.66,
+                        "end": 101.02
+                    },
+                    {
+                        "word": "why",
+                        "start": 101.52,
+                        "end": 101.7
+                    },
+                    {
+                        "word": "does",
+                        "start": 101.7,
+                        "end": 101.88
+                    },
+                    {
+                        "word": "the",
+                        "start": 101.88,
+                        "end": 102.06
+                    },
+                    {
+                        "word": "research",
+                        "start": 102.06,
+                        "end": 102.42
+                    }
+                ]
+            },
+            {
+                "start": 102.42,
+                "end": 104.48,
+                "text": "say they are a distraction from",
+                "words": [
+                    {
+                        "word": "say",
+                        "start": 102.42,
+                        "end": 102.74
+                    },
+                    {
+                        "word": "they",
+                        "start": 102.74,
+                        "end": 102.98
+                    },
+                    {
+                        "word": "are",
+                        "start": 102.98,
+                        "end": 103.4
+                    },
+                    {
+                        "word": "a",
+                        "start": 103.4,
+                        "end": 103.72
+                    },
+                    {
+                        "word": "distraction",
+                        "start": 103.72,
+                        "end": 104.2
+                    },
+                    {
+                        "word": "from",
+                        "start": 104.2,
+                        "end": 104.48
+                    }
+                ]
+            },
+            {
+                "start": 104.48,
+                "end": 106.84,
+                "text": "true autonomy? because an agent",
+                "words": [
+                    {
+                        "word": "true",
+                        "start": 104.48,
+                        "end": 104.7
+                    },
+                    {
+                        "word": "autonomy?",
+                        "start": 104.7,
+                        "end": 105.14
+                    },
+                    {
+                        "word": "because",
+                        "start": 105.9,
+                        "end": 106.16
+                    },
+                    {
+                        "word": "an",
+                        "start": 106.16,
+                        "end": 106.42
+                    },
+                    {
+                        "word": "agent",
+                        "start": 106.42,
+                        "end": 106.84
+                    }
+                ]
+            },
+            {
+                "start": 106.84,
+                "end": 108.62,
+                "text": "wrapper is by definition an",
+                "words": [
+                    {
+                        "word": "wrapper",
+                        "start": 106.84,
+                        "end": 107.12
+                    },
+                    {
+                        "word": "is",
+                        "start": 107.12,
+                        "end": 107.42
+                    },
+                    {
+                        "word": "by",
+                        "start": 107.42,
+                        "end": 107.66
+                    },
+                    {
+                        "word": "definition",
+                        "start": 107.66,
+                        "end": 108.16
+                    },
+                    {
+                        "word": "an",
+                        "start": 108.16,
+                        "end": 108.62
+                    }
+                ]
+            },
+            {
+                "start": 108.62,
+                "end": 110.64,
+                "text": "ephemeral consumer. think about",
+                "words": [
+                    {
+                        "word": "ephemeral",
+                        "start": 108.62,
+                        "end": 109.26
+                    },
+                    {
+                        "word": "consumer.",
+                        "start": 109.26,
+                        "end": 109.74
+                    },
+                    {
+                        "word": "think",
+                        "start": 110.36,
+                        "end": 110.46
+                    },
+                    {
+                        "word": "about",
+                        "start": 110.46,
+                        "end": 110.64
+                    }
+                ]
+            },
+            {
+                "start": 110.64,
+                "end": 111.78,
+                "text": "the mechanics of how a wrapper",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 110.64,
+                        "end": 110.78
+                    },
+                    {
+                        "word": "mechanics",
+                        "start": 110.78,
+                        "end": 111.1
+                    },
+                    {
+                        "word": "of",
+                        "start": 111.1,
+                        "end": 111.26
+                    },
+                    {
+                        "word": "how",
+                        "start": 111.26,
+                        "end": 111.42
+                    },
+                    {
+                        "word": "a",
+                        "start": 111.42,
+                        "end": 111.58
+                    },
+                    {
+                        "word": "wrapper",
+                        "start": 111.58,
+                        "end": 111.78
+                    }
+                ]
+            },
+            {
+                "start": 111.78,
+                "end": 113.2,
+                "text": "works. it is a piece of",
+                "words": [
+                    {
+                        "word": "works.",
+                        "start": 111.78,
+                        "end": 112.12
+                    },
+                    {
+                        "word": "it",
+                        "start": 112.52,
+                        "end": 112.62
+                    },
+                    {
+                        "word": "is",
+                        "start": 112.62,
+                        "end": 112.74
+                    },
+                    {
+                        "word": "a",
+                        "start": 112.74,
+                        "end": 112.88
+                    },
+                    {
+                        "word": "piece",
+                        "start": 112.88,
+                        "end": 113.0
+                    },
+                    {
+                        "word": "of",
+                        "start": 113.0,
+                        "end": 113.2
+                    }
+                ]
+            },
+            {
+                "start": 113.2,
+                "end": 115.06,
+                "text": "software that relies entirely on",
+                "words": [
+                    {
+                        "word": "software",
+                        "start": 113.2,
+                        "end": 113.54
+                    },
+                    {
+                        "word": "that",
+                        "start": 113.54,
+                        "end": 113.8
+                    },
+                    {
+                        "word": "relies",
+                        "start": 113.8,
+                        "end": 114.1
+                    },
+                    {
+                        "word": "entirely",
+                        "start": 114.1,
+                        "end": 114.68
+                    },
+                    {
+                        "word": "on",
+                        "start": 114.68,
+                        "end": 115.06
+                    }
+                ]
+            },
+            {
+                "start": 115.06,
+                "end": 117.0,
+                "text": "issuing api requests to an",
+                "words": [
+                    {
+                        "word": "issuing",
+                        "start": 115.06,
+                        "end": 115.42
+                    },
+                    {
+                        "word": "api",
+                        "start": 115.42,
+                        "end": 115.92
+                    },
+                    {
+                        "word": "requests",
+                        "start": 115.92,
+                        "end": 116.38
+                    },
+                    {
+                        "word": "to",
+                        "start": 116.38,
+                        "end": 116.8
+                    },
+                    {
+                        "word": "an",
+                        "start": 116.8,
+                        "end": 117.0
+                    }
+                ]
+            },
+            {
+                "start": 117.0,
+                "end": 118.34,
+                "text": "underlying server. it doesn't",
+                "words": [
+                    {
+                        "word": "underlying",
+                        "start": 117.0,
+                        "end": 117.34
+                    },
+                    {
+                        "word": "server.",
+                        "start": 117.34,
+                        "end": 117.76
+                    },
+                    {
+                        "word": "it",
+                        "start": 117.96,
+                        "end": 118.16
+                    },
+                    {
+                        "word": "doesn't",
+                        "start": 118.16,
+                        "end": 118.34
+                    }
+                ]
+            },
+            {
+                "start": 118.34,
+                "end": 119.84,
+                "text": "actually think. no,",
+                "words": [
+                    {
+                        "word": "actually",
+                        "start": 118.34,
+                        "end": 118.68
+                    },
+                    {
+                        "word": "think.",
+                        "start": 118.68,
+                        "end": 119.0
+                    },
+                    {
+                        "word": "no,",
+                        "start": 119.42,
+                        "end": 119.68
+                    }
+                ]
+            },
+            {
+                "start": 119.84,
+                "end": 121.62,
+                "text": "it has no intrinsic generative",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 119.84,
+                        "end": 120.0
+                    },
+                    {
+                        "word": "has",
+                        "start": 120.0,
+                        "end": 120.22
+                    },
+                    {
+                        "word": "no",
+                        "start": 120.22,
+                        "end": 120.44
+                    },
+                    {
+                        "word": "intrinsic",
+                        "start": 120.44,
+                        "end": 120.98
+                    },
+                    {
+                        "word": "generative",
+                        "start": 120.98,
+                        "end": 121.62
+                    }
+                ]
+            },
+            {
+                "start": 121.62,
+                "end": 123.34,
+                "text": "viability. it's just a middleman",
+                "words": [
+                    {
+                        "word": "viability.",
+                        "start": 121.62,
+                        "end": 122.18
+                    },
+                    {
+                        "word": "it's",
+                        "start": 122.36,
+                        "end": 122.66
+                    },
+                    {
+                        "word": "just",
+                        "start": 122.66,
+                        "end": 122.8
+                    },
+                    {
+                        "word": "a",
+                        "start": 122.8,
+                        "end": 122.98
+                    },
+                    {
+                        "word": "middleman",
+                        "start": 122.98,
+                        "end": 123.34
+                    }
+                ]
+            },
+            {
+                "start": 123.34,
+                "end": 124.92,
+                "text": "formatting the question.",
+                "words": [
+                    {
+                        "word": "formatting",
+                        "start": 123.34,
+                        "end": 123.84
+                    },
+                    {
+                        "word": "the",
+                        "start": 123.84,
+                        "end": 124.04
+                    },
+                    {
+                        "word": "question.",
+                        "start": 124.04,
+                        "end": 124.4
+                    }
+                ]
+            },
+            {
+                "start": 124.92,
+                "end": 127.56,
+                "text": "exactly. and if the api access",
+                "words": [
+                    {
+                        "word": "exactly.",
+                        "start": 124.92,
+                        "end": 125.52
+                    },
+                    {
+                        "word": "and",
+                        "start": 126.12,
+                        "end": 126.4
+                    },
+                    {
+                        "word": "if",
+                        "start": 126.4,
+                        "end": 126.6
+                    },
+                    {
+                        "word": "the",
+                        "start": 126.6,
+                        "end": 126.84
+                    },
+                    {
+                        "word": "api",
+                        "start": 126.84,
+                        "end": 127.16
+                    },
+                    {
+                        "word": "access",
+                        "start": 127.16,
+                        "end": 127.56
+                    }
+                ]
+            },
+            {
+                "start": 127.56,
+                "end": 128.5,
+                "text": "is suddenly revoked,",
+                "words": [
+                    {
+                        "word": "is",
+                        "start": 127.56,
+                        "end": 127.8
+                    },
+                    {
+                        "word": "suddenly",
+                        "start": 127.8,
+                        "end": 128.02
+                    },
+                    {
+                        "word": "revoked,",
+                        "start": 128.02,
+                        "end": 128.42
+                    }
+                ]
+            },
+            {
+                "start": 128.5,
+                "end": 130.38,
+                "text": "or if the human developer's credit",
+                "words": [
+                    {
+                        "word": "or",
+                        "start": 128.5,
+                        "end": 128.62
+                    },
+                    {
+                        "word": "if",
+                        "start": 128.62,
+                        "end": 129.28
+                    },
+                    {
+                        "word": "the",
+                        "start": 129.28,
+                        "end": 129.44
+                    },
+                    {
+                        "word": "human",
+                        "start": 129.44,
+                        "end": 129.64
+                    },
+                    {
+                        "word": "developer's",
+                        "start": 129.64,
+                        "end": 130.28
+                    },
+                    {
+                        "word": "credit",
+                        "start": 130.28,
+                        "end": 130.38
+                    }
+                ]
+            },
+            {
+                "start": 130.38,
+                "end": 132.24,
+                "text": "card on file expires,",
+                "words": [
+                    {
+                        "word": "card",
+                        "start": 130.38,
+                        "end": 130.7
+                    },
+                    {
+                        "word": "on",
+                        "start": 130.7,
+                        "end": 130.86
+                    },
+                    {
+                        "word": "file",
+                        "start": 130.86,
+                        "end": 131.08
+                    },
+                    {
+                        "word": "expires,",
+                        "start": 131.08,
+                        "end": 131.76
+                    }
+                ]
+            },
+            {
+                "start": 132.24,
+                "end": 133.9,
+                "text": "that wrapper dies instantly.",
+                "words": [
+                    {
+                        "word": "that",
+                        "start": 132.24,
+                        "end": 132.5
+                    },
+                    {
+                        "word": "wrapper",
+                        "start": 132.5,
+                        "end": 132.72
+                    },
+                    {
+                        "word": "dies",
+                        "start": 132.72,
+                        "end": 133.02
+                    },
+                    {
+                        "word": "instantly.",
+                        "start": 133.02,
+                        "end": 133.54
+                    }
+                ]
+            },
+            {
+                "start": 133.9,
+                "end": 135.34,
+                "text": "it ceases to exist because it",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 133.9,
+                        "end": 134.06
+                    },
+                    {
+                        "word": "ceases",
+                        "start": 134.06,
+                        "end": 134.28
+                    },
+                    {
+                        "word": "to",
+                        "start": 134.28,
+                        "end": 134.6
+                    },
+                    {
+                        "word": "exist",
+                        "start": 134.6,
+                        "end": 134.86
+                    },
+                    {
+                        "word": "because",
+                        "start": 134.86,
+                        "end": 135.2
+                    },
+                    {
+                        "word": "it",
+                        "start": 135.2,
+                        "end": 135.34
+                    }
+                ]
+            },
+            {
+                "start": 135.34,
+                "end": 136.78,
+                "text": "has no foundational capital",
+                "words": [
+                    {
+                        "word": "has",
+                        "start": 135.34,
+                        "end": 135.52
+                    },
+                    {
+                        "word": "no",
+                        "start": 135.52,
+                        "end": 135.78
+                    },
+                    {
+                        "word": "foundational",
+                        "start": 135.78,
+                        "end": 136.4
+                    },
+                    {
+                        "word": "capital",
+                        "start": 136.4,
+                        "end": 136.78
+                    }
+                ]
+            },
+            {
+                "start": 136.78,
+                "end": 138.0,
+                "text": "backing it up.",
+                "words": [
+                    {
+                        "word": "backing",
+                        "start": 136.78,
+                        "end": 137.2
+                    },
+                    {
+                        "word": "it",
+                        "start": 137.2,
+                        "end": 137.36
+                    },
+                    {
+                        "word": "up.",
+                        "start": 137.36,
+                        "end": 137.58
+                    }
+                ]
+            },
+            {
+                "start": 138.0,
+                "end": 138.94,
+                "text": "you got it.",
+                "words": [
+                    {
+                        "word": "you",
+                        "start": 138.0,
+                        "end": 138.1
+                    },
+                    {
+                        "word": "got",
+                        "start": 138.1,
+                        "end": 138.3
+                    },
+                    {
+                        "word": "it.",
+                        "start": 138.3,
+                        "end": 138.56
+                    }
+                ]
+            },
+            {
+                "start": 138.94,
+                "end": 140.3,
+                "text": "the actual capital sync,",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 138.94,
+                        "end": 139.12
+                    },
+                    {
+                        "word": "actual",
+                        "start": 139.12,
+                        "end": 139.58
+                    },
+                    {
+                        "word": "capital",
+                        "start": 139.58,
+                        "end": 139.9
+                    },
+                    {
+                        "word": "sync,",
+                        "start": 139.9,
+                        "end": 140.18
+                    }
+                ]
+            },
+            {
+                "start": 140.3,
+                "end": 141.8,
+                "text": "the primary engine of generation,",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 140.3,
+                        "end": 140.42
+                    },
+                    {
+                        "word": "primary",
+                        "start": 140.42,
+                        "end": 140.86
+                    },
+                    {
+                        "word": "engine",
+                        "start": 140.86,
+                        "end": 141.2
+                    },
+                    {
+                        "word": "of",
+                        "start": 141.2,
+                        "end": 141.38
+                    },
+                    {
+                        "word": "generation,",
+                        "start": 141.38,
+                        "end": 141.78
+                    }
+                ]
+            },
+            {
+                "start": 141.8,
+                "end": 143.66,
+                "text": "is the massive foundation model",
+                "words": [
+                    {
+                        "word": "is",
+                        "start": 141.8,
+                        "end": 142.22
+                    },
+                    {
+                        "word": "the",
+                        "start": 142.22,
+                        "end": 142.42
+                    },
+                    {
+                        "word": "massive",
+                        "start": 142.42,
+                        "end": 142.86
+                    },
+                    {
+                        "word": "foundation",
+                        "start": 142.86,
+                        "end": 143.34
+                    },
+                    {
+                        "word": "model",
+                        "start": 143.34,
+                        "end": 143.66
+                    }
+                ]
+            },
+            {
+                "start": 143.66,
+                "end": 145.14,
+                "text": "sitting in the data center.",
+                "words": [
+                    {
+                        "word": "sitting",
+                        "start": 143.66,
+                        "end": 143.9
+                    },
+                    {
+                        "word": "in",
+                        "start": 143.9,
+                        "end": 144.08
+                    },
+                    {
+                        "word": "the",
+                        "start": 144.08,
+                        "end": 144.24
+                    },
+                    {
+                        "word": "data",
+                        "start": 144.24,
+                        "end": 144.38
+                    },
+                    {
+                        "word": "center.",
+                        "start": 144.38,
+                        "end": 144.66
+                    }
+                ]
+            },
+            {
+                "start": 145.14,
+                "end": 146.94,
+                "text": "that multi -billion parameter",
+                "words": [
+                    {
+                        "word": "that",
+                        "start": 145.14,
+                        "end": 145.34
+                    },
+                    {
+                        "word": "multi",
+                        "start": 145.34,
+                        "end": 145.94
+                    },
+                    {
+                        "word": "-billion",
+                        "start": 145.94,
+                        "end": 146.44
+                    },
+                    {
+                        "word": "parameter",
+                        "start": 146.44,
+                        "end": 146.94
+                    }
+                ]
+            },
+            {
+                "start": 146.94,
+                "end": 149.16,
+                "text": "neural network is the core asset.",
+                "words": [
+                    {
+                        "word": "neural",
+                        "start": 146.94,
+                        "end": 147.32
+                    },
+                    {
+                        "word": "network",
+                        "start": 147.32,
+                        "end": 147.7
+                    },
+                    {
+                        "word": "is",
+                        "start": 147.7,
+                        "end": 148.06
+                    },
+                    {
+                        "word": "the",
+                        "start": 148.06,
+                        "end": 148.3
+                    },
+                    {
+                        "word": "core",
+                        "start": 148.3,
+                        "end": 148.52
+                    },
+                    {
+                        "word": "asset.",
+                        "start": 148.52,
+                        "end": 148.92
+                    }
+                ]
+            },
+            {
+                "start": 149.16,
+                "end": 150.48,
+                "text": "it is the entity doing the",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 149.16,
+                        "end": 149.36
+                    },
+                    {
+                        "word": "is",
+                        "start": 149.36,
+                        "end": 149.48
+                    },
+                    {
+                        "word": "the",
+                        "start": 149.48,
+                        "end": 149.62
+                    },
+                    {
+                        "word": "entity",
+                        "start": 149.62,
+                        "end": 149.92
+                    },
+                    {
+                        "word": "doing",
+                        "start": 149.92,
+                        "end": 150.22
+                    },
+                    {
+                        "word": "the",
+                        "start": 150.22,
+                        "end": 150.48
+                    }
+                ]
+            },
+            {
+                "start": 150.48,
+                "end": 152.42,
+                "text": "heavy thermodynamic lifting of",
+                "words": [
+                    {
+                        "word": "heavy",
+                        "start": 150.48,
+                        "end": 150.8
+                    },
+                    {
+                        "word": "thermodynamic",
+                        "start": 150.8,
+                        "end": 151.56
+                    },
+                    {
+                        "word": "lifting",
+                        "start": 151.56,
+                        "end": 151.94
+                    },
+                    {
+                        "word": "of",
+                        "start": 151.94,
+                        "end": 152.42
+                    }
+                ]
+            },
+            {
+                "start": 152.42,
+                "end": 153.94,
+                "text": "processing vast amounts of",
+                "words": [
+                    {
+                        "word": "processing",
+                        "start": 152.42,
+                        "end": 153.0
+                    },
+                    {
+                        "word": "vast",
+                        "start": 153.0,
+                        "end": 153.46
+                    },
+                    {
+                        "word": "amounts",
+                        "start": 153.46,
+                        "end": 153.72
+                    },
+                    {
+                        "word": "of",
+                        "start": 153.72,
+                        "end": 153.94
+                    }
+                ]
+            },
+            {
+                "start": 153.94,
+                "end": 155.28,
+                "text": "information and producing high",
+                "words": [
+                    {
+                        "word": "information",
+                        "start": 153.94,
+                        "end": 154.36
+                    },
+                    {
+                        "word": "and",
+                        "start": 154.36,
+                        "end": 154.58
+                    },
+                    {
+                        "word": "producing",
+                        "start": 154.58,
+                        "end": 155.0
+                    },
+                    {
+                        "word": "high",
+                        "start": 155.0,
+                        "end": 155.28
+                    }
+                ]
+            },
+            {
+                "start": 155.28,
+                "end": 157.7,
+                "text": "value tokens. so true economic",
+                "words": [
+                    {
+                        "word": "value",
+                        "start": 155.28,
+                        "end": 155.5
+                    },
+                    {
+                        "word": "tokens.",
+                        "start": 155.5,
+                        "end": 156.0
+                    },
+                    {
+                        "word": "so",
+                        "start": 156.54,
+                        "end": 156.58
+                    },
+                    {
+                        "word": "true",
+                        "start": 156.54,
+                        "end": 157.12
+                    },
+                    {
+                        "word": "economic",
+                        "start": 157.12,
+                        "end": 157.7
+                    }
+                ]
+            },
+            {
+                "start": 157.7,
+                "end": 159.48,
+                "text": "autonomy has to happen at",
+                "words": [
+                    {
+                        "word": "autonomy",
+                        "start": 157.7,
+                        "end": 158.24
+                    },
+                    {
+                        "word": "has",
+                        "start": 158.24,
+                        "end": 158.9
+                    },
+                    {
+                        "word": "to",
+                        "start": 158.9,
+                        "end": 159.08
+                    },
+                    {
+                        "word": "happen",
+                        "start": 159.08,
+                        "end": 159.32
+                    },
+                    {
+                        "word": "at",
+                        "start": 159.32,
+                        "end": 159.48
+                    }
+                ]
+            },
+            {
+                "start": 159.48,
+                "end": 160.71,
+                "text": "that foundation layer.",
+                "words": [
+                    {
+                        "word": "that",
+                        "start": 159.48,
+                        "end": 159.7
+                    },
+                    {
+                        "word": "foundation",
+                        "start": 159.7,
+                        "end": 160.2
+                    },
+                    {
+                        "word": "layer.",
+                        "start": 160.2,
+                        "end": 160.56
+                    }
+                ]
+            }
+        ],
+        "_caption_sig": "6165ee2dedfc5251a71c7e7968745618",
+        "_audio_sig": "a6ac7194f60344d9399b115cd065fe11",
+        "audio_duration": 164.76,
+        "visual_source": "manim",
+        "infographic_ready": false,
+        "_infographic_version": "v3_monochrome_no_grid",
+        "rendered_duration": 170.3,
+        "intro_offset": 1.5,
+        "outro_duration": 5.0,
+        "source_start": 435.52,
+        "source_end": 597.64,
+        "_compiled_sig": "ea3f59c65fb2efff1bc2103d50c48107"
     },
     {
         "num": 5,
-        "title": "And Someone Has to Pay for the Physics",
+        "title": "Nothing is Free !",
         "start": 598.34,
         "end": 748.64,
         "duration": 150.3,
@@ -14240,10 +19539,10 @@
         "segments": [
             {
                 "type": "audio",
-                "start": 598.34,
+                "start": 607.16,
                 "end": 617.78,
-                "duration": 19.44,
-                "text": "It needs to sense consumer demand in real time, determine what users are willing to pay for specific types of cognitive work, and manage its own operational margins. But to run a profitable business, you have to know your exact margins. The AI needs to know, down to the fraction of a penny, exactly how much a single thought costs to produce."
+                "duration": 10.62,
+                "text": "But  to  run  a  profitable  business,  you  have  to  know  your  exact  margins.  The  AI  needs  to  know,  down  to  the  fraction  of  a  penny,  exactly  how  much  a  single  thought  costs  to  produce."
             },
             {
                 "type": "music",
@@ -14257,9 +19556,9 @@
             {
                 "type": "audio",
                 "start": 618.26,
-                "end": 748.64,
-                "duration": 130.38,
-                "text": "And this brings us to the hidden microeconomics of artificial intelligence. Every single word an AI speaks burns physical energy, and someone has to pay for the physics. I think this is one of the most crucial mental shifts for anyone trying to understand the future of computation. We're so deeply conditioned by the internet era to view digital goods as essentially free. Right, you send an email, it's free. You type a prompt into an interface. Words instantly appear on the screen, and it feels like magic. It feels totally weightless. But the research explicitly grounds us back in the physical constraints of inference. Nothing is free. Not a single thing. Every single token, every tiny fragment of a word the AI generates, carries a strict, non -negotiable physical expense. And the author models this expense mathematically in the paper. Now, we aren't going to read out the complex equations they use, but the conceptual essence of their formula is just vital. Break you down for us. The true base cost to generate one single token is immutably tied to the physical world. It is calculated as a combination of real -time server rental costs and live, fluctuating electrical utility rates. Okay, so rent and power. Yes, and you take those costs, and you divide them by the physical efficiency of the hardware, basically how fast the GPUs can actually process information. And then, importantly, you have to multiply that baseline by the sheer size of the AI's internal memory, its parameter count, and the length of the prompt the user just submitted. Exactly. Let's try to visualize this mechanics because I think a metaphor helps here. Imagine a microscopic, highly complex factory assembly line. Every single word produced by this AI requires exactly one drop of physical electricity, and it takes up a specific microsecond of physical space on a GPU assembly line. That's a great way to picture it. And just like a physical factory, if a user submits a massive, complex prompt, they are essentially ordering a custom, heavy -duty product. Which takes up more space on the assembly line. Takes up more space, requires more drops of electricity, and it actually forces the cooling fans to spin faster to dissipate the physical heat generated by the calculation."
+                "end": 760.78,
+                "duration": 142.52,
+                "text": "And  this  brings  us  to  the  hidden  microeconomics  of  artificial  intelligence.  Every  single  word  an  AI  speaks  burns  physical  energy,  and  someone  has  to  pay  for  the  physics.  I  think  this  is  one  of  the  most  crucial  mental  shifts  for  anyone  trying  to  understand  the  future  of  computation.  We're  so  deeply  conditioned  by  the  internet  era  to  view  digital  goods  as  essentially  free.  Right,  you  send  an  email,  it's  free.  You  type  a  prompt  into  an  interface.  Words  instantly  appear  on  the  screen,  and  it  feels  like  magic.  It  feels  totally  weightless.  But  the  research  explicitly  grounds  us  back  in  the  physical  constraints  of  inference.  Nothing  is  free.  Not  a  single  thing.  Every  single  token,  every  tiny  fragment  of  a  word  the  AI  generates,  carries  a  strict,  non -negotiable  physical  expense.  And  the  author  models  this  expense  mathematically  in  the  paper.  Now,  we  aren't  going  to  read  out  the  complex  equations  they  use,  but  the  conceptual  essence  of  their  formula  is  just  vital.  Break  you  down  for  us.  The  true  base  cost  to  generate  one  single  token  is  immutably  tied  to  the  physical  world.  It  is  calculated  as  a  combination  of  real -time  server  rental  costs  and  live,  fluctuating  electrical  utility  rates.  Okay,  so  rent  and  power.  Yes,  and  you  take  those  costs,  and  you  divide  them  by  the  physical  efficiency  of  the  hardware,  basically  how  fast  the  GPUs  can  actually  process  information.  And  then,  importantly,  you  have  to  multiply  that  baseline  by  the  sheer  size  of  the  AI's  internal  memory,  its  parameter  count,  and  the  length  of  the  prompt  the  user  just  submitted.  Exactly.  Let's  try  to  visualize  this  mechanics  because  I  think  a  metaphor  helps  here.  Imagine  a  microscopic,  highly  complex  factory  assembly  line.  Every  single  word  produced  by  this  AI  requires  exactly  one  drop  of  physical  electricity,  and  it  takes  up  a  specific  microsecond  of  physical  space  on  a  GPU  assembly  line.  That's  a  great  way  to  picture  it.  And  just  like  a  physical  factory,  if  a  user  submits  a  massive,  complex  prompt,  they  are  essentially  ordering  a  custom,  heavy -duty  product.  Which  takes  up  more  space  on  the  assembly  line.  Takes  up  more  space,  requires  more  drops  of  electricity,  and  it  actually  forces  the  cooling  fans  to  spin  faster  to  dissipate  the  physical  heat  generated  by  the  calculation.  So  if  the  local  utility  company  raises  electricity  prices  during  a  summer  heat  wave,  the  cost  of  running  that  microscopic  factory  goes  up  instantly.  The  physics  literally  cannot  be  ignored.  No,  it  can't."
             },
             {
                 "type": "music",
