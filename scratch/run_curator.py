@@ -1166,7 +1166,8 @@ def generate_or_load_storyboard_data(project_id: str, clip_num, force_regen: boo
                 "foundation_stack": "Solid base vs fragile top layers",
                 "robot_unplugged": "The physical robot fallacy (dead battery, missing plug)",
                 "circuit_switch": "Logic gate, threshold barrier, state trigger",
-                "pulse_resonance": "Frequency alignment, acoustic harmony, signal clarity"
+                "pulse_resonance": "Frequency alignment, acoustic harmony, signal clarity",
+            "teenager_basement": "Genius teenager coding in basement with happy tail-wagging dog"
             }
         },
         "clip_num": int(clip_num),

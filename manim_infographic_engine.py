@@ -36,6 +36,7 @@ PEDAGOGICAL_ARCHETYPES = [
     "robot_unplugged",        # The physical robot fallacy (dead battery, missing plug)
     "circuit_switch",         # Logic gate, threshold barrier, state trigger
     "pulse_resonance",        # Frequency alignment, acoustic harmony, signal clarity
+    "teenager_basement",      # Cognitive genius coder in basement with happy tail-wagging dog
 ]
 
 
@@ -132,6 +133,7 @@ def generate_pedagogical_storyboard(
             ("foundation_stack", "ARCHITECTURAL LAYERS", "Foundational physical layer supporting cognitive software", "Structural granite blocks anchoring top tier", ["PHYSICS", "LOGIC"]),
             ("circuit_switch", "ECONOMIC TRIGGER", "State change when economic viability threshold is crossed", "High-voltage knife switch closing circuit", ["OPEN", "CLOSED"]),
             ("pulse_resonance", "SIGNAL COHERENCE", "Constructive alignment of economic incentives and energy", "Harmonic standing wave amplifying peak resonance", ["NOISE", "RESONANCE"]),
+            ("teenager_basement", "TEENAGED AI", "Brilliant cognitive maturity but complete economic dependency", "Teenager typing in basement with dog wagging tail", ["COGNITIVE", "DEPENDENT"]),
         ]
         for i in range(num_scenes):
             s_t = round(i * target_scene_dur, 2)
@@ -280,6 +282,83 @@ class {scene_class_name}(Scene):
             eye_l.animate.set_fill(opacity=0.2),
             eye_r.animate.set_fill(opacity=0.2),
             cord_grp.animate.rotate(0.18, about_point=[0, -0.35, 0]),
+            run_time={t_kinetic:.2f}
+        )
+        self.wait({t_hold:.2f})
+"""
+    elif archetype == "teenager_basement":
+        code = f"""
+class {scene_class_name}(Scene):
+    def construct(self):{grid_init}
+        # Header (y ≈ 3.2 to 2.7)
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
+        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
+        self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
+
+        # Step 1: Basement Light & Ambient Glow (Starts below rule at y = 2.3)
+        wire = Line([0, 2.3, 0], [0, 1.4, 0], color="#FFFFFF", stroke_width=3)
+        shade = Polygon([-0.45, 1.25, 0], [0.45, 1.25, 0], [0.2, 1.4, 0], [-0.2, 1.4, 0], color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.9, stroke_width=3)
+        bulb = Circle(radius=0.09, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([0, 1.18, 0])
+        lamp = VGroup(wire, shade, bulb)
+        light_beam = Polygon([0, 1.18, 0], [-3.4, -2.8, 0], [3.4, -2.8, 0], color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.05, stroke_width=0)
+
+        # Desk & Setup (Left: x in [-2.9, 0.1])
+        desk_top = RoundedRectangle(corner_radius=0.06, height=0.14, width=3.0, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.9, stroke_width=4).move_to([-1.4, -0.7, 0])
+        leg_l = Line([-2.7, -0.77, 0], [-2.7, -2.6, 0], color="#FFFFFF", stroke_width=4)
+        leg_r = Line([-0.1, -0.77, 0], [-0.1, -2.6, 0], color="#FFFFFF", stroke_width=4)
+        desk = VGroup(desk_top, leg_l, leg_r)
+
+        # Monitor & Code
+        m_base = Line([-1.9, -0.63, 0], [-1.1, -0.63, 0], color="#FFFFFF", stroke_width=5)
+        m_pole = Line([-1.5, -0.63, 0], [-1.5, -0.15, 0], color="#FFFFFF", stroke_width=5)
+        m_screen = RoundedRectangle(corner_radius=0.08, height=1.2, width=1.7, color="#FFFFFF", fill_color="#000000", fill_opacity=0.95, stroke_width=4).move_to([-1.5, 0.45, 0])
+        c1 = Line([-2.15, 0.72, 0], [-1.2, 0.72, 0], color="#FFFFFF", stroke_width=3)
+        c2 = Line([-2.15, 0.52, 0], [-1.5, 0.52, 0], color="#FFFFFF", stroke_width=3)
+        c3 = Line([-2.15, 0.32, 0], [-0.95, 0.32, 0], color="#FFFFFF", stroke_width=3)
+        c4 = Line([-2.15, 0.12, 0], [-1.6, 0.12, 0], color="#FFFFFF", stroke_width=3)
+        code_lines = VGroup(c1, c2, c3, c4)
+        monitor = VGroup(m_base, m_pole, m_screen, code_lines)
+
+        # Chair
+        c_seat = Line([0.2, -0.9, 0], [0.9, -0.9, 0], color="#FFFFFF", stroke_width=5)
+        c_back = Line([0.9, -0.9, 0], [0.9, 0.25, 0], color="#FFFFFF", stroke_width=4)
+        c_leg = Line([0.55, -0.9, 0], [0.55, -2.6, 0], color="#FFFFFF", stroke_width=4)
+        chair = VGroup(c_seat, c_back, c_leg)
+
+        # Teenager with Gamer Headphones
+        head = Circle(radius=0.28, color="#FFFFFF", fill_color="#000000", fill_opacity=0.95, stroke_width=4).move_to([0.45, 0.5, 0])
+        hp_band = Arc(radius=0.33, start_angle=0.1, angle=PI-0.2, color="#FFFFFF", stroke_width=4).move_to([0.45, 0.58, 0])
+        hp_ear = Circle(radius=0.09, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([0.45, 0.48, 0])
+        torso = Line([0.45, 0.22, 0], [0.65, -0.85, 0], color="#FFFFFF", stroke_width=6)
+        arm = VMobject(color="#FFFFFF", stroke_width=5).set_points_as_corners([[0.48, 0.12, 0], [0.15, -0.22, 0], [-0.75, -0.58, 0]])
+        teenager = VGroup(head, hp_band, hp_ear, torso, arm)
+
+        self.play(FadeIn(lamp), FadeIn(light_beam), FadeIn(desk), FadeIn(monitor), FadeIn(chair), FadeIn(teenager), run_time={t_step1:.2f})
+
+        # Step 2: Dog on Rug & Labels
+        rug = Ellipse(width=2.2, height=0.45, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.08, stroke_width=2).move_to([2.35, -2.4, 0])
+        dog_body = RoundedRectangle(corner_radius=0.22, height=0.55, width=1.1, color="#FFFFFF", fill_color="#000000", fill_opacity=0.95, stroke_width=4).move_to([2.25, -2.05, 0])
+        paw_f = Circle(radius=0.08, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([1.85, -2.28, 0])
+        paw_b = Circle(radius=0.08, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([2.65, -2.28, 0])
+        dog_head = Circle(radius=0.22, color="#FFFFFF", fill_color="#000000", fill_opacity=0.95, stroke_width=4).move_to([1.7, -1.88, 0])
+        dog_ear = Polygon([1.65, -1.7, 0], [1.82, -1.75, 0], [1.74, -1.98, 0], color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0, stroke_width=2)
+        dog_snout = Circle(radius=0.06, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([1.5, -1.92, 0])
+
+        tail_pivot = np.array([2.77, -1.98, 0])
+        tail = Line(tail_pivot, tail_pivot + np.array([0.45, 0.35, 0]), color="#FFFFFF", stroke_width=5)
+        dog_static = VGroup(rug, dog_body, paw_f, paw_b, dog_head, dog_snout, dog_ear)
+
+        lbl_top = Text("{lbl_a}", font="Arial", weight=BOLD, font_size=13, color="#FFFFFF").next_to(m_screen, UP, buff=0.18)
+        lbl_sub = Text("{lbl_b}", font="Arial", weight=BOLD, font_size=13, color="#FFFFFF").move_to([2.25, -1.25, 0])
+        labels_grp = VGroup(lbl_top, lbl_sub)
+
+        self.play(FadeIn(dog_static), Create(tail), FadeIn(labels_grp), run_time={t_step2:.2f})
+
+        # Step 3: Kinetic Dog Tail Wagging & Screen Glow Pulse
+        self.play(
+            Rotate(tail, angle=0.45, about_point=tail_pivot, rate_func=wiggle, run_time={t_kinetic:.2f}),
+            code_lines.animate.set_stroke(width=5),
+            arm.animate.shift(LEFT * 0.08),
             run_time={t_kinetic:.2f}
         )
         self.wait({t_hold:.2f})
