@@ -19517,7 +19517,7 @@
         "_caption_sig": "6165ee2dedfc5251a71c7e7968745618",
         "_audio_sig": "a6ac7194f60344d9399b115cd065fe11",
         "audio_duration": 164.76,
-        "visual_source": "manim",
+        "visual_source": "mosaic",
         "infographic_ready": false,
         "_infographic_version": "v3_monochrome_no_grid",
         "rendered_duration": 170.3,
@@ -19525,7 +19525,7 @@
         "outro_duration": 5.0,
         "source_start": 435.52,
         "source_end": 597.64,
-        "_compiled_sig": "df706fda2719107f541e975b1d89d226"
+        "_compiled_sig": "12df21067eadc458c240cf1aef0734bb"
     },
     {
         "num": 5,
