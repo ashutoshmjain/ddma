@@ -1915,7 +1915,10 @@
                             <label style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: block;">GEMINI API CREDENTIALS</label>
                             <span style="font-size: 0.72rem; color: var(--text-muted);">Required for Gemini AI Clip Remixing & Episode AI Auto-Plan.</span>
                         </div>
-                        <input type="password" id="settingsGeminiApiKey" placeholder="Enter Gemini API Key" autocomplete="new-password" data-lpignore="true" style="width: 380px; padding: 0.55rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                        <div style="display: flex; gap: 0.4rem; align-items: center;">
+                            <input type="password" id="settingsGeminiApiKey" placeholder="Enter Gemini API Key" autocomplete="new-password" data-lpignore="true" style="width: 340px; padding: 0.55rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
+                            <button type="button" id="toggleGeminiKeyVisBtn" class="btn btn-secondary" style="padding: 0.45rem 0.65rem; font-size: 0.85rem; cursor: pointer;" title="Show/Hide API Key">👁️</button>
+                        </div>
                     </div>
 
                     <!-- Single Clip Remix Prompt -->
@@ -3443,6 +3446,19 @@
             document.getElementById('settingsMosaicMogrNodeId').value = localStorage.getItem('ddma-mosaic-mogr-node-id') || '';
             document.getElementById('settingsMosaicCaptionsNodeId').value = localStorage.getItem('ddma-mosaic-captions-node-id') || '';
             document.getElementById('settingsGeminiApiKey').value = localStorage.getItem('ddma-gemini-api-key') || '';
+            const toggleGeminiKeyVisBtn = document.getElementById('toggleGeminiKeyVisBtn');
+            const geminiKeyInput = document.getElementById('settingsGeminiApiKey');
+            if (toggleGeminiKeyVisBtn && geminiKeyInput) {
+                toggleGeminiKeyVisBtn.addEventListener('click', () => {
+                    if (geminiKeyInput.type === 'password') {
+                        geminiKeyInput.type = 'text';
+                        toggleGeminiKeyVisBtn.textContent = '🔒';
+                    } else {
+                        geminiKeyInput.type = 'password';
+                        toggleGeminiKeyVisBtn.textContent = '👁️';
+                    }
+                });
+            }
             document.getElementById('settingsMosaicDefaultPrompt').value = localStorage.getItem('ddma-mosaic-default-prompt') || '';
             document.getElementById('settingsGeminiDefaultPrompt').value = localStorage.getItem('ddma-gemini-default-prompt') || '';
             const epPromptEl = document.getElementById('settingsGeminiEpisodeDefaultPrompt');
