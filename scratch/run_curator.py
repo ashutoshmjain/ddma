@@ -4056,19 +4056,25 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     not os.path.exists(infographic_mp4) or os.path.getsize(infographic_mp4) < 10000
                 )
 
-                                # Check for on-disk storyboard file from external editor
+                # Check for storyboard: 1) passed in body, 2) on disk, 3) in t_clip
                 sb_disk_path = get_storyboard_filepath(project_id, clip_num)
-                if os.path.exists(sb_disk_path):
+                scenes = req_body.get("scenes")
+                if not scenes and os.path.exists(sb_disk_path):
                     try:
                         with open(sb_disk_path, "r", encoding="utf-8") as sbf:
                             sb_disk_data = json.load(sbf)
                             if sb_disk_data.get("scenes"):
-                                t_clip["infographic_scenes"] = sb_disk_data["scenes"]
-                                print(f"[{project_id}][Clip {clip_num}] Using storyboard from disk: {sb_disk_path} ({len(sb_disk_data['scenes'])} scenes)")
+                                scenes = sb_disk_data["scenes"]
+                                t_clip["infographic_scenes"] = scenes
+                                print(f"[{project_id}][Clip {clip_num}] Using storyboard from disk: {sb_disk_path} ({len(scenes)} scenes)")
                     except Exception as e_sb:
                         print(f"Warning reading storyboard from {sb_disk_path}: {e_sb}")
 
-                if need_render_infographic:
+                if not scenes:
+                    scenes = t_clip.get("infographic_scenes")
+
+                # Only generate brand new scenes with AI/heuristic if none exist at all
+                if not scenes or (force_regen and not os.path.exists(sb_disk_path) and not req_body.get("scenes")):
                     settings = load_settings()
                     api_key = settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
                     g_mod = genai if (HAS_GENAI and configure_gemini(api_key)) else None
@@ -4078,8 +4084,9 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         force_regenerate=True
                     )
                     t_clip["infographic_scenes"] = scenes
-                    print(f"[{project_id}][Clip {clip_num}] Rendering 1080x1080 Manim Pedagogical Infographic ({len(scenes)} scenes)...")
-                    manim_infographic_engine.render_manim_infographic_mp4(scenes, clip_mp3, infographic_mp4, duration=body_dur)
+
+                print(f"[{project_id}][Clip {clip_num}] Rendering 1080x1080 Manim Pedagogical Infographic ({len(scenes)} scenes)...")
+                manim_infographic_engine.render_manim_infographic_mp4(scenes, clip_mp3, infographic_mp4, duration=body_dur)
 
                 t_clip["_audio_sig"] = curr_audio_sig
                 t_clip["audio_duration"] = round(body_dur, 2)

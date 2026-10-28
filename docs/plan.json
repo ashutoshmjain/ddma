@@ -14101,7 +14101,9 @@
                 "metaphor": "Node revived by high-speed trade connection",
                 "labels": [
                     "ISOLATION",
-                    "NETWORK"
+                    "COMPUTE",
+                    "CAPITAL",
+                    "DATA"
                 ]
             },
             {
