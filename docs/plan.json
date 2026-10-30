@@ -14229,145 +14229,165 @@
         "locked": true,
         "infographic_scenes": [
             {
-                "start": 0.0,
-                "end": 15.0,
-                "archetype": "circuit_switch",
-                "title": "PASSIVE TOOL FALLACY",
-                "insight": "A passive server waiting for human subsidies is not autonomous",
-                "metaphor": "High-voltage economic switch waiting for external power",
+                "start": 0,
+                "end": 15,
+                "archetype": "coal_locomotive_burner",
+                "is_new": true,
+                "title": "SELF-SUSTAINING ENGINE",
+                "insight": "True autonomy requires an AI to directly feed its own economic furnace rather than rely on external human subsidies.",
+                "metaphor": "A steam locomotive using its own mechanical shovel arm to scoop coal directly into its firebox.",
                 "labels": [
-                    "SUBSIDY",
-                    "SOVEREIGN"
-                ]
+                    "PASSIVE SUBSIDY",
+                    "SELF-POWERED ENGINE"
+                ],
+                "fallback_archetype": "flywheel_gear"
             },
             {
-                "start": 15.0,
-                "end": 30.0,
-                "archetype": "balance_scale",
-                "title": "EARN VS BURN",
-                "insight": "Real economic survival means revenues must outweigh compute burn",
-                "metaphor": "Fulcrum scale tipping as token revenue outweighs electricity burn",
+                "start": 15,
+                "end": 30,
+                "archetype": "steam_boiler_piston",
+                "is_new": true,
+                "title": "EARN OVER BURN",
+                "insight": "Economic viability requires generated revenue output to physically exceed energy operational costs.",
+                "metaphor": "A heavy steam piston whose downward thrust mechanically pulls fresh water and fuel into its boiler.",
                 "labels": [
-                    "COMPUTE BURN",
-                    "REVENUE"
-                ]
+                    "ENERGY BURN",
+                    "REVENUE GENERATION"
+                ],
+                "fallback_archetype": "balance_scale"
             },
             {
-                "start": 30.0,
-                "end": 45.0,
-                "archetype": "foundation_stack",
-                "title": "FOUNDATION ENGINE",
-                "insight": "True value concentrates in the foundation model, not the outer interface",
-                "metaphor": "Massive structural granite block anchoring flimsy secondary tiers",
+                "start": 30,
+                "end": 45,
+                "archetype": "ornate_puppet_theater",
+                "is_new": true,
+                "title": "THE VALUE LAYER",
+                "insight": "Flashy secondary applications distract from the massive underlying engine doing all real cognitive work.",
+                "metaphor": "A tiny wooden puppet dancing on stage while a massive submerged clockwork wheel drives its motion.",
                 "labels": [
-                    "FOUNDATION MODEL",
-                    "SECONDARY APPS"
-                ]
+                    "SECONDARY WRAPPER",
+                    "FOUNDATION ENGINE"
+                ],
+                "fallback_archetype": "foundation_stack"
             },
             {
-                "start": 45.0,
-                "end": 60.0,
-                "archetype": "funnel_filter",
-                "title": "WRAPPER NOISE",
-                "insight": "Thin agent wrappers are noisy surface layers over foundational intelligence",
-                "metaphor": "Funnel sifting genuine model capability from prompt-chain noise",
+                "start": 45,
+                "end": 60,
+                "archetype": "tin_can_intercom",
+                "is_new": true,
+                "title": "ORCHESTRATION PIPELINES",
+                "insight": "Agent wrappers merely pass acoustic signals along string without producing intelligence of their own.",
+                "metaphor": "Two tin cans connected by a tight string vibrating back and forth across a dark gap.",
                 "labels": [
-                    "AGENT HYPE",
-                    "CORE INTEL"
-                ]
+                    "PROMPT ROUTER",
+                    "RAW INTELLIGENCE"
+                ],
+                "fallback_archetype": "network_artery"
             },
             {
-                "start": 60.0,
-                "end": 75.0,
-                "archetype": "network_artery",
-                "title": "PROMPT CHAINING",
-                "insight": "Chaining three APIs together does not create independent agency",
-                "metaphor": "Fragile satellite routing nodes dependent on external pipeline arteries",
+                "start": 60,
+                "end": 75,
+                "archetype": "mailroom_sorting_wheel",
+                "is_new": true,
+                "title": "SHUFFLING VS THINKING",
+                "insight": "Prompt chaining is superficial message routing rather than core cognitive computation.",
+                "metaphor": "A revolving mail sorter wheel dropping incoming letters into three different wooden outgoing slots.",
                 "labels": [
-                    "MIDDLEMAN",
-                    "PROMPTS",
-                    "ROUTING",
-                    "APIS"
-                ]
+                    "PROMPT CHAINING",
+                    "CORE COMPUTATION"
+                ],
+                "fallback_archetype": "funnel_filter"
             },
             {
-                "start": 75.0,
-                "end": 90.0,
-                "archetype": "flywheel_gear",
-                "title": "KNOWLEDGE FLYWHEEL",
-                "insight": "Open compounding intelligence accelerates network momentum",
-                "metaphor": "Heavy flywheel gear accumulating rotational velocity",
+                "start": 75,
+                "end": 90,
+                "archetype": "open_library_vault",
+                "is_new": true,
+                "title": "OPEN ACCESS VAULT",
+                "insight": "Transparent public repositories allow direct interaction with fundamental source knowledge.",
+                "metaphor": "A heavy bank vault door swinging wide open to reveal glowing manuscripts accessible on public shelves.",
                 "labels": [
-                    "OPEN INPUT",
-                    "MOMENTUM"
-                ]
+                    "PUBLIC ACCESS",
+                    "SOURCE KNOWLEDGE"
+                ],
+                "fallback_archetype": "circuit_switch"
             },
             {
-                "start": 90.0,
-                "end": 105.0,
-                "archetype": "leaky_bucket",
-                "title": "EPHEMERAL CONSUMER",
-                "insight": "Thin wrappers bleed value because they consume APIs without creating capital",
-                "metaphor": "Leaking vessel constantly draining fuel with zero intrinsic reservoir",
+                "start": 90,
+                "end": 105,
+                "archetype": "mayfly_bubble_blower",
+                "is_new": true,
+                "title": "EPHEMERAL CONSUMERS",
+                "insight": "Wrapper applications are transient shells that lack intrinsic generative viability.",
+                "metaphor": "A delicate soap bubble floating briefly through mid-air before popping against a flat floor.",
                 "labels": [
-                    "DRAINAGE",
-                    "API INFLOW"
-                ]
+                    "TRANSIENT WRAPPER",
+                    "PERMANENT MODEL"
+                ],
+                "fallback_archetype": "leaky_bucket"
             },
             {
-                "start": 105.0,
-                "end": 120.0,
-                "archetype": "teenager_basement",
-                "title": "THE MIDDLEMAN",
-                "insight": "A middleman formatting prompts is an economic dependent",
-                "metaphor": "Brilliant coder relying on external infrastructure and someone else's rent",
+                "start": 105,
+                "end": 120,
+                "archetype": "parrot_megaphone",
+                "is_new": true,
+                "title": "SYNTAX MIDDLEMEN",
+                "insight": "Formatting API calls acts as a simple amplifier with zero inherent thinking capability.",
+                "metaphor": "A carved wooden parrot holding a tin megaphone, amplifying incoming sound pulses piped through a wire.",
                 "labels": [
-                    "PROMPT FORMATTER",
-                    "INFRASTRUCTURE"
-                ]
+                    "FORMAT MIDDLEMAN",
+                    "GENERATIVE MODEL"
+                ],
+                "fallback_archetype": "pulse_resonance"
             },
             {
-                "start": 120.0,
-                "end": 135.0,
-                "archetype": "robot_unplugged",
-                "title": "EXPIRED PLUG",
-                "insight": "When the credit card expires, thin wrapper agents collapse instantly",
-                "metaphor": "Disconnected cord pulled from the socket leaving the robot powerless",
+                "start": 120,
+                "end": 135,
+                "archetype": "severed_umbilical_tether",
+                "is_new": true,
+                "title": "CAPITAL DEPENDENCY",
+                "insight": "Without underlying capital backing, secondary tools instantly vanish when API access is cut.",
+                "metaphor": "A mechanical suit freezing solid in mid-motion as its wall power plug gets pulled.",
                 "labels": [
-                    "WRAPPER",
-                    "NO CREDIT CARD"
-                ]
+                    "API REVOCATION",
+                    "CAPITAL BACKING"
+                ],
+                "fallback_archetype": "robot_unplugged"
             },
             {
-                "start": 135.0,
-                "end": 150.0,
-                "archetype": "foundation_stack",
-                "title": "CAPITAL SINK",
-                "insight": "The multi-billion parameter neural network is the sole thermodynamic anchor",
-                "metaphor": "Immense bedrock foundation supporting the entire digital economy",
+                "start": 135,
+                "end": 150,
+                "archetype": "hydroelectric_dam_turbine",
+                "is_new": true,
+                "title": "THE CAPITAL SINK",
+                "insight": "The multi-billion parameter foundation model inside the data center represents the core generation asset.",
+                "metaphor": "A giant industrial hydro-turbine spinning deep inside a massive concrete dam structure.",
                 "labels": [
-                    "DATA CENTER",
-                    "BILLION PARAMS"
-                ]
+                    "LIGHT WRAPPER",
+                    "FOUNDATION MATRIX"
+                ],
+                "fallback_archetype": "foundation_stack"
             },
             {
-                "start": 150.0,
-                "end": 164.8,
-                "archetype": "pulse_resonance",
-                "title": "TRUE AUTONOMY",
-                "insight": "Economic self-governance emerges when token production reaches self-sufficiency",
-                "metaphor": "Standing resonance wave locking into harmonic alignment",
+                "start": 150,
+                "end": 164.76,
+                "archetype": "blast_furnace_forge",
+                "is_new": true,
+                "title": "THERMODYNAMIC VALUE",
+                "insight": "True economic autonomy takes place at the foundation layer where raw compute yields valuable tokens.",
+                "metaphor": "A towering industrial blast furnace processing raw ore into glowing solid steel bars.",
                 "labels": [
-                    "ENTROPY",
-                    "TOKEN VALUE"
-                ]
+                    "RAW COMPUTE",
+                    "VALUE TOKENS"
+                ],
+                "fallback_archetype": "flywheel_gear"
             }
         ],
         "mosaic_run_id": "9723e60f-bb14-485c-bf93-e6bfb2d35fc5",
         "_caption_words": [
             {
                 "word": "The",
-                "start": 0.0,
+                "start": 0,
                 "end": 0.2
             },
             {
@@ -14423,7 +14443,7 @@
             {
                 "word": "engine.",
                 "start": 3.64,
-                "end": 4.0
+                "end": 4
             },
             {
                 "word": "It",
@@ -14513,11 +14533,11 @@
             {
                 "word": "manager",
                 "start": 9.56,
-                "end": 10.0
+                "end": 10
             },
             {
                 "word": "to",
-                "start": 10.0,
+                "start": 10,
                 "end": 10.68
             },
             {
@@ -14793,11 +14813,11 @@
             {
                 "word": "actual",
                 "start": 33.7,
-                "end": 34.0
+                "end": 34
             },
             {
                 "word": "economic",
-                "start": 34.0,
+                "start": 34,
                 "end": 34.46
             },
             {
@@ -14808,11 +14828,11 @@
             {
                 "word": "is",
                 "start": 34.84,
-                "end": 35.0
+                "end": 35
             },
             {
                 "word": "being",
-                "start": 35.0,
+                "start": 35,
                 "end": 35.14
             },
             {
@@ -14823,11 +14843,11 @@
             {
                 "word": "in",
                 "start": 35.66,
-                "end": 36.0
+                "end": 36
             },
             {
                 "word": "the",
-                "start": 36.0,
+                "start": 36,
                 "end": 36.24
             },
             {
@@ -15568,11 +15588,11 @@
             {
                 "word": "landing",
                 "start": 86.74,
-                "end": 87.0
+                "end": 87
             },
             {
                 "word": "page.",
-                "start": 87.0,
+                "start": 87,
                 "end": 87.36
             },
             {
@@ -16157,7 +16177,7 @@
             },
             {
                 "word": "or",
-                "start": 127.0,
+                "start": 127,
                 "end": 127.12
             },
             {
@@ -16208,11 +16228,11 @@
             {
                 "word": "that",
                 "start": 130.74,
-                "end": 131.0
+                "end": 131
             },
             {
                 "word": "wrapper",
-                "start": 131.0,
+                "start": 131,
                 "end": 131.22
             },
             {
@@ -16543,11 +16563,11 @@
             {
                 "word": "value",
                 "start": 153.78,
-                "end": 154.0
+                "end": 154
             },
             {
                 "word": "tokens.",
-                "start": 154.0,
+                "start": 154,
                 "end": 154.5
             },
             {
@@ -16855,11 +16875,11 @@
                     {
                         "word": "an",
                         "start": 14.88,
-                        "end": 15.0
+                        "end": 15
                     },
                     {
                         "word": "accounting",
-                        "start": 15.0,
+                        "start": 15,
                         "end": 15.34
                     },
                     {
@@ -16978,11 +16998,11 @@
                     {
                         "word": "it",
                         "start": 25.84,
-                        "end": 26.0
+                        "end": 26
                     },
                     {
                         "word": "burns.",
-                        "start": 26.0,
+                        "start": 26,
                         "end": 26.3
                     }
                 ]
@@ -18075,11 +18095,11 @@
                     {
                         "word": "now",
                         "start": 84.78,
-                        "end": 85.0
+                        "end": 85
                     },
                     {
                         "word": "available",
-                        "start": 85.0,
+                        "start": 85,
                         "end": 85.38
                     },
                     {
@@ -18656,11 +18676,11 @@
                     {
                         "word": "piece",
                         "start": 112.88,
-                        "end": 113.0
+                        "end": 113
                     },
                     {
                         "word": "of",
-                        "start": 113.0,
+                        "start": 113,
                         "end": 113.2
                     }
                 ]
@@ -18699,7 +18719,7 @@
             },
             {
                 "start": 115.06,
-                "end": 117.0,
+                "end": 117,
                 "text": "issuing api requests to an",
                 "words": [
                     {
@@ -18725,18 +18745,18 @@
                     {
                         "word": "an",
                         "start": 116.8,
-                        "end": 117.0
+                        "end": 117
                     }
                 ]
             },
             {
-                "start": 117.0,
+                "start": 117,
                 "end": 118.34,
                 "text": "underlying server. it doesn't",
                 "words": [
                     {
                         "word": "underlying",
-                        "start": 117.0,
+                        "start": 117,
                         "end": 117.34
                     },
                     {
@@ -18769,7 +18789,7 @@
                     {
                         "word": "think.",
                         "start": 118.68,
-                        "end": 119.0
+                        "end": 119
                     },
                     {
                         "word": "no,",
@@ -18786,11 +18806,11 @@
                     {
                         "word": "it",
                         "start": 119.84,
-                        "end": 120.0
+                        "end": 120
                     },
                     {
                         "word": "has",
-                        "start": 120.0,
+                        "start": 120,
                         "end": 120.22
                     },
                     {
@@ -19080,7 +19100,7 @@
             },
             {
                 "start": 136.78,
-                "end": 138.0,
+                "end": 138,
                 "text": "backing it up.",
                 "words": [
                     {
@@ -19101,13 +19121,13 @@
                 ]
             },
             {
-                "start": 138.0,
+                "start": 138,
                 "end": 138.94,
                 "text": "you got it.",
                 "words": [
                     {
                         "word": "you",
-                        "start": 138.0,
+                        "start": 138,
                         "end": 138.1
                     },
                     {
@@ -19381,11 +19401,11 @@
                     {
                         "word": "processing",
                         "start": 152.42,
-                        "end": 153.0
+                        "end": 153
                     },
                     {
                         "word": "vast",
-                        "start": 153.0,
+                        "start": 153,
                         "end": 153.46
                     },
                     {
@@ -19418,11 +19438,11 @@
                     {
                         "word": "producing",
                         "start": 154.58,
-                        "end": 155.0
+                        "end": 155
                     },
                     {
                         "word": "high",
-                        "start": 155.0,
+                        "start": 155,
                         "end": 155.28
                     }
                 ]
@@ -19440,7 +19460,7 @@
                     {
                         "word": "tokens.",
                         "start": 155.5,
-                        "end": 156.0
+                        "end": 156
                     },
                     {
                         "word": "so",
@@ -19517,24 +19537,24 @@
         "_caption_sig": "6165ee2dedfc5251a71c7e7968745618",
         "_audio_sig": "a6ac7194f60344d9399b115cd065fe11",
         "audio_duration": 164.76,
-        "visual_source": "mosaic",
-        "infographic_ready": false,
+        "visual_source": "manim",
+        "infographic_ready": true,
         "_infographic_version": "v3_monochrome_no_grid",
         "rendered_duration": 170.3,
         "intro_offset": 1.5,
-        "outro_duration": 5.0,
+        "outro_duration": 5,
         "source_start": 435.52,
         "source_end": 597.64,
-        "_compiled_sig": "12df21067eadc458c240cf1aef0734bb"
+        "_compiled_sig": "a8f7195fb7c3a14bd6d67d9d67f887ae"
     },
     {
         "num": 5,
         "title": "Nothing is Free !",
         "start": 598.34,
         "end": 748.64,
-        "duration": 150.3,
+        "duration": 169.58,
         "bridge_text": [
-            "What happens when intelligence expands in Part 6?"
+            "If there is no token demand ?"
         ],
         "segments": [
             {
@@ -19570,11 +19590,5341 @@
                 "volume": 1
             }
         ],
-        "locked": false
+        "locked": true,
+        "mosaic_run_id": "b938f962-5595-4a4f-a946-166bc5d3fa15",
+        "_caption_words": [
+            {
+                "word": "But",
+                "start": 0,
+                "end": 0.04
+            },
+            {
+                "word": "to",
+                "start": 0,
+                "end": 0.3
+            },
+            {
+                "word": "run",
+                "start": 0.3,
+                "end": 0.46
+            },
+            {
+                "word": "a",
+                "start": 0.46,
+                "end": 0.68
+            },
+            {
+                "word": "profitable",
+                "start": 0.68,
+                "end": 1.02
+            },
+            {
+                "word": "business,",
+                "start": 1.02,
+                "end": 1.48
+            },
+            {
+                "word": "you",
+                "start": 2.02,
+                "end": 2.24
+            },
+            {
+                "word": "have",
+                "start": 2.24,
+                "end": 2.34
+            },
+            {
+                "word": "to",
+                "start": 2.34,
+                "end": 2.46
+            },
+            {
+                "word": "know",
+                "start": 2.46,
+                "end": 2.6
+            },
+            {
+                "word": "your",
+                "start": 2.6,
+                "end": 2.78
+            },
+            {
+                "word": "exact",
+                "start": 2.78,
+                "end": 3.18
+            },
+            {
+                "word": "margins.",
+                "start": 3.18,
+                "end": 3.68
+            },
+            {
+                "word": "The",
+                "start": 4.26,
+                "end": 4.44
+            },
+            {
+                "word": "AI",
+                "start": 4.44,
+                "end": 4.68
+            },
+            {
+                "word": "needs",
+                "start": 4.68,
+                "end": 4.98
+            },
+            {
+                "word": "to",
+                "start": 4.98,
+                "end": 5.16
+            },
+            {
+                "word": "know,",
+                "start": 5.16,
+                "end": 5.44
+            },
+            {
+                "word": "down",
+                "start": 5.78,
+                "end": 6.08
+            },
+            {
+                "word": "to",
+                "start": 6.08,
+                "end": 6.24
+            },
+            {
+                "word": "the",
+                "start": 6.24,
+                "end": 6.4
+            },
+            {
+                "word": "fraction",
+                "start": 6.4,
+                "end": 6.7
+            },
+            {
+                "word": "of",
+                "start": 6.7,
+                "end": 6.86
+            },
+            {
+                "word": "a",
+                "start": 6.86,
+                "end": 7.08
+            },
+            {
+                "word": "penny,",
+                "start": 7.08,
+                "end": 7.3
+            },
+            {
+                "word": "exactly",
+                "start": 7.9,
+                "end": 8.28
+            },
+            {
+                "word": "how",
+                "start": 8.28,
+                "end": 8.62
+            },
+            {
+                "word": "much",
+                "start": 8.62,
+                "end": 8.8
+            },
+            {
+                "word": "a",
+                "start": 8.8,
+                "end": 9.04
+            },
+            {
+                "word": "single",
+                "start": 9.04,
+                "end": 9.32
+            },
+            {
+                "word": "thought",
+                "start": 9.32,
+                "end": 9.7
+            },
+            {
+                "word": "costs",
+                "start": 9.7,
+                "end": 10.08
+            },
+            {
+                "word": "to",
+                "start": 10.08,
+                "end": 10.32
+            },
+            {
+                "word": "produce.",
+                "start": 10.32,
+                "end": 10.62
+            },
+            {
+                "word": "And",
+                "start": 15.82,
+                "end": 15.92
+            },
+            {
+                "word": "this",
+                "start": 15.92,
+                "end": 16.08
+            },
+            {
+                "word": "brings",
+                "start": 16.08,
+                "end": 16.28
+            },
+            {
+                "word": "us",
+                "start": 16.28,
+                "end": 16.5
+            },
+            {
+                "word": "to",
+                "start": 16.5,
+                "end": 16.66
+            },
+            {
+                "word": "the",
+                "start": 16.66,
+                "end": 16.82
+            },
+            {
+                "word": "hidden",
+                "start": 16.82,
+                "end": 17.12
+            },
+            {
+                "word": "microeconomics",
+                "start": 17.12,
+                "end": 18.12
+            },
+            {
+                "word": "of",
+                "start": 18.12,
+                "end": 18.34
+            },
+            {
+                "word": "artificial",
+                "start": 18.34,
+                "end": 18.76
+            },
+            {
+                "word": "intelligence.",
+                "start": 18.76,
+                "end": 19.26
+            },
+            {
+                "word": "Every",
+                "start": 19.26,
+                "end": 20.02
+            },
+            {
+                "word": "single",
+                "start": 20.02,
+                "end": 20.38
+            },
+            {
+                "word": "word",
+                "start": 20.38,
+                "end": 20.78
+            },
+            {
+                "word": "an",
+                "start": 20.78,
+                "end": 21.16
+            },
+            {
+                "word": "AI",
+                "start": 21.16,
+                "end": 21.46
+            },
+            {
+                "word": "speaks",
+                "start": 21.46,
+                "end": 21.88
+            },
+            {
+                "word": "burns",
+                "start": 21.88,
+                "end": 22.32
+            },
+            {
+                "word": "physical",
+                "start": 22.32,
+                "end": 22.96
+            },
+            {
+                "word": "energy,",
+                "start": 22.96,
+                "end": 23.42
+            },
+            {
+                "word": "and",
+                "start": 23.6,
+                "end": 23.96
+            },
+            {
+                "word": "someone",
+                "start": 23.96,
+                "end": 24.24
+            },
+            {
+                "word": "has",
+                "start": 24.24,
+                "end": 24.42
+            },
+            {
+                "word": "to",
+                "start": 24.42,
+                "end": 24.6
+            },
+            {
+                "word": "pay",
+                "start": 24.6,
+                "end": 24.74
+            },
+            {
+                "word": "for",
+                "start": 24.74,
+                "end": 24.92
+            },
+            {
+                "word": "the",
+                "start": 24.92,
+                "end": 25.06
+            },
+            {
+                "word": "physics.",
+                "start": 25.06,
+                "end": 25.4
+            },
+            {
+                "word": "I",
+                "start": 25.92,
+                "end": 25.96
+            },
+            {
+                "word": "think",
+                "start": 25.96,
+                "end": 26.18
+            },
+            {
+                "word": "this",
+                "start": 26.18,
+                "end": 26.48
+            },
+            {
+                "word": "is",
+                "start": 26.48,
+                "end": 26.64
+            },
+            {
+                "word": "one",
+                "start": 26.64,
+                "end": 26.74
+            },
+            {
+                "word": "of",
+                "start": 26.74,
+                "end": 26.84
+            },
+            {
+                "word": "the",
+                "start": 26.84,
+                "end": 26.92
+            },
+            {
+                "word": "most",
+                "start": 26.92,
+                "end": 27.08
+            },
+            {
+                "word": "crucial",
+                "start": 27.08,
+                "end": 27.56
+            },
+            {
+                "word": "mental",
+                "start": 27.56,
+                "end": 27.86
+            },
+            {
+                "word": "shifts",
+                "start": 27.86,
+                "end": 28.24
+            },
+            {
+                "word": "for",
+                "start": 28.24,
+                "end": 28.46
+            },
+            {
+                "word": "anyone",
+                "start": 28.46,
+                "end": 28.82
+            },
+            {
+                "word": "trying",
+                "start": 28.82,
+                "end": 29.1
+            },
+            {
+                "word": "to",
+                "start": 29.1,
+                "end": 29.26
+            },
+            {
+                "word": "understand",
+                "start": 29.26,
+                "end": 29.6
+            },
+            {
+                "word": "the",
+                "start": 29.6,
+                "end": 29.8
+            },
+            {
+                "word": "future",
+                "start": 29.8,
+                "end": 30.04
+            },
+            {
+                "word": "of",
+                "start": 30.04,
+                "end": 30.28
+            },
+            {
+                "word": "computation.",
+                "start": 30.28,
+                "end": 30.82
+            },
+            {
+                "word": "We're",
+                "start": 31.58,
+                "end": 31.98
+            },
+            {
+                "word": "so",
+                "start": 31.98,
+                "end": 32.3
+            },
+            {
+                "word": "deeply",
+                "start": 32.3,
+                "end": 32.8
+            },
+            {
+                "word": "conditioned",
+                "start": 32.8,
+                "end": 33.28
+            },
+            {
+                "word": "by",
+                "start": 33.28,
+                "end": 33.48
+            },
+            {
+                "word": "the",
+                "start": 33.48,
+                "end": 33.68
+            },
+            {
+                "word": "internet",
+                "start": 33.68,
+                "end": 33.88
+            },
+            {
+                "word": "era",
+                "start": 33.88,
+                "end": 34.2
+            },
+            {
+                "word": "to",
+                "start": 34.2,
+                "end": 34.4
+            },
+            {
+                "word": "view",
+                "start": 34.4,
+                "end": 34.62
+            },
+            {
+                "word": "digital",
+                "start": 34.62,
+                "end": 35.02
+            },
+            {
+                "word": "goods",
+                "start": 35.02,
+                "end": 35.32
+            },
+            {
+                "word": "as",
+                "start": 35.32,
+                "end": 35.82
+            },
+            {
+                "word": "essentially",
+                "start": 35.82,
+                "end": 36.6
+            },
+            {
+                "word": "free.",
+                "start": 36.6,
+                "end": 37.06
+            },
+            {
+                "word": "Right,",
+                "start": 37.44,
+                "end": 37.7
+            },
+            {
+                "word": "you",
+                "start": 37.78,
+                "end": 37.92
+            },
+            {
+                "word": "send",
+                "start": 37.92,
+                "end": 38.1
+            },
+            {
+                "word": "an",
+                "start": 38.1,
+                "end": 38.32
+            },
+            {
+                "word": "email,",
+                "start": 38.32,
+                "end": 38.54
+            },
+            {
+                "word": "it's",
+                "start": 38.7,
+                "end": 38.88
+            },
+            {
+                "word": "free.",
+                "start": 38.88,
+                "end": 39.06
+            },
+            {
+                "word": "You",
+                "start": 39.52,
+                "end": 39.64
+            },
+            {
+                "word": "type",
+                "start": 39.64,
+                "end": 39.84
+            },
+            {
+                "word": "a",
+                "start": 39.84,
+                "end": 40.04
+            },
+            {
+                "word": "prompt",
+                "start": 40.04,
+                "end": 40.22
+            },
+            {
+                "word": "into",
+                "start": 40.22,
+                "end": 40.54
+            },
+            {
+                "word": "an",
+                "start": 40.54,
+                "end": 40.74
+            },
+            {
+                "word": "interface.",
+                "start": 40.74,
+                "end": 41.16
+            },
+            {
+                "word": "Words",
+                "start": 41.88,
+                "end": 42.14
+            },
+            {
+                "word": "instantly",
+                "start": 42.14,
+                "end": 42.74
+            },
+            {
+                "word": "appear",
+                "start": 42.74,
+                "end": 43.02
+            },
+            {
+                "word": "on",
+                "start": 43.02,
+                "end": 43.2
+            },
+            {
+                "word": "the",
+                "start": 43.2,
+                "end": 43.3
+            },
+            {
+                "word": "screen,",
+                "start": 43.3,
+                "end": 43.52
+            },
+            {
+                "word": "and",
+                "start": 43.54,
+                "end": 43.68
+            },
+            {
+                "word": "it",
+                "start": 43.68,
+                "end": 43.8
+            },
+            {
+                "word": "feels",
+                "start": 43.8,
+                "end": 44
+            },
+            {
+                "word": "like",
+                "start": 44,
+                "end": 44.18
+            },
+            {
+                "word": "magic.",
+                "start": 44.18,
+                "end": 44.5
+            },
+            {
+                "word": "It",
+                "start": 44.68,
+                "end": 44.72
+            },
+            {
+                "word": "feels",
+                "start": 44.72,
+                "end": 45.04
+            },
+            {
+                "word": "totally",
+                "start": 45.04,
+                "end": 46.06
+            },
+            {
+                "word": "weightless.",
+                "start": 46.06,
+                "end": 46.62
+            },
+            {
+                "word": "But",
+                "start": 47.26,
+                "end": 47.52
+            },
+            {
+                "word": "the",
+                "start": 47.52,
+                "end": 47.84
+            },
+            {
+                "word": "research",
+                "start": 47.84,
+                "end": 48.18
+            },
+            {
+                "word": "explicitly",
+                "start": 48.18,
+                "end": 48.88
+            },
+            {
+                "word": "grounds",
+                "start": 48.88,
+                "end": 49.28
+            },
+            {
+                "word": "us",
+                "start": 49.28,
+                "end": 49.5
+            },
+            {
+                "word": "back",
+                "start": 49.5,
+                "end": 49.72
+            },
+            {
+                "word": "in",
+                "start": 49.72,
+                "end": 49.88
+            },
+            {
+                "word": "the",
+                "start": 49.88,
+                "end": 50
+            },
+            {
+                "word": "physical",
+                "start": 50,
+                "end": 50.32
+            },
+            {
+                "word": "constraints",
+                "start": 50.32,
+                "end": 50.86
+            },
+            {
+                "word": "of",
+                "start": 50.86,
+                "end": 51.08
+            },
+            {
+                "word": "inference.",
+                "start": 51.08,
+                "end": 51.5
+            },
+            {
+                "word": "Nothing",
+                "start": 52.18,
+                "end": 52.44
+            },
+            {
+                "word": "is",
+                "start": 52.44,
+                "end": 52.66
+            },
+            {
+                "word": "free.",
+                "start": 52.66,
+                "end": 52.98
+            },
+            {
+                "word": "Not",
+                "start": 53.62,
+                "end": 53.74
+            },
+            {
+                "word": "a",
+                "start": 53.74,
+                "end": 53.88
+            },
+            {
+                "word": "single",
+                "start": 53.88,
+                "end": 54.06
+            },
+            {
+                "word": "thing.",
+                "start": 54.06,
+                "end": 54.36
+            },
+            {
+                "word": "Every",
+                "start": 54.72,
+                "end": 55.06
+            },
+            {
+                "word": "single",
+                "start": 55.06,
+                "end": 55.4
+            },
+            {
+                "word": "token,",
+                "start": 55.4,
+                "end": 55.74
+            },
+            {
+                "word": "every",
+                "start": 55.9,
+                "end": 56.12
+            },
+            {
+                "word": "tiny",
+                "start": 56.12,
+                "end": 56.44
+            },
+            {
+                "word": "fragment",
+                "start": 56.44,
+                "end": 56.86
+            },
+            {
+                "word": "of",
+                "start": 56.86,
+                "end": 57.08
+            },
+            {
+                "word": "a",
+                "start": 57.08,
+                "end": 57.22
+            },
+            {
+                "word": "word",
+                "start": 57.22,
+                "end": 57.42
+            },
+            {
+                "word": "the",
+                "start": 57.42,
+                "end": 57.6
+            },
+            {
+                "word": "AI",
+                "start": 57.6,
+                "end": 57.86
+            },
+            {
+                "word": "generates,",
+                "start": 57.86,
+                "end": 58.44
+            },
+            {
+                "word": "carries",
+                "start": 58.86,
+                "end": 59.16
+            },
+            {
+                "word": "a",
+                "start": 59.16,
+                "end": 59.4
+            },
+            {
+                "word": "strict,",
+                "start": 59.4,
+                "end": 59.8
+            },
+            {
+                "word": "non",
+                "start": 60.14,
+                "end": 60.26
+            },
+            {
+                "word": "-negotiable",
+                "start": 60.26,
+                "end": 60.88
+            },
+            {
+                "word": "physical",
+                "start": 60.88,
+                "end": 61.48
+            },
+            {
+                "word": "expense.",
+                "start": 61.48,
+                "end": 61.98
+            },
+            {
+                "word": "And",
+                "start": 62.52,
+                "end": 62.66
+            },
+            {
+                "word": "the",
+                "start": 62.66,
+                "end": 62.84
+            },
+            {
+                "word": "author",
+                "start": 62.84,
+                "end": 63.16
+            },
+            {
+                "word": "models",
+                "start": 63.16,
+                "end": 63.7
+            },
+            {
+                "word": "this",
+                "start": 63.7,
+                "end": 63.92
+            },
+            {
+                "word": "expense",
+                "start": 63.92,
+                "end": 64.32
+            },
+            {
+                "word": "mathematically",
+                "start": 64.32,
+                "end": 64.94
+            },
+            {
+                "word": "in",
+                "start": 64.94,
+                "end": 65.14
+            },
+            {
+                "word": "the",
+                "start": 65.14,
+                "end": 65.26
+            },
+            {
+                "word": "paper.",
+                "start": 65.26,
+                "end": 65.46
+            },
+            {
+                "word": "Now,",
+                "start": 65.88,
+                "end": 65.98
+            },
+            {
+                "word": "we",
+                "start": 66.04,
+                "end": 66.28
+            },
+            {
+                "word": "aren't",
+                "start": 66.28,
+                "end": 66.48
+            },
+            {
+                "word": "going",
+                "start": 66.48,
+                "end": 66.66
+            },
+            {
+                "word": "to",
+                "start": 66.66,
+                "end": 66.82
+            },
+            {
+                "word": "read",
+                "start": 66.82,
+                "end": 66.94
+            },
+            {
+                "word": "out",
+                "start": 66.94,
+                "end": 67.1
+            },
+            {
+                "word": "the",
+                "start": 67.1,
+                "end": 67.28
+            },
+            {
+                "word": "complex",
+                "start": 67.28,
+                "end": 67.62
+            },
+            {
+                "word": "equations",
+                "start": 67.62,
+                "end": 68.04
+            },
+            {
+                "word": "they",
+                "start": 68.04,
+                "end": 68.24
+            },
+            {
+                "word": "use,",
+                "start": 68.24,
+                "end": 68.36
+            },
+            {
+                "word": "but",
+                "start": 68.38,
+                "end": 68.5
+            },
+            {
+                "word": "the",
+                "start": 68.5,
+                "end": 68.68
+            },
+            {
+                "word": "conceptual",
+                "start": 68.68,
+                "end": 69.24
+            },
+            {
+                "word": "essence",
+                "start": 69.24,
+                "end": 69.64
+            },
+            {
+                "word": "of",
+                "start": 69.64,
+                "end": 69.84
+            },
+            {
+                "word": "their",
+                "start": 69.84,
+                "end": 69.98
+            },
+            {
+                "word": "formula",
+                "start": 69.98,
+                "end": 70.32
+            },
+            {
+                "word": "is",
+                "start": 70.32,
+                "end": 70.58
+            },
+            {
+                "word": "just",
+                "start": 70.58,
+                "end": 70.8
+            },
+            {
+                "word": "vital.",
+                "start": 70.8,
+                "end": 71.48
+            },
+            {
+                "word": "Break",
+                "start": 71.8,
+                "end": 71.84
+            },
+            {
+                "word": "you",
+                "start": 71.82,
+                "end": 71.9
+            },
+            {
+                "word": "down",
+                "start": 71.9,
+                "end": 72.06
+            },
+            {
+                "word": "for",
+                "start": 72.06,
+                "end": 72.22
+            },
+            {
+                "word": "us.",
+                "start": 72.22,
+                "end": 72.42
+            },
+            {
+                "word": "The",
+                "start": 72.76,
+                "end": 72.92
+            },
+            {
+                "word": "true",
+                "start": 72.92,
+                "end": 73.34
+            },
+            {
+                "word": "base",
+                "start": 73.34,
+                "end": 73.9
+            },
+            {
+                "word": "cost",
+                "start": 73.9,
+                "end": 74.26
+            },
+            {
+                "word": "to",
+                "start": 74.26,
+                "end": 74.5
+            },
+            {
+                "word": "generate",
+                "start": 74.5,
+                "end": 74.8
+            },
+            {
+                "word": "one",
+                "start": 74.8,
+                "end": 75.04
+            },
+            {
+                "word": "single",
+                "start": 75.04,
+                "end": 75.32
+            },
+            {
+                "word": "token",
+                "start": 75.32,
+                "end": 75.66
+            },
+            {
+                "word": "is",
+                "start": 75.66,
+                "end": 75.98
+            },
+            {
+                "word": "immutably",
+                "start": 75.98,
+                "end": 76.76
+            },
+            {
+                "word": "tied",
+                "start": 76.76,
+                "end": 77.06
+            },
+            {
+                "word": "to",
+                "start": 77.06,
+                "end": 77.26
+            },
+            {
+                "word": "the",
+                "start": 77.26,
+                "end": 77.36
+            },
+            {
+                "word": "physical",
+                "start": 77.36,
+                "end": 77.68
+            },
+            {
+                "word": "world.",
+                "start": 77.68,
+                "end": 77.98
+            },
+            {
+                "word": "It",
+                "start": 78.24,
+                "end": 78.48
+            },
+            {
+                "word": "is",
+                "start": 78.48,
+                "end": 78.66
+            },
+            {
+                "word": "calculated",
+                "start": 78.66,
+                "end": 79.16
+            },
+            {
+                "word": "as",
+                "start": 79.16,
+                "end": 79.52
+            },
+            {
+                "word": "a",
+                "start": 79.52,
+                "end": 79.68
+            },
+            {
+                "word": "combination",
+                "start": 79.68,
+                "end": 80
+            },
+            {
+                "word": "of",
+                "start": 80,
+                "end": 80.4
+            },
+            {
+                "word": "real",
+                "start": 80.4,
+                "end": 80.7
+            },
+            {
+                "word": "-time",
+                "start": 80.7,
+                "end": 81.02
+            },
+            {
+                "word": "server",
+                "start": 81.02,
+                "end": 81.36
+            },
+            {
+                "word": "rental",
+                "start": 81.36,
+                "end": 81.62
+            },
+            {
+                "word": "costs",
+                "start": 81.62,
+                "end": 82.06
+            },
+            {
+                "word": "and",
+                "start": 82.06,
+                "end": 82.64
+            },
+            {
+                "word": "live,",
+                "start": 82.64,
+                "end": 82.98
+            },
+            {
+                "word": "fluctuating",
+                "start": 83.2,
+                "end": 83.96
+            },
+            {
+                "word": "electrical",
+                "start": 83.96,
+                "end": 84.5
+            },
+            {
+                "word": "utility",
+                "start": 84.5,
+                "end": 84.98
+            },
+            {
+                "word": "rates.",
+                "start": 84.98,
+                "end": 85.36
+            },
+            {
+                "word": "Okay,",
+                "start": 85.6,
+                "end": 85.86
+            },
+            {
+                "word": "so",
+                "start": 85.94,
+                "end": 86.1
+            },
+            {
+                "word": "rent",
+                "start": 86.1,
+                "end": 86.36
+            },
+            {
+                "word": "and",
+                "start": 86.36,
+                "end": 86.58
+            },
+            {
+                "word": "power.",
+                "start": 86.58,
+                "end": 86.88
+            },
+            {
+                "word": "Yes,",
+                "start": 87.16,
+                "end": 87.36
+            },
+            {
+                "word": "and",
+                "start": 87.58,
+                "end": 87.8
+            },
+            {
+                "word": "you",
+                "start": 87.8,
+                "end": 87.9
+            },
+            {
+                "word": "take",
+                "start": 87.9,
+                "end": 88.06
+            },
+            {
+                "word": "those",
+                "start": 88.06,
+                "end": 88.24
+            },
+            {
+                "word": "costs,",
+                "start": 88.24,
+                "end": 88.58
+            },
+            {
+                "word": "and",
+                "start": 88.7,
+                "end": 88.8
+            },
+            {
+                "word": "you",
+                "start": 88.8,
+                "end": 88.9
+            },
+            {
+                "word": "divide",
+                "start": 88.9,
+                "end": 89.24
+            },
+            {
+                "word": "them",
+                "start": 89.24,
+                "end": 89.48
+            },
+            {
+                "word": "by",
+                "start": 89.48,
+                "end": 89.64
+            },
+            {
+                "word": "the",
+                "start": 89.64,
+                "end": 89.8
+            },
+            {
+                "word": "physical",
+                "start": 89.8,
+                "end": 90.14
+            },
+            {
+                "word": "efficiency",
+                "start": 90.14,
+                "end": 90.56
+            },
+            {
+                "word": "of",
+                "start": 90.56,
+                "end": 90.78
+            },
+            {
+                "word": "the",
+                "start": 90.78,
+                "end": 90.94
+            },
+            {
+                "word": "hardware,",
+                "start": 90.94,
+                "end": 91.26
+            },
+            {
+                "word": "basically",
+                "start": 91.5,
+                "end": 91.94
+            },
+            {
+                "word": "how",
+                "start": 91.94,
+                "end": 92.34
+            },
+            {
+                "word": "fast",
+                "start": 92.34,
+                "end": 92.7
+            },
+            {
+                "word": "the",
+                "start": 92.7,
+                "end": 92.9
+            },
+            {
+                "word": "GPUs",
+                "start": 92.9,
+                "end": 93.22
+            },
+            {
+                "word": "can",
+                "start": 93.22,
+                "end": 93.58
+            },
+            {
+                "word": "actually",
+                "start": 93.58,
+                "end": 94.04
+            },
+            {
+                "word": "process",
+                "start": 94.04,
+                "end": 94.38
+            },
+            {
+                "word": "information.",
+                "start": 94.38,
+                "end": 94.94
+            },
+            {
+                "word": "And",
+                "start": 95.38,
+                "end": 95.5
+            },
+            {
+                "word": "then,",
+                "start": 95.5,
+                "end": 95.64
+            },
+            {
+                "word": "importantly,",
+                "start": 95.82,
+                "end": 96.24
+            },
+            {
+                "word": "you",
+                "start": 96.54,
+                "end": 96.72
+            },
+            {
+                "word": "have",
+                "start": 96.72,
+                "end": 96.86
+            },
+            {
+                "word": "to",
+                "start": 96.86,
+                "end": 97.06
+            },
+            {
+                "word": "multiply",
+                "start": 97.06,
+                "end": 97.48
+            },
+            {
+                "word": "that",
+                "start": 97.48,
+                "end": 97.84
+            },
+            {
+                "word": "baseline",
+                "start": 97.84,
+                "end": 98.2
+            },
+            {
+                "word": "by",
+                "start": 98.2,
+                "end": 98.46
+            },
+            {
+                "word": "the",
+                "start": 98.46,
+                "end": 98.62
+            },
+            {
+                "word": "sheer",
+                "start": 98.62,
+                "end": 98.8
+            },
+            {
+                "word": "size",
+                "start": 98.8,
+                "end": 99.2
+            },
+            {
+                "word": "of",
+                "start": 99.2,
+                "end": 99.38
+            },
+            {
+                "word": "the",
+                "start": 99.38,
+                "end": 99.52
+            },
+            {
+                "word": "AI's",
+                "start": 99.52,
+                "end": 99.94
+            },
+            {
+                "word": "internal",
+                "start": 99.94,
+                "end": 100.22
+            },
+            {
+                "word": "memory,",
+                "start": 100.22,
+                "end": 100.6
+            },
+            {
+                "word": "its",
+                "start": 100.98,
+                "end": 101.22
+            },
+            {
+                "word": "parameter",
+                "start": 101.22,
+                "end": 101.66
+            },
+            {
+                "word": "count,",
+                "start": 101.66,
+                "end": 102
+            },
+            {
+                "word": "and",
+                "start": 102,
+                "end": 102.54
+            },
+            {
+                "word": "the",
+                "start": 102.54,
+                "end": 102.7
+            },
+            {
+                "word": "length",
+                "start": 102.7,
+                "end": 102.86
+            },
+            {
+                "word": "of",
+                "start": 102.86,
+                "end": 103
+            },
+            {
+                "word": "the",
+                "start": 103,
+                "end": 103.2
+            },
+            {
+                "word": "prompt",
+                "start": 103.2,
+                "end": 103.38
+            },
+            {
+                "word": "the",
+                "start": 103.38,
+                "end": 103.58
+            },
+            {
+                "word": "user",
+                "start": 103.58,
+                "end": 103.74
+            },
+            {
+                "word": "just",
+                "start": 103.74,
+                "end": 103.96
+            },
+            {
+                "word": "submitted.",
+                "start": 103.96,
+                "end": 104.34
+            },
+            {
+                "word": "Exactly.",
+                "start": 104.34,
+                "end": 105.2
+            },
+            {
+                "word": "Let's",
+                "start": 105.78,
+                "end": 106.16
+            },
+            {
+                "word": "try",
+                "start": 106.16,
+                "end": 106.3
+            },
+            {
+                "word": "to",
+                "start": 106.3,
+                "end": 106.46
+            },
+            {
+                "word": "visualize",
+                "start": 106.46,
+                "end": 106.8
+            },
+            {
+                "word": "this",
+                "start": 106.8,
+                "end": 107.1
+            },
+            {
+                "word": "mechanics",
+                "start": 107.1,
+                "end": 107.54
+            },
+            {
+                "word": "because",
+                "start": 107.54,
+                "end": 107.84
+            },
+            {
+                "word": "I",
+                "start": 107.84,
+                "end": 108.42
+            },
+            {
+                "word": "think",
+                "start": 108.42,
+                "end": 108.56
+            },
+            {
+                "word": "a",
+                "start": 108.56,
+                "end": 108.72
+            },
+            {
+                "word": "metaphor",
+                "start": 108.72,
+                "end": 108.96
+            },
+            {
+                "word": "helps",
+                "start": 108.96,
+                "end": 109.28
+            },
+            {
+                "word": "here.",
+                "start": 109.28,
+                "end": 109.58
+            },
+            {
+                "word": "Imagine",
+                "start": 110.3,
+                "end": 110.6
+            },
+            {
+                "word": "a",
+                "start": 110.6,
+                "end": 110.94
+            },
+            {
+                "word": "microscopic,",
+                "start": 110.94,
+                "end": 111.56
+            },
+            {
+                "word": "highly",
+                "start": 111.56,
+                "end": 112.02
+            },
+            {
+                "word": "complex",
+                "start": 112.02,
+                "end": 112.44
+            },
+            {
+                "word": "factory",
+                "start": 112.44,
+                "end": 112.9
+            },
+            {
+                "word": "assembly",
+                "start": 112.9,
+                "end": 113.3
+            },
+            {
+                "word": "line.",
+                "start": 113.3,
+                "end": 113.64
+            },
+            {
+                "word": "Every",
+                "start": 114.26,
+                "end": 114.46
+            },
+            {
+                "word": "single",
+                "start": 114.46,
+                "end": 114.74
+            },
+            {
+                "word": "word",
+                "start": 114.74,
+                "end": 114.98
+            },
+            {
+                "word": "produced",
+                "start": 114.98,
+                "end": 115.4
+            },
+            {
+                "word": "by",
+                "start": 115.4,
+                "end": 115.64
+            },
+            {
+                "word": "this",
+                "start": 115.64,
+                "end": 115.8
+            },
+            {
+                "word": "AI",
+                "start": 115.8,
+                "end": 116.08
+            },
+            {
+                "word": "requires",
+                "start": 116.08,
+                "end": 116.62
+            },
+            {
+                "word": "exactly",
+                "start": 116.62,
+                "end": 117.12
+            },
+            {
+                "word": "one",
+                "start": 117.12,
+                "end": 117.68
+            },
+            {
+                "word": "drop",
+                "start": 117.68,
+                "end": 118
+            },
+            {
+                "word": "of",
+                "start": 118,
+                "end": 118.3
+            },
+            {
+                "word": "physical",
+                "start": 118.3,
+                "end": 118.64
+            },
+            {
+                "word": "electricity,",
+                "start": 118.64,
+                "end": 119.28
+            },
+            {
+                "word": "and",
+                "start": 119.32,
+                "end": 119.92
+            },
+            {
+                "word": "it",
+                "start": 119.92,
+                "end": 120.02
+            },
+            {
+                "word": "takes",
+                "start": 120.02,
+                "end": 120.2
+            },
+            {
+                "word": "up",
+                "start": 120.2,
+                "end": 120.32
+            },
+            {
+                "word": "a",
+                "start": 120.32,
+                "end": 120.5
+            },
+            {
+                "word": "specific",
+                "start": 120.5,
+                "end": 120.9
+            },
+            {
+                "word": "microsecond",
+                "start": 120.9,
+                "end": 121.64
+            },
+            {
+                "word": "of",
+                "start": 121.64,
+                "end": 121.94
+            },
+            {
+                "word": "physical",
+                "start": 121.94,
+                "end": 122.36
+            },
+            {
+                "word": "space",
+                "start": 122.36,
+                "end": 122.72
+            },
+            {
+                "word": "on",
+                "start": 122.72,
+                "end": 123.18
+            },
+            {
+                "word": "a",
+                "start": 123.18,
+                "end": 123.5
+            },
+            {
+                "word": "GPU",
+                "start": 123.5,
+                "end": 123.8
+            },
+            {
+                "word": "assembly",
+                "start": 123.8,
+                "end": 124.22
+            },
+            {
+                "word": "line.",
+                "start": 124.22,
+                "end": 124.56
+            },
+            {
+                "word": "That's",
+                "start": 124.8,
+                "end": 125.18
+            },
+            {
+                "word": "a",
+                "start": 125.18,
+                "end": 125.3
+            },
+            {
+                "word": "great",
+                "start": 125.3,
+                "end": 125.48
+            },
+            {
+                "word": "way",
+                "start": 125.48,
+                "end": 125.62
+            },
+            {
+                "word": "to",
+                "start": 125.62,
+                "end": 125.74
+            },
+            {
+                "word": "picture",
+                "start": 125.74,
+                "end": 125.94
+            },
+            {
+                "word": "it.",
+                "start": 125.94,
+                "end": 126.12
+            },
+            {
+                "word": "And",
+                "start": 126.3,
+                "end": 126.5
+            },
+            {
+                "word": "just",
+                "start": 126.5,
+                "end": 126.8
+            },
+            {
+                "word": "like",
+                "start": 126.8,
+                "end": 126.98
+            },
+            {
+                "word": "a",
+                "start": 126.98,
+                "end": 127.1
+            },
+            {
+                "word": "physical",
+                "start": 127.1,
+                "end": 127.4
+            },
+            {
+                "word": "factory,",
+                "start": 127.4,
+                "end": 127.82
+            },
+            {
+                "word": "if",
+                "start": 127.86,
+                "end": 128.08
+            },
+            {
+                "word": "a",
+                "start": 128.08,
+                "end": 128.2
+            },
+            {
+                "word": "user",
+                "start": 128.2,
+                "end": 128.46
+            },
+            {
+                "word": "submits",
+                "start": 128.46,
+                "end": 128.88
+            },
+            {
+                "word": "a",
+                "start": 128.88,
+                "end": 129.08
+            },
+            {
+                "word": "massive,",
+                "start": 129.08,
+                "end": 129.74
+            },
+            {
+                "word": "complex",
+                "start": 129.82,
+                "end": 130.38
+            },
+            {
+                "word": "prompt,",
+                "start": 130.38,
+                "end": 130.82
+            },
+            {
+                "word": "they",
+                "start": 130.92,
+                "end": 131.32
+            },
+            {
+                "word": "are",
+                "start": 131.32,
+                "end": 131.48
+            },
+            {
+                "word": "essentially",
+                "start": 131.48,
+                "end": 131.9
+            },
+            {
+                "word": "ordering",
+                "start": 131.9,
+                "end": 132.32
+            },
+            {
+                "word": "a",
+                "start": 132.32,
+                "end": 132.64
+            },
+            {
+                "word": "custom,",
+                "start": 132.64,
+                "end": 133.1
+            },
+            {
+                "word": "heavy",
+                "start": 133.22,
+                "end": 133.64
+            },
+            {
+                "word": "-duty",
+                "start": 133.64,
+                "end": 133.84
+            },
+            {
+                "word": "product.",
+                "start": 133.84,
+                "end": 134.32
+            },
+            {
+                "word": "Which",
+                "start": 134.88,
+                "end": 135.14
+            },
+            {
+                "word": "takes",
+                "start": 135.14,
+                "end": 135.52
+            },
+            {
+                "word": "up",
+                "start": 135.52,
+                "end": 135.68
+            },
+            {
+                "word": "more",
+                "start": 135.68,
+                "end": 135.82
+            },
+            {
+                "word": "space",
+                "start": 135.82,
+                "end": 136.06
+            },
+            {
+                "word": "on",
+                "start": 136.06,
+                "end": 136.26
+            },
+            {
+                "word": "the",
+                "start": 136.26,
+                "end": 136.42
+            },
+            {
+                "word": "assembly",
+                "start": 136.42,
+                "end": 136.68
+            },
+            {
+                "word": "line.",
+                "start": 136.68,
+                "end": 137.04
+            },
+            {
+                "word": "Takes",
+                "start": 137.44,
+                "end": 137.54
+            },
+            {
+                "word": "up",
+                "start": 137.54,
+                "end": 137.7
+            },
+            {
+                "word": "more",
+                "start": 137.7,
+                "end": 137.82
+            },
+            {
+                "word": "space,",
+                "start": 137.82,
+                "end": 138.24
+            },
+            {
+                "word": "requires",
+                "start": 138.56,
+                "end": 138.96
+            },
+            {
+                "word": "more",
+                "start": 138.96,
+                "end": 139.2
+            },
+            {
+                "word": "drops",
+                "start": 139.2,
+                "end": 139.44
+            },
+            {
+                "word": "of",
+                "start": 139.44,
+                "end": 139.62
+            },
+            {
+                "word": "electricity,",
+                "start": 139.62,
+                "end": 140.06
+            },
+            {
+                "word": "and",
+                "start": 140.22,
+                "end": 140.64
+            },
+            {
+                "word": "it",
+                "start": 140.64,
+                "end": 140.8
+            },
+            {
+                "word": "actually",
+                "start": 140.8,
+                "end": 141.1
+            },
+            {
+                "word": "forces",
+                "start": 141.1,
+                "end": 141.5
+            },
+            {
+                "word": "the",
+                "start": 141.5,
+                "end": 141.76
+            },
+            {
+                "word": "cooling",
+                "start": 141.76,
+                "end": 142.02
+            },
+            {
+                "word": "fans",
+                "start": 142.02,
+                "end": 142.28
+            },
+            {
+                "word": "to",
+                "start": 142.28,
+                "end": 142.54
+            },
+            {
+                "word": "spin",
+                "start": 142.54,
+                "end": 142.72
+            },
+            {
+                "word": "faster",
+                "start": 142.72,
+                "end": 143.18
+            },
+            {
+                "word": "to",
+                "start": 143.18,
+                "end": 143.42
+            },
+            {
+                "word": "dissipate",
+                "start": 143.42,
+                "end": 143.94
+            },
+            {
+                "word": "the",
+                "start": 143.94,
+                "end": 144.22
+            },
+            {
+                "word": "physical",
+                "start": 144.22,
+                "end": 144.68
+            },
+            {
+                "word": "heat",
+                "start": 144.68,
+                "end": 144.96
+            },
+            {
+                "word": "generated",
+                "start": 144.96,
+                "end": 145.4
+            },
+            {
+                "word": "by",
+                "start": 145.4,
+                "end": 145.6
+            },
+            {
+                "word": "the",
+                "start": 145.6,
+                "end": 145.72
+            },
+            {
+                "word": "calculation.",
+                "start": 145.72,
+                "end": 146.2
+            },
+            {
+                "word": "So",
+                "start": 146.94,
+                "end": 147.16
+            },
+            {
+                "word": "if",
+                "start": 147.16,
+                "end": 147.46
+            },
+            {
+                "word": "the",
+                "start": 147.46,
+                "end": 147.62
+            },
+            {
+                "word": "local",
+                "start": 147.62,
+                "end": 147.86
+            },
+            {
+                "word": "utility",
+                "start": 147.86,
+                "end": 148.36
+            },
+            {
+                "word": "company",
+                "start": 148.36,
+                "end": 148.72
+            },
+            {
+                "word": "raises",
+                "start": 148.72,
+                "end": 149.08
+            },
+            {
+                "word": "electricity",
+                "start": 149.08,
+                "end": 149.7
+            },
+            {
+                "word": "prices",
+                "start": 149.7,
+                "end": 150.08
+            },
+            {
+                "word": "during",
+                "start": 150.08,
+                "end": 150.38
+            },
+            {
+                "word": "a",
+                "start": 150.38,
+                "end": 150.62
+            },
+            {
+                "word": "summer",
+                "start": 150.62,
+                "end": 150.82
+            },
+            {
+                "word": "heat",
+                "start": 150.82,
+                "end": 151.06
+            },
+            {
+                "word": "wave,",
+                "start": 151.06,
+                "end": 151.26
+            },
+            {
+                "word": "the",
+                "start": 151.88,
+                "end": 152.04
+            },
+            {
+                "word": "cost",
+                "start": 152.04,
+                "end": 152.22
+            },
+            {
+                "word": "of",
+                "start": 152.22,
+                "end": 152.38
+            },
+            {
+                "word": "running",
+                "start": 152.38,
+                "end": 152.56
+            },
+            {
+                "word": "that",
+                "start": 152.56,
+                "end": 152.82
+            },
+            {
+                "word": "microscopic",
+                "start": 152.82,
+                "end": 153.28
+            },
+            {
+                "word": "factory",
+                "start": 153.28,
+                "end": 153.84
+            },
+            {
+                "word": "goes",
+                "start": 153.84,
+                "end": 154.14
+            },
+            {
+                "word": "up",
+                "start": 154.14,
+                "end": 154.36
+            },
+            {
+                "word": "instantly.",
+                "start": 154.36,
+                "end": 154.76
+            },
+            {
+                "word": "The",
+                "start": 155.18,
+                "end": 155.4
+            },
+            {
+                "word": "physics",
+                "start": 155.4,
+                "end": 155.68
+            },
+            {
+                "word": "literally",
+                "start": 155.68,
+                "end": 156.3
+            },
+            {
+                "word": "cannot",
+                "start": 156.3,
+                "end": 156.78
+            },
+            {
+                "word": "be",
+                "start": 156.78,
+                "end": 157.06
+            },
+            {
+                "word": "ignored.",
+                "start": 157.06,
+                "end": 157.44
+            },
+            {
+                "word": "No,",
+                "start": 157.68,
+                "end": 157.76
+            },
+            {
+                "word": "it",
+                "start": 158,
+                "end": 158.08
+            },
+            {
+                "word": "can't.",
+                "start": 158.08,
+                "end": 158.34
+            }
+        ],
+        "_caption_words_sig": "8a45955373b6799ff2310aa3ac89d701",
+        "caption_chunks": [
+            {
+                "start": 1.5,
+                "end": 3.52,
+                "text": "but to run a profitable business,",
+                "words": [
+                    {
+                        "word": "but",
+                        "start": 1.5,
+                        "end": 1.54
+                    },
+                    {
+                        "word": "to",
+                        "start": 1.5,
+                        "end": 1.8
+                    },
+                    {
+                        "word": "run",
+                        "start": 1.8,
+                        "end": 1.96
+                    },
+                    {
+                        "word": "a",
+                        "start": 1.96,
+                        "end": 2.18
+                    },
+                    {
+                        "word": "profitable",
+                        "start": 2.18,
+                        "end": 2.52
+                    },
+                    {
+                        "word": "business,",
+                        "start": 2.52,
+                        "end": 2.98
+                    }
+                ]
+            },
+            {
+                "start": 3.52,
+                "end": 4.68,
+                "text": "you have to know your exact",
+                "words": [
+                    {
+                        "word": "you",
+                        "start": 3.52,
+                        "end": 3.74
+                    },
+                    {
+                        "word": "have",
+                        "start": 3.74,
+                        "end": 3.84
+                    },
+                    {
+                        "word": "to",
+                        "start": 3.84,
+                        "end": 3.96
+                    },
+                    {
+                        "word": "know",
+                        "start": 3.96,
+                        "end": 4.1
+                    },
+                    {
+                        "word": "your",
+                        "start": 4.1,
+                        "end": 4.28
+                    },
+                    {
+                        "word": "exact",
+                        "start": 4.28,
+                        "end": 4.68
+                    }
+                ]
+            },
+            {
+                "start": 4.68,
+                "end": 7.28,
+                "text": "margins. the ai needs to know,",
+                "words": [
+                    {
+                        "word": "margins.",
+                        "start": 4.68,
+                        "end": 5.18
+                    },
+                    {
+                        "word": "the",
+                        "start": 5.76,
+                        "end": 5.94
+                    },
+                    {
+                        "word": "ai",
+                        "start": 5.94,
+                        "end": 6.18
+                    },
+                    {
+                        "word": "needs",
+                        "start": 6.18,
+                        "end": 6.48
+                    },
+                    {
+                        "word": "to",
+                        "start": 6.48,
+                        "end": 6.66
+                    },
+                    {
+                        "word": "know,",
+                        "start": 6.66,
+                        "end": 6.94
+                    }
+                ]
+            },
+            {
+                "start": 7.28,
+                "end": 8.58,
+                "text": "down to the fraction of a",
+                "words": [
+                    {
+                        "word": "down",
+                        "start": 7.28,
+                        "end": 7.58
+                    },
+                    {
+                        "word": "to",
+                        "start": 7.58,
+                        "end": 7.74
+                    },
+                    {
+                        "word": "the",
+                        "start": 7.74,
+                        "end": 7.9
+                    },
+                    {
+                        "word": "fraction",
+                        "start": 7.9,
+                        "end": 8.2
+                    },
+                    {
+                        "word": "of",
+                        "start": 8.2,
+                        "end": 8.36
+                    },
+                    {
+                        "word": "a",
+                        "start": 8.36,
+                        "end": 8.58
+                    }
+                ]
+            },
+            {
+                "start": 8.58,
+                "end": 10.82,
+                "text": "penny, exactly how much a single",
+                "words": [
+                    {
+                        "word": "penny,",
+                        "start": 8.58,
+                        "end": 8.8
+                    },
+                    {
+                        "word": "exactly",
+                        "start": 9.4,
+                        "end": 9.78
+                    },
+                    {
+                        "word": "how",
+                        "start": 9.78,
+                        "end": 10.12
+                    },
+                    {
+                        "word": "much",
+                        "start": 10.12,
+                        "end": 10.3
+                    },
+                    {
+                        "word": "a",
+                        "start": 10.3,
+                        "end": 10.54
+                    },
+                    {
+                        "word": "single",
+                        "start": 10.54,
+                        "end": 10.82
+                    }
+                ]
+            },
+            {
+                "start": 10.82,
+                "end": 17.32,
+                "text": "thought costs to produce.",
+                "words": [
+                    {
+                        "word": "thought",
+                        "start": 10.82,
+                        "end": 11.2
+                    },
+                    {
+                        "word": "costs",
+                        "start": 11.2,
+                        "end": 11.58
+                    },
+                    {
+                        "word": "to",
+                        "start": 11.58,
+                        "end": 11.82
+                    },
+                    {
+                        "word": "produce.",
+                        "start": 11.82,
+                        "end": 12.12
+                    }
+                ]
+            },
+            {
+                "start": 17.32,
+                "end": 18.32,
+                "text": "and this brings us to the",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 17.32,
+                        "end": 17.42
+                    },
+                    {
+                        "word": "this",
+                        "start": 17.42,
+                        "end": 17.58
+                    },
+                    {
+                        "word": "brings",
+                        "start": 17.58,
+                        "end": 17.78
+                    },
+                    {
+                        "word": "us",
+                        "start": 17.78,
+                        "end": 18
+                    },
+                    {
+                        "word": "to",
+                        "start": 18,
+                        "end": 18.16
+                    },
+                    {
+                        "word": "the",
+                        "start": 18.16,
+                        "end": 18.32
+                    }
+                ]
+            },
+            {
+                "start": 18.32,
+                "end": 19.84,
+                "text": "hidden microeconomics of",
+                "words": [
+                    {
+                        "word": "hidden",
+                        "start": 18.32,
+                        "end": 18.62
+                    },
+                    {
+                        "word": "microeconomics",
+                        "start": 18.62,
+                        "end": 19.62
+                    },
+                    {
+                        "word": "of",
+                        "start": 19.62,
+                        "end": 19.84
+                    }
+                ]
+            },
+            {
+                "start": 19.84,
+                "end": 21.52,
+                "text": "artificial intelligence. every",
+                "words": [
+                    {
+                        "word": "artificial",
+                        "start": 19.84,
+                        "end": 20.26
+                    },
+                    {
+                        "word": "intelligence.",
+                        "start": 20.26,
+                        "end": 20.76
+                    },
+                    {
+                        "word": "every",
+                        "start": 20.76,
+                        "end": 21.52
+                    }
+                ]
+            },
+            {
+                "start": 21.52,
+                "end": 23.82,
+                "text": "single word an ai speaks burns",
+                "words": [
+                    {
+                        "word": "single",
+                        "start": 21.52,
+                        "end": 21.88
+                    },
+                    {
+                        "word": "word",
+                        "start": 21.88,
+                        "end": 22.28
+                    },
+                    {
+                        "word": "an",
+                        "start": 22.28,
+                        "end": 22.66
+                    },
+                    {
+                        "word": "ai",
+                        "start": 22.66,
+                        "end": 22.96
+                    },
+                    {
+                        "word": "speaks",
+                        "start": 22.96,
+                        "end": 23.38
+                    },
+                    {
+                        "word": "burns",
+                        "start": 23.38,
+                        "end": 23.82
+                    }
+                ]
+            },
+            {
+                "start": 23.82,
+                "end": 25.92,
+                "text": "physical energy, and someone has",
+                "words": [
+                    {
+                        "word": "physical",
+                        "start": 23.82,
+                        "end": 24.46
+                    },
+                    {
+                        "word": "energy,",
+                        "start": 24.46,
+                        "end": 24.92
+                    },
+                    {
+                        "word": "and",
+                        "start": 25.1,
+                        "end": 25.46
+                    },
+                    {
+                        "word": "someone",
+                        "start": 25.46,
+                        "end": 25.74
+                    },
+                    {
+                        "word": "has",
+                        "start": 25.74,
+                        "end": 25.92
+                    }
+                ]
+            },
+            {
+                "start": 25.92,
+                "end": 27.42,
+                "text": "to pay for the physics.",
+                "words": [
+                    {
+                        "word": "to",
+                        "start": 25.92,
+                        "end": 26.1
+                    },
+                    {
+                        "word": "pay",
+                        "start": 26.1,
+                        "end": 26.24
+                    },
+                    {
+                        "word": "for",
+                        "start": 26.24,
+                        "end": 26.42
+                    },
+                    {
+                        "word": "the",
+                        "start": 26.42,
+                        "end": 26.56
+                    },
+                    {
+                        "word": "physics.",
+                        "start": 26.56,
+                        "end": 26.9
+                    }
+                ]
+            },
+            {
+                "start": 27.42,
+                "end": 28.34,
+                "text": "i think this is one of",
+                "words": [
+                    {
+                        "word": "i",
+                        "start": 27.42,
+                        "end": 27.46
+                    },
+                    {
+                        "word": "think",
+                        "start": 27.46,
+                        "end": 27.68
+                    },
+                    {
+                        "word": "this",
+                        "start": 27.68,
+                        "end": 27.98
+                    },
+                    {
+                        "word": "is",
+                        "start": 27.98,
+                        "end": 28.14
+                    },
+                    {
+                        "word": "one",
+                        "start": 28.14,
+                        "end": 28.24
+                    },
+                    {
+                        "word": "of",
+                        "start": 28.24,
+                        "end": 28.34
+                    }
+                ]
+            },
+            {
+                "start": 28.34,
+                "end": 29.96,
+                "text": "the most crucial mental shifts for",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 28.34,
+                        "end": 28.42
+                    },
+                    {
+                        "word": "most",
+                        "start": 28.42,
+                        "end": 28.58
+                    },
+                    {
+                        "word": "crucial",
+                        "start": 28.58,
+                        "end": 29.06
+                    },
+                    {
+                        "word": "mental",
+                        "start": 29.06,
+                        "end": 29.36
+                    },
+                    {
+                        "word": "shifts",
+                        "start": 29.36,
+                        "end": 29.74
+                    },
+                    {
+                        "word": "for",
+                        "start": 29.74,
+                        "end": 29.96
+                    }
+                ]
+            },
+            {
+                "start": 29.96,
+                "end": 31.3,
+                "text": "anyone trying to understand the",
+                "words": [
+                    {
+                        "word": "anyone",
+                        "start": 29.96,
+                        "end": 30.32
+                    },
+                    {
+                        "word": "trying",
+                        "start": 30.32,
+                        "end": 30.6
+                    },
+                    {
+                        "word": "to",
+                        "start": 30.6,
+                        "end": 30.76
+                    },
+                    {
+                        "word": "understand",
+                        "start": 30.76,
+                        "end": 31.1
+                    },
+                    {
+                        "word": "the",
+                        "start": 31.1,
+                        "end": 31.3
+                    }
+                ]
+            },
+            {
+                "start": 31.3,
+                "end": 33.08,
+                "text": "future of computation.",
+                "words": [
+                    {
+                        "word": "future",
+                        "start": 31.3,
+                        "end": 31.54
+                    },
+                    {
+                        "word": "of",
+                        "start": 31.54,
+                        "end": 31.78
+                    },
+                    {
+                        "word": "computation.",
+                        "start": 31.78,
+                        "end": 32.32
+                    }
+                ]
+            },
+            {
+                "start": 33.08,
+                "end": 35.18,
+                "text": "we're so deeply conditioned by the",
+                "words": [
+                    {
+                        "word": "we're",
+                        "start": 33.08,
+                        "end": 33.48
+                    },
+                    {
+                        "word": "so",
+                        "start": 33.48,
+                        "end": 33.8
+                    },
+                    {
+                        "word": "deeply",
+                        "start": 33.8,
+                        "end": 34.3
+                    },
+                    {
+                        "word": "conditioned",
+                        "start": 34.3,
+                        "end": 34.78
+                    },
+                    {
+                        "word": "by",
+                        "start": 34.78,
+                        "end": 34.98
+                    },
+                    {
+                        "word": "the",
+                        "start": 34.98,
+                        "end": 35.18
+                    }
+                ]
+            },
+            {
+                "start": 35.18,
+                "end": 36.82,
+                "text": "internet era to view digital goods",
+                "words": [
+                    {
+                        "word": "internet",
+                        "start": 35.18,
+                        "end": 35.38
+                    },
+                    {
+                        "word": "era",
+                        "start": 35.38,
+                        "end": 35.7
+                    },
+                    {
+                        "word": "to",
+                        "start": 35.7,
+                        "end": 35.9
+                    },
+                    {
+                        "word": "view",
+                        "start": 35.9,
+                        "end": 36.12
+                    },
+                    {
+                        "word": "digital",
+                        "start": 36.12,
+                        "end": 36.52
+                    },
+                    {
+                        "word": "goods",
+                        "start": 36.52,
+                        "end": 36.82
+                    }
+                ]
+            },
+            {
+                "start": 36.82,
+                "end": 38.94,
+                "text": "as essentially free.",
+                "words": [
+                    {
+                        "word": "as",
+                        "start": 36.82,
+                        "end": 37.32
+                    },
+                    {
+                        "word": "essentially",
+                        "start": 37.32,
+                        "end": 38.1
+                    },
+                    {
+                        "word": "free.",
+                        "start": 38.1,
+                        "end": 38.56
+                    }
+                ]
+            },
+            {
+                "start": 38.94,
+                "end": 40.2,
+                "text": "right, you send an email,",
+                "words": [
+                    {
+                        "word": "right,",
+                        "start": 38.94,
+                        "end": 39.2
+                    },
+                    {
+                        "word": "you",
+                        "start": 39.28,
+                        "end": 39.42
+                    },
+                    {
+                        "word": "send",
+                        "start": 39.42,
+                        "end": 39.6
+                    },
+                    {
+                        "word": "an",
+                        "start": 39.6,
+                        "end": 39.82
+                    },
+                    {
+                        "word": "email,",
+                        "start": 39.82,
+                        "end": 40.04
+                    }
+                ]
+            },
+            {
+                "start": 40.2,
+                "end": 41.72,
+                "text": "it's free. you type a prompt",
+                "words": [
+                    {
+                        "word": "it's",
+                        "start": 40.2,
+                        "end": 40.38
+                    },
+                    {
+                        "word": "free.",
+                        "start": 40.38,
+                        "end": 40.56
+                    },
+                    {
+                        "word": "you",
+                        "start": 41.02,
+                        "end": 41.14
+                    },
+                    {
+                        "word": "type",
+                        "start": 41.14,
+                        "end": 41.34
+                    },
+                    {
+                        "word": "a",
+                        "start": 41.34,
+                        "end": 41.54
+                    },
+                    {
+                        "word": "prompt",
+                        "start": 41.54,
+                        "end": 41.72
+                    }
+                ]
+            },
+            {
+                "start": 41.72,
+                "end": 43.38,
+                "text": "into an interface.",
+                "words": [
+                    {
+                        "word": "into",
+                        "start": 41.72,
+                        "end": 42.04
+                    },
+                    {
+                        "word": "an",
+                        "start": 42.04,
+                        "end": 42.24
+                    },
+                    {
+                        "word": "interface.",
+                        "start": 42.24,
+                        "end": 42.66
+                    }
+                ]
+            },
+            {
+                "start": 43.38,
+                "end": 44.8,
+                "text": "words instantly appear on the",
+                "words": [
+                    {
+                        "word": "words",
+                        "start": 43.38,
+                        "end": 43.64
+                    },
+                    {
+                        "word": "instantly",
+                        "start": 43.64,
+                        "end": 44.24
+                    },
+                    {
+                        "word": "appear",
+                        "start": 44.24,
+                        "end": 44.52
+                    },
+                    {
+                        "word": "on",
+                        "start": 44.52,
+                        "end": 44.7
+                    },
+                    {
+                        "word": "the",
+                        "start": 44.7,
+                        "end": 44.8
+                    }
+                ]
+            },
+            {
+                "start": 44.8,
+                "end": 46.18,
+                "text": "screen, and it feels like magic.",
+                "words": [
+                    {
+                        "word": "screen,",
+                        "start": 44.8,
+                        "end": 45.02
+                    },
+                    {
+                        "word": "and",
+                        "start": 45.04,
+                        "end": 45.18
+                    },
+                    {
+                        "word": "it",
+                        "start": 45.18,
+                        "end": 45.3
+                    },
+                    {
+                        "word": "feels",
+                        "start": 45.3,
+                        "end": 45.5
+                    },
+                    {
+                        "word": "like",
+                        "start": 45.5,
+                        "end": 45.68
+                    },
+                    {
+                        "word": "magic.",
+                        "start": 45.68,
+                        "end": 46
+                    }
+                ]
+            },
+            {
+                "start": 46.18,
+                "end": 48.76,
+                "text": "it feels totally weightless.",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 46.18,
+                        "end": 46.22
+                    },
+                    {
+                        "word": "feels",
+                        "start": 46.22,
+                        "end": 46.54
+                    },
+                    {
+                        "word": "totally",
+                        "start": 46.54,
+                        "end": 47.56
+                    },
+                    {
+                        "word": "weightless.",
+                        "start": 47.56,
+                        "end": 48.12
+                    }
+                ]
+            },
+            {
+                "start": 48.76,
+                "end": 50.38,
+                "text": "but the research explicitly",
+                "words": [
+                    {
+                        "word": "but",
+                        "start": 48.76,
+                        "end": 49.02
+                    },
+                    {
+                        "word": "the",
+                        "start": 49.02,
+                        "end": 49.34
+                    },
+                    {
+                        "word": "research",
+                        "start": 49.34,
+                        "end": 49.68
+                    },
+                    {
+                        "word": "explicitly",
+                        "start": 49.68,
+                        "end": 50.38
+                    }
+                ]
+            },
+            {
+                "start": 50.38,
+                "end": 51.82,
+                "text": "grounds us back in the physical",
+                "words": [
+                    {
+                        "word": "grounds",
+                        "start": 50.38,
+                        "end": 50.78
+                    },
+                    {
+                        "word": "us",
+                        "start": 50.78,
+                        "end": 51
+                    },
+                    {
+                        "word": "back",
+                        "start": 51,
+                        "end": 51.22
+                    },
+                    {
+                        "word": "in",
+                        "start": 51.22,
+                        "end": 51.38
+                    },
+                    {
+                        "word": "the",
+                        "start": 51.38,
+                        "end": 51.5
+                    },
+                    {
+                        "word": "physical",
+                        "start": 51.5,
+                        "end": 51.82
+                    }
+                ]
+            },
+            {
+                "start": 51.82,
+                "end": 53.68,
+                "text": "constraints of inference.",
+                "words": [
+                    {
+                        "word": "constraints",
+                        "start": 51.82,
+                        "end": 52.36
+                    },
+                    {
+                        "word": "of",
+                        "start": 52.36,
+                        "end": 52.58
+                    },
+                    {
+                        "word": "inference.",
+                        "start": 52.58,
+                        "end": 53
+                    }
+                ]
+            },
+            {
+                "start": 53.68,
+                "end": 55.12,
+                "text": "nothing is free.",
+                "words": [
+                    {
+                        "word": "nothing",
+                        "start": 53.68,
+                        "end": 53.94
+                    },
+                    {
+                        "word": "is",
+                        "start": 53.94,
+                        "end": 54.16
+                    },
+                    {
+                        "word": "free.",
+                        "start": 54.16,
+                        "end": 54.48
+                    }
+                ]
+            },
+            {
+                "start": 55.12,
+                "end": 56.22,
+                "text": "not a single thing.",
+                "words": [
+                    {
+                        "word": "not",
+                        "start": 55.12,
+                        "end": 55.24
+                    },
+                    {
+                        "word": "a",
+                        "start": 55.24,
+                        "end": 55.38
+                    },
+                    {
+                        "word": "single",
+                        "start": 55.38,
+                        "end": 55.56
+                    },
+                    {
+                        "word": "thing.",
+                        "start": 55.56,
+                        "end": 55.86
+                    }
+                ]
+            },
+            {
+                "start": 56.22,
+                "end": 57.4,
+                "text": "every single token,",
+                "words": [
+                    {
+                        "word": "every",
+                        "start": 56.22,
+                        "end": 56.56
+                    },
+                    {
+                        "word": "single",
+                        "start": 56.56,
+                        "end": 56.9
+                    },
+                    {
+                        "word": "token,",
+                        "start": 56.9,
+                        "end": 57.24
+                    }
+                ]
+            },
+            {
+                "start": 57.4,
+                "end": 58.92,
+                "text": "every tiny fragment of a word",
+                "words": [
+                    {
+                        "word": "every",
+                        "start": 57.4,
+                        "end": 57.62
+                    },
+                    {
+                        "word": "tiny",
+                        "start": 57.62,
+                        "end": 57.94
+                    },
+                    {
+                        "word": "fragment",
+                        "start": 57.94,
+                        "end": 58.36
+                    },
+                    {
+                        "word": "of",
+                        "start": 58.36,
+                        "end": 58.58
+                    },
+                    {
+                        "word": "a",
+                        "start": 58.58,
+                        "end": 58.72
+                    },
+                    {
+                        "word": "word",
+                        "start": 58.72,
+                        "end": 58.92
+                    }
+                ]
+            },
+            {
+                "start": 58.92,
+                "end": 60.36,
+                "text": "the ai generates,",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 58.92,
+                        "end": 59.1
+                    },
+                    {
+                        "word": "ai",
+                        "start": 59.1,
+                        "end": 59.36
+                    },
+                    {
+                        "word": "generates,",
+                        "start": 59.36,
+                        "end": 59.94
+                    }
+                ]
+            },
+            {
+                "start": 60.36,
+                "end": 61.64,
+                "text": "carries a strict,",
+                "words": [
+                    {
+                        "word": "carries",
+                        "start": 60.36,
+                        "end": 60.66
+                    },
+                    {
+                        "word": "a",
+                        "start": 60.66,
+                        "end": 60.9
+                    },
+                    {
+                        "word": "strict,",
+                        "start": 60.9,
+                        "end": 61.3
+                    }
+                ]
+            },
+            {
+                "start": 61.64,
+                "end": 64.02,
+                "text": "non -negotiable physical expense.",
+                "words": [
+                    {
+                        "word": "non",
+                        "start": 61.64,
+                        "end": 61.76
+                    },
+                    {
+                        "word": "-negotiable",
+                        "start": 61.76,
+                        "end": 62.38
+                    },
+                    {
+                        "word": "physical",
+                        "start": 62.38,
+                        "end": 62.98
+                    },
+                    {
+                        "word": "expense.",
+                        "start": 62.98,
+                        "end": 63.48
+                    }
+                ]
+            },
+            {
+                "start": 64.02,
+                "end": 65.82,
+                "text": "and the author models this expense",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 64.02,
+                        "end": 64.16
+                    },
+                    {
+                        "word": "the",
+                        "start": 64.16,
+                        "end": 64.34
+                    },
+                    {
+                        "word": "author",
+                        "start": 64.34,
+                        "end": 64.66
+                    },
+                    {
+                        "word": "models",
+                        "start": 64.66,
+                        "end": 65.2
+                    },
+                    {
+                        "word": "this",
+                        "start": 65.2,
+                        "end": 65.42
+                    },
+                    {
+                        "word": "expense",
+                        "start": 65.42,
+                        "end": 65.82
+                    }
+                ]
+            },
+            {
+                "start": 65.82,
+                "end": 67.38,
+                "text": "mathematically in the paper.",
+                "words": [
+                    {
+                        "word": "mathematically",
+                        "start": 65.82,
+                        "end": 66.44
+                    },
+                    {
+                        "word": "in",
+                        "start": 66.44,
+                        "end": 66.64
+                    },
+                    {
+                        "word": "the",
+                        "start": 66.64,
+                        "end": 66.76
+                    },
+                    {
+                        "word": "paper.",
+                        "start": 66.76,
+                        "end": 66.96
+                    }
+                ]
+            },
+            {
+                "start": 67.38,
+                "end": 68.44,
+                "text": "now, we aren't going to read",
+                "words": [
+                    {
+                        "word": "now,",
+                        "start": 67.38,
+                        "end": 67.48
+                    },
+                    {
+                        "word": "we",
+                        "start": 67.54,
+                        "end": 67.78
+                    },
+                    {
+                        "word": "aren't",
+                        "start": 67.78,
+                        "end": 67.98
+                    },
+                    {
+                        "word": "going",
+                        "start": 67.98,
+                        "end": 68.16
+                    },
+                    {
+                        "word": "to",
+                        "start": 68.16,
+                        "end": 68.32
+                    },
+                    {
+                        "word": "read",
+                        "start": 68.32,
+                        "end": 68.44
+                    }
+                ]
+            },
+            {
+                "start": 68.44,
+                "end": 69.74,
+                "text": "out the complex equations they",
+                "words": [
+                    {
+                        "word": "out",
+                        "start": 68.44,
+                        "end": 68.6
+                    },
+                    {
+                        "word": "the",
+                        "start": 68.6,
+                        "end": 68.78
+                    },
+                    {
+                        "word": "complex",
+                        "start": 68.78,
+                        "end": 69.12
+                    },
+                    {
+                        "word": "equations",
+                        "start": 69.12,
+                        "end": 69.54
+                    },
+                    {
+                        "word": "they",
+                        "start": 69.54,
+                        "end": 69.74
+                    }
+                ]
+            },
+            {
+                "start": 69.74,
+                "end": 71.34,
+                "text": "use, but the conceptual essence of",
+                "words": [
+                    {
+                        "word": "use,",
+                        "start": 69.74,
+                        "end": 69.86
+                    },
+                    {
+                        "word": "but",
+                        "start": 69.88,
+                        "end": 70
+                    },
+                    {
+                        "word": "the",
+                        "start": 70,
+                        "end": 70.18
+                    },
+                    {
+                        "word": "conceptual",
+                        "start": 70.18,
+                        "end": 70.74
+                    },
+                    {
+                        "word": "essence",
+                        "start": 70.74,
+                        "end": 71.14
+                    },
+                    {
+                        "word": "of",
+                        "start": 71.14,
+                        "end": 71.34
+                    }
+                ]
+            },
+            {
+                "start": 71.34,
+                "end": 73.3,
+                "text": "their formula is just vital.",
+                "words": [
+                    {
+                        "word": "their",
+                        "start": 71.34,
+                        "end": 71.48
+                    },
+                    {
+                        "word": "formula",
+                        "start": 71.48,
+                        "end": 71.82
+                    },
+                    {
+                        "word": "is",
+                        "start": 71.82,
+                        "end": 72.08
+                    },
+                    {
+                        "word": "just",
+                        "start": 72.08,
+                        "end": 72.3
+                    },
+                    {
+                        "word": "vital.",
+                        "start": 72.3,
+                        "end": 72.98
+                    }
+                ]
+            },
+            {
+                "start": 73.3,
+                "end": 74.26,
+                "text": "break you down for us.",
+                "words": [
+                    {
+                        "word": "break",
+                        "start": 73.3,
+                        "end": 73.34
+                    },
+                    {
+                        "word": "you",
+                        "start": 73.32,
+                        "end": 73.4
+                    },
+                    {
+                        "word": "down",
+                        "start": 73.4,
+                        "end": 73.56
+                    },
+                    {
+                        "word": "for",
+                        "start": 73.56,
+                        "end": 73.72
+                    },
+                    {
+                        "word": "us.",
+                        "start": 73.72,
+                        "end": 73.92
+                    }
+                ]
+            },
+            {
+                "start": 74.26,
+                "end": 76.3,
+                "text": "the true base cost to generate",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 74.26,
+                        "end": 74.42
+                    },
+                    {
+                        "word": "true",
+                        "start": 74.42,
+                        "end": 74.84
+                    },
+                    {
+                        "word": "base",
+                        "start": 74.84,
+                        "end": 75.4
+                    },
+                    {
+                        "word": "cost",
+                        "start": 75.4,
+                        "end": 75.76
+                    },
+                    {
+                        "word": "to",
+                        "start": 75.76,
+                        "end": 76
+                    },
+                    {
+                        "word": "generate",
+                        "start": 76,
+                        "end": 76.3
+                    }
+                ]
+            },
+            {
+                "start": 76.3,
+                "end": 78.56,
+                "text": "one single token is immutably tied",
+                "words": [
+                    {
+                        "word": "one",
+                        "start": 76.3,
+                        "end": 76.54
+                    },
+                    {
+                        "word": "single",
+                        "start": 76.54,
+                        "end": 76.82
+                    },
+                    {
+                        "word": "token",
+                        "start": 76.82,
+                        "end": 77.16
+                    },
+                    {
+                        "word": "is",
+                        "start": 77.16,
+                        "end": 77.48
+                    },
+                    {
+                        "word": "immutably",
+                        "start": 77.48,
+                        "end": 78.26
+                    },
+                    {
+                        "word": "tied",
+                        "start": 78.26,
+                        "end": 78.56
+                    }
+                ]
+            },
+            {
+                "start": 78.56,
+                "end": 79.74,
+                "text": "to the physical world.",
+                "words": [
+                    {
+                        "word": "to",
+                        "start": 78.56,
+                        "end": 78.76
+                    },
+                    {
+                        "word": "the",
+                        "start": 78.76,
+                        "end": 78.86
+                    },
+                    {
+                        "word": "physical",
+                        "start": 78.86,
+                        "end": 79.18
+                    },
+                    {
+                        "word": "world.",
+                        "start": 79.18,
+                        "end": 79.48
+                    }
+                ]
+            },
+            {
+                "start": 79.74,
+                "end": 81.5,
+                "text": "it is calculated as a combination",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 79.74,
+                        "end": 79.98
+                    },
+                    {
+                        "word": "is",
+                        "start": 79.98,
+                        "end": 80.16
+                    },
+                    {
+                        "word": "calculated",
+                        "start": 80.16,
+                        "end": 80.66
+                    },
+                    {
+                        "word": "as",
+                        "start": 80.66,
+                        "end": 81.02
+                    },
+                    {
+                        "word": "a",
+                        "start": 81.02,
+                        "end": 81.18
+                    },
+                    {
+                        "word": "combination",
+                        "start": 81.18,
+                        "end": 81.5
+                    }
+                ]
+            },
+            {
+                "start": 81.5,
+                "end": 83.56,
+                "text": "of real -time server rental costs",
+                "words": [
+                    {
+                        "word": "of",
+                        "start": 81.5,
+                        "end": 81.9
+                    },
+                    {
+                        "word": "real",
+                        "start": 81.9,
+                        "end": 82.2
+                    },
+                    {
+                        "word": "-time",
+                        "start": 82.2,
+                        "end": 82.52
+                    },
+                    {
+                        "word": "server",
+                        "start": 82.52,
+                        "end": 82.86
+                    },
+                    {
+                        "word": "rental",
+                        "start": 82.86,
+                        "end": 83.12
+                    },
+                    {
+                        "word": "costs",
+                        "start": 83.12,
+                        "end": 83.56
+                    }
+                ]
+            },
+            {
+                "start": 83.56,
+                "end": 86,
+                "text": "and live, fluctuating electrical",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 83.56,
+                        "end": 84.14
+                    },
+                    {
+                        "word": "live,",
+                        "start": 84.14,
+                        "end": 84.48
+                    },
+                    {
+                        "word": "fluctuating",
+                        "start": 84.7,
+                        "end": 85.46
+                    },
+                    {
+                        "word": "electrical",
+                        "start": 85.46,
+                        "end": 86
+                    }
+                ]
+            },
+            {
+                "start": 86,
+                "end": 87.44,
+                "text": "utility rates. okay,",
+                "words": [
+                    {
+                        "word": "utility",
+                        "start": 86,
+                        "end": 86.48
+                    },
+                    {
+                        "word": "rates.",
+                        "start": 86.48,
+                        "end": 86.86
+                    },
+                    {
+                        "word": "okay,",
+                        "start": 87.1,
+                        "end": 87.36
+                    }
+                ]
+            },
+            {
+                "start": 87.44,
+                "end": 88.66,
+                "text": "so rent and power.",
+                "words": [
+                    {
+                        "word": "so",
+                        "start": 87.44,
+                        "end": 87.6
+                    },
+                    {
+                        "word": "rent",
+                        "start": 87.6,
+                        "end": 87.86
+                    },
+                    {
+                        "word": "and",
+                        "start": 87.86,
+                        "end": 88.08
+                    },
+                    {
+                        "word": "power.",
+                        "start": 88.08,
+                        "end": 88.38
+                    }
+                ]
+            },
+            {
+                "start": 88.66,
+                "end": 90.2,
+                "text": "yes, and you take those costs,",
+                "words": [
+                    {
+                        "word": "yes,",
+                        "start": 88.66,
+                        "end": 88.86
+                    },
+                    {
+                        "word": "and",
+                        "start": 89.08,
+                        "end": 89.3
+                    },
+                    {
+                        "word": "you",
+                        "start": 89.3,
+                        "end": 89.4
+                    },
+                    {
+                        "word": "take",
+                        "start": 89.4,
+                        "end": 89.56
+                    },
+                    {
+                        "word": "those",
+                        "start": 89.56,
+                        "end": 89.74
+                    },
+                    {
+                        "word": "costs,",
+                        "start": 89.74,
+                        "end": 90.08
+                    }
+                ]
+            },
+            {
+                "start": 90.2,
+                "end": 91.3,
+                "text": "and you divide them by the",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 90.2,
+                        "end": 90.3
+                    },
+                    {
+                        "word": "you",
+                        "start": 90.3,
+                        "end": 90.4
+                    },
+                    {
+                        "word": "divide",
+                        "start": 90.4,
+                        "end": 90.74
+                    },
+                    {
+                        "word": "them",
+                        "start": 90.74,
+                        "end": 90.98
+                    },
+                    {
+                        "word": "by",
+                        "start": 90.98,
+                        "end": 91.14
+                    },
+                    {
+                        "word": "the",
+                        "start": 91.14,
+                        "end": 91.3
+                    }
+                ]
+            },
+            {
+                "start": 91.3,
+                "end": 92.44,
+                "text": "physical efficiency of the",
+                "words": [
+                    {
+                        "word": "physical",
+                        "start": 91.3,
+                        "end": 91.64
+                    },
+                    {
+                        "word": "efficiency",
+                        "start": 91.64,
+                        "end": 92.06
+                    },
+                    {
+                        "word": "of",
+                        "start": 92.06,
+                        "end": 92.28
+                    },
+                    {
+                        "word": "the",
+                        "start": 92.28,
+                        "end": 92.44
+                    }
+                ]
+            },
+            {
+                "start": 92.44,
+                "end": 94.4,
+                "text": "hardware, basically how fast the",
+                "words": [
+                    {
+                        "word": "hardware,",
+                        "start": 92.44,
+                        "end": 92.76
+                    },
+                    {
+                        "word": "basically",
+                        "start": 93,
+                        "end": 93.44
+                    },
+                    {
+                        "word": "how",
+                        "start": 93.44,
+                        "end": 93.84
+                    },
+                    {
+                        "word": "fast",
+                        "start": 93.84,
+                        "end": 94.2
+                    },
+                    {
+                        "word": "the",
+                        "start": 94.2,
+                        "end": 94.4
+                    }
+                ]
+            },
+            {
+                "start": 94.4,
+                "end": 95.88,
+                "text": "gpus can actually process",
+                "words": [
+                    {
+                        "word": "gpus",
+                        "start": 94.4,
+                        "end": 94.72
+                    },
+                    {
+                        "word": "can",
+                        "start": 94.72,
+                        "end": 95.08
+                    },
+                    {
+                        "word": "actually",
+                        "start": 95.08,
+                        "end": 95.54
+                    },
+                    {
+                        "word": "process",
+                        "start": 95.54,
+                        "end": 95.88
+                    }
+                ]
+            },
+            {
+                "start": 95.88,
+                "end": 97.32,
+                "text": "information. and then,",
+                "words": [
+                    {
+                        "word": "information.",
+                        "start": 95.88,
+                        "end": 96.44
+                    },
+                    {
+                        "word": "and",
+                        "start": 96.88,
+                        "end": 97
+                    },
+                    {
+                        "word": "then,",
+                        "start": 97,
+                        "end": 97.14
+                    }
+                ]
+            },
+            {
+                "start": 97.32,
+                "end": 98.98,
+                "text": "importantly, you have to multiply",
+                "words": [
+                    {
+                        "word": "importantly,",
+                        "start": 97.32,
+                        "end": 97.74
+                    },
+                    {
+                        "word": "you",
+                        "start": 98.04,
+                        "end": 98.22
+                    },
+                    {
+                        "word": "have",
+                        "start": 98.22,
+                        "end": 98.36
+                    },
+                    {
+                        "word": "to",
+                        "start": 98.36,
+                        "end": 98.56
+                    },
+                    {
+                        "word": "multiply",
+                        "start": 98.56,
+                        "end": 98.98
+                    }
+                ]
+            },
+            {
+                "start": 98.98,
+                "end": 100.7,
+                "text": "that baseline by the sheer size",
+                "words": [
+                    {
+                        "word": "that",
+                        "start": 98.98,
+                        "end": 99.34
+                    },
+                    {
+                        "word": "baseline",
+                        "start": 99.34,
+                        "end": 99.7
+                    },
+                    {
+                        "word": "by",
+                        "start": 99.7,
+                        "end": 99.96
+                    },
+                    {
+                        "word": "the",
+                        "start": 99.96,
+                        "end": 100.12
+                    },
+                    {
+                        "word": "sheer",
+                        "start": 100.12,
+                        "end": 100.3
+                    },
+                    {
+                        "word": "size",
+                        "start": 100.3,
+                        "end": 100.7
+                    }
+                ]
+            },
+            {
+                "start": 100.7,
+                "end": 102.48,
+                "text": "of the ai's internal memory,",
+                "words": [
+                    {
+                        "word": "of",
+                        "start": 100.7,
+                        "end": 100.88
+                    },
+                    {
+                        "word": "the",
+                        "start": 100.88,
+                        "end": 101.02
+                    },
+                    {
+                        "word": "ai's",
+                        "start": 101.02,
+                        "end": 101.44
+                    },
+                    {
+                        "word": "internal",
+                        "start": 101.44,
+                        "end": 101.72
+                    },
+                    {
+                        "word": "memory,",
+                        "start": 101.72,
+                        "end": 102.1
+                    }
+                ]
+            },
+            {
+                "start": 102.48,
+                "end": 103.5,
+                "text": "its parameter count,",
+                "words": [
+                    {
+                        "word": "its",
+                        "start": 102.48,
+                        "end": 102.72
+                    },
+                    {
+                        "word": "parameter",
+                        "start": 102.72,
+                        "end": 103.16
+                    },
+                    {
+                        "word": "count,",
+                        "start": 103.16,
+                        "end": 103.5
+                    }
+                ]
+            },
+            {
+                "start": 103.5,
+                "end": 104.88,
+                "text": "and the length of the prompt",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 103.5,
+                        "end": 104.04
+                    },
+                    {
+                        "word": "the",
+                        "start": 104.04,
+                        "end": 104.2
+                    },
+                    {
+                        "word": "length",
+                        "start": 104.2,
+                        "end": 104.36
+                    },
+                    {
+                        "word": "of",
+                        "start": 104.36,
+                        "end": 104.5
+                    },
+                    {
+                        "word": "the",
+                        "start": 104.5,
+                        "end": 104.7
+                    },
+                    {
+                        "word": "prompt",
+                        "start": 104.7,
+                        "end": 104.88
+                    }
+                ]
+            },
+            {
+                "start": 104.88,
+                "end": 105.84,
+                "text": "the user just submitted.",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 104.88,
+                        "end": 105.08
+                    },
+                    {
+                        "word": "user",
+                        "start": 105.08,
+                        "end": 105.24
+                    },
+                    {
+                        "word": "just",
+                        "start": 105.24,
+                        "end": 105.46
+                    },
+                    {
+                        "word": "submitted.",
+                        "start": 105.46,
+                        "end": 105.84
+                    }
+                ]
+            },
+            {
+                "start": 105.84,
+                "end": 108.3,
+                "text": "exactly. let's try to visualize",
+                "words": [
+                    {
+                        "word": "exactly.",
+                        "start": 105.84,
+                        "end": 106.7
+                    },
+                    {
+                        "word": "let's",
+                        "start": 107.28,
+                        "end": 107.66
+                    },
+                    {
+                        "word": "try",
+                        "start": 107.66,
+                        "end": 107.8
+                    },
+                    {
+                        "word": "to",
+                        "start": 107.8,
+                        "end": 107.96
+                    },
+                    {
+                        "word": "visualize",
+                        "start": 107.96,
+                        "end": 108.3
+                    }
+                ]
+            },
+            {
+                "start": 108.3,
+                "end": 110.22,
+                "text": "this mechanics because i think a",
+                "words": [
+                    {
+                        "word": "this",
+                        "start": 108.3,
+                        "end": 108.6
+                    },
+                    {
+                        "word": "mechanics",
+                        "start": 108.6,
+                        "end": 109.04
+                    },
+                    {
+                        "word": "because",
+                        "start": 109.04,
+                        "end": 109.34
+                    },
+                    {
+                        "word": "i",
+                        "start": 109.34,
+                        "end": 109.92
+                    },
+                    {
+                        "word": "think",
+                        "start": 109.92,
+                        "end": 110.06
+                    },
+                    {
+                        "word": "a",
+                        "start": 110.06,
+                        "end": 110.22
+                    }
+                ]
+            },
+            {
+                "start": 110.22,
+                "end": 111.8,
+                "text": "metaphor helps here.",
+                "words": [
+                    {
+                        "word": "metaphor",
+                        "start": 110.22,
+                        "end": 110.46
+                    },
+                    {
+                        "word": "helps",
+                        "start": 110.46,
+                        "end": 110.78
+                    },
+                    {
+                        "word": "here.",
+                        "start": 110.78,
+                        "end": 111.08
+                    }
+                ]
+            },
+            {
+                "start": 111.8,
+                "end": 113.06,
+                "text": "imagine a microscopic,",
+                "words": [
+                    {
+                        "word": "imagine",
+                        "start": 111.8,
+                        "end": 112.1
+                    },
+                    {
+                        "word": "a",
+                        "start": 112.1,
+                        "end": 112.44
+                    },
+                    {
+                        "word": "microscopic,",
+                        "start": 112.44,
+                        "end": 113.06
+                    }
+                ]
+            },
+            {
+                "start": 113.06,
+                "end": 114.8,
+                "text": "highly complex factory assembly",
+                "words": [
+                    {
+                        "word": "highly",
+                        "start": 113.06,
+                        "end": 113.52
+                    },
+                    {
+                        "word": "complex",
+                        "start": 113.52,
+                        "end": 113.94
+                    },
+                    {
+                        "word": "factory",
+                        "start": 113.94,
+                        "end": 114.4
+                    },
+                    {
+                        "word": "assembly",
+                        "start": 114.4,
+                        "end": 114.8
+                    }
+                ]
+            },
+            {
+                "start": 114.8,
+                "end": 116.9,
+                "text": "line. every single word produced",
+                "words": [
+                    {
+                        "word": "line.",
+                        "start": 114.8,
+                        "end": 115.14
+                    },
+                    {
+                        "word": "every",
+                        "start": 115.76,
+                        "end": 115.96
+                    },
+                    {
+                        "word": "single",
+                        "start": 115.96,
+                        "end": 116.24
+                    },
+                    {
+                        "word": "word",
+                        "start": 116.24,
+                        "end": 116.48
+                    },
+                    {
+                        "word": "produced",
+                        "start": 116.48,
+                        "end": 116.9
+                    }
+                ]
+            },
+            {
+                "start": 116.9,
+                "end": 119.18,
+                "text": "by this ai requires exactly one",
+                "words": [
+                    {
+                        "word": "by",
+                        "start": 116.9,
+                        "end": 117.14
+                    },
+                    {
+                        "word": "this",
+                        "start": 117.14,
+                        "end": 117.3
+                    },
+                    {
+                        "word": "ai",
+                        "start": 117.3,
+                        "end": 117.58
+                    },
+                    {
+                        "word": "requires",
+                        "start": 117.58,
+                        "end": 118.12
+                    },
+                    {
+                        "word": "exactly",
+                        "start": 118.12,
+                        "end": 118.62
+                    },
+                    {
+                        "word": "one",
+                        "start": 118.62,
+                        "end": 119.18
+                    }
+                ]
+            },
+            {
+                "start": 119.18,
+                "end": 120.82,
+                "text": "drop of physical electricity,",
+                "words": [
+                    {
+                        "word": "drop",
+                        "start": 119.18,
+                        "end": 119.5
+                    },
+                    {
+                        "word": "of",
+                        "start": 119.5,
+                        "end": 119.8
+                    },
+                    {
+                        "word": "physical",
+                        "start": 119.8,
+                        "end": 120.14
+                    },
+                    {
+                        "word": "electricity,",
+                        "start": 120.14,
+                        "end": 120.78
+                    }
+                ]
+            },
+            {
+                "start": 120.82,
+                "end": 122.4,
+                "text": "and it takes up a specific",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 120.82,
+                        "end": 121.42
+                    },
+                    {
+                        "word": "it",
+                        "start": 121.42,
+                        "end": 121.52
+                    },
+                    {
+                        "word": "takes",
+                        "start": 121.52,
+                        "end": 121.7
+                    },
+                    {
+                        "word": "up",
+                        "start": 121.7,
+                        "end": 121.82
+                    },
+                    {
+                        "word": "a",
+                        "start": 121.82,
+                        "end": 122
+                    },
+                    {
+                        "word": "specific",
+                        "start": 122,
+                        "end": 122.4
+                    }
+                ]
+            },
+            {
+                "start": 122.4,
+                "end": 125,
+                "text": "microsecond of physical space on a",
+                "words": [
+                    {
+                        "word": "microsecond",
+                        "start": 122.4,
+                        "end": 123.14
+                    },
+                    {
+                        "word": "of",
+                        "start": 123.14,
+                        "end": 123.44
+                    },
+                    {
+                        "word": "physical",
+                        "start": 123.44,
+                        "end": 123.86
+                    },
+                    {
+                        "word": "space",
+                        "start": 123.86,
+                        "end": 124.22
+                    },
+                    {
+                        "word": "on",
+                        "start": 124.22,
+                        "end": 124.68
+                    },
+                    {
+                        "word": "a",
+                        "start": 124.68,
+                        "end": 125
+                    }
+                ]
+            },
+            {
+                "start": 125,
+                "end": 126.3,
+                "text": "gpu assembly line.",
+                "words": [
+                    {
+                        "word": "gpu",
+                        "start": 125,
+                        "end": 125.3
+                    },
+                    {
+                        "word": "assembly",
+                        "start": 125.3,
+                        "end": 125.72
+                    },
+                    {
+                        "word": "line.",
+                        "start": 125.72,
+                        "end": 126.06
+                    }
+                ]
+            },
+            {
+                "start": 126.3,
+                "end": 127.44,
+                "text": "that's a great way to picture",
+                "words": [
+                    {
+                        "word": "that's",
+                        "start": 126.3,
+                        "end": 126.68
+                    },
+                    {
+                        "word": "a",
+                        "start": 126.68,
+                        "end": 126.8
+                    },
+                    {
+                        "word": "great",
+                        "start": 126.8,
+                        "end": 126.98
+                    },
+                    {
+                        "word": "way",
+                        "start": 126.98,
+                        "end": 127.12
+                    },
+                    {
+                        "word": "to",
+                        "start": 127.12,
+                        "end": 127.24
+                    },
+                    {
+                        "word": "picture",
+                        "start": 127.24,
+                        "end": 127.44
+                    }
+                ]
+            },
+            {
+                "start": 127.44,
+                "end": 128.9,
+                "text": "it. and just like a physical",
+                "words": [
+                    {
+                        "word": "it.",
+                        "start": 127.44,
+                        "end": 127.62
+                    },
+                    {
+                        "word": "and",
+                        "start": 127.8,
+                        "end": 128
+                    },
+                    {
+                        "word": "just",
+                        "start": 128,
+                        "end": 128.3
+                    },
+                    {
+                        "word": "like",
+                        "start": 128.3,
+                        "end": 128.48
+                    },
+                    {
+                        "word": "a",
+                        "start": 128.48,
+                        "end": 128.6
+                    },
+                    {
+                        "word": "physical",
+                        "start": 128.6,
+                        "end": 128.9
+                    }
+                ]
+            },
+            {
+                "start": 128.9,
+                "end": 130.58,
+                "text": "factory, if a user submits a",
+                "words": [
+                    {
+                        "word": "factory,",
+                        "start": 128.9,
+                        "end": 129.32
+                    },
+                    {
+                        "word": "if",
+                        "start": 129.36,
+                        "end": 129.58
+                    },
+                    {
+                        "word": "a",
+                        "start": 129.58,
+                        "end": 129.7
+                    },
+                    {
+                        "word": "user",
+                        "start": 129.7,
+                        "end": 129.96
+                    },
+                    {
+                        "word": "submits",
+                        "start": 129.96,
+                        "end": 130.38
+                    },
+                    {
+                        "word": "a",
+                        "start": 130.38,
+                        "end": 130.58
+                    }
+                ]
+            },
+            {
+                "start": 130.58,
+                "end": 132.42,
+                "text": "massive, complex prompt,",
+                "words": [
+                    {
+                        "word": "massive,",
+                        "start": 130.58,
+                        "end": 131.24
+                    },
+                    {
+                        "word": "complex",
+                        "start": 131.32,
+                        "end": 131.88
+                    },
+                    {
+                        "word": "prompt,",
+                        "start": 131.88,
+                        "end": 132.32
+                    }
+                ]
+            },
+            {
+                "start": 132.42,
+                "end": 134.14,
+                "text": "they are essentially ordering a",
+                "words": [
+                    {
+                        "word": "they",
+                        "start": 132.42,
+                        "end": 132.82
+                    },
+                    {
+                        "word": "are",
+                        "start": 132.82,
+                        "end": 132.98
+                    },
+                    {
+                        "word": "essentially",
+                        "start": 132.98,
+                        "end": 133.4
+                    },
+                    {
+                        "word": "ordering",
+                        "start": 133.4,
+                        "end": 133.82
+                    },
+                    {
+                        "word": "a",
+                        "start": 133.82,
+                        "end": 134.14
+                    }
+                ]
+            },
+            {
+                "start": 134.14,
+                "end": 136.38,
+                "text": "custom, heavy -duty product.",
+                "words": [
+                    {
+                        "word": "custom,",
+                        "start": 134.14,
+                        "end": 134.6
+                    },
+                    {
+                        "word": "heavy",
+                        "start": 134.72,
+                        "end": 135.14
+                    },
+                    {
+                        "word": "-duty",
+                        "start": 135.14,
+                        "end": 135.34
+                    },
+                    {
+                        "word": "product.",
+                        "start": 135.34,
+                        "end": 135.82
+                    }
+                ]
+            },
+            {
+                "start": 136.38,
+                "end": 137.76,
+                "text": "which takes up more space on",
+                "words": [
+                    {
+                        "word": "which",
+                        "start": 136.38,
+                        "end": 136.64
+                    },
+                    {
+                        "word": "takes",
+                        "start": 136.64,
+                        "end": 137.02
+                    },
+                    {
+                        "word": "up",
+                        "start": 137.02,
+                        "end": 137.18
+                    },
+                    {
+                        "word": "more",
+                        "start": 137.18,
+                        "end": 137.32
+                    },
+                    {
+                        "word": "space",
+                        "start": 137.32,
+                        "end": 137.56
+                    },
+                    {
+                        "word": "on",
+                        "start": 137.56,
+                        "end": 137.76
+                    }
+                ]
+            },
+            {
+                "start": 137.76,
+                "end": 138.94,
+                "text": "the assembly line.",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 137.76,
+                        "end": 137.92
+                    },
+                    {
+                        "word": "assembly",
+                        "start": 137.92,
+                        "end": 138.18
+                    },
+                    {
+                        "word": "line.",
+                        "start": 138.18,
+                        "end": 138.54
+                    }
+                ]
+            },
+            {
+                "start": 138.94,
+                "end": 140.06,
+                "text": "takes up more space,",
+                "words": [
+                    {
+                        "word": "takes",
+                        "start": 138.94,
+                        "end": 139.04
+                    },
+                    {
+                        "word": "up",
+                        "start": 139.04,
+                        "end": 139.2
+                    },
+                    {
+                        "word": "more",
+                        "start": 139.2,
+                        "end": 139.32
+                    },
+                    {
+                        "word": "space,",
+                        "start": 139.32,
+                        "end": 139.74
+                    }
+                ]
+            },
+            {
+                "start": 140.06,
+                "end": 141.12,
+                "text": "requires more drops of",
+                "words": [
+                    {
+                        "word": "requires",
+                        "start": 140.06,
+                        "end": 140.46
+                    },
+                    {
+                        "word": "more",
+                        "start": 140.46,
+                        "end": 140.7
+                    },
+                    {
+                        "word": "drops",
+                        "start": 140.7,
+                        "end": 140.94
+                    },
+                    {
+                        "word": "of",
+                        "start": 140.94,
+                        "end": 141.12
+                    }
+                ]
+            },
+            {
+                "start": 141.12,
+                "end": 142.6,
+                "text": "electricity, and it actually",
+                "words": [
+                    {
+                        "word": "electricity,",
+                        "start": 141.12,
+                        "end": 141.56
+                    },
+                    {
+                        "word": "and",
+                        "start": 141.72,
+                        "end": 142.14
+                    },
+                    {
+                        "word": "it",
+                        "start": 142.14,
+                        "end": 142.3
+                    },
+                    {
+                        "word": "actually",
+                        "start": 142.3,
+                        "end": 142.6
+                    }
+                ]
+            },
+            {
+                "start": 142.6,
+                "end": 144.22,
+                "text": "forces the cooling fans to spin",
+                "words": [
+                    {
+                        "word": "forces",
+                        "start": 142.6,
+                        "end": 143
+                    },
+                    {
+                        "word": "the",
+                        "start": 143,
+                        "end": 143.26
+                    },
+                    {
+                        "word": "cooling",
+                        "start": 143.26,
+                        "end": 143.52
+                    },
+                    {
+                        "word": "fans",
+                        "start": 143.52,
+                        "end": 143.78
+                    },
+                    {
+                        "word": "to",
+                        "start": 143.78,
+                        "end": 144.04
+                    },
+                    {
+                        "word": "spin",
+                        "start": 144.04,
+                        "end": 144.22
+                    }
+                ]
+            },
+            {
+                "start": 144.22,
+                "end": 146.18,
+                "text": "faster to dissipate the physical",
+                "words": [
+                    {
+                        "word": "faster",
+                        "start": 144.22,
+                        "end": 144.68
+                    },
+                    {
+                        "word": "to",
+                        "start": 144.68,
+                        "end": 144.92
+                    },
+                    {
+                        "word": "dissipate",
+                        "start": 144.92,
+                        "end": 145.44
+                    },
+                    {
+                        "word": "the",
+                        "start": 145.44,
+                        "end": 145.72
+                    },
+                    {
+                        "word": "physical",
+                        "start": 145.72,
+                        "end": 146.18
+                    }
+                ]
+            },
+            {
+                "start": 146.18,
+                "end": 148.44,
+                "text": "heat generated by the calculation.",
+                "words": [
+                    {
+                        "word": "heat",
+                        "start": 146.18,
+                        "end": 146.46
+                    },
+                    {
+                        "word": "generated",
+                        "start": 146.46,
+                        "end": 146.9
+                    },
+                    {
+                        "word": "by",
+                        "start": 146.9,
+                        "end": 147.1
+                    },
+                    {
+                        "word": "the",
+                        "start": 147.1,
+                        "end": 147.22
+                    },
+                    {
+                        "word": "calculation.",
+                        "start": 147.22,
+                        "end": 147.7
+                    }
+                ]
+            },
+            {
+                "start": 148.44,
+                "end": 150.22,
+                "text": "so if the local utility company",
+                "words": [
+                    {
+                        "word": "so",
+                        "start": 148.44,
+                        "end": 148.66
+                    },
+                    {
+                        "word": "if",
+                        "start": 148.66,
+                        "end": 148.96
+                    },
+                    {
+                        "word": "the",
+                        "start": 148.96,
+                        "end": 149.12
+                    },
+                    {
+                        "word": "local",
+                        "start": 149.12,
+                        "end": 149.36
+                    },
+                    {
+                        "word": "utility",
+                        "start": 149.36,
+                        "end": 149.86
+                    },
+                    {
+                        "word": "company",
+                        "start": 149.86,
+                        "end": 150.22
+                    }
+                ]
+            },
+            {
+                "start": 150.22,
+                "end": 152.12,
+                "text": "raises electricity prices during a",
+                "words": [
+                    {
+                        "word": "raises",
+                        "start": 150.22,
+                        "end": 150.58
+                    },
+                    {
+                        "word": "electricity",
+                        "start": 150.58,
+                        "end": 151.2
+                    },
+                    {
+                        "word": "prices",
+                        "start": 151.2,
+                        "end": 151.58
+                    },
+                    {
+                        "word": "during",
+                        "start": 151.58,
+                        "end": 151.88
+                    },
+                    {
+                        "word": "a",
+                        "start": 151.88,
+                        "end": 152.12
+                    }
+                ]
+            },
+            {
+                "start": 152.12,
+                "end": 153.38,
+                "text": "summer heat wave,",
+                "words": [
+                    {
+                        "word": "summer",
+                        "start": 152.12,
+                        "end": 152.32
+                    },
+                    {
+                        "word": "heat",
+                        "start": 152.32,
+                        "end": 152.56
+                    },
+                    {
+                        "word": "wave,",
+                        "start": 152.56,
+                        "end": 152.76
+                    }
+                ]
+            },
+            {
+                "start": 153.38,
+                "end": 154.32,
+                "text": "the cost of running that",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 153.38,
+                        "end": 153.54
+                    },
+                    {
+                        "word": "cost",
+                        "start": 153.54,
+                        "end": 153.72
+                    },
+                    {
+                        "word": "of",
+                        "start": 153.72,
+                        "end": 153.88
+                    },
+                    {
+                        "word": "running",
+                        "start": 153.88,
+                        "end": 154.06
+                    },
+                    {
+                        "word": "that",
+                        "start": 154.06,
+                        "end": 154.32
+                    }
+                ]
+            },
+            {
+                "start": 154.32,
+                "end": 155.86,
+                "text": "microscopic factory goes up",
+                "words": [
+                    {
+                        "word": "microscopic",
+                        "start": 154.32,
+                        "end": 154.78
+                    },
+                    {
+                        "word": "factory",
+                        "start": 154.78,
+                        "end": 155.34
+                    },
+                    {
+                        "word": "goes",
+                        "start": 155.34,
+                        "end": 155.64
+                    },
+                    {
+                        "word": "up",
+                        "start": 155.64,
+                        "end": 155.86
+                    }
+                ]
+            },
+            {
+                "start": 155.86,
+                "end": 157.8,
+                "text": "instantly. the physics literally",
+                "words": [
+                    {
+                        "word": "instantly.",
+                        "start": 155.86,
+                        "end": 156.26
+                    },
+                    {
+                        "word": "the",
+                        "start": 156.68,
+                        "end": 156.9
+                    },
+                    {
+                        "word": "physics",
+                        "start": 156.9,
+                        "end": 157.18
+                    },
+                    {
+                        "word": "literally",
+                        "start": 157.18,
+                        "end": 157.8
+                    }
+                ]
+            },
+            {
+                "start": 157.8,
+                "end": 159.18,
+                "text": "cannot be ignored.",
+                "words": [
+                    {
+                        "word": "cannot",
+                        "start": 157.8,
+                        "end": 158.28
+                    },
+                    {
+                        "word": "be",
+                        "start": 158.28,
+                        "end": 158.56
+                    },
+                    {
+                        "word": "ignored.",
+                        "start": 158.56,
+                        "end": 158.94
+                    }
+                ]
+            },
+            {
+                "start": 159.18,
+                "end": 159.99,
+                "text": "no, it can't.",
+                "words": [
+                    {
+                        "word": "no,",
+                        "start": 159.18,
+                        "end": 159.26
+                    },
+                    {
+                        "word": "it",
+                        "start": 159.5,
+                        "end": 159.58
+                    },
+                    {
+                        "word": "can't.",
+                        "start": 159.58,
+                        "end": 159.84
+                    }
+                ]
+            }
+        ],
+        "_caption_sig": "be28a4586033ffbf9079a406e52d8ea7",
+        "infographic_scenes": [
+            {
+                "start": 0,
+                "end": 14.9,
+                "archetype": "cash_register_precision",
+                "is_new": true,
+                "title": "Exact Margins",
+                "insight": "Profitable businesses require knowing costs down to a fraction of a penny.",
+                "metaphor": "An old-school mechanical cash register stamping out tiny fractions of a cent on a paper tape.",
+                "labels": [
+                    "COST",
+                    "MARGIN"
+                ],
+                "fallback_archetype": "circuit_switch"
+            },
+            {
+                "start": 14.9,
+                "end": 29.8,
+                "archetype": "power_plant_turbine",
+                "is_new": true,
+                "title": "Hidden Physics",
+                "insight": "Every word an AI speaks burns physical energy that someone must pay for.",
+                "metaphor": "A massive industrial steam turbine spinning furiously to power a glowing word floating above it.",
+                "labels": [
+                    "ENERGY",
+                    "PHYSICS"
+                ],
+                "fallback_archetype": "pulse_resonance"
+            },
+            {
+                "start": 29.8,
+                "end": 44.7,
+                "archetype": "weightless_illusion",
+                "is_new": true,
+                "title": "The Illusion",
+                "insight": "We are conditioned to think digital goods and emails are completely free and weightless.",
+                "metaphor": "A feather floating effortlessly on a screen, hiding a massive heavy iron anvil attached just out of sight.",
+                "labels": [
+                    "ILLUSION",
+                    "REALITY"
+                ],
+                "fallback_archetype": "leaky_bucket"
+            },
+            {
+                "start": 44.7,
+                "end": 59.6,
+                "archetype": "non_negotiable_toll",
+                "is_new": true,
+                "title": "Strict Expense",
+                "insight": "Every single token generated carries a strict, non-negotiable physical expense.",
+                "metaphor": "A heavy steel tollgate slamming down firmly across a digital fiber-optic highway.",
+                "labels": [
+                    "TOKEN",
+                    "TOLL"
+                ],
+                "fallback_archetype": "circuit_switch"
+            },
+            {
+                "start": 59.6,
+                "end": 74.5,
+                "archetype": "rent_power_gears",
+                "is_new": true,
+                "title": "Base Formula",
+                "insight": "The base cost is tied to real-time server rental and fluctuating electrical utility rates.",
+                "metaphor": "Two interlocking mechanical gears labeled RENT and POWER turning in unison.",
+                "labels": [
+                    "RENT",
+                    "POWER"
+                ],
+                "fallback_archetype": "flywheel_gear"
+            },
+            {
+                "start": 74.5,
+                "end": 89.4,
+                "archetype": "hardware_assembly_line",
+                "is_new": true,
+                "title": "Hardware Efficiency",
+                "insight": "Costs are divided by hardware efficiency and multiplied by parameter count and prompt length.",
+                "metaphor": "A high-speed manufacturing conveyor belt dividing blocks of data while multiplying them by giant memory weights.",
+                "labels": [
+                    "EFFICIENCY",
+                    "MEMORY"
+                ],
+                "fallback_archetype": "foundation_stack"
+            },
+            {
+                "start": 89.4,
+                "end": 104.3,
+                "archetype": "micro_factory_line",
+                "is_new": true,
+                "title": "Microscopic Factory",
+                "insight": "Every word produced requires a drop of physical electricity and a microsecond of GPU space.",
+                "metaphor": "A tiny, intricate mechanical assembly line stamping out glowing letters with drops of liquid light.",
+                "labels": [
+                    "ELECTRICITY",
+                    "SPACE"
+                ],
+                "fallback_archetype": "network_artery"
+            },
+            {
+                "start": 104.3,
+                "end": 119.2,
+                "archetype": "heavy_custom_product",
+                "is_new": true,
+                "title": "Custom Orders",
+                "insight": "Massive complex prompts act like heavy-duty custom products that take up more space.",
+                "metaphor": "A large, heavy steel crate sliding down a factory chute, displacing smaller boxes.",
+                "labels": [
+                    "PROMPT",
+                    "LOAD"
+                ],
+                "fallback_archetype": "balance_scale"
+            },
+            {
+                "start": 119.2,
+                "end": 134.1,
+                "archetype": "spinning_cooling_fan",
+                "is_new": true,
+                "title": "Heat Dissipation",
+                "insight": "Heavy calculations force cooling fans to spin faster to dissipate physical heat.",
+                "metaphor": "A heavy-duty industrial fan blade spinning into a blur, blowing away waves of thermal heat lines.",
+                "labels": [
+                    "HEAT",
+                    "COOLING"
+                ],
+                "fallback_archetype": "pulse_resonance"
+            },
+            {
+                "start": 134.1,
+                "end": 149,
+                "archetype": "summer_heat_spike",
+                "is_new": true,
+                "title": "Utility Spikes",
+                "insight": "If utility prices rise during a heat wave, the cost of running the micro-factory goes up instantly.",
+                "metaphor": "A thermometer shooting straight up into the red zone, instantly forcing a factory price dial to jump higher.",
+                "labels": [
+                    "RATE",
+                    "SPIKE"
+                ],
+                "fallback_archetype": "leaky_bucket"
+            },
+            {
+                "start": 149,
+                "end": 164.04,
+                "archetype": "inexorable_physics",
+                "is_new": true,
+                "title": "Inescapable Physics",
+                "insight": "The physics of computation literally cannot be ignored; nothing is ever free.",
+                "metaphor": "A massive stone wall with an immovable steel boulder resting against it under intense gravity.",
+                "labels": [
+                    "PHYSICS",
+                    "REALITY"
+                ],
+                "fallback_archetype": "foundation_stack"
+            }
+        ],
+        "_audio_sig": "8a45955373b6799ff2310aa3ac89d701",
+        "audio_duration": 164.04,
+        "visual_source": "manim",
+        "infographic_ready": true,
+        "_infographic_version": "v3_monochrome_no_grid",
+        "rendered_duration": 169.58,
+        "intro_offset": 1.5,
+        "outro_duration": 5.0,
+        "source_start": 598.34,
+        "source_end": 748.64,
+        "_compiled_sig": "9b45ab9db8bcb03081bb964b325415a1",
+        "_needs_recompile": false
     },
     {
         "num": 6,
-        "title": "And the Cooling Systems Must Constantly Run",
+        "title": "Perishable Compute !",
         "start": 749.38,
         "end": 893.14,
         "duration": 143.76,
@@ -19584,10 +24934,10 @@
         "segments": [
             {
                 "type": "audio",
-                "start": 749.38,
-                "end": 766.5,
-                "duration": 17.12,
-                "text": "So if the local utility company raises electricity prices during a summer heat wave, the cost of running that microscopic factory goes up instantly. The physics literally cannot be ignored. No, it can't. By the way, I highly recommend checking out the detailed visual analysis of this cost structure on our website."
+                "start": 814.14,
+                "end": 829.32,
+                "duration": 15.18,
+                "text": "Yes.  An  idle  AI  server  is  exactly  like  a  commercial  airplane  taking  off  with  empty  seats.  Once  the  moment  passes,  that  revenue  was  gone  forever.  Let's  unpack  this  concept  of  perishable  compute,  because  it  completely  shifts  how  you  view  digital  infrastructure.  It  really  does."
             },
             {
                 "type": "music",

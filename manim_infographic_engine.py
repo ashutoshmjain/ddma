@@ -11,11 +11,14 @@ import sys
 import json
 import subprocess
 import tempfile
+import re
 from typing import List, Dict, Any, Optional
 
-# Manim Configuration for Native 1080x1080 Pure Glossy Black Viewport
+# Manim Configuration for Native 740x740 / 1080x1080 Pure Glossy Black Viewport
 MANIM_HEADER = """
 from manim import *
+
+CENTER = ORIGIN
 
 config.pixel_width = 740
 config.pixel_height = 740
@@ -23,6 +26,28 @@ config.frame_width = 8.0
 config.frame_height = 8.0
 config.background_color = "#000000"
 config.frame_rate = 30
+
+class PedagogicalBaseScene(Scene):
+    archetype_label = ""
+    credits_label = "DEEP DIVE PODCAST"
+
+    def setup(self):
+        super().setup()
+        self.camera.background_color = "#000000"
+        
+        # Bottom footer bar with archetype and podcast credits
+        footer_line = Line(LEFT * 3.5, RIGHT * 3.5, color="#FFFFFF", stroke_width=1.5).move_to(DOWN * 3.35)
+        footer_line.set_opacity(0.4)
+        
+        left_text = Text(self.archetype_label, font="Arial", weight=BOLD, font_size=11, color="#FFFFFF")
+        left_text.set_opacity(0.65)
+        left_text.next_to(footer_line, DOWN, buff=0.12).to_edge(LEFT, buff=0.55)
+        
+        right_text = Text(self.credits_label, font="Arial", weight=NORMAL, font_size=11, color="#FFFFFF")
+        right_text.set_opacity(0.65)
+        right_text.next_to(footer_line, DOWN, buff=0.12).to_edge(RIGHT, buff=0.55)
+        
+        self.add(footer_line, left_text, right_text)
 """
 
 # Supported Pedagogical Archetypes
@@ -72,6 +97,10 @@ def generate_pedagogical_storyboard(
 
     # Calculate optimal scene count: ~15s per scene (Mosaic standard: 8-12 scenes for 120-180s)
     num_scenes = max(5, min(12, int(round(body_duration / 15.0))))
+    if custom_instructions:
+        m_scenes = re.search(r'(\d+)\s*(?:scenes?|animations?)', custom_instructions, re.IGNORECASE)
+        if m_scenes:
+            num_scenes = max(4, min(30, int(m_scenes.group(1))))
     target_scene_dur = body_duration / float(num_scenes)
 
     scenes = None
@@ -85,23 +114,27 @@ def generate_pedagogical_storyboard(
                 f"1. PURE MONOCHROME: All graphics are shining white (#FFFFFF) on pure black (#000000). Zero colors.\n"
                 f"2. PACING: Strictly {num_scenes} continuous scenes (~{target_scene_dur:.1f}s each), from 0.0 to {body_duration:.2f}s.\n"
                 f"3. NO PERFORMANCE THEATER: Avoid random floating equations or meaningless clutter. Use bold, tangible physical metaphors.\n"
-                f"4. PHYSICAL METAPHORS: Every scene must use everyday physics (fulcrum scale, leaking pipe, disconnected cord, trade arteries, funnel filter, flywheel).\n"
-                f"Allowed archetypes: {', '.join(PEDAGOGICAL_ARCHETYPES)}\n"
+                f"4. \"SUPER DUMB\" FIGURATIVE ANIMATIONS: Immediately recognizable figurative cartoons and kinetic physical scenes that even a child understands instantly without reading labels (e.g., airplane flying past clouds, brass faucet dripping into mug, yellow forklift stacking wooden crates, robot bouncer unhooking velvet rope, melting ice cream cone, teenager typing in basement with dog wagging tail, tin cans on a string, marionette puppet on strings, lighthouse enduring waves).\n"
+                f"5. ARCHETYPES & CREATIVE FREEDOM:\n"
+                f"   - Existing Library Archetypes: {', '.join(PEDAGOGICAL_ARCHETYPES)}\n"
+                f"   - NEW ARCHETYPES: You are explicitly ENCOURAGED to invent NEW figurative cartoon archetypes tailored to the specific dialogue and narrative! Do NOT force all scenes into the existing library. Propose bold, fresh physical analogies.\n"
                 f"{('- Special instructions: ' + custom_instructions) if custom_instructions else ''}\n\n"
                 f"Return ONLY a valid JSON array of {num_scenes} objects with schema:\n"
                 f'[\n'
                 f'  {{\n'
                 f'    "start": 0.0,\n'
                 f'    "end": {target_scene_dur:.1f},\n'
-                f'    "archetype": "...",\n'
+                f'    "archetype": "new_or_existing_archetype_name",\n'
+                f'    "is_new": true,\n'
                 f'    "title": "SHORT TITLE (1-3 WORDS)",\n'
                 f'    "insight": "Core pedagogical insight in one sentence",\n'
-                f'    "metaphor": "Concrete physical analogy",\n'
-                f'    "labels": ["LEFT_LABEL", "RIGHT_LABEL"]\n'
+                f'    "metaphor": "Concrete physical analogy description",\n'
+                f'    "labels": ["LEFT_LABEL", "RIGHT_LABEL"],\n'
+                f'    "fallback_archetype": "closest_existing_library_archetype"\n'
                 f'  }}\n'
                 f']'
             )
-            for m_name in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]:
+            for m_name in ["gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-3.5-flash", "gemini-3.8-flash"]:
                 try:
                     m = genai_mod.GenerativeModel(m_name)
                     res = m.generate_content(prompt)
@@ -158,7 +191,153 @@ def generate_pedagogical_storyboard(
     return scenes
 
 
+
+ARCHETYPES_CACHE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "generated_archetypes.json")
+
+def normalize_bottom_title(code: str) -> str:
+    """
+    Antigravity Animation Rule Engine:
+    All Archetype Titles sit at the BOTTOM of the archetype window (y = -2.95),
+    resting right above the canvas footer line (y = -3.35).
+    Removes the horizontal rule below the title because the canvas already has a horizontal line at the bottom.
+    Upper canvas (y > 0.0) remains completely clear for dialogue subtitles.
+    """
+    # Remove rule definition
+    code = re.sub(r'[ \t]*rule\s*=\s*Line\([^)]*\)\.next_to\(title,[^)]*\)\n?', '', code)
+    code = re.sub(r'[ \t]*rule\s*=\s*Line\([^)]*\)\n?', '', code)
+    # Remove Create(rule) or FadeIn(rule)
+    code = re.sub(r',\s*Create\(rule\)', '', code)
+    code = re.sub(r'Create\(rule\)\s*,\s*', '', code)
+    code = re.sub(r',\s*FadeIn\(rule\)', '', code)
+    code = re.sub(r'FadeIn\(rule\)\s*,\s*', '', code)
+    # Convert title position to bottom and font size to 22
+    code = re.sub(
+        r'(title\s*=\s*Text\([^)]*?font_size=)\d+([^)]*?\))\.to_edge\(UP[^)]*?\)',
+        r'\1 22\2.move_to([0, -2.95, 0])',
+        code
+    )
+    code = re.sub(
+        r'(title\s*=\s*Text\([^)]*?\))\.to_edge\(UP[^)]*?\)',
+        r'\1.move_to([0, -2.95, 0])',
+        code
+    )
+    return code
+
+def get_or_generate_archetype_code(scene_data: Dict[str, Any], scene_class_name: str, duration: float) -> Optional[str]:
+    archetype = scene_data.get("archetype", "").strip()
+    if not archetype or archetype in PEDAGOGICAL_ARCHETYPES:
+        return None
+        
+    cache = {}
+    if os.path.exists(ARCHETYPES_CACHE_FILE):
+        try:
+            with open(ARCHETYPES_CACHE_FILE, "r", encoding="utf-8") as f:
+                cache = json.load(f)
+        except Exception:
+            pass
+
+    title_text = scene_data.get("title", "DEEP DIVE").upper()
+    metaphor = scene_data.get("metaphor", "").strip()
+    insight = scene_data.get("insight", "").strip()
+    labels = scene_data.get("labels", ["INPUT", "OUTPUT"])
+
+    t_enter = min(1.0, duration * 0.12)
+    t_step1 = min(2.5, duration * 0.22)
+    t_step2 = min(2.5, duration * 0.25)
+    t_kinetic = min(2.5, duration * 0.25)
+    t_hold = max(1.0, duration - (t_enter + t_step1 + t_step2 + t_kinetic))
+
+    cached_template = cache.get(archetype)
+    if cached_template:
+        code = cached_template.replace("CLASS_NAME_PLACEHOLDER", scene_class_name)
+        code = code.replace("TITLE_TEXT_PLACEHOLDER", title_text)
+        return normalize_bottom_title(code)
+
+    # JIT Auto-Coding via Gemini
+    print(f"[Manim JIT Auto-Coder] Auto-generating Manim Python code for new concept: '{archetype}'...")
+    try:
+        api_key = None
+        for cand in ["settings.json", os.path.join(os.path.dirname(os.path.abspath(__file__)), "settings.json")]:
+            if os.path.exists(cand):
+                try:
+                    with open(cand, "r", encoding="utf-8") as sf:
+                        api_key = json.load(sf).get("gemini_api_key")
+                        if api_key:
+                            break
+                except Exception:
+                    pass
+        if not api_key:
+            api_key = os.environ.get("GEMINI_API_KEY")
+
+        if not api_key:
+            print(f"[Manim JIT Auto-Coder] Warning: No API key found for auto-coding '{archetype}'.")
+            return None
+
+        import google.generativeai as genai
+        genai.configure(api_key=api_key)
+
+        prompt = f"""You are an expert Manim (v0.18+) Python developer writing a complete, error-free Manim Scene class.
+Write a pure monochrome white-on-black vector animation for archetype: '{archetype}'.
+
+SCENE DETAILS:
+- Class Name: CLASS_NAME_PLACEHOLDER
+- Title: TITLE_TEXT_PLACEHOLDER
+- Physical Visual Metaphor: "{metaphor}"
+- Core Insight: "{insight}"
+- Labels to show: {labels}
+- Micro-beat timings: enter={t_enter:.2f}s, step1={t_step1:.2f}s, step2={t_step2:.2f}s, kinetic={t_kinetic:.2f}s, hold={t_hold:.2f}s
+
+STRICT VISUAL & CODE RULES (The Feynman-Needham Standard):
+1. PURE MONOCHROME: Every stroke and fill is shining white (#FFFFFF) on pure black background (#000000). Fill opacities between 0.05 and 1.0. Zero colors.
+2. CANVAS SAFE ZONE: 1080x1080 square. All coordinates stay inside x in [-3.5, 3.5], y in [-3.0, 3.0]. Lines stroke_width=4 to 6.
+3. BOTTOM TITLE (STRICT FEYNMAN-NEEDHAM PLACEMENT):
+   title = Text("TITLE_TEXT_PLACEHOLDER", font="Arial", weight=BOLD, font_size=22, color="#FFFFFF").move_to([0, -2.95, 0])
+   self.play(FadeIn(title), run_time={t_enter:.2f})
+   (STRICT INVARIANT: NEVER put titles or lines at the top of the canvas! The upper canvas y in [0.5, 3.5] must remain 100% clear of graphics, titles, and rules so spoken dialogue subtitles never collide. NEVER create a horizontal line/rule below the title; the canvas footer line already sits at y = -3.35).
+4. 3-STEP FIGURATIVE CARTOON CHOREOGRAPHY:
+   - Step 1: Draw the base figurative machinery/objects (run_time={t_step1:.2f}).
+   - Step 2: Add dynamic details, components, or labels (run_time={t_step2:.2f}).
+   - Step 3: Kinetic action or transformation matching the metaphor (run_time={t_kinetic:.2f}) using .animate, Rotate, Transform, or GrowArrow.
+   - End with: self.wait({t_hold:.2f})
+5. ONLY VALID MANIM CE MOBJECTS:
+   - Use only Line, Circle, Rectangle, RoundedRectangle, Polygon, Arc, Arrow, Text, VGroup.
+   - No external files, SVGs, or 3D.
+   - Return ONLY the executable Python class inside a ```python ``` block.
+"""
+        for m_name in ["gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-3.5-flash", "gemini-3.8-flash"]:
+            try:
+                m = genai.GenerativeModel(m_name)
+                res = m.generate_content(prompt)
+                raw = res.text.strip()
+                if "```python" in raw:
+                    code_block = raw.split("```python")[1].split("```")[0].strip()
+                elif "```" in raw:
+                    code_block = raw.split("```")[1].split("```")[0].strip()
+                else:
+                    code_block = raw
+
+                if "def construct(self):" in code_block:
+                    cache[archetype] = code_block
+                    with open(ARCHETYPES_CACHE_FILE, "w", encoding="utf-8") as f_c:
+                        json.dump(cache, f_c, indent=2)
+                    print(f"[Manim JIT Auto-Coder] Successfully auto-coded and cached archetype '{archetype}'!")
+                    code = code_block.replace("CLASS_NAME_PLACEHOLDER", scene_class_name)
+                    code = code.replace("TITLE_TEXT_PLACEHOLDER", title_text)
+                    return normalize_bottom_title(code)
+            except Exception as e_m:
+                print(f"[Manim JIT Auto-Coder] Model {m_name} failed: {e_m}")
+                continue
+    except Exception as e_top:
+        print(f"[Manim JIT Auto-Coder] Failed to auto-generate code: {e_top}")
+
+    return None
+
 def generate_manim_scene_python(scene_data: Dict[str, Any], scene_class_name: str, duration: float) -> str:
+    # 1. JIT Auto-Coding: If archetype is a new concept, check cache or auto-code via Gemini
+    jit_code = get_or_generate_archetype_code(scene_data, scene_class_name, duration)
+    if jit_code:
+        return jit_code
+
     """
     Generate Python Manim code for a single 1080x1080 scene adhering strictly to:
     1. Pure monochrome shining white (#FFFFFF) on pure black (#000000).
@@ -167,6 +346,10 @@ def generate_manim_scene_python(scene_data: Dict[str, Any], scene_class_name: st
     4. Seamless relay handoff.
     """
     archetype = scene_data.get("archetype", "balance_scale")
+    if archetype not in PEDAGOGICAL_ARCHETYPES:
+        archetype = scene_data.get("fallback_archetype") or "flywheel_gear"
+        if archetype not in PEDAGOGICAL_ARCHETYPES:
+            archetype = "flywheel_gear"
     title_text = scene_data.get("title", "DEEP DIVE").upper()
     labels = scene_data.get("labels", ["STATE A", "STATE B"])
     lbl_a = labels[0] if len(labels) > 0 else "INPUT"
@@ -195,10 +378,9 @@ def generate_manim_scene_python(scene_data: Dict[str, Any], scene_class_name: st
         code = f"""
 class {scene_class_name}(Scene):
     def construct(self):{grid_init}
-        # 1. Header (y = 3.2)
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
-        self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
+        # Bottom Archetype Title (y = -2.95, resting right above footer_line at y = -3.35)
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=22, color="#FFFFFF").move_to([0, -2.95, 0])
+        self.play(FadeIn(title), run_time={t_enter:.2f})
 
         # 2. Step 1: Fulcrum & Beam
         fulcrum = Polygon([-0.4, -1.2, 0], [0.4, -1.2, 0], [0, -0.6, 0], color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.15, stroke_width=4)
@@ -229,9 +411,9 @@ class {scene_class_name}(Scene):
         code = f"""
 class {scene_class_name}(Scene):
     def construct(self):{grid_init}
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
-        self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
+        # Bottom Archetype Title (y = -2.95, resting right above footer_line at y = -3.35)
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=22, color="#FFFFFF").move_to([0, -2.95, 0])
+        self.play(FadeIn(title), run_time={t_enter:.2f})
 
         # Step 1: Reservoir Vessel
         p1, p2, p3, p4 = [-1.5, 1.0, 0], [-1.2, -1.5, 0], [1.2, -1.5, 0], [1.5, 1.0, 0]
@@ -254,9 +436,9 @@ class {scene_class_name}(Scene):
         code = f"""
 class {scene_class_name}(Scene):
     def construct(self):{grid_init}
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
-        self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
+        # Bottom Archetype Title (y = -2.95, resting right above footer_line at y = -3.35)
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=22, color="#FFFFFF").move_to([0, -2.95, 0])
+        self.play(FadeIn(title), run_time={t_enter:.2f})
 
         # Step 1: Robot Head Outline (Centered at y = 0.5, bottom at y = -0.35)
         head = RoundedRectangle(corner_radius=0.2, height=1.7, width=2.0, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.08, stroke_width=5).move_to([0, 0.5, 0])
@@ -290,10 +472,9 @@ class {scene_class_name}(Scene):
         code = f"""
 class {scene_class_name}(Scene):
     def construct(self):{grid_init}
-        # Header (y ≈ 3.2 to 2.7)
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
-        self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
+        # Bottom Archetype Title (y = -2.95, resting right above footer_line at y = -3.35)
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=22, color="#FFFFFF").move_to([0, -2.95, 0])
+        self.play(FadeIn(title), run_time={t_enter:.2f})
 
         # Step 1: Basement Light & Ambient Glow (Starts below rule at y = 2.3)
         wire = Line([0, 2.3, 0], [0, 1.4, 0], color="#FFFFFF", stroke_width=3)
@@ -367,9 +548,9 @@ class {scene_class_name}(Scene):
         code = f"""
 class {scene_class_name}(Scene):
     def construct(self):{grid_init}
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
-        self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
+        # Bottom Archetype Title (y = -2.95, resting right above footer_line at y = -3.35)
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=22, color="#FFFFFF").move_to([0, -2.95, 0])
+        self.play(FadeIn(title), run_time={t_enter:.2f})
 
         # Step 1: Center Core Node
         center_node = Circle(radius=0.75, color="#FFFFFF", fill_color="#000000", fill_opacity=0.9, stroke_width=5).move_to([0, -0.2, 0])
@@ -409,9 +590,9 @@ class {scene_class_name}(Scene):
         code = f"""
 class {scene_class_name}(Scene):
     def construct(self):{grid_init}
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
-        self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
+        # Bottom Archetype Title (y = -2.95, resting right above footer_line at y = -3.35)
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=22, color="#FFFFFF").move_to([0, -2.95, 0])
+        self.play(FadeIn(title), run_time={t_enter:.2f})
 
         # Step 1: Concentric Rings & Core
         outer_ring = Circle(radius=1.8, color="#FFFFFF", stroke_width=6).move_to([0, -0.3, 0])
@@ -435,9 +616,9 @@ class {scene_class_name}(Scene):
         code = f"""
 class {scene_class_name}(Scene):
     def construct(self):{grid_init}
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
-        self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
+        # Bottom Archetype Title (y = -2.95, resting right above footer_line at y = -3.35)
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=22, color="#FFFFFF").move_to([0, -2.95, 0])
+        self.play(FadeIn(title), run_time={t_enter:.2f})
 
         # Step 1: Heavy Granite Base
         base = RoundedRectangle(corner_radius=0.08, height=0.9, width=4.8, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=0.3, stroke_width=6).move_to([0, -1.8, 0])
@@ -459,9 +640,9 @@ class {scene_class_name}(Scene):
         code = f"""
 class {scene_class_name}(Scene):
     def construct(self):{grid_init}
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
-        self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
+        # Bottom Archetype Title (y = -2.95, resting right above footer_line at y = -3.35)
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=22, color="#FFFFFF").move_to([0, -2.95, 0])
+        self.play(FadeIn(title), run_time={t_enter:.2f})
 
         # Step 1: Terminals
         t_left = Circle(radius=0.25, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to([-1.6, -0.4, 0])
@@ -487,9 +668,9 @@ class {scene_class_name}(Scene):
         code = f"""
 class {scene_class_name}(Scene):
     def construct(self):{grid_init}
-        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=26, color="#FFFFFF").to_edge(UP, buff=0.6)
-        rule = Line(LEFT * 2.8, RIGHT * 2.8, color="#FFFFFF", stroke_width=2).next_to(title, DOWN, buff=0.15)
-        self.play(FadeIn(title), Create(rule), run_time={t_enter:.2f})
+        # Bottom Archetype Title (y = -2.95, resting right above footer_line at y = -3.35)
+        title = Text("{title_text}", font="Arial", weight=BOLD, font_size=22, color="#FFFFFF").move_to([0, -2.95, 0])
+        self.play(FadeIn(title), run_time={t_enter:.2f})
 
         # Step 1: Funnel Sieve
         p1, p2, p3, p4 = [-2.2, 1.2, 0], [-0.5, -0.8, 0], [0.5, -0.8, 0], [2.2, 1.2, 0]
@@ -509,7 +690,7 @@ class {scene_class_name}(Scene):
         self.play(GrowArrow(out_arrow), FadeIn(lbl_out), dots_in.animate.shift(DOWN * 0.8), run_time={t_kinetic:.2f})
         self.wait({t_hold:.2f})
 """
-    return code
+    return normalize_bottom_title(code)
 
 
 def render_manim_infographic_mp4(
@@ -518,10 +699,21 @@ def render_manim_infographic_mp4(
     out_mp4_path: str,
     duration: Optional[float] = None,
     fps: int = 30,
+    episode_num: Optional[str] = None,
 ) -> str:
     """
-    Compile full Manim educational script, render 1080x1080 pure white-on-black MP4 scenes, and mux audio.
+    Compile full Manim educational script, render 740x740 pure white-on-black MP4 scenes, and mux audio.
+    Includes footer bar with archetype name and podcast credits.
     """
+    if not episode_num:
+        base = os.path.basename(out_mp4_path)
+        if "-" in base:
+            episode_num = base.split("-")[0]
+        elif "_" in base:
+            parts = [p for p in base.split("_") if p.isdigit()]
+            if parts:
+                episode_num = parts[0]
+
     if duration is None or duration <= 0:
         try:
             p = subprocess.run(
@@ -541,12 +733,22 @@ def render_manim_infographic_mp4(
     python_script_path = os.path.join(temp_dir, "render_scenes.py")
     scene_classes = []
     
+    ep_label = f"DEEP DIVE PODCAST • EP. {episode_num}" if episode_num else "DEEP DIVE PODCAST"
+
     script_lines = [MANIM_HEADER]
     for idx, sc in enumerate(scenes):
         cls_name = f"PedagogicalScene{idx + 1}"
         scene_classes.append(cls_name)
         sc_dur = max(1.0, float(sc.get("end", 0.0)) - float(sc.get("start", 0.0)))
         code = generate_manim_scene_python(sc, cls_name, sc_dur)
+
+        arch_clean = str(sc.get("archetype", "")).replace("_", " ").upper()
+        if f"class {cls_name}(Scene):" in code:
+            code = code.replace(
+                f"class {cls_name}(Scene):",
+                f"class {cls_name}(PedagogicalBaseScene):\n    archetype_label = \"{arch_clean}\"\n    credits_label = \"{ep_label}\""
+            )
+
         script_lines.append(code)
 
     with open(python_script_path, "w", encoding="utf-8") as f:

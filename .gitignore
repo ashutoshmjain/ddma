@@ -71,3 +71,7 @@ docs/**/*.wav
 **/__pycache__/
 
 scratch/
+
+# Manim build caches
+media/
+**/media/

@@ -796,7 +796,8 @@ def render_horizontal_podcast_video(
     edit_data=None,
     cover_image_path=None,
     progress_callback=None,
-    start_seconds=0.0
+    start_seconds=0.0,
+    acts=None
 ):
     """
     Renders 1920x1080 horizontal podcast video with:
@@ -948,14 +949,40 @@ def render_horizontal_podcast_video(
             # -------------------------------------------------------------
             # CASE A: END-OF-ACT 4-SECOND CLOSURE OR ACTIVE MUSIC STING
             # -------------------------------------------------------------
-            ACTS = [
-                ("MODULE 1", "THE ONTOLOGICAL FALLACY & SUBSIDIES", "00:00 - 07:20", 0.0, 440.0),
-                ("MODULE 2", "THE MICROSCOPIC COMPUTE FACTORY", "07:20 - 14:00", 440.0, 840.0),
-                ("MODULE 3", "THE CORPORATE BREAKER & CHECKBOOK", "14:00 - 22:30", 840.0, 1350.0),
-                ("MODULE 4", "DEBASEMENT, RESERVES & AUTOPOIESIS", "22:30 - 32:00", 1350.0, 1920.0),
-                ("MODULE 5", "CIVIC AGENTS & STREAMING SATOSHIS", "32:00 - 43:00", 1920.0, 2580.0),
-                ("MODULE 6", "SYNTHESIS & MACHINE SOVEREIGNTY", "43:00 - 54:14", 2580.0, 3254.0),
-            ]
+            # Dynamic Chapter Loading
+            if acts:
+                ACTS = acts
+            else:
+                ACTS = [
+                    ("MODULE 1", "THE ONTOLOGICAL FALLACY & SUBSIDIES", "00:00 - 07:20", 0.0, 440.0),
+                    ("MODULE 2", "THE MICROSCOPIC COMPUTE FACTORY", "07:20 - 14:00", 440.0, 840.0),
+                    ("MODULE 3", "THE CORPORATE BREAKER & CHECKBOOK", "14:00 - 22:30", 840.0, 1350.0),
+                    ("MODULE 4", "DEBASEMENT, RESERVES & AUTOPOIESIS", "22:30 - 32:00", 1350.0, 1920.0),
+                    ("MODULE 5", "CIVIC AGENTS & STREAMING SATOSHIS", "32:00 - 43:00", 1920.0, 2580.0),
+                    ("MODULE 6", "SYNTHESIS & MACHINE SOVEREIGNTY", "43:00 - 54:14", 2580.0, 3254.0),
+                ]
+                chapters_candidates = [
+                    f"ddma/projects/episode_{episode_num}/longform_chapters.json",
+                    f"projects/episode_{episode_num}/longform_chapters.json"
+                ]
+                for c_cand in chapters_candidates:
+                    if os.path.exists(c_cand):
+                        try:
+                            with open(c_cand, "r", encoding="utf-8") as cf:
+                                cdata = json.load(cf)
+                                loaded_acts = []
+                                for ch in cdata.get("chapters", []):
+                                    c_num = ch.get("chapter_num", len(loaded_acts) + 1)
+                                    c_title = ch.get("title", f"Chapter {c_num}").upper()
+                                    c_s = float(ch.get("start", 0.0))
+                                    c_e = float(ch.get("end", c_s + 60.0))
+                                    c_time = f"{_format_time(c_s)} - {_format_time(c_e)}"
+                                    loaded_acts.append((f"CHAPTER {c_num}", c_title, c_time, c_s, c_e))
+                                if loaded_acts:
+                                    ACTS = loaded_acts
+                                    break
+                        except Exception:
+                            pass
 
             # Detect if current frame falls in a 4-second End-of-Act closure window
             is_closure = False
@@ -1201,28 +1228,30 @@ def render_horizontal_podcast_video(
             if not active_sting and not is_closure and not is_intro:
                 wsi.draw_host_avatar_nodes(draw, t=t, active_speaker=active_speaker, cy=130, fonts=ui_fonts)
 
-            # 4. Clean Bottom Audio Spectrum Visualizer Ribbon
+            # 4. Clean Bottom Fine-Print Metadata Bar & Audio Spectrum Visualizer
+            fine_font = ui_fonts.get("mono_16", ui_fonts.get("mono_18", ImageFont.load_default()))
+            draw.line([(80, 1018), (1840, 1018)], fill=(40, 56, 80), width=1)
+
+            # Left side: Archetype display name in fine print
+            arch_raw = (sc.get("archetype", "") if isinstance(sc, dict) else "").strip()
+            arch_title = (sc.get("title", "") if isinstance(sc, dict) else "").strip()
+            display_arch = arch_raw.upper().replace("_", " ") if arch_raw else (arch_title.upper() if arch_title else "AUTONOMOUS AGENT")
+            draw.text((85, 1032), display_arch, font=fine_font, fill=(0, 229, 255), anchor="la")
+
+            # Center: 56-bar audio visualizer
             wsi.draw_bottom_audio_visualizer(
                 draw,
                 t=t,
                 is_speaking=is_speaking,
-                y_base=1060,
-                height=40,
+                y_base=1055,
+                height=30,
                 fonts=ui_fonts
             )
-            pct = min(1.0, max(0.0, t / float(duration)))
 
-                        # 5. Bottom-Right Artifact Chyron Tag (Broadcast Identifier)
-            if manim_reader and not is_intro and not is_closure and (manim_reader.scenes[0]["start"] <= t <= manim_reader.scenes[-1]["end"]):
-                active_manim_sc = manim_reader.get_scene_for_time(t)
-                tag_txt = f"[ SCENE {active_manim_sc['num']:02d}: {active_manim_sc['title']} ]"
-            else:
-                tag_txt = get_artifact_chyron_tag(sc, is_intro=is_intro, is_closure=is_closure, episode_num=episode_num)
-            if tag_txt:
-                chyron_font = ui_fonts.get("mono_18", ui_fonts.get("mono_20", ui_fonts.get("bold_18", ImageFont.load_default())))
-                bbox = draw.textbbox((1840, 1045), tag_txt, font=chyron_font, anchor="rm")
-                draw.rounded_rectangle([(bbox[0] - 14, bbox[1] - 5), (bbox[2] + 14, bbox[3] + 5)], radius=6, fill=(10, 15, 24), outline=(45, 65, 90), width=2)
-                draw.text((1840, 1045), tag_txt, font=chyron_font, fill=(148, 185, 220), anchor="rm")
+            # Right side: Podcast Credits in fine print
+            credits_txt = f"DEEP DIVE PODCAST • EP. {episode_num}"
+            draw.text((1835, 1032), credits_txt, font=fine_font, fill=(148, 163, 184), anchor="ra")
+            pct = min(1.0, max(0.0, t / float(duration)))
 
             last_bytes = canvas.tobytes()
             proc.stdin.write(last_bytes)

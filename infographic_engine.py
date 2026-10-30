@@ -672,7 +672,7 @@ def generate_infographic_storyboard(
     if genai_mod is not None:
         try:
             model = None
-            for m_name in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]:
+            for m_name in ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.8-flash", "gemini-flash-latest", "gemini-2.5-flash"]:
                 try:
                     model = genai_mod.GenerativeModel(m_name)
                     break

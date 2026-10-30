@@ -2018,8 +2018,8 @@
                     <button class="btn btn-secondary btn-mini" id="syncStoryboardFromDiskBtn" style="font-weight: 600; padding: 0.45rem 0.8rem;">
                         🔄 Sync Disk (:w)
                     </button>
-                    <button class="btn btn-secondary btn-mini" id="regenStoryboardBtn" style="font-weight: 600; padding: 0.45rem 0.8rem; opacity: 0.85;">
-                        ⚡ Reset to Fresh Storyboard
+                    <button class="btn btn-secondary btn-mini" id="regenStoryboardBtn" style="font-weight: 600; padding: 0.45rem 0.9rem; background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); color: #ffffff; border: none; box-shadow: 0 2px 6px rgba(124, 58, 237, 0.35);">
+                        ✨ Regenerate with AI (Gemini)
                     </button>
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
@@ -5494,8 +5494,8 @@
         function invalidateClipMedia(clipIdx) {
             if (!clips || !clips[clipIdx]) return;
             const c = clips[clipIdx];
+            c._needs_recompile = true;
             delete c.infographic_ready;
-            delete c.infographic_scenes;
             delete c.caption_chunks;
             delete c._caption_sig;
             delete c._audio_sig;
@@ -5607,10 +5607,23 @@
         // Toggle card lock state
         function toggleClipLock(clipIdx, event) {
             event.stopPropagation();
-            clips[clipIdx].locked = !clips[clipIdx].locked;
+            const wasLocked = Boolean(clips[clipIdx].locked);
+            clips[clipIdx].locked = !wasLocked;
             
-            if (clips[clipIdx].locked && editingSegmentRef && editingSegmentRef.clipIdx === clipIdx) {
-                editingSegmentRef = null;
+            if (clips[clipIdx].locked) {
+                // Transitioned from UNLOCKED -> LOCKED:
+                // User unlocked, made changes (intro, outro, segments, title), and re-locked.
+                // Clear case for recompilation!
+                if (editingSegmentRef && editingSegmentRef.clipIdx === clipIdx) {
+                    editingSegmentRef = null;
+                }
+                invalidateClipMedia(clipIdx);
+                clips[clipIdx]._needs_recompile = true;
+                updateStateBar(`🔒 Locked Part ${clips[clipIdx].num}. Changes staged for recompilation.`);
+            } else {
+                // Card unlocked for editing
+                clips[clipIdx]._was_unlocked = true;
+                updateStateBar(`🔓 Unlocked Part ${clips[clipIdx].num} for editing.`);
             }
             
             renderClips();
@@ -7102,7 +7115,8 @@
                 const mosaicStatusText = statusInfo.mosaic_status || statusInfo.status || '';
                 const mosaicErrorText = statusInfo.mosaic_error || statusInfo.error || '';
                 
-                const hasInfographicRender = Boolean(clip.infographic_ready) || Boolean(statusInfo.has_infographic_file);
+                const isClipDirty = Boolean(clip._needs_recompile);
+                const hasInfographicRender = !isClipDirty && (Boolean(clip.infographic_ready) || Boolean(statusInfo.has_infographic_file));
                 const isCompilingInfographic = Boolean(window.activeCompilingInfographics && window.activeCompilingInfographics[clip.num]);
                 const isCompilingMosaic = Boolean(window.activeCompilingClips && window.activeCompilingClips[clip.num]);
                 const isCompilingDraft = Boolean(window.activeCompilingDrafts && window.activeCompilingDrafts[clip.num]);
@@ -7119,14 +7133,16 @@
                 if (isLocked) {
                     if (isCompilingInfographic) {
                         infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-success" id="infographicCardBtn_${index}" style="font-weight: 600; cursor: wait;" disabled title="Rendering 740×740 Manim Pedagogical Video &amp; 1080×1920 Captions...">⏳ Rendering...</button>`;
+                    } else if (isClipDirty) {
+                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-purple" id="infographicCardBtn_${index}" style="font-weight: 700; box-shadow: 0 0 0 2px #a855f7;" title="Clip was unlocked &amp; edited: Click to recompile 740×740 Manim Video &amp; Captions">✨ Recompile Manim</button>`;
                     } else if (hasInfographicRender) {
                         const activeStyle = isInfographicActive
                             ? 'font-weight: 700; box-shadow: 0 0 0 2px #38bdf8;'
                             : 'font-weight: 600; opacity: 0.78;';
                         const activeLabel = isInfographicActive ? '🟢 Manim ✓' : '🟢 Manim';
                         const activeTip = isInfographicActive
-                            ? 'ACTIVE MASTER for deepDive / shutri.com • Left-click to play • Right-click to open Storyboard Designer'
-                            : 'Cached locally • Click to switch Active Master to Manim (updates deepDive) • Right-click for Storyboard';
+                            ? 'ACTIVE MASTER for deepDive • Left-click to play • Shift+Click to re-render & recompile • Right-click for Storyboard'
+                            : 'Cached locally • Click to switch Active Master to Manim • Shift+Click to re-render & recompile • Right-click for Storyboard';
                         infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-success" id="infographicCardBtn_${index}" style="${activeStyle}" title="${activeTip}">${activeLabel}</button>`;
                     } else {
                         infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-purple" id="infographicCardBtn_${index}" style="font-weight: 600;" title="Left-click: 1-click render 740×740 Manim Pedagogical Video (Feynman/Needham Standard) • Right-click: Open Storyboard Designer">✨ Manim</button>`;
@@ -7450,6 +7466,7 @@
                             })
                             .then(data => {
                                 clip.infographic_ready = true;
+                                clip._needs_recompile = false;
                                 clip.visual_source = "infographic";
                                 if (window.clipStatusesCache) {
                                     window.clipStatusesCache[clip.num] = window.clipStatusesCache[clip.num] || {};
@@ -7458,9 +7475,7 @@
                                 }
                                 const freshVideoUrl = (data && data.video_url)
                                     ? (data.video_url + '?t=' + Date.now())
-                                    : ((clip.visual_source === 'manim' || clip.visual_source === 'infographic')
-                                        ? `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now()
-                                        : `/clips/${epNum}-${clip.num}-manim.mp4?t=` + Date.now());
+                                    : (`/clips/${epNum}-${clip.num}-manim.mp4?t=` + Date.now());
                                 openVideoModal(
                                     freshVideoUrl,
                                     `✨ MANIM PEDAGOGICAL VIDEO (740×740 + Captions) - Part ${clip.num}: ${clip.title}`,
@@ -7499,6 +7514,10 @@
                         infographicBtnEl.addEventListener('click', function(e) {
                             e.stopPropagation();
                             const epNum = activeProjectId.replace('episode_', '');
+                            if (e.shiftKey) {
+                                runLocalInfographic(this, true, "");
+                                return;
+                            }
                             if (hasInfographicRender) {
                                 if (!isInfographicActive) {
                                     const promote = confirm(
@@ -7518,9 +7537,7 @@
                                         return;
                                     }
                                 }
-                                const vidUrl = isInfographicActive
-                                    ? `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now()
-                                    : `/clips/${epNum}-${clip.num}-manim.mp4?t=` + Date.now();
+                                const vidUrl = `/clips/${epNum}-${clip.num}-manim.mp4?t=` + Date.now();
                                 openVideoModal(
                                     vidUrl,
                                     `✨ MANIM PEDAGOGICAL VIDEO - Part ${clip.num}: ${clip.title}`,
@@ -7614,12 +7631,13 @@
                                     })
                                     .then(data => {
                                         clip.visual_source = "mosaic";
-                                        const freshVideoUrl = `/clips/${epNum}-${clip.num}.mp4?t=` + Date.now();
+                                        clip._needs_recompile = false;
+                                        const freshVideoUrl = `/clips/${epNum}-${clip.num}-mosaic.mp4?t=` + Date.now();
                                         
                                         openVideoModal(
                                             freshVideoUrl,
                                             `🌌 MASTER MOSAIC VIDEO (Motion Infographics) - Part ${clip.num}: ${clip.title}`,
-                                            `✨ Master Video with Dan Koe–style Motion Graphics • clips/${epNum}-${clip.num}.mp4`
+                                            `✨ Master Video with Dan Koe–style Motion Graphics • clips/${epNum}-${clip.num}-mosaic.mp4`
                                         );
                                         
                                         updateStateBar(`Playing Master Mosaic video preview for Part ${clip.num}`);
@@ -8340,6 +8358,7 @@
             previewVideoPlayer.addEventListener('error', hideLoading);
             
             previewVideoPlayer.src = videoUrl;
+            previewVideoPlayer.load();
             videoModalTitle.textContent = titleText;
             videoModalSubtitle.textContent = subtitleText;
             downloadVideoBtn.href = videoUrl;
@@ -8549,13 +8568,30 @@
                 timeBadge.style.cssText = 'font-family: var(--font-mono); font-size: 0.74rem; font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 0.2rem 0.5rem; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.3);';
                 timeBadge.textContent = `Scene ${i + 1}: ${Number(sc.start).toFixed(1)}s - ${Number(sc.end).toFixed(1)}s (${(Number(sc.end) - Number(sc.start)).toFixed(1)}s)`;
 
+                const isNewArchetype = !PEDAGOGICAL_ARCHETYPES_LIST.includes(sc.archetype) || Boolean(sc.is_new);
+                if (isNewArchetype && sc.archetype) {
+                    const newBadge = document.createElement('span');
+                    newBadge.style.cssText = 'font-size: 0.65rem; font-weight: 700; color: #c084fc; background: rgba(168, 85, 247, 0.2); border: 1px solid rgba(168, 85, 247, 0.45); padding: 0.15rem 0.45rem; border-radius: 4px; margin-left: 0.5rem; text-transform: uppercase;';
+                    newBadge.textContent = '✨ NEW CONCEPT';
+                    timeBadge.appendChild(newBadge);
+                }
+
                 const archSelect = document.createElement('select');
                 archSelect.style.cssText = 'font-size: 0.74rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 4px; background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;';
+                
+                if (sc.archetype && !PEDAGOGICAL_ARCHETYPES_LIST.includes(sc.archetype)) {
+                    const newOpt = document.createElement('option');
+                    newOpt.value = sc.archetype;
+                    newOpt.textContent = `✨ ${sc.archetype} (New Concept)`;
+                    newOpt.selected = true;
+                    archSelect.appendChild(newOpt);
+                }
+
                 PEDAGOGICAL_ARCHETYPES_LIST.forEach(arch => {
                     const opt = document.createElement('option');
                     opt.value = arch;
                     opt.textContent = arch;
-                    if (arch === sc.archetype) opt.selected = true;
+                    if (arch === sc.archetype && !archSelect.value) opt.selected = true;
                     archSelect.appendChild(opt);
                 });
                 archSelect.addEventListener('change', () => {
@@ -8594,16 +8630,23 @@
 
                 const insightText = document.createElement('div');
                 insightText.style.cssText = 'font-size: 0.72rem; color: var(--text-muted); line-height: 1.35;';
-                insightText.textContent = sc.insight || sc.subtitle || sc.metaphor || 'Pedagogical conceptual reveal';
+                insightText.textContent = sc.insight || sc.subtitle || 'Pedagogical conceptual reveal';
 
                 card.appendChild(header);
                 card.appendChild(row2);
                 card.appendChild(insightText);
+
+                if (sc.metaphor) {
+                    const metaphorDiv = document.createElement('div');
+                    metaphorDiv.style.cssText = 'font-size: 0.72rem; color: #cbd5e1; font-style: italic; background: rgba(255,255,255,0.03); padding: 0.3rem 0.5rem; border-radius: 4px; border-left: 2px solid #a855f7;';
+                    metaphorDiv.textContent = `Visual Metaphor: ${sc.metaphor}`;
+                    card.appendChild(metaphorDiv);
+                }
                 storyboardCardsContainer.appendChild(card);
             });
         }
 
-        function openStoryboardModal(clipIdx, forceRegen = false) {
+        function openStoryboardModal(clipIdx, forceRegen = false, customDirective = "") {
             const clip = clips[clipIdx];
             if (!clip || !activeProjectId) return;
             activeStoryboardClipIdx = clipIdx;
@@ -8616,7 +8659,29 @@
             }
             if (storyboardModalOverlay) storyboardModalOverlay.classList.add('active');
 
-            fetch(`/get-storyboard?id=${activeProjectId}&num=${clip.num}&force=${forceRegen ? 'true' : 'false'}`)
+            if (forceRegen && storyboardCardsContainer) {
+                if (regenStoryboardBtn) {
+                    regenStoryboardBtn.disabled = true;
+                    regenStoryboardBtn.textContent = '⏳ Generating with Gemini...';
+                }
+                storyboardCardsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 4rem 1.5rem; color: #a855f7;">
+                        <div style="font-size: 2.8rem; margin-bottom: 1rem; animation: pulse 1.5s infinite;">✨</div>
+                        <div style="font-size: 1.2rem; font-weight: 700; color: #f1f5f9; margin-bottom: 0.6rem;">
+                            Gemini AI is Generating Your Custom Storyboard...
+                        </div>
+                        <div style="font-size: 0.88rem; color: var(--text-muted); max-width: 520px; margin: 0 auto 1.5rem auto; line-height: 1.5;">
+                            Parsing timed transcript, applying Feynman-Needham pedagogical rules, and creating paced animations. This takes about 20–30 seconds.
+                        </div>
+                        <div style="display: inline-block; padding: 0.4rem 1.1rem; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 20px; font-size: 0.82rem; font-family: var(--font-mono); color: #c084fc;">
+                            Directive: "${(customDirective || 'Standard Pacing').replace(/</g, '&lt;')}"
+                        </div>
+                    </div>
+                `;
+            }
+
+            const dirQuery = customDirective ? `&directive=${encodeURIComponent(customDirective)}` : '';
+            fetch(`/get-storyboard?id=${activeProjectId}&num=${clip.num}&force=${forceRegen ? 'true' : 'false'}${dirQuery}`)
                 .then(r => {
                     if (!r.ok) throw new Error("Could not load storyboard.");
                     return r.json();
@@ -8633,11 +8698,20 @@
                     renderStoryboardSceneCards(activeStoryboardData);
                     if (storyboardModalStatus) {
                         const sceneCount = (activeStoryboardData.scenes || []).length;
-                        storyboardModalStatus.textContent = `Loaded ${sceneCount} pedagogical scenes. Edit in gVim (:w to save) or cards above.`;
+                        storyboardModalStatus.textContent = `✨ Successfully generated and loaded ${sceneCount} pedagogical scenes!`;
                     }
                 })
                 .catch(err => {
                     if (storyboardModalStatus) storyboardModalStatus.textContent = `Error: ${err.message}`;
+                    if (storyboardCardsContainer && forceRegen) {
+                        storyboardCardsContainer.innerHTML = `<div style="padding: 2rem; color: #f87171; text-align: center;">Error generating storyboard: ${err.message}</div>`;
+                    }
+                })
+                .finally(() => {
+                    if (regenStoryboardBtn) {
+                        regenStoryboardBtn.disabled = false;
+                        regenStoryboardBtn.textContent = '✨ Regenerate with AI (Gemini)';
+                    }
                 });
         }
         window.openStoryboardModal = openStoryboardModal;
@@ -8703,8 +8777,13 @@
         if (regenStoryboardBtn) {
             regenStoryboardBtn.addEventListener('click', () => {
                 if (activeStoryboardClipIdx === null) return;
-                const ok = confirm("Reset storyboard to freshly generated Feynman-Needham scenes?");
-                if (ok) openStoryboardModal(activeStoryboardClipIdx, true);
+                const directive = prompt(
+                    "✨ Regenerate Storyboard with Gemini AI:\n\nEnter any custom creative directives (or leave blank for standard Feynman-Needham pacing):\n\nExample: '20 animations, each 5 to 6 seconds long'",
+                    "20 animations, each 5 to 6 seconds long"
+                );
+                if (directive !== null) {
+                    openStoryboardModal(activeStoryboardClipIdx, true, directive.trim());
+                }
             });
         }
 
@@ -8752,6 +8831,27 @@
                 const clipIdx = activeStoryboardClipIdx;
                 const clip = clips[clipIdx];
                 const btn = document.getElementById(`infographicCardBtn_${clipIdx}`);
+
+                // Synchronize from JSON editor if user modified it
+                if (storyboardJsonContainer && storyboardJsonContainer.style.display !== 'none' && storyboardJsonTextarea) {
+                    try {
+                        activeStoryboardData = JSON.parse(storyboardJsonTextarea.value);
+                    } catch (pe) {
+                        alert("Invalid JSON in editor: " + pe.message);
+                        return;
+                    }
+                }
+
+                // Preserve storyboard data BEFORE closing modal
+                const currentStoryboard = activeStoryboardData ? JSON.parse(JSON.stringify(activeStoryboardData)) : null;
+                const scenesToSend = (currentStoryboard && currentStoryboard.scenes && currentStoryboard.scenes.length)
+                    ? currentStoryboard.scenes
+                    : (clip.infographic_scenes || []);
+
+                if (scenesToSend.length) {
+                    clip.infographic_scenes = scenesToSend;
+                }
+
                 closeStoryboardModal();
 
                 if (btn) {
@@ -8770,18 +8870,12 @@
                         `Compiling 1080x1080 Manim scenes from custom storyboard and burning 1080x1920 vertical captions...`
                     );
 
-                    const scenesToSend = (activeStoryboardData && activeStoryboardData.scenes) ? activeStoryboardData.scenes : (clip.infographic_scenes || []);
-                    fetch(`/save-storyboard?id=${activeProjectId}&num=${clip.num}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(activeStoryboardData || { scenes: scenesToSend })
-                    }).catch(() => {});
-
-                    fetch(`/render-local-infographic?id=${activeProjectId}&num=${clip.num}&force=true`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ directive: "", scenes: scenesToSend })
-                    })
+                    const doRenderInfographic = () => {
+                        fetch(`/render-local-infographic?id=${activeProjectId}&num=${clip.num}&force=true`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ directive: "", scenes: scenesToSend })
+                        })
                     .then(res => {
                         if (!res.ok) return res.json().then(d => { throw new Error(d.error || "Infographic render failed"); });
                         return res.json();
@@ -8826,6 +8920,15 @@
                         }
                         updateStateBar(`❌ Infographic render failed: ${err.message}`);
                     });
+                    };
+
+                    fetch(`/save-storyboard?id=${activeProjectId}&num=${clip.num}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(currentStoryboard || { scenes: scenesToSend })
+                    })
+                    .then(() => doRenderInfographic())
+                    .catch(() => doRenderInfographic());
                 }
             });
         }
