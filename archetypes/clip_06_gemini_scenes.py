@@ -142,26 +142,48 @@ class Scene06_04(Scene):
 class Scene06_05(Scene):
     def construct(self):
         get_footer(self)
-        title = get_title(self)
-        
-        # Visual: Conveyor belt moving compute blocks into a trash bin
-        belt = Line(LEFT * 2.5, RIGHT * 1.5, color="#FFFFFF", stroke_width=2).move_to(DOWN * 1.5)
-        wheels = VGroup(Circle(radius=0.2).move_to(LEFT*2.3 + DOWN*1.7), Circle(radius=0.2).move_to(RIGHT*1.3 + DOWN*1.7))
-        bin_poly = Polygon([1.8, -1.2, 0], [2.8, -1.2, 0], [2.6, -2.2, 0], [2.0, -2.2, 0], color="#FFFFFF", stroke_width=2)
-        
-        self.play(FadeIn(title), run_time=0.6)
-        self.play(Create(belt), Create(wheels), Create(bin_poly), run_time=1.0)
-        
-        for i in range(3):
-            block = Rectangle(width=0.6, height=0.4, color="#FFFFFF", fill_opacity=0.5).move_to(LEFT * 2.5 + UP * 0.2 + DOWN * 1.5)
-            self.add(block)
-            self.play(
-                block.animate.move_to(RIGHT * 2.3 + DOWN * 1.3).set_opacity(0),
-                wheels.animate.rotate(-PI),
-                run_time=1.8, rate_func=linear
-            )
-        
-        self.play(FadeOut(VGroup(belt, wheels, bin_poly, title)), run_time=0.6)
+        # Visual: 100-meter sprinter racing against a ticking stopwatch toward the finish line (Visualize race against time as a 100 meter race)
+        track_top = Line([-3.1, -0.85, 0], [3.1, -0.85, 0], color="#FFFFFF", stroke_width=3).set_opacity(0.6)
+        track_mid = DashedLine([-3.1, -1.35, 0], [3.1, -1.35, 0], color="#FFFFFF", stroke_width=2).set_opacity(0.45)
+        track_bot = Line([-3.1, -1.85, 0], [3.1, -1.85, 0], color="#FFFFFF", stroke_width=4)
+        finish_pole = Line([2.55, 0.25, 0], [2.55, -1.85, 0], color="#FFFFFF", stroke_width=4)
+        finish_banner = RoundedRectangle(width=1.05, height=0.34, corner_radius=0.05, color="#FFFFFF", stroke_width=2.5, fill_color="#000000", fill_opacity=1.0).move_to([2.55, 0.45, 0])
+        finish_txt = Text("100M", font="Arial", weight=BOLD, font_size=12, color="#FFFFFF").move_to(finish_banner.get_center())
+
+        # Ticking Stopwatch above the track
+        clock_ring = Circle(radius=0.58, color="#FFFFFF", stroke_width=3.5).move_to([0.0, 0.45, 0])
+        clock_btn = Rectangle(width=0.22, height=0.12, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).next_to(clock_ring, UP, buff=0.02)
+        clock_hand = Line(clock_ring.get_center(), clock_ring.get_center() + UP * 0.44, color="#FFFFFF", stroke_width=4)
+
+        # Dynamic Sprinter Figure (Head, Torso, Pumping Arms & Striding Legs)
+        r_head = Circle(radius=0.18, color="#FFFFFF", stroke_width=3.5, fill_color="#FFFFFF", fill_opacity=0.2).move_to([-2.0, -0.15, 0])
+        r_torso = Line([-2.05, -0.33, 0], [-2.25, -0.95, 0], color="#FFFFFF", stroke_width=5)
+        r_arm_f = Line([-2.12, -0.52, 0], [-1.72, -0.38, 0], color="#FFFFFF", stroke_width=3.5)
+        r_arm_b = Line([-2.12, -0.52, 0], [-2.52, -0.68, 0], color="#FFFFFF", stroke_width=3.5)
+        r_leg_f = Line([-2.25, -0.95, 0], [-1.82, -1.55, 0], color="#FFFFFF", stroke_width=4)
+        r_leg_b = Line([-2.25, -0.95, 0], [-2.65, -1.52, 0], color="#FFFFFF", stroke_width=4)
+        speed_lines = VGroup(
+            Line([-3.0, -0.35, 0], [-2.45, -0.35, 0], color="#FFFFFF", stroke_width=2.5).set_opacity(0.6),
+            Line([-3.1, -0.75, 0], [-2.55, -0.75, 0], color="#FFFFFF", stroke_width=2.5).set_opacity(0.6),
+        )
+        sprinter = VGroup(r_head, r_torso, r_arm_f, r_arm_b, r_leg_f, r_leg_b, speed_lines)
+        tag = Text("100M SPRINT • RACE AGAINST TIME", font="Arial", weight=BOLD, font_size=12, color="#FFFFFF").move_to([0, -2.25, 0]).set_opacity(0.85)
+
+        self.play(
+            Create(track_top), Create(track_mid), Create(track_bot),
+            Create(finish_pole), FadeIn(finish_banner), FadeIn(finish_txt),
+            Create(clock_ring), FadeIn(clock_btn), Create(clock_hand),
+            FadeIn(sprinter, shift=RIGHT * 0.3), FadeIn(tag),
+            run_time=1.6
+        )
+        self.play(
+            sprinter.animate.shift(RIGHT * 4.15),
+            Rotate(clock_hand, angle=-6 * PI, about_point=clock_ring.get_center()),
+            finish_banner.animate.set_fill(color="#FFFFFF", opacity=0.25),
+            run_time=10.3,
+            rate_func=linear
+        )
+        self.play(FadeOut(VGroup(track_top, track_mid, track_bot, finish_pole, finish_banner, finish_txt, clock_ring, clock_btn, clock_hand, sprinter, tag)), run_time=0.8)
 
 class Scene06_06(Scene):
     def construct(self):

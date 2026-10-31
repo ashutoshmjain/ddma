@@ -102,15 +102,37 @@ def ensure_clip_meta(clip_num: int, plan_clip: Optional[Dict[str, Any]] = None, 
     raw_beats = meta_data.get("beats", [])
 
     # Determine clip start/end and spoken words from plan_clip if available
+    if plan_clip is None:
+        # Auto-discover plan_clip from projects/episode_248/plan.json or root plan.json so we NEVER lose caption_chunks or audio_duration!
+        for cand_plan in [
+            os.path.join(SCRIPT_DIR, "projects", "episode_248", "plan.json"),
+            os.path.join(SCRIPT_DIR, "plan.json"),
+        ]:
+            if os.path.exists(cand_plan):
+                try:
+                    with open(cand_plan, "r", encoding="utf-8") as pf:
+                        p_list = json.load(pf)
+                    if isinstance(p_list, list):
+                        plan_clip = next((c for c in p_list if str(c.get("num")) == str(c_num)), None)
+                        if plan_clip:
+                            break
+                except Exception:
+                    pass
+
     c_start = float(plan_clip.get("start", 0.0)) if plan_clip else (float(raw_beats[0]["start"]) if raw_beats else 0.0)
     c_end = float(plan_clip.get("end", c_start + 120.0)) if plan_clip else (float(raw_beats[-1]["end"]) if raw_beats else c_start + 120.0)
-    eff_body_dur = float(body_duration) if body_duration and body_duration > 0 else max(10.0, c_end - c_start)
+    plan_audio_dur = float(plan_clip.get("audio_duration") or 0.0) if plan_clip else 0.0
+    eff_body_dur = (
+        float(body_duration)
+        if body_duration and body_duration > 0
+        else (plan_audio_dur if plan_audio_dur > 0 else max(10.0, c_end - c_start))
+    )
 
     n_scenes = len(parsed_classes)
     if n_scenes == 0:
         return {"clip_num": c_num, "title": plan_clip.get("title", f"Part {c_num}") if plan_clip else f"Part {c_num}", "beats": []}
 
-    # Extract caption words or chunks from plan_clip to populate spoken transcript per beat if missing
+    # Extract caption words or chunks from plan_clip to populate exact spoken transcript per beat
     caption_chunks = (plan_clip.get("caption_chunks") or []) if plan_clip else []
     full_clip_text = (plan_clip.get("text") or "") if plan_clip else ""
 
@@ -131,17 +153,28 @@ def ensure_clip_meta(clip_num: int, plan_clip: Optional[Dict[str, Any]] = None, 
         abs_start = float(raw_b.get("start", c_start + rel_start))
         abs_end = float(raw_b.get("end", c_start + rel_end))
 
-        # Resolve spoken text for this beat window
-        b_text = str(raw_b.get("text", "")).strip()
-        if (not b_text or b_text.startswith("Discussion on ")) and caption_chunks:
-            matching_chunks = [
-                ch.get("text", "").strip()
-                for ch in caption_chunks
-                if float(ch.get("end", 0)) > vid_start and float(ch.get("start", 0)) < vid_end
-            ]
-            if matching_chunks:
-                b_text = " ".join(matching_chunks)
-        if not b_text and full_clip_text:
+        # ALWAYS compute spoken text from exact word-timed caption_chunks in [vid_start, vid_end] when available
+        # so the right-hand "SPOKEN DIALOGUE IN THIS BEAT" matches the burned-in ASS captions 100%!
+        b_text = ""
+        if caption_chunks:
+            beat_words = []
+            for ch in caption_chunks:
+                w_list = ch.get("words") or []
+                if w_list:
+                    for w_obj in w_list:
+                        w_mid = 0.5 * (float(w_obj.get("start", 0.0)) + float(w_obj.get("end", 0.0)))
+                        if vid_start <= w_mid < vid_end:
+                            beat_words.append(str(w_obj.get("word", "")).strip())
+                else:
+                    ch_mid = 0.5 * (float(ch.get("start", 0.0)) + float(ch.get("end", 0.0)))
+                    if vid_start <= ch_mid < vid_end:
+                        beat_words.append(str(ch.get("text", "")).strip())
+            if beat_words:
+                b_text = " ".join(w for w in beat_words if w)
+
+        if not b_text:
+            b_text = str(raw_b.get("text", "")).strip()
+        if (not b_text or b_text.startswith("Discussion on ")) and full_clip_text:
             words = full_clip_text.split()
             w_per_beat = max(1, len(words) // n_scenes)
             b_text = " ".join(words[idx * w_per_beat : (idx + 1) * w_per_beat])
@@ -403,7 +436,58 @@ def synthesize_figurative_manim_class(
         )
         self.play(FadeOut(VGroup(plane, cloud1, cloud2, wind_lines, tag)), run_time={t_out})'''
 
-    # 2. Check if directive matches any of our 22 cached figurative archetypes in generated_archetypes.json
+        # 2. 100 Meter Sprint / Race Against Time (Sprinter on track racing a giant stopwatch to finish line)
+    if any(k in combined for k in ["100 meter", "race", "sprint", "runner", "running", "track", "marathon", "finish line"]):
+        t_build = round(min(1.6, dur * 0.16), 2)
+        t_run = round(max(2.0, dur - t_build - 0.8), 2)
+        t_out = round(max(0.5, dur - t_build - t_run), 2)
+        return f'''class {class_name}(Scene):
+    def construct(self):
+        get_footer(self)
+        # Visual: 100-meter sprinter racing against a ticking stopwatch toward the finish line ({d_clean})
+        track_top = Line([-3.1, -0.85, 0], [3.1, -0.85, 0], color="#FFFFFF", stroke_width=3).set_opacity(0.6)
+        track_mid = DashedLine([-3.1, -1.35, 0], [3.1, -1.35, 0], color="#FFFFFF", stroke_width=2).set_opacity(0.45)
+        track_bot = Line([-3.1, -1.85, 0], [3.1, -1.85, 0], color="#FFFFFF", stroke_width=4)
+        finish_pole = Line([2.55, 0.25, 0], [2.55, -1.85, 0], color="#FFFFFF", stroke_width=4)
+        finish_banner = RoundedRectangle(width=1.05, height=0.34, corner_radius=0.05, color="#FFFFFF", stroke_width=2.5, fill_color="#000000", fill_opacity=1.0).move_to([2.55, 0.45, 0])
+        finish_txt = Text("100M", font="Arial", weight=BOLD, font_size=12, color="#FFFFFF").move_to(finish_banner.get_center())
+
+        # Ticking Stopwatch above the track
+        clock_ring = Circle(radius=0.58, color="#FFFFFF", stroke_width=3.5).move_to([0.0, 0.45, 0])
+        clock_btn = Rectangle(width=0.22, height=0.12, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).next_to(clock_ring, UP, buff=0.02)
+        clock_hand = Line(clock_ring.get_center(), clock_ring.get_center() + UP * 0.44, color="#FFFFFF", stroke_width=4)
+
+        # Dynamic Sprinter Figure (Head, Torso, Pumping Arms & Striding Legs)
+        r_head = Circle(radius=0.18, color="#FFFFFF", stroke_width=3.5, fill_color="#FFFFFF", fill_opacity=0.2).move_to([-2.0, -0.15, 0])
+        r_torso = Line([-2.05, -0.33, 0], [-2.25, -0.95, 0], color="#FFFFFF", stroke_width=5)
+        r_arm_f = Line([-2.12, -0.52, 0], [-1.72, -0.38, 0], color="#FFFFFF", stroke_width=3.5)
+        r_arm_b = Line([-2.12, -0.52, 0], [-2.52, -0.68, 0], color="#FFFFFF", stroke_width=3.5)
+        r_leg_f = Line([-2.25, -0.95, 0], [-1.82, -1.55, 0], color="#FFFFFF", stroke_width=4)
+        r_leg_b = Line([-2.25, -0.95, 0], [-2.65, -1.52, 0], color="#FFFFFF", stroke_width=4)
+        speed_lines = VGroup(
+            Line([-3.0, -0.35, 0], [-2.45, -0.35, 0], color="#FFFFFF", stroke_width=2.5).set_opacity(0.6),
+            Line([-3.1, -0.75, 0], [-2.55, -0.75, 0], color="#FFFFFF", stroke_width=2.5).set_opacity(0.6),
+        )
+        sprinter = VGroup(r_head, r_torso, r_arm_f, r_arm_b, r_leg_f, r_leg_b, speed_lines)
+        tag = Text("100M SPRINT • RACE AGAINST TIME", font="Arial", weight=BOLD, font_size=12, color="#FFFFFF").move_to([0, -2.25, 0]).set_opacity(0.85)
+
+        self.play(
+            Create(track_top), Create(track_mid), Create(track_bot),
+            Create(finish_pole), FadeIn(finish_banner), FadeIn(finish_txt),
+            Create(clock_ring), FadeIn(clock_btn), Create(clock_hand),
+            FadeIn(sprinter, shift=RIGHT * 0.3), FadeIn(tag),
+            run_time={t_build}
+        )
+        self.play(
+            sprinter.animate.shift(RIGHT * 4.15),
+            Rotate(clock_hand, angle=-6 * PI, about_point=clock_ring.get_center()),
+            finish_banner.animate.set_fill(color="#FFFFFF", opacity=0.25),
+            run_time={t_run},
+            rate_func=linear
+        )
+        self.play(FadeOut(VGroup(track_top, track_mid, track_bot, finish_pole, finish_banner, finish_txt, clock_ring, clock_btn, clock_hand, sprinter, tag)), run_time={t_out})'''
+
+    # 3. Check if directive matches any of our 22 cached figurative archetypes in generated_archetypes.json
     if os.path.exists(GENERATED_ARCHETYPES_JSON):
         try:
             with open(GENERATED_ARCHETYPES_JSON, "r", encoding="utf-8") as f:
