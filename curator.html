@@ -2177,24 +2177,116 @@
         </div>
     </div>
 
-    <!-- Video Preview Modal -->
+    <!-- Video Preview & Split-Screen Archetype Inspector Studio Modal -->
     <div class="export-modal-overlay" id="videoModalOverlay">
-        <div class="export-modal" style="max-width: 520px; padding: 1.25rem;">
-            <div class="export-modal-header">
-                <h3 id="videoModalTitle">VIDEO PREVIEW</h3>
-                <button class="icon-btn" id="closeVideoModalBtn" style="font-size: 1.2rem;" title="Close player">✖</button>
-            </div>
-            <div style="position: relative; display: flex; justify-content: center; align-items: center; background-color: #000; border-radius: 8px; overflow: hidden; margin: 0.5rem auto 0 auto; aspect-ratio: 9/16; height: 68vh; max-height: 640px; border: 1px solid var(--border-color);">
-                <video id="previewVideoPlayer" controls style="width: 100%; height: 100%; object-fit: contain;"></video>
-                <div id="videoModalLoadingOverlay" style="display: none; position: absolute; inset: 0; background: rgba(10, 12, 18, 0.88); backdrop-filter: blur(4px); flex-direction: column; justify-content: center; align-items: center; gap: 0.85rem; z-index: 10; padding: 1.5rem; text-align: center;">
-                    <div style="font-size: 2.2rem; animation: pulse 1.2s infinite ease-in-out;">⏳</div>
-                    <div id="videoModalLoadingTitle" style="font-size: 0.95rem; font-weight: 700; color: #fff; font-family: var(--font-mono);">Compiling Master Video...</div>
-                    <div id="videoModalLoadingSub" style="font-size: 0.78rem; color: var(--text-muted); max-width: 360px; line-height: 1.4;">Assembling Intro, Mosaic Motion Graphics, Outro Bridge &amp; 1080×1920 Burned Captions...</div>
+        <div class="export-modal" id="videoModalContainer" style="max-width: 1180px; width: 95vw; max-height: 92vh; padding: 1.15rem 1.35rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            <div class="export-modal-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.65rem;">
+                <div>
+                    <h3 id="videoModalTitle" style="margin: 0; font-size: 1.05rem;">VIDEO PREVIEW &amp; ARCHETYPE STUDIO</h3>
+                    <span id="videoModalSubtitle" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 0.15rem;"></span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <a id="downloadVideoBtn" class="btn btn-accent btn-mini" style="text-decoration: none; padding: 0.35rem 0.75rem; font-size: 0.74rem; font-weight: 600;" download>⬇ Download Short</a>
+                    <button class="icon-btn" id="closeVideoModalBtn" style="font-size: 1.2rem;" title="Close player">✖</button>
                 </div>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.8rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
-                <span id="videoModalSubtitle" style="font-size: 0.75rem; color: var(--text-muted);"></span>
-                <a id="downloadVideoBtn" class="btn btn-accent btn-mini" style="text-decoration: none; padding: 0.35rem 0.7rem; font-size: 0.75rem;" download>⬇ Download Video</a>
+
+            <!-- Side-by-Side Split Body: Left = 9:16 Video Player, Right = Live Archetype Beat Inspector -->
+            <div style="display: grid; grid-template-columns: 380px 1fr; gap: 1.2rem; flex: 1; min-height: 0; overflow: hidden; align-items: stretch;">
+                <!-- LEFT COLUMN: 9:16 Vertical Short Player -->
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #05070c; border-radius: 10px; border: 1px solid var(--border-color); padding: 0.5rem; position: relative; min-height: 540px;">
+                    <div style="position: relative; width: 100%; height: 68vh; max-height: 620px; aspect-ratio: 9/16; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                        <video id="previewVideoPlayer" controls style="width: 100%; height: 100%; object-fit: contain;"></video>
+                        <div id="videoModalLoadingOverlay" style="display: none; position: absolute; inset: 0; background: rgba(10, 12, 18, 0.90); backdrop-filter: blur(4px); flex-direction: column; justify-content: center; align-items: center; gap: 0.85rem; z-index: 10; padding: 1.5rem; text-align: center;">
+                            <div style="font-size: 2.2rem; animation: pulse 1.2s infinite ease-in-out;">⚡</div>
+                            <div id="videoModalLoadingTitle" style="font-size: 0.95rem; font-weight: 700; color: #fff; font-family: var(--font-mono);">Assembling Short Clip...</div>
+                            <div id="videoModalLoadingSub" style="font-size: 0.78rem; color: var(--text-muted); max-width: 320px; line-height: 1.4;">Stitching pre-compiled 740×740 Manim archetypes &amp; burning 1080×1920 captions...</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 0.45rem; font-size: 0.68rem; color: var(--text-muted); text-align: center;">
+                        💡 <strong>Pause video</strong> at any moment to inspect, comment on, or regenerate the active 7.5s Manim archetype on the right.
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: Live Archetype Inspector & Beat Editor -->
+                <div id="archetypeInspectorPanel" style="display: flex; flex-direction: column; gap: 0.7rem; background: var(--panel-bg-darker); border: 1px solid var(--border-color); border-radius: 10px; padding: 0.95rem 1.1rem; overflow-y: auto; min-height: 0;">
+                    <!-- 1. Interactive Beat Scrubber Strip -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                            <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">
+                                🎬 Clip Micro-Beat Timeline (Click any beat to jump)
+                            </span>
+                            <span id="archInspectorSourceFileBadge" style="font-size: 0.68rem; font-family: var(--font-mono); color: #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 0.15rem 0.5rem; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.25);">
+                                archetypes/clip_01_gemini_scenes.py
+                            </span>
+                        </div>
+                        <div id="archBeatStripContainer" style="display: flex; gap: 0.35rem; overflow-x: auto; padding-bottom: 0.35rem;">
+                            <!-- Populated dynamically with Beat 1..N pills -->
+                        </div>
+                    </div>
+
+                    <!-- 2. Active Beat Header & Metadata Card -->
+                    <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem 0.9rem; display: flex; flex-direction: column; gap: 0.45rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.4rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span id="archActiveBeatBadge" style="background: #38bdf8; color: #000; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 800; padding: 0.2rem 0.55rem; border-radius: 4px;">
+                                    BEAT 1 / 15
+                                </span>
+                                <span id="archActiveClassBadge" style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; color: var(--text-main);">
+                                    Scene01_01
+                                </span>
+                            </div>
+                            <span id="archActiveTimeBadge" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);">
+                                01.5s – 09.0s (7.5s)
+                            </span>
+                        </div>
+
+                        <div style="display: flex; gap: 0.6rem; align-items: baseline; font-size: 0.76rem;">
+                            <span style="color: var(--text-muted); font-weight: 600; min-width: 110px;">Visual Geometry:</span>
+                            <span id="archActiveVisualSummary" style="color: #38bdf8; font-weight: 600;">Bespoke monochrome vector animation</span>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.2rem; margin-top: 0.15rem;">
+                            <span style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Spoken Dialogue in This Beat:</span>
+                            <div id="archActiveSpokenText" style="font-size: 0.8rem; color: var(--text-main); background: rgba(255,255,255,0.03); border-left: 3px solid #facc15; padding: 0.4rem 0.65rem; border-radius: 4px; line-height: 1.4; font-style: italic;">
+                                "Spoken words aligned to this 7.5-second micro-beat..."
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Producer Creative Feedback / Change Request Box -->
+                    <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.8rem 0.9rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label for="archDirectiveInput" style="font-size: 0.76rem; font-weight: 700; color: #c084fc; display: flex; align-items: center; gap: 0.35rem;">
+                                ✍️ Producer Feedback / Request Archetype Change (Updates Short + Longform Library):
+                            </label>
+                            <span id="archUpdateStatusBadge" style="font-size: 0.7rem; font-family: var(--font-mono); color: var(--text-muted);"></span>
+                        </div>
+                        <textarea id="archDirectiveInput" rows="3" placeholder="Pause the video and describe what you want changed in this specific 7.5s animation (e.g. 'Draw a literal power plug being pulled out of a wall socket while bills pile up on the left')..." style="width: 100%; background: var(--panel-bg-darker); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.6rem; font-size: 0.8rem; line-height: 1.4; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.15rem;">
+                            <button type="button" class="btn btn-secondary btn-mini" id="toggleArchCodeBtn" style="font-size: 0.72rem; font-weight: 600;">
+                                💻 Show / Edit Manim Python Code
+                            </button>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="button" class="btn btn-primary btn-mini" id="applyArchAiChangeBtn" style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); border: none; font-weight: 700; padding: 0.45rem 0.95rem; color: #fff;">
+                                    ✨ Regenerate This Beat with AI &amp; Recompile (~5s)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Collapsible Direct Manim Code Editor for Advanced Tweaks -->
+                        <div id="archCodeDrawer" style="display: none; flex-direction: column; gap: 0.4rem; margin-top: 0.4rem; border-top: 1px solid var(--border-color); padding-top: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 0.68rem; font-family: var(--font-mono); color: var(--text-muted);">Direct ManimCE Class Code (Saved directly to ddma/archetypes/):</span>
+                                <button type="button" class="btn btn-secondary btn-mini" id="saveArchCustomCodeBtn" style="font-size: 0.7rem; font-weight: 700; color: #38bdf8;">
+                                    ⚡ Compile Custom Code &amp; Update Short
+                                </button>
+                            </div>
+                            <textarea id="archCodeTextarea" rows="9" style="width: 100%; background: #090d16; color: #e2e8f0; border: 1px solid var(--border-color); border-radius: 6px; padding: 0.6rem; font-family: var(--font-mono); font-size: 0.73rem; line-height: 1.4; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -7551,8 +7643,16 @@
                         infographicBtnEl.addEventListener('contextmenu', function(e) {
                             e.preventDefault();
                             e.stopPropagation();
-                            // Right-click opens the complete Storyboard Designer & External Editor Modal
-                            openStoryboardModal(index);
+                            const epNum = activeProjectId.replace('episode_', '');
+                            if (hasInfographicRender) {
+                                openVideoModal(
+                                    `/clips/${epNum}-${clip.num}-manim.mp4?t=` + Date.now(),
+                                    `✨ MANIM ARCHETYPE STUDIO - Part ${clip.num}: ${clip.title}`,
+                                    `✨ Split-Screen Video + Beat-by-Beat Manim Archetype Inspector • clips/${epNum}-${clip.num}-manim.mp4`
+                                );
+                            } else {
+                                runLocalInfographic(this, false, "");
+                            }
                         });
                     }
 
@@ -8335,7 +8435,230 @@
             videoModalOverlay.classList.add('active');
         }
 
+        // ================= SPLIT-SCREEN ARCHETYPE INSPECTOR STUDIO =================
+        let activeStudioClipNum = null;
+        let activeStudioBeats = [];
+        let activeStudioBeatIdx = 0;
+
+        function extractClipNumFromVideoInfo(videoUrl, titleText) {
+            if (videoUrl) {
+                const m1 = String(videoUrl).match(/clips\/(?:episode_)?\d+-(\d+)/);
+                if (m1) return parseInt(m1[1], 10);
+            }
+            if (titleText) {
+                const m2 = String(titleText).match(/Part\s+(\d+)/i);
+                if (m2) return parseInt(m2[1], 10);
+            }
+            return null;
+        }
+
+        function selectStudioBeat(idx, seekVideo = false) {
+            if (!activeStudioBeats || !activeStudioBeats.length) return;
+            const safeIdx = Math.max(0, Math.min(activeStudioBeats.length - 1, idx));
+            activeStudioBeatIdx = safeIdx;
+            const beat = activeStudioBeats[safeIdx];
+
+            // Highlight active pill in strip
+            const strip = document.getElementById('archBeatStripContainer');
+            if (strip) {
+                Array.from(strip.children).forEach((pill, pIdx) => {
+                    if (pIdx === safeIdx) {
+                        pill.style.background = '#38bdf8';
+                        pill.style.color = '#000';
+                        pill.style.borderColor = '#38bdf8';
+                        pill.style.fontWeight = '800';
+                    } else {
+                        pill.style.background = 'var(--bg-color)';
+                        pill.style.color = 'var(--text-muted)';
+                        pill.style.borderColor = 'var(--border-color)';
+                        pill.style.fontWeight = '600';
+                    }
+                });
+            }
+
+            const beatBadge = document.getElementById('archActiveBeatBadge');
+            const clsBadge = document.getElementById('archActiveClassBadge');
+            const timeBadge = document.getElementById('archActiveTimeBadge');
+            const visSum = document.getElementById('archActiveVisualSummary');
+            const spokenEl = document.getElementById('archActiveSpokenText');
+            const dirInput = document.getElementById('archDirectiveInput');
+            const codeArea = document.getElementById('archCodeTextarea');
+
+            if (beatBadge) beatBadge.textContent = `BEAT ${safeIdx + 1} / ${activeStudioBeats.length}`;
+            if (clsBadge) clsBadge.textContent = beat.class_name || `Scene_${safeIdx + 1}`;
+            if (timeBadge) timeBadge.textContent = `${Number(beat.video_start).toFixed(1)}s – ${Number(beat.video_end).toFixed(1)}s (${Number(beat.duration).toFixed(1)}s)`;
+            if (visSum) visSum.textContent = beat.visual_summary || beat.title || 'Bespoke monochrome vector animation';
+            if (spokenEl) spokenEl.textContent = `"${beat.text || 'Spoken dialogue in this micro-beat...'}"`;
+            if (dirInput && document.activeElement !== dirInput) {
+                dirInput.value = beat.user_notes || '';
+            }
+            if (codeArea && document.activeElement !== codeArea) {
+                codeArea.value = beat.code || '';
+            }
+
+            if (seekVideo && previewVideoPlayer) {
+                previewVideoPlayer.currentTime = Number(beat.video_start) + 0.1;
+            }
+        }
+
+        function renderStudioBeatStrip() {
+            const strip = document.getElementById('archBeatStripContainer');
+            if (!strip) return;
+            strip.innerHTML = '';
+            activeStudioBeats.forEach((b, idx) => {
+                const pill = document.createElement('button');
+                pill.type = 'button';
+                pill.className = 'btn btn-mini';
+                pill.style.cssText = 'padding: 0.25rem 0.55rem; font-family: var(--font-mono); font-size: 0.7rem; border-radius: 5px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-muted); white-space: nowrap; cursor: pointer;';
+                pill.textContent = `#${idx + 1} (${Number(b.video_start).toFixed(0)}s)`;
+                pill.title = `${b.class_name}: ${b.visual_summary || ''}`;
+                pill.addEventListener('click', () => {
+                    selectStudioBeat(idx, true);
+                });
+                strip.appendChild(pill);
+            });
+        }
+
+        function loadClipArchetypesIntoStudio(clipNum) {
+            if (!activeProjectId || !clipNum) return;
+            activeStudioClipNum = clipNum;
+            const srcBadge = document.getElementById('archInspectorSourceFileBadge');
+            if (srcBadge) srcBadge.textContent = `archetypes/clip_${String(clipNum).padStart(2, '0')}_gemini_scenes.py`;
+
+            fetch(`/get-clip-archetypes?id=${activeProjectId}&num=${clipNum}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success && data.meta && data.meta.beats) {
+                        activeStudioBeats = data.meta.beats;
+                        renderStudioBeatStrip();
+                        selectStudioBeat(0, false);
+                    }
+                })
+                .catch(err => console.warn('Could not load clip archetypes:', err));
+        }
+
+        if (previewVideoPlayer) {
+            previewVideoPlayer.addEventListener('timeupdate', () => {
+                if (!activeStudioBeats || !activeStudioBeats.length) return;
+                // Do not overwrite user's text box while they are actively typing a comment!
+                const dirInput = document.getElementById('archDirectiveInput');
+                const codeArea = document.getElementById('archCodeTextarea');
+                if (document.activeElement === dirInput || document.activeElement === codeArea) return;
+
+                const t = previewVideoPlayer.currentTime;
+                const matchIdx = activeStudioBeats.findIndex(b => t >= Number(b.video_start) && t < Number(b.video_end));
+                if (matchIdx !== -1 && matchIdx !== activeStudioBeatIdx) {
+                    selectStudioBeat(matchIdx, false);
+                }
+            });
+        }
+
+        const toggleArchCodeBtn = document.getElementById('toggleArchCodeBtn');
+        const archCodeDrawer = document.getElementById('archCodeDrawer');
+        if (toggleArchCodeBtn && archCodeDrawer) {
+            toggleArchCodeBtn.addEventListener('click', () => {
+                const isHidden = archCodeDrawer.style.display === 'none';
+                archCodeDrawer.style.display = isHidden ? 'flex' : 'none';
+                toggleArchCodeBtn.textContent = isHidden ? '🔼 Hide Manim Python Code' : '💻 Show / Edit Manim Python Code';
+            });
+        }
+
+        function triggerArchetypeBeatUpdate(useCustomCode = false) {
+            if (!activeProjectId || !activeStudioClipNum || !activeStudioBeats.length) return;
+            const beat = activeStudioBeats[activeStudioBeatIdx];
+            if (!beat) return;
+
+            const dirInput = document.getElementById('archDirectiveInput');
+            const codeArea = document.getElementById('archCodeTextarea');
+            const statusBadge = document.getElementById('archUpdateStatusBadge');
+            const aiBtn = document.getElementById('applyArchAiChangeBtn');
+            const codeBtn = document.getElementById('saveArchCustomCodeBtn');
+
+            const directive = dirInput ? dirInput.value.trim() : '';
+            const customCode = useCustomCode && codeArea ? codeArea.value.trim() : null;
+
+            if (!useCustomCode && !directive) {
+                alert('Please enter your creative feedback or change request for this 7.5s beat first!');
+                return;
+            }
+
+            if (previewVideoPlayer) previewVideoPlayer.pause();
+            const resumeTime = previewVideoPlayer ? previewVideoPlayer.currentTime : Number(beat.video_start);
+
+            if (statusBadge) {
+                statusBadge.style.color = '#38bdf8';
+                statusBadge.textContent = useCustomCode
+                    ? `⚡ Compiling ${beat.class_name} & re-stitching Short...`
+                    : `✨ Gemini is rewriting ${beat.class_name} & compiling Manim (~5s)...`;
+            }
+            if (aiBtn) aiBtn.disabled = true;
+            if (codeBtn) codeBtn.disabled = true;
+
+            fetch(`/update-archetype-beat?id=${activeProjectId}&num=${activeStudioClipNum}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    beat_index: beat.index,
+                    class_name: beat.class_name,
+                    directive: directive,
+                    spoken_text: beat.text || '',
+                    duration: beat.duration || 7.5,
+                    custom_code: customCode,
+                    recompile_short: true
+                })
+            })
+            .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
+            .then(({ ok, data }) => {
+                if (!ok || data.error) throw new Error(data.error || 'Failed to update beat');
+                if (data.meta && data.meta.beats) {
+                    activeStudioBeats = data.meta.beats;
+                    renderStudioBeatStrip();
+                    selectStudioBeat(activeStudioBeatIdx, false);
+                }
+                if (data.short_video_url && previewVideoPlayer) {
+                    previewVideoPlayer.src = data.short_video_url;
+                    previewVideoPlayer.load();
+                    previewVideoPlayer.addEventListener('loadedmetadata', function onMeta() {
+                        previewVideoPlayer.currentTime = Math.max(0, Number(beat.video_start));
+                        previewVideoPlayer.play().catch(() => {});
+                        previewVideoPlayer.removeEventListener('loadedmetadata', onMeta);
+                    });
+                }
+                if (statusBadge) {
+                    statusBadge.style.color = '#4ade80';
+                    statusBadge.textContent = `✅ Updated ${beat.class_name} in Short & Longform Library!`;
+                }
+                updateStateBar(`✅ Updated ${beat.class_name} (Beat #${beat.index}) in Clip ${activeStudioClipNum} & Longform Library!`);
+            })
+            .catch(err => {
+                if (statusBadge) {
+                    statusBadge.style.color = '#f87171';
+                    statusBadge.textContent = `❌ Error: ${err.message}`;
+                }
+                alert('Archetype Update Error:
+' + err.message);
+            })
+            .finally(() => {
+                if (aiBtn) aiBtn.disabled = false;
+                if (codeBtn) codeBtn.disabled = false;
+            });
+        }
+
+        const applyArchAiChangeBtn = document.getElementById('applyArchAiChangeBtn');
+        if (applyArchAiChangeBtn) {
+            applyArchAiChangeBtn.addEventListener('click', () => triggerArchetypeBeatUpdate(false));
+        }
+        const saveArchCustomCodeBtn = document.getElementById('saveArchCustomCodeBtn');
+        if (saveArchCustomCodeBtn) {
+            saveArchCustomCodeBtn.addEventListener('click', () => triggerArchetypeBeatUpdate(true));
+        }
+
         function openVideoModal(videoUrl, titleText, subtitleText) {
+            const cNum = extractClipNumFromVideoInfo(videoUrl, titleText);
+            if (cNum) {
+                loadClipArchetypesIntoStudio(cNum);
+            }
+
             audioElement.pause();
             playBtn.textContent = '▶';
             
