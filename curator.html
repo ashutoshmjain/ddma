@@ -4998,7 +4998,7 @@
             if (!contextMenu) return;
             contextMenu.style.left = `${Math.max(10, Math.min(x, window.innerWidth - 200))}px`;
             contextMenu.style.top = `${Math.max(10, Math.min(y, window.innerHeight - 180))}px`;
-            contextMenu.style.display = 'block';
+            contextMenu.style.display = 'none'; // disabled per producer preference
             contextMenu.style.zIndex = '10000';
         }
 
