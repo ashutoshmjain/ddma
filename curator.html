@@ -8635,8 +8635,7 @@
                     statusBadge.style.color = '#f87171';
                     statusBadge.textContent = `❌ Error: ${err.message}`;
                 }
-                alert('Archetype Update Error:
-' + err.message);
+                alert('Archetype Update Error: ' + err.message);
             })
             .finally(() => {
                 if (aiBtn) aiBtn.disabled = false;
