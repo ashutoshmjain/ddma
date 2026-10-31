@@ -720,3 +720,207 @@ Return ONLY the valid Python code for `class {class_name}(Scene):` inside a ```p
         "code": new_cls_code,
         "mp4_url": f"/media/videos/clip_{c_num:02d}_gemini_scenes/740p15/{class_name}.mp4?t={int(time.time())}",
     }
+
+
+def _load_episode_plan(ep_num: str = "248") -> List[Dict[str, Any]]:
+    clean_ep = str(ep_num).replace(".md", "").lstrip("_")
+    for cand in [
+        os.path.join(SCRIPT_DIR, "projects", f"episode_{clean_ep}", "plan.json"),
+        os.path.join(SCRIPT_DIR, "plan.json"),
+    ]:
+        if os.path.exists(cand):
+            try:
+                with open(cand, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                if isinstance(data, list) and data:
+                    return data
+            except Exception:
+                pass
+    return []
+
+
+def _load_mapped_longform_words(ep_num: str = "248", total_duration: float = 3254.21) -> List[Dict[str, Any]]:
+    """
+    Loads the exact word-level timeline mapped with podcast_edit.json cuts & stings
+    so that each Longform beat displays the exact words spoken during [longform_start, longform_end].
+    """
+    clean_ep = str(ep_num).replace(".md", "").lstrip("_")
+    ep_dir = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", clean_ep)
+    trans_path = os.path.join(ep_dir, "transcription.json")
+    edit_path = os.path.join(ep_dir, "podcast_edit.json")
+
+    if not os.path.exists(trans_path):
+        return []
+
+    try:
+        with open(trans_path, "r", encoding="utf-8") as f:
+            trans_data = json.load(f)
+        edit_data = {}
+        if os.path.exists(edit_path):
+            with open(edit_path, "r", encoding="utf-8") as f:
+                edit_data = json.load(f)
+
+        from longform_video_engine import map_timeline_with_stings_and_cuts
+        mapped_trans, _, _ = map_timeline_with_stings_and_cuts(trans_data, edit_data, total_duration)
+        segs = mapped_trans.get("segments", [])
+        words = []
+        for s in segs:
+            for w in s.get("words", []):
+                w_text = str(w.get("word", "")).strip()
+                if w_text:
+                    words.append({
+                        "word": w_text,
+                        "start": float(w.get("start", s.get("start", 0.0))),
+                        "end": float(w.get("end", s.get("end", 0.0))),
+                    })
+        return words
+    except Exception:
+        return []
+
+
+def get_longform_timeline_index(ep_num: str = "248") -> Dict[str, Any]:
+    """
+    Returns a lightweight (< 4 KB) chapter index across the 54-minute Longform Master video
+    so the browser can progressively lazy-load individual chapter beats without bloating DOM memory.
+    """
+    clean_ep = str(ep_num).replace(".md", "").lstrip("_")
+    plan_data = _load_episode_plan(clean_ep)
+    total_duration = 3254.21
+
+    # Check actual rendered video duration if present
+    for v_cand in [
+        os.path.join(SCRIPT_DIR, "clips", f"{clean_ep}-longform-master.mp4"),
+        os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", clean_ep, f"podcast_{clean_ep}.mp4"),
+    ]:
+        if os.path.exists(v_cand):
+            try:
+                p = subprocess.run(
+                    ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", v_cand],
+                    capture_output=True, text=True, timeout=5
+                )
+                if p.returncode == 0 and p.stdout.strip():
+                    total_duration = float(p.stdout.strip())
+                    break
+            except Exception:
+                pass
+
+    chapters = []
+    total_scenes = 0
+    for idx, clip in enumerate(plan_data):
+        c_num = int(clip.get("num", idx + 1))
+        c_start = float(clip.get("start", 0.0))
+        c_end = float(clip.get("end", c_start + 120.0))
+        if idx < len(plan_data) - 1:
+            next_start = float(plan_data[idx + 1].get("start", c_end))
+            if c_end < next_start:
+                c_end = next_start
+        else:
+            if c_end < total_duration:
+                c_end = total_duration
+
+        py_path = os.path.join(ARCHETYPES_DIR, f"clip_{c_num:02d}_gemini_scenes.py")
+        n_scenes = 0
+        if os.path.exists(py_path):
+            with open(py_path, "r", encoding="utf-8") as f:
+                n_scenes = len(re.findall(r"class\s+(Scene\w+)\s*\(", f.read()))
+        total_scenes += n_scenes
+
+        chapters.append({
+            "clip_num": c_num,
+            "title": str(clip.get("title", f"Part {c_num}")).strip(),
+            "start": round(c_start, 2),
+            "end": round(c_end, 2),
+            "duration": round(c_end - c_start, 2),
+            "scenes_count": n_scenes,
+            "py_file": f"archetypes/clip_{c_num:02d}_gemini_scenes.py",
+        })
+
+    return {
+        "ep_num": clean_ep,
+        "total_duration": round(total_duration, 2),
+        "total_chapters": len(chapters),
+        "total_scenes": total_scenes,
+        "welcome_sting": {"start": 29.68, "end": 39.68},
+        "chapters": chapters,
+    }
+
+
+def get_longform_chapter_beats(ep_num: str = "248", clip_num: int = 1) -> Dict[str, Any]:
+    """
+    Progressively loads the ~12-18 Manim beats for a single Chapter (clip_num) mapped to
+    their exact Longform Master timestamps [longform_start, longform_end] and spoken words.
+    """
+    clean_ep = str(ep_num).replace(".md", "").lstrip("_")
+    c_num = int(clip_num)
+    plan_data = _load_episode_plan(clean_ep)
+    plan_clip = next((c for c in plan_data if int(c.get("num", 0)) == c_num), None)
+
+    clip_meta = ensure_clip_meta(c_num, plan_clip=plan_clip)
+    short_beats = clip_meta.get("beats", [])
+
+    # Determine chapter's continuous interval on the Longform Master timeline
+    c_start = float(plan_clip.get("start", 0.0)) if plan_clip else 0.0
+    c_end = float(plan_clip.get("end", c_start + 120.0)) if plan_clip else (c_start + 120.0)
+    if plan_data:
+        for i, c in enumerate(plan_data):
+            if int(c.get("num", 0)) == c_num:
+                if i < len(plan_data) - 1:
+                    nxt = float(plan_data[i + 1].get("start", c_end))
+                    if c_end < nxt:
+                        c_end = nxt
+                break
+
+    intro_mp4 = os.path.join(MEDIA_VIDEOS_DIR, "chapter_01_scenes_strict", "740p30", "Scene01_RobotWildernessFallacy.mp4")
+    if c_num == 1 and os.path.exists(intro_mp4):
+        eff_start = 39.68
+    else:
+        eff_start = c_start
+
+    n = max(1, len(short_beats))
+    lf_beat_dur = max(1.0, (c_end - eff_start) / n)
+
+    mapped_words = _load_mapped_longform_words(clean_ep)
+
+    lf_beats = []
+    for idx, sb in enumerate(short_beats):
+        lf_st = round(eff_start + idx * lf_beat_dur, 2)
+        lf_en = round(c_end if idx == n - 1 else eff_start + (idx + 1) * lf_beat_dur, 2)
+
+        # Extract exact spoken words from longform mapped transcript if available, fallback to short beat text
+        spoken = sb.get("text", "")
+        if mapped_words:
+            bw = [w["word"] for w in mapped_words if lf_st <= 0.5 * (w["start"] + w["end"]) < lf_en]
+            if bw:
+                spoken = " ".join(bw)
+
+        cls_name = sb.get("class_name", f"Scene{c_num:02d}_{idx+1:02d}")
+        lf_beats.append({
+            "index": idx + 1,
+            "clip_num": c_num,
+            "class_name": cls_name,
+            "title": sb.get("title", cls_name),
+            "category": sb.get("category", "AI AUTONOMY"),
+            "visual_summary": sb.get("visual_summary", ""),
+            "user_notes": sb.get("user_notes", ""),
+            "longform_start": lf_st,
+            "longform_end": lf_en,
+            "duration": round(lf_en - lf_st, 2),
+            "short_video_start": sb.get("video_start", 0.0),
+            "short_video_end": sb.get("video_end", 0.0),
+            "text": spoken,
+            "mp4_exists": sb.get("mp4_exists", True),
+            "beat_video_url": f"/api/podcast/beat_video?clip_num={c_num}&class_name={cls_name}",
+            "code": sb.get("code", ""),
+        })
+
+    return {
+        "ep_num": clean_ep,
+        "clip_num": c_num,
+        "title": clip_meta.get("title", f"Part {c_num}"),
+        "py_file": f"archetypes/clip_{c_num:02d}_gemini_scenes.py",
+        "chapter_start": round(c_start, 2),
+        "chapter_end": round(c_end, 2),
+        "scenes_count": len(lf_beats),
+        "beats": lf_beats,
+    }
+
