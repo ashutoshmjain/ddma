@@ -37,18 +37,48 @@ def get_title(scene, text="PERISHABLE COMPUTE !"):
 class Scene06_01(Scene):
     def construct(self):
         get_footer(self)
-        title = get_title(self)
-        
-        # Visual: Server rack with a ticking clock above it
-        server = RoundedRectangle(width=1.5, height=2.0, corner_radius=0.1, color="#FFFFFF", stroke_width=2).move_to(DOWN * 1.0)
-        slots = VGroup(*[Line(LEFT*0.5, RIGHT*0.5, color="#FFFFFF", stroke_width=1).move_to(server.get_center() + UP*(0.6 - i*0.4)) for i in range(4)])
-        clock = Circle(radius=0.5, color="#FFFFFF", stroke_width=2).move_to(UP * 0.1)
-        hand = Line(clock.get_center(), clock.get_center() + UP * 0.4, color="#FFFFFF", stroke_width=3)
-        
-        self.play(FadeIn(title), run_time=0.6)
-        self.play(Create(server), Create(slots), Create(clock), Create(hand), run_time=1.0)
-        self.play(Rotate(hand, angle=-6*PI, about_point=clock.get_center()), server.animate.set_opacity(0.3), run_time=5.4, rate_func=linear)
-        self.play(FadeOut(VGroup(server, slots, clock, hand, title)), run_time=0.6)
+        # Visual: Commercial airplane flying past clouds with empty cabin seats (We should show a commercial airplane flying)
+        fuselage = RoundedRectangle(width=3.6, height=0.82, corner_radius=0.41, color="#FFFFFF", stroke_width=4, fill_color="#000000", fill_opacity=1.0).move_to([0, -0.35, 0])
+        nose_cockpit = Arc(radius=0.38, start_angle=-PI/3, angle=2*PI/3, color="#FFFFFF", stroke_width=3).move_to([1.52, -0.32, 0])
+        tail_fin = Polygon([-1.65, 0.0, 0], [-2.25, 1.05, 0], [-1.15, 0.0, 0], color="#FFFFFF", stroke_width=4, fill_color="#000000", fill_opacity=1.0)
+        wing_bottom = Polygon([-0.55, -0.45, 0], [-1.35, -1.55, 0], [-0.25, -1.55, 0], [0.55, -0.45, 0], color="#FFFFFF", stroke_width=4, fill_color="#000000", fill_opacity=1.0)
+        wing_top = Polygon([-0.35, 0.05, 0], [-0.95, 0.78, 0], [-0.15, 0.78, 0], [0.35, 0.05, 0], color="#FFFFFF", stroke_width=3, fill_color="#000000", fill_opacity=1.0)
+        engine = RoundedRectangle(width=0.65, height=0.30, corner_radius=0.12, color="#FFFFFF", stroke_width=3, fill_color="#FFFFFF", fill_opacity=0.18).move_to([-0.5, -1.12, 0])
+
+        # Illuminated empty passenger windows along the cabin
+        windows = VGroup(*[
+            RoundedRectangle(width=0.22, height=0.26, corner_radius=0.06, color="#FFFFFF", stroke_width=2.5, fill_color="#FFFFFF", fill_opacity=0.15).move_to([-1.05 + i * 0.44, -0.32, 0])
+            for i in range(6)
+        ])
+        tag = Text("EMPTY SEATS • PERISHABLE CAPACITY", font="Arial", weight=BOLD, font_size=12, color="#FFFFFF").move_to([0, -2.05, 0]).set_opacity(0.85)
+
+        plane = VGroup(wing_top, tail_fin, fuselage, nose_cockpit, windows, wing_bottom, engine).shift(LEFT * 0.4 + DOWN * 0.15)
+
+        # Fluffy clouds & slipstream lines rushing past
+        cloud1 = VGroup(
+            Circle(radius=0.28, color="#FFFFFF", stroke_width=2.5, fill_color="#000000", fill_opacity=1.0).move_to([2.1, 0.85, 0]),
+            Circle(radius=0.36, color="#FFFFFF", stroke_width=2.5, fill_color="#000000", fill_opacity=1.0).move_to([2.45, 0.92, 0]),
+            Circle(radius=0.26, color="#FFFFFF", stroke_width=2.5, fill_color="#000000", fill_opacity=1.0).move_to([2.8, 0.82, 0]),
+        ).set_opacity(0.75)
+        cloud2 = VGroup(
+            Circle(radius=0.24, color="#FFFFFF", stroke_width=2.5, fill_color="#000000", fill_opacity=1.0).move_to([2.5, -1.55, 0]),
+            Circle(radius=0.32, color="#FFFFFF", stroke_width=2.5, fill_color="#000000", fill_opacity=1.0).move_to([2.85, -1.48, 0]),
+        ).set_opacity(0.65)
+        wind_lines = VGroup(
+            DashedLine([3.2, 0.35, 0], [-3.2, 0.35, 0], color="#FFFFFF", stroke_width=2).set_opacity(0.45),
+            DashedLine([3.2, -0.95, 0], [-3.2, -0.95, 0], color="#FFFFFF", stroke_width=2).set_opacity(0.45),
+        )
+
+        self.play(FadeIn(plane, shift=RIGHT * 0.4 + UP * 0.15), FadeIn(cloud1), FadeIn(cloud2), Create(wind_lines), FadeIn(tag), run_time=1.6)
+        self.play(
+            plane.animate.shift(RIGHT * 0.85 + UP * 0.32).rotate(0.06),
+            cloud1.animate.shift(LEFT * 4.4),
+            cloud2.animate.shift(LEFT * 4.8),
+            windows.animate.set_fill(opacity=0.45),
+            run_time=10.3,
+            rate_func=linear
+        )
+        self.play(FadeOut(VGroup(plane, cloud1, cloud2, wind_lines, tag)), run_time=0.8)
 
 class Scene06_02(Scene):
     def construct(self):

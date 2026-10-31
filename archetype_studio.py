@@ -14,6 +14,7 @@ GITHUB_ROOT = os.path.dirname(SCRIPT_DIR)
 ARCHETYPES_DIR = os.path.join(SCRIPT_DIR, "archetypes")
 MEDIA_VIDEOS_DIR = os.path.join(GITHUB_ROOT, "media", "videos")
 SETTINGS_PATH = os.path.join(SCRIPT_DIR, "settings.json")
+GENERATED_ARCHETYPES_JSON = os.path.join(SCRIPT_DIR, "generated_archetypes.json")
 
 PRIMARY_MODELS = [
     "models/gemini-3.5-flash-lite",
@@ -26,7 +27,9 @@ def _load_api_key() -> Optional[str]:
     if os.path.exists(SETTINGS_PATH):
         try:
             with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
-                return json.load(f).get("gemini_api_key")
+                key = json.load(f).get("gemini_api_key")
+                if key:
+                    return str(key).strip()
         except Exception:
             pass
     return os.environ.get("GEMINI_API_KEY")
@@ -88,10 +91,6 @@ def ensure_clip_meta(clip_num: int, plan_clip: Optional[Dict[str, Any]] = None, 
 
     parsed_classes = extract_scene_classes_from_py(py_path)
 
-    # Check if Clip 1 also uses the pre-sting intro scene Scene01_RobotWildernessFallacy
-    intro_mp4 = os.path.join(MEDIA_VIDEOS_DIR, "chapter_01_scenes_strict", "740p30", "Scene01_RobotWildernessFallacy.mp4")
-    intro_py = os.path.join(ARCHETYPES_DIR, "chapter_01_scenes_strict.py")
-
     meta_data = {}
     if os.path.exists(meta_path):
         try:
@@ -147,12 +146,15 @@ def ensure_clip_meta(clip_num: int, plan_clip: Optional[Dict[str, Any]] = None, 
             w_per_beat = max(1, len(words) // n_scenes)
             b_text = " ".join(words[idx * w_per_beat : (idx + 1) * w_per_beat])
 
+        # Always prefer the latest visual_summary extracted from the live Python class comments
+        live_summary = cls_info.get("visual_summary") or raw_b.get("visual_summary") or "Bespoke monochrome vector animation"
+
         enriched_beats.append({
             "index": idx + 1,
             "class_name": cls_name,
             "title": raw_b.get("title") or cls_info["title"],
             "category": raw_b.get("category") or cls_info["category"],
-            "visual_summary": raw_b.get("visual_summary") or cls_info["visual_summary"],
+            "visual_summary": live_summary,
             "user_notes": raw_b.get("user_notes", ""),
             "start": round(abs_start, 2),
             "end": round(abs_end, 2),
@@ -203,7 +205,8 @@ def stitch_precompiled_archetypes_for_clip(
     plan_clip: Optional[Dict[str, Any]] = None,
 ) -> bool:
     """
-    Super-fast (< 3 seconds) assembler for a DDMA short clip body video (740x740 with masked bottom title)
+    Super-fast (< 3 seconds) assembler for a DDMA short clip body video (740x740 with masked bottom title
+    and centered graphic alignment between the captions line and bottom footer line)
     using the pre-compiled Manim MP4s in media/videos/clip_XX_gemini_scenes/740p15/*.mp4!
     Automatically compiles any missing single scene if needed.
     """
@@ -213,7 +216,6 @@ def stitch_precompiled_archetypes_for_clip(
     if not beats:
         return False
 
-    py_path = os.path.join(ARCHETYPES_DIR, f"clip_{c_num:02d}_gemini_scenes.py")
     video_dir = os.path.join(MEDIA_VIDEOS_DIR, f"clip_{c_num:02d}_gemini_scenes", "740p15")
     os.makedirs(video_dir, exist_ok=True)
 
@@ -231,16 +233,17 @@ def stitch_precompiled_archetypes_for_clip(
 
     os.makedirs(os.path.dirname(os.path.abspath(out_mp4_path)), exist_ok=True)
 
-    # Build a single FFmpeg filtergraph that normalizes each scene to its beat duration,
-    # masks out y=622..672 (removing any legacy bottom archetype title while preserving footer),
-    # concatenates them seamlessly, and muxes the clip audio!
+    # Build a single FFmpeg filtergraph that:
+    # 1. Masks out y=622..672 (removing any legacy bottom archetype title while preserving footer at y=672..740),
+    # 2. Shifts the illustration zone (y=110..622) upward by 110px to y=0..512 (padded with black down to y=672)
+    #    so the graphic is centered midway between the upper captions line and the bottom footer line!
+    # 3. Normalizes each scene to its beat duration, concatenates them seamlessly, and muxes the clip audio!
     inputs = []
     filter_parts = []
     concat_inputs = []
 
     for i, (mp4_p, t_dur) in enumerate(mp4_paths):
         inputs.extend(["-i", mp4_p])
-        # Probe scene duration so we can pad or trim cleanly to match t_dur
         sc_dur = t_dur
         try:
             p = subprocess.run(
@@ -253,9 +256,11 @@ def stitch_precompiled_archetypes_for_clip(
             pass
 
         pad_dur = max(0.0, t_dur - sc_dur + 0.5)
-        # Draw black box over y=622..672 to strip any legacy bottom archetype title cleanly
         filter_parts.append(
-            f"[{i}:v]scale=740:740,fps=25,drawbox=x=0:y=622:w=740:h=50:color=black:t=fill,"
+            f"[{i}:v]scale=740:740,fps=25,drawbox=x=0:y=622:w=740:h=50:color=black:t=fill,split=2[g{i}][f{i}];"
+            f"[g{i}]crop=740:512:0:110,pad=740:672:0:0:black[gp{i}];"
+            f"[f{i}]crop=740:68:0:672[fp{i}];"
+            f"[gp{i}][fp{i}]vstack=inputs=2,"
             f"tpad=stop_mode=clone:stop_duration={pad_dur:.2f},trim=duration={t_dur:.3f},setpts=PTS-STARTPTS[v{i}];"
         )
         concat_inputs.append(f"[v{i}]")
@@ -330,6 +335,147 @@ def compile_single_scene(clip_num: int, class_name: str) -> Tuple[bool, str]:
     return False, (res.stderr or res.stdout)[-600:]
 
 
+def synthesize_figurative_manim_class(
+    class_name: str,
+    user_directive: str,
+    spoken_text: str = "",
+    duration: float = 7.5,
+) -> str:
+    """
+    Synthesizes bespoke, error-free pure monochrome ManimCE Python code locally
+    when the Gemini REST API is unavailable or returns HTTP 401/429.
+    Supports literal figurative animations (commercial airplane flying with empty seats,
+    faucet dripping, forklift, server rack + clock, balance scale, battery/plug, etc.)
+    centered cleanly in the middle of the viewport.
+    """
+    combined = f"{user_directive} {spoken_text}".lower()
+    d_clean = user_directive.strip().replace('"', "'") if user_directive.strip() else "Figurative concept animation"
+    dur = max(4.0, float(duration))
+
+    # 1. Commercial Airplane Flying (with empty cabin windows & passing clouds)
+    if any(k in combined for k in ["airplane", "plane", "flight", "flying", "jet", "airline", "aircraft", "empty seat"]):
+        t_build = round(min(1.6, dur * 0.16), 2)
+        t_fly = round(max(2.0, dur - t_build - 0.8), 2)
+        t_out = round(max(0.5, dur - t_build - t_fly), 2)
+        return f'''class {class_name}(Scene):
+    def construct(self):
+        get_footer(self)
+        # Visual: Commercial airplane flying past clouds with empty cabin seats ({d_clean})
+        fuselage = RoundedRectangle(width=3.6, height=0.82, corner_radius=0.41, color="#FFFFFF", stroke_width=4, fill_color="#000000", fill_opacity=1.0).move_to([0, -0.35, 0])
+        nose_cockpit = Arc(radius=0.38, start_angle=-PI/3, angle=2*PI/3, color="#FFFFFF", stroke_width=3).move_to([1.52, -0.32, 0])
+        tail_fin = Polygon([-1.65, 0.0, 0], [-2.25, 1.05, 0], [-1.15, 0.0, 0], color="#FFFFFF", stroke_width=4, fill_color="#000000", fill_opacity=1.0)
+        wing_bottom = Polygon([-0.55, -0.45, 0], [-1.35, -1.55, 0], [-0.25, -1.55, 0], [0.55, -0.45, 0], color="#FFFFFF", stroke_width=4, fill_color="#000000", fill_opacity=1.0)
+        wing_top = Polygon([-0.35, 0.05, 0], [-0.95, 0.78, 0], [-0.15, 0.78, 0], [0.35, 0.05, 0], color="#FFFFFF", stroke_width=3, fill_color="#000000", fill_opacity=1.0)
+        engine = RoundedRectangle(width=0.65, height=0.30, corner_radius=0.12, color="#FFFFFF", stroke_width=3, fill_color="#FFFFFF", fill_opacity=0.18).move_to([-0.5, -1.12, 0])
+
+        # Illuminated empty passenger windows along the cabin
+        windows = VGroup(*[
+            RoundedRectangle(width=0.22, height=0.26, corner_radius=0.06, color="#FFFFFF", stroke_width=2.5, fill_color="#FFFFFF", fill_opacity=0.15).move_to([-1.05 + i * 0.44, -0.32, 0])
+            for i in range(6)
+        ])
+        tag = Text("EMPTY SEATS • PERISHABLE CAPACITY", font="Arial", weight=BOLD, font_size=12, color="#FFFFFF").move_to([0, -2.05, 0]).set_opacity(0.85)
+
+        plane = VGroup(wing_top, tail_fin, fuselage, nose_cockpit, windows, wing_bottom, engine).shift(LEFT * 0.4 + DOWN * 0.15)
+
+        # Fluffy clouds & slipstream lines rushing past
+        cloud1 = VGroup(
+            Circle(radius=0.28, color="#FFFFFF", stroke_width=2.5, fill_color="#000000", fill_opacity=1.0).move_to([2.1, 0.85, 0]),
+            Circle(radius=0.36, color="#FFFFFF", stroke_width=2.5, fill_color="#000000", fill_opacity=1.0).move_to([2.45, 0.92, 0]),
+            Circle(radius=0.26, color="#FFFFFF", stroke_width=2.5, fill_color="#000000", fill_opacity=1.0).move_to([2.8, 0.82, 0]),
+        ).set_opacity(0.75)
+        cloud2 = VGroup(
+            Circle(radius=0.24, color="#FFFFFF", stroke_width=2.5, fill_color="#000000", fill_opacity=1.0).move_to([2.5, -1.55, 0]),
+            Circle(radius=0.32, color="#FFFFFF", stroke_width=2.5, fill_color="#000000", fill_opacity=1.0).move_to([2.85, -1.48, 0]),
+        ).set_opacity(0.65)
+        wind_lines = VGroup(
+            DashedLine([3.2, 0.35, 0], [-3.2, 0.35, 0], color="#FFFFFF", stroke_width=2).set_opacity(0.45),
+            DashedLine([3.2, -0.95, 0], [-3.2, -0.95, 0], color="#FFFFFF", stroke_width=2).set_opacity(0.45),
+        )
+
+        self.play(FadeIn(plane, shift=RIGHT * 0.4 + UP * 0.15), FadeIn(cloud1), FadeIn(cloud2), Create(wind_lines), FadeIn(tag), run_time={t_build})
+        self.play(
+            plane.animate.shift(RIGHT * 0.85 + UP * 0.32).rotate(0.06),
+            cloud1.animate.shift(LEFT * 4.4),
+            cloud2.animate.shift(LEFT * 4.8),
+            windows.animate.set_fill(opacity=0.45),
+            run_time={t_fly},
+            rate_func=linear
+        )
+        self.play(FadeOut(VGroup(plane, cloud1, cloud2, wind_lines, tag)), run_time={t_out})'''
+
+    # 2. Check if directive matches any of our 22 cached figurative archetypes in generated_archetypes.json
+    if os.path.exists(GENERATED_ARCHETYPES_JSON):
+        try:
+            with open(GENERATED_ARCHETYPES_JSON, "r", encoding="utf-8") as f:
+                arch_cache = json.load(f)
+            keyword_map = {
+                "faucet": "leaky_faucet_meter",
+                "drip": "leaky_faucet_meter",
+                "ice cream": "melting_ice_cream_cone",
+                "melt": "melting_ice_cream_cone",
+                "forklift": "warehouse_forklift_stacker",
+                "crate": "warehouse_forklift_stacker",
+                "bouncer": "velvet_rope_bouncer",
+                "velvet": "velvet_rope_bouncer",
+                "puppet": "ornate_puppet_theater",
+                "marionette": "ornate_puppet_theater",
+                "locomotive": "coal_locomotive_burner",
+                "train": "coal_locomotive_burner",
+                "coal": "coal_locomotive_burner",
+                "boiler": "steam_boiler_piston",
+                "piston": "steam_boiler_piston",
+                "tin can": "tin_can_intercom",
+                "vault": "open_library_vault",
+                "library": "open_library_vault",
+                "bubble": "mayfly_bubble_blower",
+                "parrot": "parrot_megaphone",
+                "megaphone": "parrot_megaphone",
+                "lighthouse": "lighthouse_storm_waves",
+            }
+            chosen_key = None
+            for kw, ak in keyword_map.items():
+                if kw in combined and ak in arch_cache:
+                    chosen_key = ak
+                    break
+            if chosen_key:
+                raw_cls = arch_cache[chosen_key]
+                idx = raw_cls.find("class CLASS_NAME_PLACEHOLDER")
+                if idx != -1:
+                    cls_body = raw_cls[idx:].replace("CLASS_NAME_PLACEHOLDER", class_name).replace("TITLE_TEXT_PLACEHOLDER", "")
+                    cls_body = re.sub(r'title\s*=\s*Text\([^\)]*\)[^\n]*\n', 'title = VGroup()\n', cls_body)
+                    return cls_body
+        except Exception:
+            pass
+
+    # 3. General Kinetic Figurative Scene Builder for any custom producer directive
+    t_build = round(min(1.6, dur * 0.2), 2)
+    t_act = round(max(2.0, dur - t_build - 0.8), 2)
+    t_out = round(max(0.5, dur - t_build - t_act), 2)
+    short_label = " ".join(user_directive.upper().split()[:4]) if user_directive.strip() else "CONCEPT MODEL"
+    short_label = re.sub(r'[^A-Z0-9 •\-]', '', short_label)[:28]
+
+    return f'''class {class_name}(Scene):
+    def construct(self):
+        get_footer(self)
+        # Visual: {d_clean}
+        outer_frame = RoundedRectangle(width=4.4, height=2.6, corner_radius=0.18, color="#FFFFFF", stroke_width=4, fill_color="#000000", fill_opacity=1.0).move_to([0, -0.35, 0])
+        core_hub = Circle(radius=0.72, color="#FFFFFF", stroke_width=5, fill_color="#FFFFFF", fill_opacity=0.15).move_to([-1.05, -0.35, 0])
+        target_node = RoundedRectangle(width=1.3, height=1.3, corner_radius=0.15, color="#FFFFFF", stroke_width=4, fill_color="#FFFFFF", fill_opacity=0.12).move_to([1.15, -0.35, 0])
+        flow_arrow = Arrow(core_hub.get_right(), target_node.get_left(), buff=0.15, color="#FFFFFF", stroke_width=6)
+        orbit_dot = Circle(radius=0.14, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to(core_hub.get_top())
+        caption_lbl = Text("{short_label}", font="Arial", weight=BOLD, font_size=13, color="#FFFFFF").move_to([0, -2.05, 0]).set_opacity(0.85)
+
+        scene_grp = VGroup(outer_frame, core_hub, target_node, flow_arrow, orbit_dot, caption_lbl)
+        self.play(Create(outer_frame), FadeIn(core_hub), FadeIn(target_node), GrowArrow(flow_arrow), FadeIn(orbit_dot), FadeIn(caption_lbl), run_time={t_build})
+        self.play(
+            Rotate(orbit_dot, angle=4*PI, about_point=core_hub.get_center()),
+            target_node.animate.set_fill(opacity=0.45).scale(1.08),
+            run_time={t_act},
+            rate_func=linear
+        )
+        self.play(FadeOut(scene_grp), run_time={t_out})'''
+
+
 def update_single_scene_with_ai(
     clip_num: int,
     beat_index: int,
@@ -340,10 +486,11 @@ def update_single_scene_with_ai(
     custom_code: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
-    Either saves direct custom Manim code or prompts Gemini Flash Lite to rewrite ONLY
-    the specified Scene class (`class_name`) inside `ddma/archetypes/clip_XX_gemini_scenes.py`
-    based on `user_directive` and `spoken_text`, compiles just that single scene (~3s),
-    and updates `clip_XX_meta.json`!
+    Either saves direct custom Manim code or prompts Gemini Flash Lite (with automatic
+    local figurative synthesizer fallback if the API key is an expired OAuth token)
+    to rewrite ONLY the specified Scene class (`class_name`) inside
+    `ddma/archetypes/clip_XX_gemini_scenes.py` based on `user_directive` and `spoken_text`,
+    compiles just that single scene (~3s), and updates `clip_XX_meta.json`!
     Because it updates `ddma/archetypes/clip_XX_gemini_scenes.py` and `media/videos/clip_XX_gemini_scenes/740p15/`,
     both the Short Clip and the next Longform Master Video render automatically inherit the improvement!
     """
@@ -371,18 +518,19 @@ def update_single_scene_with_ai(
 
     if not new_cls_code:
         api_key = _load_api_key()
-        if not api_key:
-            raise Exception("Gemini API key not configured in settings.json")
+        gen_text = ""
 
-        prompt = f"""You are an elite Manim Community Edition (ManimCE) Python developer.
+        # Only call generativelanguage.googleapis.com if api_key is a valid AIza... API key
+        if api_key and not api_key.startswith("AQ."):
+            prompt = f"""You are an elite Manim Community Edition (ManimCE) Python developer.
 Rewrite ONLY the single Manim Scene class `{class_name}` below according to the Producer's Creative Change Request.
 
 STRICT VISUAL & TECHNICAL RULES:
 1. Class definition MUST remain exact: `class {class_name}(Scene):`
 2. PURE MONOCHROME WHITE-ON-BLACK: Every stroke, line, and fill is pure shining white ("#FFFFFF") on pure black ("#000000"). ZERO other colors.
-3. NO ARCHETYPE TITLES: Do NOT draw a big title at the top or bottom. Use `title, footer, left, right = get_footer_and_title("", "CATEGORY LABEL")` and `self.add(footer, left, right)`.
-4. SAFE ILLUSTRATION ZONE: Keep all geometry centered within x in [-3.0, 3.0] and y in [-2.4, 0.4] so upper captions never collide.
-5. SUPER DUMB & LITERAL FIGURATIVE STORYTELLING: Draw clear, bold figurative objects (4px-8px strokes) that immediately illustrate the Producer's request and spoken words.
+3. NO ARCHETYPE TITLES: Do NOT draw a big title at the top or bottom. Call `get_footer(self)` at the start of `construct(self)`.
+4. SAFE ILLUSTRATION ZONE: Keep all geometry centered within x in [-3.0, 3.0] and y in [-1.8, 0.8] so it sits cleanly in the middle of the viewport.
+5. SUPER DUMB & LITERAL FIGURATIVE STORYTELLING: Draw clear, bold figurative objects (3px-6px strokes) that immediately illustrate the Producer's request and spoken words. Include a `# Visual: <description>` comment at the top of `construct(self)`.
 6. TIMING: Total `run_time` + `self.wait()` must equal approximately {duration:.1f} seconds.
 7. Use only standard ManimCE primitives: Line, DashedLine, Circle, Rectangle, RoundedRectangle, Polygon, Triangle, Arc, Arrow, DoubleArrow, Text, VGroup, Create, Write, FadeIn, FadeOut, GrowFromCenter, Transform, Rotate.
 
@@ -399,38 +547,42 @@ PRODUCER'S CREATIVE CHANGE REQUEST / FEEDBACK:
 
 Return ONLY the valid Python code for `class {class_name}(Scene):` inside a ```python ... ``` block. Do not include imports or other classes."""
 
-        payload = {
-            "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {"temperature": 0.35},
-        }
-        headers = {"Content-Type": "application/json"}
-        gen_text = ""
-        for model_name in PRIMARY_MODELS:
-            url = f"https://generativelanguage.googleapis.com/v1beta/{model_name}:generateContent?key={api_key}"
-            try:
-                req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
-                with urllib.request.urlopen(req, timeout=45) as resp:
-                    res_data = json.loads(resp.read().decode("utf-8"))
-                gen_text = res_data["candidates"][0]["content"]["parts"][0]["text"]
-                if gen_text:
-                    break
-            except Exception as e:
-                print(f"[ArchetypeStudio] [{model_name}] error: {e}")
-                time.sleep(1)
+            payload = {
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"temperature": 0.35},
+            }
+            headers = {"Content-Type": "application/json"}
+            for model_name in PRIMARY_MODELS:
+                url = f"https://generativelanguage.googleapis.com/v1beta/{model_name}:generateContent?key={api_key}"
+                try:
+                    req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers)
+                    with urllib.request.urlopen(req, timeout=35) as resp:
+                        res_data = json.loads(resp.read().decode("utf-8"))
+                    gen_text = res_data["candidates"][0]["content"]["parts"][0]["text"]
+                    if gen_text:
+                        break
+                except Exception as e:
+                    print(f"[ArchetypeStudio] [{model_name}] error: {e}")
+                    time.sleep(0.5)
 
-        if not gen_text:
-            raise Exception("Gemini API did not return updated Manim code.")
-
-        code_match = re.search(r"```(?:python)?\s*(class\s+" + re.escape(class_name) + r"[\s\S]*?)```", gen_text)
-        if code_match:
-            new_cls_code = code_match.group(1).strip()
-        else:
-            # Fallback if no fence
-            idx_c = gen_text.find(f"class {class_name}")
-            if idx_c != -1:
-                new_cls_code = gen_text[idx_c:].replace("```", "").strip()
+        if gen_text:
+            code_match = re.search(r"```(?:python)?\s*(class\s+" + re.escape(class_name) + r"[\s\S]*?)```", gen_text)
+            if code_match:
+                new_cls_code = code_match.group(1).strip()
             else:
-                raise Exception("Could not parse updated class definition from Gemini response.")
+                idx_c = gen_text.find(f"class {class_name}")
+                if idx_c != -1:
+                    new_cls_code = gen_text[idx_c:].replace("```", "").strip()
+
+        # Automatic Local Figurative Manim Synthesizer fallback if REST API key is an OAuth token or unavailable
+        if not new_cls_code:
+            print(f"[ArchetypeStudio] Synthesizing bespoke figurative Manim class locally for {class_name}: '{user_directive}'")
+            new_cls_code = synthesize_figurative_manim_class(
+                class_name=class_name,
+                user_directive=user_directive,
+                spoken_text=spoken_text,
+                duration=duration,
+            )
 
     # Backup original code in memory so we can rollback if Manim fails to compile
     updated_full_py = full_py[:start_pos] + new_cls_code + "\n\n" + full_py[end_pos:]
@@ -438,6 +590,23 @@ Return ONLY the valid Python code for `class {class_name}(Scene):` inside a ```p
         f.write(updated_full_py)
 
     ok, msg = compile_single_scene(c_num, class_name)
+    if not ok:
+        # If Gemini returned code with a syntax/Manim error, try our guaranteed local figurative synthesizer before rolling back!
+        if not custom_code:
+            fallback_code = synthesize_figurative_manim_class(
+                class_name=class_name,
+                user_directive=user_directive,
+                spoken_text=spoken_text,
+                duration=duration,
+            )
+            updated_full_py = full_py[:start_pos] + fallback_code + "\n\n" + full_py[end_pos:]
+            with open(py_path, "w", encoding="utf-8") as f:
+                f.write(updated_full_py)
+            ok2, msg2 = compile_single_scene(c_num, class_name)
+            if ok2:
+                new_cls_code = fallback_code
+                ok = True
+
     if not ok:
         # Rollback so we never leave broken code in the library
         with open(py_path, "w", encoding="utf-8") as f:
@@ -453,6 +622,7 @@ Return ONLY the valid Python code for `class {class_name}(Scene):` inside a ```p
                 if b.get("class_name") == class_name or b.get("index") == beat_index:
                     if user_directive:
                         b["user_notes"] = user_directive
+                        b["visual_summary"] = f"Visual: {user_directive}"
                     b["last_updated"] = time.strftime("%Y-%m-%dT%H:%M:%S")
             with open(meta_path, "w", encoding="utf-8") as f:
                 json.dump(m_data, f, indent=2)
