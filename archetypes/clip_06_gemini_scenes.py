@@ -78,7 +78,7 @@ class Scene06_01(Scene):
             run_time=10.3,
             rate_func=linear
         )
-        self.play(FadeOut(VGroup(plane, cloud1, cloud2, wind_lines, tag)), run_time=0.8)
+        self.wait(0.8)
 
 class Scene06_02(Scene):
     def construct(self):
@@ -99,7 +99,7 @@ class Scene06_02(Scene):
             self.add(b)
             self.play(b.animate.move_to([0, -1.4, 0]).set_opacity(0), run_time=0.9, rate_func=ease_in_sine)
         
-        self.play(FadeOut(VGroup(top_tri, bot_tri, title)), run_time=0.5)
+        self.wait(0.5)
 
 class Scene06_03(Scene):
     def construct(self):
@@ -115,7 +115,7 @@ class Scene06_03(Scene):
         self.play(FadeIn(title), run_time=0.6)
         self.play(Create(gauge), Create(needle), Write(label_f), Write(label_e), run_time=1.0)
         self.play(Rotate(needle, angle=PI, about_point=gauge.get_center()), run_time=5.4, rate_func=slow_into)
-        self.play(FadeOut(VGroup(gauge, needle, label_f, label_e, title)), run_time=0.6)
+        self.wait(0.6)
 
 class Scene06_04(Scene):
     def construct(self):
@@ -137,7 +137,7 @@ class Scene06_04(Scene):
             run_time=0.4, rate_func=bounce_it
         )
         self.play(VGroup(server, label, stamp_box, stamp_text).animate.set_opacity(0.2), run_time=4.0)
-        self.play(FadeOut(VGroup(server, label, stamp_box, stamp_text, title)), run_time=0.6)
+        self.wait(0.6)
 
 class Scene06_05(Scene):
     def construct(self):
@@ -183,7 +183,7 @@ class Scene06_05(Scene):
             run_time=10.3,
             rate_func=linear
         )
-        self.play(FadeOut(VGroup(track_top, track_mid, track_bot, finish_pole, finish_banner, finish_txt, clock_ring, clock_btn, clock_hand, sprinter, tag)), run_time=0.8)
+        self.wait(0.8)
 
 class Scene06_06(Scene):
     def construct(self):
@@ -198,7 +198,7 @@ class Scene06_06(Scene):
         self.play(FadeIn(title), run_time=0.6)
         self.play(Create(battery_body), Create(battery_tip), FadeIn(charge), run_time=1.0)
         self.play(charge.animate.scale(0.01, about_edge=LEFT).set_opacity(0), run_time=5.4, rate_func=linear)
-        self.play(FadeOut(VGroup(battery_body, battery_tip, charge, title)), run_time=0.6)
+        self.wait(0.6)
 
 class Scene06_07(Scene):
     def construct(self):
@@ -219,7 +219,7 @@ class Scene06_07(Scene):
             drips.animate.shift(DOWN * 0.5).set_opacity(0),
             run_time=5.4, rate_func=linear
         )
-        self.play(FadeOut(VGroup(ice_cube, server_core, drips, title)), run_time=0.6)
+        self.wait(0.6)
 
 # Configuration for 740x740 Square Video
 

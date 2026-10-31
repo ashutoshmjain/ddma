@@ -54,7 +54,7 @@ class Scene04_01(Scene):
         self.play(Create(robot), run_time=1.5)
         self.play(robot.animate.shift(UP * 0.2), run_time=2)
         self.play(robot.animate.shift(DOWN * 0.2), run_time=2.3)
-        self.play(FadeOut(robot), FadeOut(footer), run_time=1.0)
+        self.wait(1.0)
 
 class Scene04_02(Scene):
     def construct(self):
@@ -74,7 +74,7 @@ class Scene04_02(Scene):
         self.play(Create(control_bar), Create(string_l), Create(string_r), FadeIn(puppet), run_time=1.5)
         self.play(VGroup(control_bar, string_l, string_r, puppet).animate.shift(LEFT * 0.5), run_time=2.1)
         self.play(VGroup(control_bar, string_l, string_r, puppet).animate.shift(RIGHT * 1.0), run_time=2.2)
-        self.play(FadeOut(VGroup(control_bar, string_l, string_r, puppet, footer)), run_time=1.0)
+        self.wait(1.0)
 
 class Scene04_03(Scene):
     def construct(self):
@@ -100,7 +100,7 @@ class Scene04_03(Scene):
         self.play(Create(signal), run_time=1.0)
         self.play(robot.animate.shift(UP * 0.3), run_time=1.5)
         self.play(robot.animate.shift(DOWN * 0.3), run_time=1.8)
-        self.play(FadeOut(VGroup(robot, remote, button, antenna, signal, footer)), run_time=1.0)
+        self.wait(1.0)
 
 class Scene04_04(Scene):
     def construct(self):
@@ -123,7 +123,7 @@ class Scene04_04(Scene):
         self.play(Create(cord), run_time=1.0)
         self.play(robot.animate.shift(RIGHT * 0.3), run_time=2.0)
         self.play(robot.animate.shift(LEFT * 0.3), run_time=1.3)
-        self.play(FadeOut(VGroup(wall, socket, robot, cord, footer)), run_time=1.0)
+        self.wait(1.0)
 
 class Scene04_05(Scene):
     def construct(self):
@@ -146,7 +146,7 @@ class Scene04_05(Scene):
         self.play(stamp.animate.move_to(DOWN * 0.8), run_time=0.8, rate_func=exponential_decay)
         self.play(Flash(robot_icon, color="#FFFFFF", line_length=0.4), run_time=0.5)
         self.wait(3.5)
-        self.play(FadeOut(VGroup(robot_icon, stamp, footer)), run_time=1.0)
+        self.wait(1.0)
 
 class Scene04_06(Scene):
     def construct(self):
@@ -170,7 +170,7 @@ class Scene04_06(Scene):
         self.play(Create(connection), run_time=1.0)
         self.play(connection.animate.set_stroke(width=5), run_time=1.0)
         self.play(connection.animate.set_stroke(width=1), run_time=1.3)
-        self.play(FadeOut(VGroup(cloud, robot, connection, footer)), run_time=1.0)
+        self.wait(1.0)
 
 class Scene04_07(Scene):
     def construct(self):
@@ -194,7 +194,7 @@ class Scene04_07(Scene):
         self.play(Create(base), Create(pivot), Create(scale), run_time=1.5)
         self.play(scale.animate.rotate(0.2, about_point=pivot.get_top()), run_time=2.0)
         self.play(scale.animate.rotate(-0.4, about_point=pivot.get_top()), run_time=2.3)
-        self.play(FadeOut(VGroup(base, pivot, scale, footer)), run_time=1.0)
+        self.wait(1.0)
 
 
 # (Using universal get_footer_and_title from manim_compat)

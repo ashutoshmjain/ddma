@@ -25,7 +25,7 @@ class Scene08_01(Scene):
         self.play(FadeIn(title), run_time=0.6)
         self.play(Create(meter_arc), Create(ticks), Create(needle), Write(fail_label), run_time=1.5)
         self.play(needle.animate.rotate(-PI * 0.9, about_point=meter_arc.get_center()), run_time=4.4, rate_func=slow_into)
-        self.play(FadeOut(VGroup(title, meter_arc, ticks, needle, fail_label, footer_line, left_text, right_text)), run_time=1.0)
+        self.wait(1.0)
 
 class Scene08_02(Scene):
     def construct(self):
@@ -49,7 +49,7 @@ class Scene08_02(Scene):
             FadeIn(zero_weight), FadeIn(zero_text),
             run_time=4.4
         )
-        self.play(FadeOut(Group(*self.mobjects)), run_time=1.0)
+        self.wait(1.0)
 
 class Scene08_03(Scene):
     def construct(self):
@@ -67,7 +67,7 @@ class Scene08_03(Scene):
         self.play(error_text.animate.set_opacity(0.2), run_time=0.5)
         self.play(error_text.animate.set_opacity(1.0), run_time=0.5)
         self.play(error_text.animate.scale(1.2), run_time=3.4)
-        self.play(FadeOut(Group(*self.mobjects)), run_time=1.0)
+        self.wait(1.0)
 
 class Scene08_04(Scene):
     def construct(self):
@@ -83,7 +83,7 @@ class Scene08_04(Scene):
         self.play(FadeIn(title), run_time=0.6)
         self.play(Create(pipe), run_time=1.5)
         self.play(Create(leak_stream), Write(math_sym), run_time=4.4)
-        self.play(FadeOut(Group(*self.mobjects)), run_time=1.0)
+        self.wait(1.0)
 
 class Scene08_05(Scene):
     def construct(self):
@@ -99,7 +99,7 @@ class Scene08_05(Scene):
         self.play(FadeIn(title), run_time=0.6)
         self.play(Create(server), Create(lights), run_time=1.5)
         self.play(Create(cross_line1), Create(cross_line2), run_time=4.4)
-        self.play(FadeOut(Group(*self.mobjects)), run_time=1.0)
+        self.wait(1.0)
 
 class Scene08_06(Scene):
     def construct(self):
@@ -113,7 +113,7 @@ class Scene08_06(Scene):
         self.play(FadeIn(title), run_time=0.6)
         self.play(Create(floor), run_time=1.5)
         self.play(LaggedStart(*[Create(a) for a in arrows], lag_ratio=0.3), run_time=4.4)
-        self.play(FadeOut(Group(*self.mobjects)), run_time=1.0)
+        self.wait(1.0)
 
 class Scene08_07(Scene):
     def construct(self):
@@ -126,7 +126,7 @@ class Scene08_07(Scene):
         self.play(FadeIn(title), run_time=0.6)
         self.play(Create(socket), Create(plug), run_time=1.5)
         self.play(plug.animate.shift(RIGHT * 1.5), run_time=4.4)
-        self.play(FadeOut(Group(*self.mobjects)), run_time=1.0)
+        self.wait(1.0)
 
 # CANVAS CONFIGURATION
 
@@ -261,7 +261,7 @@ class Scene08_12(Scene):
         self.wait(0.5)
         for _ in range(3):
             self.play(FadeIn(error_text), run_time=0.4)
-            self.play(FadeOut(error_text), run_time=0.4)
+            self.wait(0.4)
         self.play(FadeIn(error_text), run_time=0.2)
         self.wait(1.8)
 

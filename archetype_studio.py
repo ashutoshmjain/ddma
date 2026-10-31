@@ -434,7 +434,7 @@ def synthesize_figurative_manim_class(
             run_time={t_fly},
             rate_func=linear
         )
-        self.play(FadeOut(VGroup(plane, cloud1, cloud2, wind_lines, tag)), run_time={t_out})'''
+        self.wait({t_out})'''
 
         # 2. 100 Meter Sprint / Race Against Time (Sprinter on track racing a giant stopwatch to finish line)
     if any(k in combined for k in ["100 meter", "race", "sprint", "runner", "running", "track", "marathon", "finish line"]):
@@ -485,7 +485,7 @@ def synthesize_figurative_manim_class(
             run_time={t_run},
             rate_func=linear
         )
-        self.play(FadeOut(VGroup(track_top, track_mid, track_bot, finish_pole, finish_banner, finish_txt, clock_ring, clock_btn, clock_hand, sprinter, tag)), run_time={t_out})'''
+        self.wait({t_out})'''
 
     # 3. Check if directive matches any of our 22 cached figurative archetypes in generated_archetypes.json
     if os.path.exists(GENERATED_ARCHETYPES_JSON):
@@ -557,7 +557,7 @@ def synthesize_figurative_manim_class(
             run_time={t_act},
             rate_func=linear
         )
-        self.play(FadeOut(scene_grp), run_time={t_out})'''
+        self.wait({t_out})'''
 
 
 def update_single_scene_with_ai(
@@ -615,8 +615,8 @@ STRICT VISUAL & TECHNICAL RULES:
 3. NO ARCHETYPE TITLES: Do NOT draw a big title at the top or bottom. Call `get_footer(self)` at the start of `construct(self)`.
 4. SAFE ILLUSTRATION ZONE: Keep all geometry centered within x in [-3.0, 3.0] and y in [-1.8, 0.8] so it sits cleanly in the middle of the viewport.
 5. SUPER DUMB & LITERAL FIGURATIVE STORYTELLING: Draw clear, bold figurative objects (3px-6px strokes) that immediately illustrate the Producer's request and spoken words. Include a `# Visual: <description>` comment at the top of `construct(self)`.
-6. TIMING: Total `run_time` + `self.wait()` must equal approximately {duration:.1f} seconds.
-7. Use only standard ManimCE primitives: Line, DashedLine, Circle, Rectangle, RoundedRectangle, Polygon, Triangle, Arc, Arrow, DoubleArrow, Text, VGroup, Create, Write, FadeIn, FadeOut, GrowFromCenter, Transform, Rotate.
+6. TIMING & PERSISTENCE INVARIANT: Total `run_time` + `self.wait()` must equal approximately {duration:.1f} seconds. NEVER call `FadeOut` on the main illustration at the end of the scene! The final visual state MUST persist on screen (`self.wait(...)`) until the next beat takes over so the screen is NEVER empty!
+7. Use only standard ManimCE primitives: Line, DashedLine, Circle, Rectangle, RoundedRectangle, Polygon, Triangle, Arc, Arrow, DoubleArrow, Text, VGroup, Create, Write, FadeIn, GrowFromCenter, Transform, Rotate.
 
 SPOKEN TRANSCRIPT DURING THIS {duration:.1f}s BEAT:
 "{spoken_text}"
