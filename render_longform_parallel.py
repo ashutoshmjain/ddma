@@ -4,6 +4,7 @@ import re
 import json
 import time
 import math
+import shutil
 import subprocess
 import av
 from multiprocessing import Pool, cpu_count
@@ -77,74 +78,15 @@ def find_system_fonts():
 
 def build_manim_scene_timeline(plan_data, total_duration):
     """
-    Maps all 389 compiled Manim MP4 scenes across the 23 clips onto a continuous
-    non-overlapping timeline from 0.0s to total_duration.
+    Maps all compiled Manim MP4 scenes across the 23 clips onto the Longform Master timeline
+    using exact audio-timestamp alignment (archetype_studio.get_longform_scene_intervals):
+    every visual lands on the same spoken words as in the DDMA Short. Gaps are closed so the
+    last visual persists (screen-never-empty), except for the welcome sting window.
     """
-    raw_intervals = []
-
-    # Optional: If Scene01_RobotWildernessFallacy exists for the pre-sting intro (0.0s - 29.68s), include it
-    intro_mp4 = os.path.join(MEDIA_VIDEOS_DIR, "chapter_01_scenes_strict", "740p30", "Scene01_RobotWildernessFallacy.mp4")
-
-    for clip_num in range(1, len(plan_data) + 1):
-        clip = plan_data[clip_num - 1]
-        c_start = float(clip.get("start", 0.0))
-        c_end = float(clip.get("end", c_start + 120.0))
-
-        py_path = os.path.join(ARCHETYPES_DIR, f"clip_{clip_num:02d}_gemini_scenes.py")
-        v_dir = os.path.join(MEDIA_VIDEOS_DIR, f"clip_{clip_num:02d}_gemini_scenes", "740p15")
-
-        if not os.path.exists(py_path) or not os.path.exists(v_dir):
-            continue
-
-        with open(py_path, "r", encoding="utf-8") as fp:
-            classes = re.findall(r"class\s+(Scene\w+)\s*\(", fp.read())
-
-        mp4s = [
-            os.path.join(v_dir, f"{sc}.mp4")
-            for sc in classes
-            if os.path.exists(os.path.join(v_dir, f"{sc}.mp4"))
-        ]
-        if not mp4s:
-            continue
-
-        # For Clip 1, pre-sting (0 -> 29.68s) uses intro_mp4 if available, and post-sting (39.68s -> c_end) uses Clip 1 scenes
-        if clip_num == 1 and os.path.exists(intro_mp4):
-            raw_intervals.append({
-                "start": 0.0,
-                "end": 29.68,
-                "mp4": intro_mp4,
-                "fps": 30
-            })
-            eff_start = 39.68
-        else:
-            eff_start = c_start
-
-        n = len(mp4s)
-        beat_dur = max(1.0, (c_end - eff_start) / n)
-        for idx, mp4_path in enumerate(mp4s):
-            b_st = eff_start + idx * beat_dur
-            b_en = c_end if idx == n - 1 else eff_start + (idx + 1) * beat_dur
-            raw_intervals.append({
-                "start": b_st,
-                "end": b_en,
-                "mp4": mp4_path,
-                "fps": 15
-            })
-
-    raw_intervals.sort(key=lambda x: x["start"])
-
-    # Close any small inter-clip gaps so every frame has an active Manim scene
-    for i in range(len(raw_intervals) - 1):
-        # Do not overwrite the welcome sting window (29.68s -> 39.68s)
-        if abs(raw_intervals[i]["end"] - 29.68) < 0.5:
-            continue
-        if raw_intervals[i]["end"] < raw_intervals[i + 1]["start"]:
-            raw_intervals[i]["end"] = raw_intervals[i + 1]["start"]
-
-    if raw_intervals and raw_intervals[-1]["end"] < total_duration:
-        raw_intervals[-1]["end"] = total_duration + 1.0
-
-    return raw_intervals
+    if SCRIPT_DIR not in sys.path:
+        sys.path.insert(0, SCRIPT_DIR)
+    from archetype_studio import get_longform_scene_intervals
+    return get_longform_scene_intervals(EP_NUM, total_duration)
 
 def render_chunk_worker(args):
     chunk_idx, start_t, end_t, out_path, trans_segments, scene_intervals, fps = args
@@ -289,6 +231,157 @@ def render_chunk_worker(args):
     print(f"[{chunk_idx+1}] Finished in {dur_render:.1f}s ({num_frames/max(0.1, dur_render):.1f} fps)", flush=True)
     return out_path
 
+WELCOME_SEGMENTS = [
+    {"start": 29.80, "end": 31.50, "text": "Welcome to the Deep Dive.", "words": [
+        {"word": "Welcome", "start": 29.80, "end": 30.22}, {"word": "to", "start": 30.22, "end": 30.50},
+        {"word": "the", "start": 30.50, "end": 30.64}, {"word": "Deep", "start": 30.64, "end": 30.86},
+        {"word": "Dive.", "start": 30.86, "end": 31.40}]},
+    {"start": 31.60, "end": 33.50, "text": "I am Satosha and I am Satoshi.", "words": [
+        {"word": "I", "start": 31.60, "end": 31.75}, {"word": "am", "start": 31.75, "end": 31.90},
+        {"word": "Satosha", "start": 31.90, "end": 32.35}, {"word": "and", "start": 32.35, "end": 32.55},
+        {"word": "I", "start": 32.55, "end": 32.70}, {"word": "am", "start": 32.70, "end": 32.85},
+        {"word": "Satoshi.", "start": 32.85, "end": 33.35}]},
+]
+
+
+def _probe_duration(path):
+    p = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
+                        "-of", "default=noprint_wrappers=1:nokey=1", path], capture_output=True, text=True)
+    return float(p.stdout.strip()) if p.returncode == 0 and p.stdout.strip() else 0.0
+
+
+def _keyframes_near(path, t, before=20.0, after=20.0):
+    """Video keyframe (packet flag K) timestamps within [t-before, t+after]."""
+    p = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0",
+                        "-read_intervals", f"{max(0.0, t - before)}%{t + after}",
+                        "-show_entries", "packet=pts_time,flags", "-of", "csv=p=0", path],
+                       capture_output=True, text=True)
+    kfs = []
+    for line in p.stdout.splitlines():
+        parts = line.strip().split(",")
+        if len(parts) >= 2 and "K" in parts[1]:
+            try:
+                kfs.append(float(parts[0]))
+            except ValueError:
+                pass
+    return sorted(set(kfs))
+
+
+def patch_longform_chapter(clip_num, ep_num=EP_NUM, log=print):
+    """
+    Fast chapter hot-patch: re-renders ONLY one chapter's window of the Longform Master
+    (snapped outward to existing keyframes) and splices it in with stream copy:
+        [0, k0) master  +  patch [k0, k1)  +  [k1, end) master   (+ original audio stream copy)
+    Then replaces ddma/clips/<ep>-longform-master.mp4 and deepDive .../podcast_<ep>.mp4.
+    Returns dict(success, start, end, elapsed, path | error).
+    """
+    t_all = time.time()
+    if SCRIPT_DIR not in sys.path:
+        sys.path.insert(0, SCRIPT_DIR)
+    import archetype_studio
+    canonical = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", ep_num, f"podcast_{ep_num}.mp4")
+    master = canonical if os.path.exists(canonical) else FINAL_MASTER_MP4
+    if not os.path.exists(master):
+        return {"success": False, "error": "No Longform Master MP4 found - run a full render first."}
+    total_duration = _probe_duration(master) or 3254.21
+
+    data = archetype_studio.get_longform_all_chapter_mappings(ep_num, total_duration)
+    ch = data["chapters"].get(int(clip_num))
+    if not ch:
+        return {"success": False, "error": f"Chapter {clip_num} not found in plan."}
+    t0, t1 = float(ch["start"]), min(float(ch["end"]), total_duration)
+
+    kf0 = [k for k in _keyframes_near(master, t0) if k <= t0 + 0.001]
+    kf1 = [k for k in _keyframes_near(master, t1) if k >= t1 - 0.001]
+    k0 = kf0[-1] if kf0 else 0.0
+    k1 = kf1[0] if kf1 else total_duration
+    if t1 >= total_duration - 0.5:
+        k1 = total_duration
+    log(f"[patch] Part {clip_num}: chapter {t0:.2f}-{t1:.2f}s -> keyframe window {k0:.2f}-{k1:.2f}s")
+
+    fps = 25
+    with open(TRANS_PATH, "r", encoding="utf-8") as f:
+        trans_data = json.load(f)
+    with open(EDIT_PATH, "r", encoding="utf-8") as f:
+        edit_data = json.load(f)
+    mapped_trans, _, _ = map_timeline_with_stings_and_cuts(trans_data, edit_data, total_duration)
+    trans_segments = mapped_trans.get("segments", []) + [dict(s) for s in WELCOME_SEGMENTS]
+    trans_segments.sort(key=lambda x: x.get("start", 0))
+
+    scene_intervals = archetype_studio.get_longform_scene_intervals(ep_num, total_duration)
+    c_scenes = [s for s in scene_intervals if s["end"] >= k0 - 5.0 and s["start"] <= k1 + 5.0]
+
+    work = os.path.join(TEMP_CHUNKS_DIR, f"patch_{ep_num}_{int(clip_num):02d}")
+    os.makedirs(work, exist_ok=True)
+    patch_mp4 = os.path.join(work, "patch.mp4")
+    head_mp4 = os.path.join(work, "head.mp4")
+    tail_mp4 = os.path.join(work, "tail.mp4")
+    out_mp4 = os.path.join(work, "spliced.mp4")
+
+    t_r = time.time()
+    # Render in 4 parallel sub-chunks, then concat (keeps the patch ~4x faster on long chapters)
+    n_sub = 4 if (k1 - k0) > 40 else 1
+    bounds = [k0 + (k1 - k0) * i / n_sub for i in range(n_sub + 1)]
+    bounds = [round(round(b * fps) / fps, 4) for b in bounds]
+    tasks = [(i, bounds[i], bounds[i + 1], os.path.join(work, f"sub_{i:02d}.mp4"), trans_segments, c_scenes, fps)
+             for i in range(n_sub)]
+    if n_sub > 1:
+        with Pool(processes=min(n_sub, cpu_count())) as pool:
+            subs = pool.map(render_chunk_worker, tasks)
+    else:
+        subs = [render_chunk_worker(tasks[0])]
+    log(f"[patch] rendered {k1 - k0:.1f}s of video in {time.time() - t_r:.1f}s")
+
+    def _ff(args):
+        r = subprocess.run(["ffmpeg", "-y", "-v", "error"] + args, capture_output=True, text=True)
+        if r.returncode != 0:
+            raise RuntimeError(r.stderr[-600:])
+
+    try:
+        sub_list = os.path.join(work, "sub_list.txt")
+        with open(sub_list, "w", encoding="utf-8") as f:
+            for s in subs:
+                f.write(f"file '{s.replace(chr(92), '/')}'\n")
+        _ff(["-f", "concat", "-safe", "0", "-i", sub_list, "-c", "copy", patch_mp4])
+
+        pieces = []
+        if k0 > 0.01:
+            _ff(["-i", master, "-map", "0:v:0", "-t", f"{k0:.4f}", "-c", "copy", head_mp4])
+            pieces.append(head_mp4)
+        pieces.append(patch_mp4)
+        if k1 < total_duration - 0.05:
+            _ff(["-ss", f"{k1:.4f}", "-i", master, "-map", "0:v:0", "-c", "copy", tail_mp4])
+            pieces.append(tail_mp4)
+        lst = os.path.join(work, "splice_list.txt")
+        with open(lst, "w", encoding="utf-8") as f:
+            for pth in pieces:
+                f.write(f"file '{pth.replace(chr(92), '/')}'\n")
+        _ff(["-f", "concat", "-safe", "0", "-i", lst, "-i", master,
+             "-map", "0:v:0", "-map", "1:a:0?", "-c", "copy", "-movflags", "+faststart", out_mp4])
+    except Exception as e:
+        return {"success": False, "error": f"Splice failed: {e}"}
+
+    new_dur = _probe_duration(out_mp4)
+    if abs(new_dur - total_duration) > 1.0:
+        return {"success": False, "error": f"Spliced duration {new_dur:.2f}s differs from master {total_duration:.2f}s - aborted."}
+
+    replaced = []
+    for dst in {os.path.normcase(os.path.abspath(p)): p for p in [canonical, FINAL_MASTER_MP4]}.values():
+        if not os.path.exists(os.path.dirname(dst)):
+            continue
+        try:
+            shutil.copyfile(out_mp4, dst + ".tmp")
+            os.replace(dst + ".tmp", dst)
+            replaced.append(dst)
+        except Exception as e:
+            log(f"[patch] could not replace {dst}: {e}")
+    elapsed = time.time() - t_all
+    log(f"[patch] Part {clip_num} spliced into master in {elapsed:.1f}s ({len(replaced)} file(s) updated)")
+    return {"success": bool(replaced), "clip_num": int(clip_num), "start": round(t0, 2), "end": round(t1, 2),
+            "window": [round(k0, 2), round(k1, 2)], "elapsed": round(elapsed, 1), "paths": replaced,
+            **({} if replaced else {"error": "Master file locked; could not replace."})}
+
+
 def main():
     print(f"==================================================")
     print(f"  Longform Video Master Parallel Render & Concat  ")
@@ -415,4 +508,8 @@ def main():
     print("==================================================")
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) >= 3 and sys.argv[1] == "--patch":
+        res = patch_longform_chapter(int(sys.argv[2]))
+        print(json.dumps({k: v for k, v in res.items() if k != "paths"}))
+    else:
+        main()

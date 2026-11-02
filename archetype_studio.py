@@ -778,19 +778,351 @@ def _load_mapped_longform_words(ep_num: str = "248", total_duration: float = 325
         return []
 
 
-def get_longform_timeline_index(ep_num: str = "248") -> Dict[str, Any]:
+WELCOME_STING_START = 29.68
+WELCOME_STING_END = 39.68
+_LF_INTERVALS_CACHE: Dict[str, Any] = {}
+
+
+def _episode_dir(clean_ep: str) -> str:
+    return os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", clean_ep)
+
+
+def _load_podcast_edit(ep_num: str = "248") -> Dict[str, Any]:
+    clean_ep = str(ep_num).replace(".md", "").lstrip("_")
+    p = os.path.join(_episode_dir(clean_ep), "podcast_edit.json")
+    if os.path.exists(p):
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                return json.load(f) or {}
+        except Exception:
+            pass
+    return {}
+
+
+def _raw_source_duration(clean_ep: str, edit_data: Dict[str, Any]) -> float:
+    """Raw (pre-edit) source speech duration: last transcribed word end, bounded by the outro sting position."""
+    dur = 0.0
+    tp = os.path.join(_episode_dir(clean_ep), "transcription.json")
+    if os.path.exists(tp):
+        try:
+            with open(tp, "r", encoding="utf-8") as f:
+                segs = json.load(f).get("segments", [])
+            if segs:
+                dur = float(segs[-1].get("end", 0.0))
+        except Exception:
+            pass
+    sting_ats = [float(s.get("at", 0.0)) for s in edit_data.get("stings", [])]
+    if sting_ats:
+        dur = max(dur, max(sting_ats))
+    return dur or 3215.34
+
+
+def build_raw_to_lf_mapper(edit_data: Dict[str, Any], total_source_dur: float = 3215.34):
     """
-    Returns a lightweight (< 4 KB) chapter index across the 54-minute Longform Master video
-    so the browser can progressively lazy-load individual chapter beats without bloating DOM memory.
+    Returns map_t(raw_t) -> Longform Master time, mirroring longform_video_engine's
+    cut removal + midroll sting slicing (+0.2s gap, sting_dur - 0.5s crossfade per midroll).
+    """
+    raw_cuts = edit_data.get("cuts", [])
+    valid_cuts = sorted([
+        (max(0.0, float(c.get("start", 0.0))), float(c.get("end", 0.0)))
+        for c in raw_cuts if float(c.get("end", 0.0)) > float(c.get("start", 0.0)) + 0.05
+    ])
+    merged_cuts: List[List[float]] = []
+    for cs, ce in valid_cuts:
+        if not merged_cuts or cs > merged_cuts[-1][1] + 0.05:
+            merged_cuts.append([cs, ce])
+        else:
+            merged_cuts[-1][1] = max(merged_cuts[-1][1], ce)
+
+    def _cut_shift(t: float) -> float:
+        return sum((ce - cs) if ce <= t else (t - cs if cs < t < ce else 0.0) for cs, ce in merged_cuts)
+
+    speech_dur = total_source_dur - sum(ce - cs for cs, ce in merged_cuts)
+    midrolls = []
+    for s in sorted(edit_data.get("stings", []), key=lambda x: float(x.get("at", 0.0))):
+        at_v = float(s.get("at", 0.0))
+        dur_v = float(s.get("duration", 7.0)) or 7.0
+        adj_at = max(0.0, at_v - _cut_shift(at_v))
+        is_outro = (adj_at >= speech_dur - 3.0) or ("conclusion" in s.get("music_file", "") and adj_at >= speech_dur - 45.0)
+        if not is_outro:
+            midrolls.append({"adj_at": adj_at, "duration": dur_v})
+
+    split_pts, filt_mid, last_pt = [], [], 0.0
+    for vs in midrolls:
+        if last_pt + 1.0 < vs["adj_at"] < speech_dur - 1.0:
+            split_pts.append(vs["adj_at"])
+            filt_mid.append(vs)
+            last_pt = vs["adj_at"]
+    slice_ranges, cur = [], 0.0
+    for pt in split_pts:
+        slice_ranges.append((cur, pt))
+        cur = pt
+    slice_ranges.append((cur, speech_dur))
+
+    slice_master = []
+    s0, e0 = slice_ranges[0]
+    slice_master.append((0.0, e0 - s0, s0, e0))
+    t_cur = e0 - s0
+    for i, st in enumerate(filt_mid):
+        t_nxt = max(t_cur, t_cur + 0.2 + st["duration"] - 0.5)
+        ns, ne = slice_ranges[i + 1]
+        slice_master.append((round(t_nxt, 2), round(t_nxt + (ne - ns), 2), ns, ne))
+        t_cur = t_nxt + (ne - ns)
+
+    def map_t(raw_t: float) -> float:
+        ts = max(0.0, raw_t - _cut_shift(raw_t))
+        for ms, me, ss, se in slice_master:
+            if ss <= ts <= se + 0.05:
+                return round(ms + (ts - ss), 2)
+        return round(ts, 2)
+
+    return map_t
+
+
+def _norm_tok(w: str) -> str:
+    return re.sub(r"[^a-z0-9']", "", str(w).lower().replace("\u2019", "'"))
+
+
+def _anchor_beats_to_spoken_words(beats: List[Dict[str, Any]], mapped_words: List[Dict[str, Any]],
+                                  window: float = 30.0, probe: int = 6) -> None:
+    """
+    Text-anchored alignment: the raw times in plan.json (DDMA transcript) and the Longform caption
+    words (transcription.json) can drift by several seconds. For every kept beat, search the caption
+    words near the time-mapped estimate for the beat's opening words and snap longform_start there,
+    so each visual lands exactly on the words it illustrates. Falls back to the estimate.
+    """
+    toks = [_norm_tok(w["word"]) for w in mapped_words]
+    starts = [w["start"] for w in mapped_words]
+    prev_anchor = -1.0
+    for b in beats:
+        if b["omitted"] or b["longform_start"] is None:
+            continue
+        bt = [t for t in (_norm_tok(x) for x in str(b["beat"].get("text", "")).split()) if t][:probe]
+        if len(bt) < 2:
+            continue
+        est = b["longform_start"]
+        best = None
+        for j, st in enumerate(starts):
+            if st < est - window:
+                continue
+            if st > est + window:
+                break
+            if st < prev_anchor:
+                continue
+            score = sum(1 for k, t in enumerate(bt) if j + k < len(toks) and toks[j + k] == t)
+            if score < min(3, len(bt)):
+                continue
+            key = (score, -abs(st - est))
+            if best is None or key > best[0]:
+                best = (key, st)
+        if best is not None:
+            delta = best[1] - b["longform_start"]
+            b["longform_start"] = round(best[1], 2)
+            b["longform_end"] = round(b["longform_end"] + delta, 2)
+            prev_anchor = best[1]
+
+
+def map_clip_beats_to_longform(clip_num: int, plan_clip: Dict[str, Any], map_t_fn,
+                               mapped_words: Optional[List[Dict[str, Any]]] = None) -> List[Dict[str, Any]]:
+    """
+    Exact audio-timestamp alignment: maps each Short beat [rel_start, rel_end] (Short body time)
+    -> raw source audio time (removing the Short-only hook/sting structure) -> Longform Master time.
+    Beats that exist only inside an out-of-order teaser hook (excerpt / flash-forward) are omitted,
+    because the Longform plays that sentence linearly inside the main discussion.
+    Returns [{"beat": short_beat, "longform_start", "longform_end"}] (+ omitted list via "omitted" flag).
+    """
+    meta = ensure_clip_meta(clip_num, plan_clip=plan_clip)
+    short_beats = meta.get("beats", [])
+    segs = plan_clip.get("segments", []) if plan_clip else []
+
+    body_cursor = 0.0
+    spans = []
+    for s in segs:
+        if s.get("type") == "audio":
+            dur = float(s.get("duration", float(s["end"]) - float(s["start"])))
+            spans.append({"body_start": body_cursor, "body_end": body_cursor + dur,
+                          "raw_start": float(s["start"]), "raw_end": float(s["end"])})
+            body_cursor += dur
+        elif s.get("type") == "music":
+            body_cursor += float(s.get("duration", 5.5)) + float(s.get("silence_before", 0.2)) - float(s.get("crossfade", 0.0))
+
+    is_excerpt = len(spans) >= 2 and spans[0]["raw_start"] > spans[-1]["raw_start"]
+    out: List[Dict[str, Any]] = []
+
+    if not spans:
+        c_st = float(plan_clip.get("start", 0.0)) if plan_clip else 0.0
+        c_en = float(plan_clip.get("end", c_st + 120.0)) if plan_clip else c_st + 120.0
+        n = max(1, len(short_beats))
+        for i, sb in enumerate(short_beats):
+            out.append({"beat": sb, "longform_start": map_t_fn(c_st + i * (c_en - c_st) / n),
+                        "longform_end": map_t_fn(c_st + (i + 1) * (c_en - c_st) / n), "omitted": False})
+    elif is_excerpt:
+        disc = spans[-1]
+        for sb in short_beats:
+            r_st, r_en = float(sb["rel_start"]), float(sb["rel_end"])
+            if r_en <= disc["body_start"] + 1.0:
+                out.append({"beat": sb, "longform_start": None, "longform_end": None, "omitted": True})
+                continue
+            eff_st = max(0.0, r_st - disc["body_start"])
+            eff_en = max(eff_st + 1.0, r_en - disc["body_start"])
+            raw_st = min(disc["raw_end"] - 0.5, disc["raw_start"] + eff_st)
+            raw_en = min(disc["raw_end"], disc["raw_start"] + eff_en)
+            out.append({"beat": sb, "longform_start": map_t_fn(raw_st), "longform_end": map_t_fn(raw_en), "omitted": False})
+    else:
+        raw_chap_end = spans[-1]["raw_end"]
+
+        def body_to_raw(b_t: float) -> float:
+            if b_t <= spans[0]["body_end"]:
+                return min(spans[0]["raw_end"], spans[0]["raw_start"] + max(0.0, b_t - spans[0]["body_start"]))
+            if len(spans) >= 2 and b_t < spans[1]["body_start"]:
+                return spans[0]["raw_end"]  # inside the Short-only sting
+            sp = spans[-1]
+            return min(sp["raw_end"], sp["raw_start"] + max(0.0, b_t - sp["body_start"]))
+
+        for sb in short_beats:
+            raw_st = body_to_raw(float(sb["rel_start"]))
+            raw_en = body_to_raw(float(sb["rel_end"]))
+            if raw_en <= raw_st + 0.5:
+                raw_en = min(raw_chap_end, raw_st + 2.0)
+            out.append({"beat": sb, "longform_start": map_t_fn(raw_st), "longform_end": map_t_fn(raw_en), "omitted": False})
+
+    # Snap each beat onto the exact words it speaks in the Longform caption timeline
+    if mapped_words:
+        _anchor_beats_to_spoken_words(out, mapped_words)
+
+    # Clip 1: Longform 0 -> 29.68 is the strict intro scene, 29.68 -> 39.68 the welcome sting card
+    if int(clip_num) == 1:
+        for b in out:
+            if b["omitted"]:
+                continue
+            if b["longform_end"] <= WELCOME_STING_END + 1.0:
+                b["omitted"] = True
+            elif b["longform_start"] < WELCOME_STING_END:
+                b["longform_start"] = WELCOME_STING_END
+
+    # Contiguous, non-overlapping intervals within the chapter (screen never empty)
+    kept = [b for b in out if not b["omitted"]]
+    for i, b in enumerate(kept):
+        if i > 0 and b["longform_start"] < kept[i - 1]["longform_end"]:
+            b["longform_start"] = kept[i - 1]["longform_end"]
+        if i < len(kept) - 1 and b["longform_end"] < kept[i + 1]["longform_start"]:
+            b["longform_end"] = kept[i + 1]["longform_start"]
+        if b["longform_end"] <= b["longform_start"] + 0.5:
+            b["longform_end"] = round(b["longform_start"] + 3.0, 2)
+        b["longform_start"] = round(b["longform_start"], 2)
+        b["longform_end"] = round(b["longform_end"], 2)
+    return out
+
+
+def _lf_cache_key(clean_ep: str) -> str:
+    parts = [clean_ep]
+    for p in [os.path.join(SCRIPT_DIR, "projects", f"episode_{clean_ep}", "plan.json"),
+              os.path.join(_episode_dir(clean_ep), "podcast_edit.json")]:
+        parts.append(str(os.path.getmtime(p)) if os.path.exists(p) else "0")
+    for p in sorted(glob.glob(os.path.join(ARCHETYPES_DIR, "clip_*_gemini_scenes.py")) +
+                    glob.glob(os.path.join(ARCHETYPES_DIR, "clip_*_meta.json"))):
+        parts.append(f"{os.path.basename(p)}:{os.path.getmtime(p)}")
+    return "|".join(parts)
+
+
+def get_longform_all_chapter_mappings(ep_num: str = "248", total_duration: Optional[float] = None) -> Dict[str, Any]:
+    """
+    Single source of truth for Longform visual alignment (used by Beat Studio, full render and hot-patch).
+    Returns {"chapters": {clip_num: {"start","end","beats":[...]}}, "total_duration"}.
+    Chapter windows are contiguous: [first mapped beat start, next chapter first beat start).
     """
     clean_ep = str(ep_num).replace(".md", "").lstrip("_")
-    plan_data = _load_episode_plan(clean_ep)
-    total_duration = 3254.21
+    key = _lf_cache_key(clean_ep) + f"|{total_duration}"
+    if _LF_INTERVALS_CACHE.get("key") == key:
+        return _LF_INTERVALS_CACHE["value"]
 
-    # Check actual rendered video duration if present
+    plan_data = _load_episode_plan(clean_ep)
+    edit_data = _load_podcast_edit(clean_ep)
+    map_t = build_raw_to_lf_mapper(edit_data, _raw_source_duration(clean_ep, edit_data))
+    if total_duration is None:
+        total_duration = 3254.21
+    mapped_words = _load_mapped_longform_words(clean_ep)
+
+    chapters: Dict[int, Dict[str, Any]] = {}
+    order: List[int] = []
+    for idx, clip in enumerate(plan_data):
+        c_num = int(clip.get("num", idx + 1))
+        try:
+            beats = map_clip_beats_to_longform(c_num, clip, map_t, mapped_words)
+        except Exception:
+            beats = []
+        kept = [b for b in beats if not b["omitted"]]
+        if c_num == 1:
+            c_start = 0.0
+        elif kept:
+            c_start = kept[0]["longform_start"]
+        else:
+            c_start = map_t(float(clip.get("start", 0.0)))
+        chapters[c_num] = {"start": round(c_start, 2), "beats": beats, "title": str(clip.get("title", f"Part {c_num}")).strip()}
+        order.append(c_num)
+
+    for i, c_num in enumerate(order):
+        ch = chapters[c_num]
+        nxt = chapters[order[i + 1]]["start"] if i < len(order) - 1 else total_duration
+        ch["end"] = round(max(nxt, ch["start"] + 1.0), 2)
+        kept = [b for b in ch["beats"] if not b["omitted"]]
+        if kept:
+            # Hold the last visual until the next chapter speaks (screen-never-empty rule)
+            kept[-1]["longform_end"] = ch["end"]
+            # Trim any beat spilling past the chapter end
+            prev_end = ch["start"]
+            for b in kept:
+                b["longform_start"] = max(b["longform_start"], prev_end)
+                b["longform_end"] = min(b["longform_end"], ch["end"])
+                if b["longform_end"] <= b["longform_start"] + 0.3:
+                    b["omitted"] = True  # squeezed out: chapter has no room left for this visual
+                    continue
+                prev_end = b["longform_end"]
+            kept = [b for b in kept if not b["omitted"]]
+            if kept:
+                kept[-1]["longform_end"] = ch["end"]
+
+    value = {"ep_num": clean_ep, "total_duration": total_duration, "order": order, "chapters": chapters}
+    _LF_INTERVALS_CACHE["key"] = key
+    _LF_INTERVALS_CACHE["value"] = value
+    return value
+
+
+def get_longform_scene_intervals(ep_num: str = "248", total_duration: Optional[float] = None) -> List[Dict[str, Any]]:
+    """All mapped Manim MP4 intervals across the Longform Master (for the compositor)."""
+    data = get_longform_all_chapter_mappings(ep_num, total_duration)
+    intervals: List[Dict[str, Any]] = []
+    intro_mp4 = os.path.join(MEDIA_VIDEOS_DIR, "chapter_01_scenes_strict", "740p30", "Scene01_RobotWildernessFallacy.mp4")
+    if os.path.exists(intro_mp4):
+        intervals.append({"start": 0.0, "end": WELCOME_STING_START, "mp4": intro_mp4, "fps": 30, "clip_num": 1, "class_name": "Scene01_RobotWildernessFallacy"})
+    for c_num in data["order"]:
+        v_dir = os.path.join(MEDIA_VIDEOS_DIR, f"clip_{c_num:02d}_gemini_scenes", "740p15")
+        for b in data["chapters"][c_num]["beats"]:
+            if b["omitted"]:
+                continue
+            cls = b["beat"].get("class_name", "")
+            mp4 = os.path.join(v_dir, f"{cls}.mp4")
+            if not os.path.exists(mp4):
+                continue
+            intervals.append({"start": b["longform_start"], "end": b["longform_end"], "mp4": mp4, "fps": 15,
+                              "clip_num": c_num, "class_name": cls})
+    intervals.sort(key=lambda x: x["start"])
+    # Close gaps (except the welcome sting window) so the last visual persists
+    for i in range(len(intervals) - 1):
+        if abs(intervals[i]["end"] - WELCOME_STING_START) < 0.5:
+            continue
+        if intervals[i]["end"] < intervals[i + 1]["start"]:
+            intervals[i]["end"] = intervals[i + 1]["start"]
+    if intervals and intervals[-1]["end"] < data["total_duration"]:
+        intervals[-1]["end"] = data["total_duration"] + 1.0
+    return intervals
+
+
+def _probe_longform_duration(clean_ep: str) -> float:
     for v_cand in [
+        os.path.join(_episode_dir(clean_ep), f"podcast_{clean_ep}.mp4"),
         os.path.join(SCRIPT_DIR, "clips", f"{clean_ep}-longform-master.mp4"),
-        os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", clean_ep, f"podcast_{clean_ep}.mp4"),
+        os.path.join(_episode_dir(clean_ep), f"podcast_{clean_ep}.mp3"),
     ]:
         if os.path.exists(v_cand):
             try:
@@ -799,38 +1131,34 @@ def get_longform_timeline_index(ep_num: str = "248") -> Dict[str, Any]:
                     capture_output=True, text=True, timeout=5
                 )
                 if p.returncode == 0 and p.stdout.strip():
-                    total_duration = float(p.stdout.strip())
-                    break
+                    return float(p.stdout.strip())
             except Exception:
                 pass
+    return 3254.21
+
+
+def get_longform_timeline_index(ep_num: str = "248") -> Dict[str, Any]:
+    """
+    Returns a lightweight (< 4 KB) chapter index across the 54-minute Longform Master video
+    so the browser can progressively lazy-load individual chapter beats without bloating DOM memory.
+    Chapter windows are exact Longform Master times (audio-timestamp aligned).
+    """
+    clean_ep = str(ep_num).replace(".md", "").lstrip("_")
+    total_duration = _probe_longform_duration(clean_ep)
+    data = get_longform_all_chapter_mappings(clean_ep, total_duration)
 
     chapters = []
     total_scenes = 0
-    for idx, clip in enumerate(plan_data):
-        c_num = int(clip.get("num", idx + 1))
-        c_start = float(clip.get("start", 0.0))
-        c_end = float(clip.get("end", c_start + 120.0))
-        if idx < len(plan_data) - 1:
-            next_start = float(plan_data[idx + 1].get("start", c_end))
-            if c_end < next_start:
-                c_end = next_start
-        else:
-            if c_end < total_duration:
-                c_end = total_duration
-
-        py_path = os.path.join(ARCHETYPES_DIR, f"clip_{c_num:02d}_gemini_scenes.py")
-        n_scenes = 0
-        if os.path.exists(py_path):
-            with open(py_path, "r", encoding="utf-8") as f:
-                n_scenes = len(re.findall(r"class\s+(Scene\w+)\s*\(", f.read()))
+    for c_num in data["order"]:
+        ch = data["chapters"][c_num]
+        n_scenes = len([b for b in ch["beats"] if not b["omitted"]])
         total_scenes += n_scenes
-
         chapters.append({
             "clip_num": c_num,
-            "title": str(clip.get("title", f"Part {c_num}")).strip(),
-            "start": round(c_start, 2),
-            "end": round(c_end, 2),
-            "duration": round(c_end - c_start, 2),
+            "title": ch["title"],
+            "start": ch["start"],
+            "end": ch["end"],
+            "duration": round(ch["end"] - ch["start"], 2),
             "scenes_count": n_scenes,
             "py_file": f"archetypes/clip_{c_num:02d}_gemini_scenes.py",
         })
@@ -840,7 +1168,7 @@ def get_longform_timeline_index(ep_num: str = "248") -> Dict[str, Any]:
         "total_duration": round(total_duration, 2),
         "total_chapters": len(chapters),
         "total_scenes": total_scenes,
-        "welcome_sting": {"start": 29.68, "end": 39.68},
+        "welcome_sting": {"start": WELCOME_STING_START, "end": WELCOME_STING_END},
         "chapters": chapters,
     }
 
@@ -849,53 +1177,32 @@ def get_longform_chapter_beats(ep_num: str = "248", clip_num: int = 1) -> Dict[s
     """
     Progressively loads the ~12-18 Manim beats for a single Chapter (clip_num) mapped to
     their exact Longform Master timestamps [longform_start, longform_end] and spoken words.
+    Teaser-only hook beats (out-of-order excerpts) are listed in "omitted_beats".
     """
     clean_ep = str(ep_num).replace(".md", "").lstrip("_")
     c_num = int(clip_num)
-    plan_data = _load_episode_plan(clean_ep)
-    plan_clip = next((c for c in plan_data if int(c.get("num", 0)) == c_num), None)
-
-    clip_meta = ensure_clip_meta(c_num, plan_clip=plan_clip)
-    short_beats = clip_meta.get("beats", [])
-
-    # Determine chapter's continuous interval on the Longform Master timeline
-    c_start = float(plan_clip.get("start", 0.0)) if plan_clip else 0.0
-    c_end = float(plan_clip.get("end", c_start + 120.0)) if plan_clip else (c_start + 120.0)
-    if plan_data:
-        for i, c in enumerate(plan_data):
-            if int(c.get("num", 0)) == c_num:
-                if i < len(plan_data) - 1:
-                    nxt = float(plan_data[i + 1].get("start", c_end))
-                    if c_end < nxt:
-                        c_end = nxt
-                break
-
-    intro_mp4 = os.path.join(MEDIA_VIDEOS_DIR, "chapter_01_scenes_strict", "740p30", "Scene01_RobotWildernessFallacy.mp4")
-    if c_num == 1 and os.path.exists(intro_mp4):
-        eff_start = 39.68
-    else:
-        eff_start = c_start
-
-    n = max(1, len(short_beats))
-    lf_beat_dur = max(1.0, (c_end - eff_start) / n)
+    total_duration = _probe_longform_duration(clean_ep)
+    data = get_longform_all_chapter_mappings(clean_ep, total_duration)
+    ch = data["chapters"].get(c_num, {"start": 0.0, "end": 0.0, "beats": [], "title": f"Part {c_num}"})
 
     mapped_words = _load_mapped_longform_words(clean_ep)
-
-    lf_beats = []
-    for idx, sb in enumerate(short_beats):
-        lf_st = round(eff_start + idx * lf_beat_dur, 2)
-        lf_en = round(c_end if idx == n - 1 else eff_start + (idx + 1) * lf_beat_dur, 2)
-
-        # Extract exact spoken words from longform mapped transcript if available, fallback to short beat text
+    lf_beats, omitted = [], []
+    for b in ch["beats"]:
+        sb = b["beat"]
+        cls_name = sb.get("class_name", "")
+        if b["omitted"]:
+            omitted.append({"class_name": cls_name, "visual_summary": sb.get("visual_summary", ""),
+                            "text": sb.get("text", ""), "reason": "Short-only teaser hook (spoken later inside the chapter)"})
+            continue
+        lf_st, lf_en = b["longform_start"], b["longform_end"]
         spoken = sb.get("text", "")
         if mapped_words:
             bw = [w["word"] for w in mapped_words if lf_st <= 0.5 * (w["start"] + w["end"]) < lf_en]
             if bw:
                 spoken = " ".join(bw)
-
-        cls_name = sb.get("class_name", f"Scene{c_num:02d}_{idx+1:02d}")
         lf_beats.append({
-            "index": idx + 1,
+            "index": len(lf_beats) + 1,
+            "short_index": sb.get("index"),
             "clip_num": c_num,
             "class_name": cls_name,
             "title": sb.get("title", cls_name),
@@ -916,11 +1223,11 @@ def get_longform_chapter_beats(ep_num: str = "248", clip_num: int = 1) -> Dict[s
     return {
         "ep_num": clean_ep,
         "clip_num": c_num,
-        "title": clip_meta.get("title", f"Part {c_num}"),
+        "title": ch.get("title", f"Part {c_num}"),
         "py_file": f"archetypes/clip_{c_num:02d}_gemini_scenes.py",
-        "chapter_start": round(c_start, 2),
-        "chapter_end": round(c_end, 2),
+        "chapter_start": ch["start"],
+        "chapter_end": ch["end"],
         "scenes_count": len(lf_beats),
         "beats": lf_beats,
+        "omitted_beats": omitted,
     }
-

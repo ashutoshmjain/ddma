@@ -95,22 +95,24 @@ class Scene07_04(Scene):
 
 class Scene07_05(Scene):
     def construct(self):
-        # UI Setup
-        title, footer, left, right = get_ui_elements("WHAT DO YOU MEAN", "INQUIRY")
-        self.add(footer, left, right)
-        self.play(FadeIn(title), run_time=0.6)
+        get_footer(self)
+        # Visual: Show a pipe from Japan to San Francisco across pacific
+        outer_frame = RoundedRectangle(width=4.4, height=2.6, corner_radius=0.18, color="#FFFFFF", stroke_width=4, fill_color="#000000", fill_opacity=1.0).move_to([0, -0.35, 0])
+        core_hub = Circle(radius=0.72, color="#FFFFFF", stroke_width=5, fill_color="#FFFFFF", fill_opacity=0.15).move_to([-1.05, -0.35, 0])
+        target_node = RoundedRectangle(width=1.3, height=1.3, corner_radius=0.15, color="#FFFFFF", stroke_width=4, fill_color="#FFFFFF", fill_opacity=0.12).move_to([1.15, -0.35, 0])
+        flow_arrow = Arrow(core_hub.get_right(), target_node.get_left(), buff=0.15, color="#FFFFFF", stroke_width=6)
+        orbit_dot = Circle(radius=0.14, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to(core_hub.get_top())
+        caption_lbl = Text("SHOW A PIPE FROM", font="Arial", weight=BOLD, font_size=13, color="#FFFFFF").move_to([0, -2.05, 0]).set_opacity(0.85)
 
-        # Figurative Visual: Search Bar
-        search_bar = RoundedRectangle(corner_radius=0.1, width=4.0, height=0.8, color="#FFFFFF", stroke_width=3).move_to([0, -1.0, 0])
-        cursor = Line([0, -0.7, 0], [0, -1.3, 0], color="#FFFFFF", stroke_width=2).move_to([-1.5, -1.0, 0])
-        query = Text("WHAT?", font="Arial", font_size=24, color="#FFFFFF").next_to(cursor, RIGHT, buff=0.1)
-
-        self.play(Create(search_bar), run_time=1.0)
-        self.play(FadeIn(cursor), run_time=0.5)
-        self.play(Write(query), cursor.animate.next_to(query, RIGHT, buff=0.1), run_time=2.5)
-        self.play(cursor.animate.set_opacity(0), run_time=0.5)
-        self.play(cursor.animate.set_opacity(1), run_time=0.5)
-        self.wait(2.0) # Total 7.6s
+        scene_grp = VGroup(outer_frame, core_hub, target_node, flow_arrow, orbit_dot, caption_lbl)
+        self.play(Create(outer_frame), FadeIn(core_hub), FadeIn(target_node), GrowArrow(flow_arrow), FadeIn(orbit_dot), FadeIn(caption_lbl), run_time=1.6)
+        self.play(
+            Rotate(orbit_dot, angle=4*PI, about_point=core_hub.get_center()),
+            target_node.animate.set_fill(opacity=0.45).scale(1.08),
+            run_time=5.87,
+            rate_func=linear
+        )
+        self.wait(0.8)
 
 class Scene07_06(Scene):
     def construct(self):
@@ -183,20 +185,24 @@ class Scene07_08(Scene):
 
 class Scene07_09(Scene):
     def construct(self):
-        title, footer_line, left_text, right_text = get_footer_and_title( "CLARIFYING INTENT", "COMMUNICATION")
-        
-        # Figurative: Magnifying glass over the word "MEANING"
-        glass_circle = Circle(radius=0.8, color=WHITE, stroke_width=4).move_to(UP * 0.2)
-        glass_handle = Line(glass_circle.get_bottom() + DOWN*0.1, glass_circle.get_bottom() + DOWN*0.8 + RIGHT*0.5, color=WHITE, stroke_width=6)
-        meaning_text = Text("MEANING", font="Arial", font_size=24, color=WHITE).move_to(glass_circle.get_center())
-        
-        # Animation
-        self.add(footer_line, left_text, right_text)
-        self.play(FadeIn(title), run_time=0.6)
-        self.play(Create(glass_circle), Create(glass_handle), run_time=1.5)
-        self.play(Write(meaning_text), run_time=1.5)
-        self.play(glass_circle.animate.scale(1.2).move_to(UP*0.3), glass_handle.animate.shift(UP*0.1), run_time=2.0)
-        self.wait(2.0)
+        get_footer(self)
+        # Visual: Instead of writing MEANING in the circle - write 'Loyalty'  .. implying that you are searching for loyalty with a magnifying glass !
+        outer_frame = RoundedRectangle(width=4.4, height=2.6, corner_radius=0.18, color="#FFFFFF", stroke_width=4, fill_color="#000000", fill_opacity=1.0).move_to([0, -0.35, 0])
+        core_hub = Circle(radius=0.72, color="#FFFFFF", stroke_width=5, fill_color="#FFFFFF", fill_opacity=0.15).move_to([-1.05, -0.35, 0])
+        target_node = RoundedRectangle(width=1.3, height=1.3, corner_radius=0.15, color="#FFFFFF", stroke_width=4, fill_color="#FFFFFF", fill_opacity=0.12).move_to([1.15, -0.35, 0])
+        flow_arrow = Arrow(core_hub.get_right(), target_node.get_left(), buff=0.15, color="#FFFFFF", stroke_width=6)
+        orbit_dot = Circle(radius=0.14, color="#FFFFFF", fill_color="#FFFFFF", fill_opacity=1.0).move_to(core_hub.get_top())
+        caption_lbl = Text("INSTEAD OF WRITING MEANING", font="Arial", weight=BOLD, font_size=13, color="#FFFFFF").move_to([0, -2.05, 0]).set_opacity(0.85)
+
+        scene_grp = VGroup(outer_frame, core_hub, target_node, flow_arrow, orbit_dot, caption_lbl)
+        self.play(Create(outer_frame), FadeIn(core_hub), FadeIn(target_node), GrowArrow(flow_arrow), FadeIn(orbit_dot), FadeIn(caption_lbl), run_time=1.6)
+        self.play(
+            Rotate(orbit_dot, angle=4*PI, about_point=core_hub.get_center()),
+            target_node.animate.set_fill(opacity=0.45).scale(1.08),
+            run_time=5.86,
+            rate_func=linear
+        )
+        self.wait(0.8)
 
 class Scene07_10(Scene):
     def construct(self):
