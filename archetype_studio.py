@@ -1022,7 +1022,65 @@ def _lf_cache_key(clean_ep: str) -> str:
     for p in sorted(glob.glob(os.path.join(ARCHETYPES_DIR, "clip_*_gemini_scenes.py")) +
                     glob.glob(os.path.join(ARCHETYPES_DIR, "clip_*_meta.json"))):
         parts.append(f"{os.path.basename(p)}:{os.path.getmtime(p)}")
+    for p in sorted(glob.glob(os.path.join(SCRIPT_DIR, "clips", f"{clean_ep}-*-mosaic*.mp4"))):
+        parts.append(f"{os.path.basename(p)}:{os.path.getmtime(p)}")
     return "|".join(parts)
+
+
+_MOSAIC_PROBE_CACHE: Dict[str, Dict[str, Any]] = {}
+
+
+def _probe_video_geometry(path: str) -> Dict[str, Any]:
+    """ffprobe width/height/fps/duration of a video (cached by path + mtime)."""
+    key = f"{path}|{os.path.getmtime(path)}"
+    if key in _MOSAIC_PROBE_CACHE:
+        return _MOSAIC_PROBE_CACHE[key]
+    info = {"width": 0, "height": 0, "fps": 30.0, "duration": 0.0}
+    try:
+        p = subprocess.run(
+            ["ffprobe", "-v", "error", "-select_streams", "v:0",
+             "-show_entries", "stream=width,height,r_frame_rate:format=duration",
+             "-of", "json", path], capture_output=True, text=True, timeout=10)
+        j = json.loads(p.stdout or "{}")
+        st = (j.get("streams") or [{}])[0]
+        num, _, den = str(st.get("r_frame_rate", "30/1")).partition("/")
+        info["width"] = int(st.get("width") or 0)
+        info["height"] = int(st.get("height") or 0)
+        info["fps"] = float(num) / float(den or 1) if float(den or 1) else 30.0
+        info["duration"] = float((j.get("format") or {}).get("duration") or 0.0)
+    except Exception:
+        pass
+    _MOSAIC_PROBE_CACHE[key] = info
+    return info
+
+
+def resolve_mosaic_body(clean_ep: str, clip_num: int, plan_clip: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    """
+    Locates the Mosaic body video for a chapter whose Active Master is Mosaic.
+    Preference: the raw Mosaic run body clips/<ep>-<n>-mosaic-<run_id>.mp4 (square, caption-free,
+    t=0 == Short body t=0); fallback: the compiled clips/<ep>-<n>-mosaic.mp4 (1080x1920 with the
+    Intro title card, so body t=0 sits at intro_offset seconds).
+    Returns {"path","offset","kind": "square"|"vertical","fps","duration","width","height"} or None.
+    """
+    clips_dir = os.path.join(SCRIPT_DIR, "clips")
+    cands = []
+    run_id = (plan_clip or {}).get("mosaic_run_id")
+    if run_id:
+        cands.append((os.path.join(clips_dir, f"{clean_ep}-{int(clip_num)}-mosaic-{run_id}.mp4"), 0.0))
+    intro = float((plan_clip or {}).get("intro_offset") or 1.5)
+    cands.append((os.path.join(clips_dir, f"{clean_ep}-{int(clip_num)}-mosaic.mp4"), intro))
+    for path, offset in cands:
+        if os.path.exists(path) and os.path.getsize(path) > 10000:
+            g = _probe_video_geometry(path)
+            if not g["width"] or not g["height"]:
+                continue
+            kind = "vertical" if g["height"] > g["width"] * 1.2 else "square"
+            # Compiled 9:16 file: the body (excluding outro) ends at offset + audio_duration
+            body_end = offset + float((plan_clip or {}).get("audio_duration") or max(0.0, g["duration"] - offset))
+            return {"path": path, "offset": offset, "kind": kind, "fps": g["fps"],
+                    "duration": g["duration"], "body_end": min(g["duration"], body_end) if g["duration"] else body_end,
+                    "width": g["width"], "height": g["height"]}
+    return None
 
 
 def get_longform_all_chapter_mappings(ep_num: str = "248", total_duration: Optional[float] = None) -> Dict[str, Any]:
@@ -1059,6 +1117,12 @@ def get_longform_all_chapter_mappings(ep_num: str = "248", total_duration: Optio
         else:
             c_start = map_t(float(clip.get("start", 0.0)))
         chapters[c_num] = {"start": round(c_start, 2), "beats": beats, "title": str(clip.get("title", f"Part {c_num}")).strip()}
+        # Active Master: plan.json visual_source ("mosaic" | "manim" | None -> manim / existing behaviour)
+        mosaic_body = None
+        if str(clip.get("visual_source") or "").lower() == "mosaic":
+            mosaic_body = resolve_mosaic_body(clean_ep, c_num, clip)
+        chapters[c_num]["visual_source"] = "mosaic" if mosaic_body else "manim"
+        chapters[c_num]["mosaic_body"] = mosaic_body
         order.append(c_num)
 
     for i, c_num in enumerate(order):
@@ -1096,8 +1160,27 @@ def get_longform_scene_intervals(ep_num: str = "248", total_duration: Optional[f
     if os.path.exists(intro_mp4):
         intervals.append({"start": 0.0, "end": WELCOME_STING_START, "mp4": intro_mp4, "fps": 30, "clip_num": 1, "class_name": "Scene01_RobotWildernessFallacy"})
     for c_num in data["order"]:
+        ch = data["chapters"][c_num]
+        mb = ch.get("mosaic_body") if ch.get("visual_source") == "mosaic" else None
+        if mb:
+            # Mosaic Active Master: slice the Mosaic body by the SAME short->longform beat windows
+            # (src time = body offset + Short body time); omitted teaser beats are skipped.
+            src_max = max(mb["offset"], float(mb.get("body_end") or mb["duration"]) - 1.0 / max(1.0, mb["fps"]))
+            kept = [b for b in ch["beats"] if not b["omitted"]]
+            if not kept:
+                kept = [{"beat": {"rel_start": 0.0, "rel_end": ch["end"] - ch["start"]},
+                         "longform_start": ch["start"], "longform_end": ch["end"]}]
+            for b in kept:
+                sb = b["beat"]
+                src_st = min(src_max, mb["offset"] + float(sb.get("rel_start", 0.0)))
+                src_hold = min(src_max, max(src_st, mb["offset"] + float(sb.get("rel_end", 0.0))))
+                intervals.append({"start": b["longform_start"], "end": b["longform_end"], "mp4": mb["path"],
+                                  "fps": mb["fps"], "clip_num": c_num, "class_name": "mosaic",
+                                  "visual_source": "mosaic", "src_offset": round(src_st, 3),
+                                  "src_hold": round(src_hold, 3), "src_kind": mb["kind"]})
+            continue
         v_dir = os.path.join(MEDIA_VIDEOS_DIR, f"clip_{c_num:02d}_gemini_scenes", "740p15")
-        for b in data["chapters"][c_num]["beats"]:
+        for b in ch["beats"]:
             if b["omitted"]:
                 continue
             cls = b["beat"].get("class_name", "")
@@ -1161,6 +1244,8 @@ def get_longform_timeline_index(ep_num: str = "248") -> Dict[str, Any]:
             "duration": round(ch["end"] - ch["start"], 2),
             "scenes_count": n_scenes,
             "py_file": f"archetypes/clip_{c_num:02d}_gemini_scenes.py",
+            "visual_source": ch.get("visual_source", "manim"),
+            "locked": ch.get("visual_source") == "mosaic",
         })
 
     return {
@@ -1218,6 +1303,7 @@ def get_longform_chapter_beats(ep_num: str = "248", clip_num: int = 1) -> Dict[s
             "mp4_exists": sb.get("mp4_exists", True),
             "beat_video_url": f"/api/podcast/beat_video?clip_num={c_num}&class_name={cls_name}",
             "code": sb.get("code", ""),
+            "visual_source": ch.get("visual_source", "manim"),
         })
 
     return {
@@ -1230,4 +1316,7 @@ def get_longform_chapter_beats(ep_num: str = "248", clip_num: int = 1) -> Dict[s
         "scenes_count": len(lf_beats),
         "beats": lf_beats,
         "omitted_beats": omitted,
+        "visual_source": ch.get("visual_source", "manim"),
+        "locked": ch.get("visual_source") == "mosaic",
+        "mosaic_file": os.path.basename((ch.get("mosaic_body") or {}).get("path", "")) or None,
     }

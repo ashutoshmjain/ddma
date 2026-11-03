@@ -2192,7 +2192,7 @@
             </div>
 
             <!-- Side-by-Side Split Body: Left = 9:16 Video Player, Right = Live Archetype Beat Inspector -->
-            <div style="display: grid; grid-template-columns: 380px 1fr; gap: 1.2rem; flex: 1; min-height: 0; overflow: hidden; align-items: stretch;">
+            <div id="videoModalSplitBody" style="display: grid; grid-template-columns: 380px 1fr; gap: 1.2rem; flex: 1; min-height: 0; overflow: hidden; align-items: stretch;">
                 <!-- LEFT COLUMN: 9:16 Vertical Short Player -->
                 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #05070c; border-radius: 10px; border: 1px solid var(--border-color); padding: 0.5rem; position: relative; min-height: 540px;">
                     <div style="position: relative; width: 100%; height: 68vh; max-height: 620px; aspect-ratio: 9/16; background: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center;">
@@ -2203,7 +2203,7 @@
                             <div id="videoModalLoadingSub" style="font-size: 0.78rem; color: var(--text-muted); max-width: 320px; line-height: 1.4;">Stitching pre-compiled 740×740 Manim archetypes &amp; burning 1080×1920 captions...</div>
                         </div>
                     </div>
-                    <div style="margin-top: 0.45rem; font-size: 0.68rem; color: var(--text-muted); text-align: center;">
+                    <div id="videoModalBeatHint" style="margin-top: 0.45rem; font-size: 0.68rem; color: var(--text-muted); text-align: center;">
                         💡 <strong>Pause video</strong> at any moment to inspect, comment on, or regenerate the active 7.5s Manim archetype on the right.
                     </div>
                 </div>
@@ -8409,7 +8409,25 @@
             combinedAudioPlayer.src = "";
         });
 
+        // Mosaic preview = plain video + Download (no Manim beat timeline / regenerate panel).
+        // Manim preview keeps the split-screen Archetype Beat Inspector.
+        function isMosaicVideoModal(videoUrl, titleText) {
+            return /-mosaic\.mp4/i.test(String(videoUrl || '')) || /MOSAIC/i.test(String(titleText || ''));
+        }
+
+        function setVideoModalMosaicMode(isMosaic) {
+            const splitBody = document.getElementById('videoModalSplitBody');
+            const inspector = document.getElementById('archetypeInspectorPanel');
+            const hint = document.getElementById('videoModalBeatHint');
+            const container = document.getElementById('videoModalContainer');
+            if (container) container.style.maxWidth = isMosaic ? '560px' : '1180px';
+            if (splitBody) splitBody.style.gridTemplateColumns = isMosaic ? '1fr' : '380px 1fr';
+            if (inspector) inspector.style.display = isMosaic ? 'none' : 'flex';
+            if (hint) hint.style.display = isMosaic ? 'none' : '';
+        }
+
         function openVideoModalLoading(titleText, subtitleText, loadingTitle = "Compiling Master Video...", loadingSub = "Assembling Intro, Mosaic Motion Graphics, and Outro Bridge...") {
+            setVideoModalMosaicMode(isMosaicVideoModal('', titleText));
             audioElement.pause();
             playBtn.textContent = '▶';
             
@@ -8654,7 +8672,9 @@
 
         function openVideoModal(videoUrl, titleText, subtitleText) {
             const cNum = extractClipNumFromVideoInfo(videoUrl, titleText);
-            if (cNum) {
+            const mosaicMode = isMosaicVideoModal(videoUrl, titleText);
+            setVideoModalMosaicMode(mosaicMode);
+            if (cNum && !mosaicMode) {
                 loadClipArchetypesIntoStudio(cNum);
             }
 

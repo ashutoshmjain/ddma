@@ -31738,7 +31738,7 @@
             }
         ],
         "audio_duration": 115.74,
-        "visual_source": "manim",
+        "visual_source": "mosaic",
         "_infographic_version": "v4_precompiled_archetypes",
         "rendered_duration": 121.28,
         "intro_offset": 1.5,
@@ -33602,7 +33602,7 @@
         "_caption_sig": "f53304b21da18e266e636262c606a09c",
         "_audio_sig": "e58e4f666078218737f00703caf2383a",
         "infographic_ready": true,
-        "_compiled_sig": "585d6695a81fd928022d00e1e943400e",
+        "_compiled_sig": "0b1ab524dabd47f911ecd24e6b136062",
         "mosaic_run_id": "b2ec9173-7ad1-42b3-a256-e5ecea040bb8"
     },
     {

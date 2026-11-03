@@ -151,28 +151,60 @@ def render_chunk_worker(args):
                 cur_sc = scene_intervals[-1] if t >= scene_intervals[-1]["end"] else scene_intervals[0]
 
             if cur_sc:
+                is_mosaic = cur_sc.get("visual_source") == "mosaic"
                 mp4_path = cur_sc["mp4"]
-                if mp4_path != cached_mp4_path:
+                cache_key = f"{mp4_path}:{cur_sc.get('src_offset', 0)}:{cur_sc.get('src_hold', 0)}" if is_mosaic else mp4_path
+                if cache_key != cached_mp4_path:
                     cached_frames = []
                     if os.path.exists(mp4_path):
-                        try:
-                            container = av.open(mp4_path)
-                            for f_av in container.decode(video=0):
-                                img = f_av.to_image().convert("RGB")
-                                # Mask out the bold Archetype Title at y = -2.95 (pixel rows 622..672)
-                                # while keeping the thin footer line (y=679..680) and tiny metadata labels (y=691..701)
-                                ImageDraw.Draw(img).rectangle([(0, 622), (740, 672)], fill=(0, 0, 0))
-                                cached_frames.append(img)
-                            container.close()
-                        except Exception:
-                            cached_frames = []
-                    cached_mp4_path = mp4_path
+                        if is_mosaic:
+                            src_st = max(0.0, float(cur_sc.get("src_offset", 0.0)))
+                            src_hold = float(cur_sc.get("src_hold", src_st + 7.5))
+                            src_dur = max(0.2, src_hold - src_st)
+                            target_w = 416 if cur_sc.get("src_kind") == "vertical" else 740
+                            target_h = 740
+                            cmd = [
+                                "ffmpeg", "-y", "-ss", f"{src_st:.3f}", "-i", mp4_path,
+                                "-t", f"{src_dur:.3f}",
+                                "-vf", f"scale={target_w}:{target_h}",
+                                "-pix_fmt", "rgb24", "-f", "rawvideo",
+                                "-v", "error", "pipe:1"
+                            ]
+                            try:
+                                res = subprocess.run(cmd, capture_output=True, timeout=20)
+                                raw = res.stdout
+                                sz = target_w * target_h * 3
+                                n = len(raw) // sz
+                                cached_frames = [Image.frombytes("RGB", (target_w, target_h), raw[j*sz : (j+1)*sz]) for j in range(n)]
+                            except Exception:
+                                cached_frames = []
+                        else:
+                            try:
+                                container = av.open(mp4_path)
+                                for f_av in container.decode(video=0):
+                                    img = f_av.to_image().convert("RGB")
+                                    # Mask out the bold Archetype Title at y = -2.95 (pixel rows 622..672)
+                                    # while keeping the thin footer line (y=679..680) and tiny metadata labels (y=691..701)
+                                    ImageDraw.Draw(img).rectangle([(0, 622), (740, 672)], fill=(0, 0, 0))
+                                    cached_frames.append(img)
+                                container.close()
+                            except Exception:
+                                cached_frames = []
+                    cached_mp4_path = cache_key
 
                 if cached_frames:
                     sc_offset = max(0.0, t - cur_sc["start"])
-                    sc_fps = cur_sc.get("fps", 15)
+                    sc_fps = cur_sc.get("fps", 25 if is_mosaic else 15)
                     f_idx = min(len(cached_frames) - 1, int(sc_offset * sc_fps))
-                    frame_img.paste(cached_frames[f_idx], (box_x, cur_box_y))
+                    if is_mosaic:
+                        img = cached_frames[f_idx]
+                        paste_x = (1920 - img.width) // 2
+                        frame_img.paste(img, (paste_x, cur_box_y))
+                        # Subtle footer line and archetype label "mosaic" in bottom bar
+                        draw.line([(590, cur_box_y + 680), (1330, cur_box_y + 680)], fill=(30, 41, 59), width=1)
+                        draw.text((960, cur_box_y + 700), "mosaic", font=font_fine, fill=(100, 116, 139), anchor="mm")
+                    else:
+                        frame_img.paste(cached_frames[f_idx], (box_x, cur_box_y))
 
         # 2. Top Host Strip: SATOSHA — 🎙️ — SATOSHI (y=60)
         y_host = 60
