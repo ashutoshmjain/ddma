@@ -13,12 +13,12 @@ app = typer.Typer(help="DeepDive Media Automator (DDMA) CLI Tool")
 @app.command()
 def transcribe(
     audio: str = typer.Option(..., help="Path to input audio file"),
-    model_name: str = typer.Option("tiny.en", help="Whisper model name to use"),
+    model_name: str = typer.Option("large-v3-turbo", help="Whisper model name to use (e.g. large-v3-turbo, small.en)"),
     out: str = typer.Option("transcription.json", help="Path to save transcription JSON"),
     word_timestamps: bool = typer.Option(True, help="Enable word-level timestamps")
 ):
     """
-    Transcribe the audio file using Whisper and cache the JSON output.
+    Transcribe the audio file using faster-whisper (CTranslate2 INT8 with AVX-512) and cache the JSON output.
     """
     if hasattr(model_name, 'default'):
         model_name = str(model_name.default)
@@ -31,14 +31,21 @@ def transcribe(
         typer.echo(f"Error: Audio file {audio} not found.", err=True)
         raise typer.Exit(code=1)
 
-    typer.echo(f"Loading Whisper model '{model_name}'...")
+    typer.echo(f"Loading faster-whisper model '{model_name}' (CPU int8, 8 threads)...")
     start_time = time.time()
-    model = whisper.load_model(model_name)
-    typer.echo(f"Model loaded in {time.time() - start_time:.2f} seconds.")
+    model = get_faster_whisper_model(model_name)
+    typer.echo(f"Model ready in {time.time() - start_time:.2f} seconds.")
 
-    typer.echo(f"Transcribing {audio} (word_timestamps={word_timestamps})...")
+    typer.echo(f"Transcribing {audio} with faster-whisper (word_timestamps={word_timestamps})...")
     transcribe_start = time.time()
-    result = model.transcribe(audio, verbose=False, word_timestamps=word_timestamps)
+    audio_input = audio
+    try:
+        import whisper.audio
+        audio_input = whisper.audio.load_audio(audio)
+    except Exception:
+        pass
+    segments_gen, info = model.transcribe(audio_input, word_timestamps=word_timestamps)
+    result = format_faster_whisper_result(segments_gen, info)
     typer.echo(f"Transcription finished in {time.time() - transcribe_start:.2f} seconds.")
 
     # Save raw transcription results
@@ -779,14 +786,71 @@ def mux_clip(
         raise typer.Exit(code=1)
 
 
-_FASTER_WHISPER_MODEL = None
+_FASTER_WHISPER_MODELS = {}
 
-def get_faster_whisper_model():
-    global _FASTER_WHISPER_MODEL
-    if _FASTER_WHISPER_MODEL is None:
+def patch_pyav_metadata_errors():
+    """Ensure PyAV 14+ does not raise TypeError on unexpected 'metadata_errors' keyword argument."""
+    try:
+        import av
+        if not hasattr(av, "_patched_metadata_errors"):
+            _orig_open = av.open
+            def _safe_av_open(*args, **kwargs):
+                kwargs.pop("metadata_errors", None)
+                return _orig_open(*args, **kwargs)
+            av.open = _safe_av_open
+            av._patched_metadata_errors = True
+    except Exception:
+        pass
+
+def format_faster_whisper_result(segments_gen, info) -> dict:
+    segments_list = []
+    text_chunks = []
+    for s in segments_gen:
+        text_chunks.append(s.text)
+        seg_dict = {
+            "id": getattr(s, "id", len(segments_list)),
+            "seek": getattr(s, "seek", 0),
+            "start": round(float(s.start), 3),
+            "end": round(float(s.end), 3),
+            "text": s.text,
+            "tokens": getattr(s, "tokens", []),
+            "avg_logprob": getattr(s, "avg_logprob", 0.0),
+            "compression_ratio": getattr(s, "compression_ratio", 1.0),
+            "no_speech_prob": getattr(s, "no_speech_prob", 0.0),
+        }
+        if s.words:
+            seg_dict["words"] = [
+                {
+                    "word": w.word,
+                    "start": round(float(w.start), 3),
+                    "end": round(float(w.end), 3),
+                    "probability": round(float(getattr(w, "probability", 1.0)), 4)
+                }
+                for w in s.words
+            ]
+        else:
+            seg_dict["words"] = []
+        segments_list.append(seg_dict)
+
+    return {
+        "text": "".join(text_chunks).strip(),
+        "segments": segments_list,
+        "language": getattr(info, "language", "en")
+    }
+
+def get_faster_whisper_model(model_name: str = "large-v3-turbo"):
+    global _FASTER_WHISPER_MODELS
+    patch_pyav_metadata_errors()
+    fw_model_name = model_name or "large-v3-turbo"
+    if fw_model_name not in _FASTER_WHISPER_MODELS:
         from faster_whisper import WhisperModel
-        _FASTER_WHISPER_MODEL = WhisperModel("small.en", device="cpu", compute_type="int8")
-    return _FASTER_WHISPER_MODEL
+        _FASTER_WHISPER_MODELS[fw_model_name] = WhisperModel(
+            fw_model_name,
+            device="cpu",
+            compute_type="int8",
+            cpu_threads=8
+        )
+    return _FASTER_WHISPER_MODELS[fw_model_name]
 
 
 def ensure_dejavu_font() -> str:
@@ -827,7 +891,7 @@ def format_ass_time(seconds: float) -> str:
 def extract_clip_words(clip: dict, plan_file: str, audio_path: Optional[str] = None, force_whisper: bool = False) -> list:
     """
     Extract word-level timestamps in rendered clip body coordinates (0..body_duration).
-    Uses faster-whisper small.en when force_whisper=True or when transcription.json is absent,
+    Uses faster-whisper large-v3-turbo when force_whisper=True or when transcription.json is absent,
     and caches on clip['_caption_words'] keyed by _audio_sig.
     """
     import hashlib
@@ -839,7 +903,7 @@ def extract_clip_words(clip: dict, plan_file: str, audio_path: Optional[str] = N
     if force_whisper and audio_path and os.path.exists(audio_path):
         try:
             import whisper.audio
-            typer.echo(f"Running faster-whisper small.en word-level transcription on {audio_path}...")
+            typer.echo(f"Running faster-whisper large-v3-turbo word-level transcription on {audio_path}...")
             model = get_faster_whisper_model()
             audio_arr = whisper.audio.load_audio(audio_path)
             segments_gen, _ = model.transcribe(audio_arr, word_timestamps=True)
@@ -933,7 +997,7 @@ def extract_clip_words(clip: dict, plan_file: str, audio_path: Optional[str] = N
     if not words and audio_path and os.path.exists(audio_path):
         try:
             import whisper.audio
-            typer.echo(f"Transcribing {audio_path} with faster-whisper small.en...")
+            typer.echo(f"Transcribing {audio_path} with faster-whisper large-v3-turbo...")
             model = get_faster_whisper_model()
             audio_arr = whisper.audio.load_audio(audio_path)
             segments_gen, _ = model.transcribe(audio_arr, word_timestamps=True)
@@ -2252,9 +2316,9 @@ def ingest_episode(
     # 2. Transcribe
     trans_path = os.path.join(proj_dir, "transcription.json")
     if not os.path.exists(trans_path):
-        update_ingestion_progress(proj_dir, 1, 30, f"Transcribing {audio_dest_name} via OpenAI Whisper...", "Running Whisper transcription with word timestamps (tiny.en)...")
-        typer.echo(f"Transcribing {audio_dest_path} with Whisper...")
-        transcribe(audio=audio_dest_path, model_name="tiny.en", out=trans_path, word_timestamps=True)
+        update_ingestion_progress(proj_dir, 1, 30, f"Transcribing {audio_dest_name} via faster-whisper...", "Running faster-whisper transcription with word timestamps (large-v3-turbo)...")
+        typer.echo(f"Transcribing {audio_dest_path} with faster-whisper (large-v3-turbo)...")
+        transcribe(audio=audio_dest_path, model_name="large-v3-turbo", out=trans_path, word_timestamps=True)
         if os.path.exists("transcription.json") and not os.path.exists(trans_path):
             shutil.copy2("transcription.json", trans_path)
 
