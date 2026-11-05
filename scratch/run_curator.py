@@ -867,6 +867,10 @@ def migrate_legacy_files():
 
 def get_mosaic_default_prompt():
     settings_path = "settings.json"
+    if not os.path.exists(settings_path):
+        alt_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "settings.json")
+        if os.path.exists(alt_path):
+            settings_path = alt_path
     if os.path.exists(settings_path):
         try:
             s_data = safe_load_json(settings_path)
@@ -880,10 +884,9 @@ def get_mosaic_default_prompt():
     return (
         "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - around 150 to 180 seconds long)\n\n"
         "- Cover the entire timeline of the video with Dan Koe-style motion graphics. Visual coverage must be active and persistent from 0:00 to the very last second with ZERO blank frames.\n\n"
-        "- Maintain uniform graphic density across all segments. Do not front-load or taper off; the closing segments must be just as visually rich and engaging as the opening.\n\n"
+        "- Maintain uniform graphic density across all segments.\n\n"
         "- Plan 10 to 12 continuous segments of roughly ~ 15 seconds each, perfectly mapped to the clip length. Each segment renders a dynamic diagrammatic graphic with changing visual steps and text reveals.\n\n"
         "- Assume background video is a blank black glossy screen (#000000). Keep persistent visuals (animations, conceptual geometry, or text) throughout. Segments must hand off to each other seamlessly like a relay race.\n\n"
-        "- Strong Outro: The final segment must conclude with an active summary diagram or key visual takeaway that persists until the clip finishes—never cut to a blank black screen.\n\n"
         "--------------------------------------------------\n"
         "PACING & ANIMATION RULES\n"
         "--------------------------------------------------\n"
