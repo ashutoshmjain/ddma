@@ -10,9 +10,18 @@ from concurrent.futures import ThreadPoolExecutor
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 GITHUB_ROOT = os.path.dirname(SCRIPT_DIR)
-EP_NUM = "248"
+def get_ep_num():
+    for i, arg in enumerate(sys.argv):
+        if arg in ("--ep", "-e") and i + 1 < len(sys.argv):
+            return sys.argv[i + 1]
+    return "249"
 
-PLAN_PATH = os.path.join(GITHUB_ROOT, "ddma", "projects", f"episode_{EP_NUM}", "plan.json")
+EP_NUM = get_ep_num()
+
+PLAN_PATH = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", EP_NUM, "plan.json")
+if not os.path.exists(PLAN_PATH):
+    PLAN_PATH = os.path.join(GITHUB_ROOT, "ddma", "projects", f"episode_{EP_NUM}", "plan.json")
+
 TRANS_PATH = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", EP_NUM, "transcription.json")
 EDIT_PATH = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", EP_NUM, "podcast_edit.json")
 AUDIO_PATH = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", EP_NUM, f"podcast_{EP_NUM}.mp3")
@@ -112,7 +121,12 @@ def extract_clip_transcript_beats(clip_data, target_beat_duration=7.5):
     """
     words = clip_data.get("_caption_words", [])
     if not words:
-        # Fallback to segments
+        try:
+            import ddma
+            words = ddma.extract_clip_words(clip_data, plan_file=PLAN_PATH)
+        except Exception:
+            pass
+    if not words:
         seg_texts = [s.get("text", "") for s in clip_data.get("segments", []) if s.get("type") == "audio"]
         full_text = " ".join(seg_texts)
         words = [{"word": w, "start": i*0.4, "end": (i+1)*0.4} for i, w in enumerate(full_text.split())]
@@ -231,9 +245,9 @@ if __name__ == "__main__":
             else:
                 clip_list = [int(target)]
 
-            print(f"Generating code for clips: {clip_list} with Gemini 3 Flash...")
+            force_flag = "--force" in sys.argv
             for c_num in clip_list:
-                generate_clip_code(c_num)
+                generate_clip_code(c_num, force=force_flag)
             print("Batch generation completed!")
     else:
         print("Usage: python batch_archetype_pipeline.py --generate-code <clip_num|all|3-23>")
