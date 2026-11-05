@@ -1,5 +1,8 @@
 import typer
-import whisper
+try:
+    import whisper
+except ImportError:
+    whisper = None
 import json
 import os
 import re
@@ -902,10 +905,9 @@ def extract_clip_words(clip: dict, plan_file: str, audio_path: Optional[str] = N
     words = []
     if force_whisper and audio_path and os.path.exists(audio_path):
         try:
-            import whisper.audio
+            audio_arr = whisper.audio.load_audio(audio_path) if (whisper and hasattr(whisper, 'audio')) else audio_path
             typer.echo(f"Running faster-whisper large-v3-turbo word-level transcription on {audio_path}...")
             model = get_faster_whisper_model()
-            audio_arr = whisper.audio.load_audio(audio_path)
             segments_gen, _ = model.transcribe(audio_arr, word_timestamps=True)
             for s in segments_gen:
                 for w in (s.words or []):
@@ -996,10 +998,9 @@ def extract_clip_words(clip: dict, plan_file: str, audio_path: Optional[str] = N
     # Final fallback to faster-whisper small.en if words still empty and audio_path exists
     if not words and audio_path and os.path.exists(audio_path):
         try:
-            import whisper.audio
+            audio_arr = whisper.audio.load_audio(audio_path) if (whisper and hasattr(whisper, 'audio')) else audio_path
             typer.echo(f"Transcribing {audio_path} with faster-whisper large-v3-turbo...")
             model = get_faster_whisper_model()
-            audio_arr = whisper.audio.load_audio(audio_path)
             segments_gen, _ = model.transcribe(audio_arr, word_timestamps=True)
             for s in segments_gen:
                 for w in (s.words or []):
