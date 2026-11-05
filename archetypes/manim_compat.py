@@ -123,7 +123,7 @@ config.frame_height = 8.0
 config.background_color = "#000000"
 
 def get_footer_and_title(*args, **kwargs):
-    cat_str = "ECONOMIC AUTONOMY"
+    cat_str = "KineticVector"
     str_args = [a for a in args if isinstance(a, str)]
     if len(str_args) >= 2:
         cat_str = str_args[1]
@@ -131,13 +131,15 @@ def get_footer_and_title(*args, **kwargs):
         cat_str = str_args[0]
     if "category_text" in kwargs or "category_str" in kwargs:
         cat_str = kwargs.get("category_text") or kwargs.get("category_str")
+    if "archetype" in kwargs:
+        cat_str = kwargs.get("archetype")
 
     # Archetype titles are permanently disabled to prevent visual distraction; return an empty VGroup for title
     title = VGroup()
-    footer_line = Line(LEFT * 3.5, RIGHT * 3.5, color="#FFFFFF", stroke_width=1.5).move_to(DOWN * 3.35)
-    footer_line.set_opacity(0.4)
-    left_text = Text(cat_str, font="Arial", weight=BOLD, font_size=10, color="#FFFFFF").set_opacity(0.65).next_to(footer_line, DOWN, buff=0.12).to_edge(LEFT, buff=0.55)
-    right_text = Text("DEEP DIVE PODCAST • EP. 248", font="Arial", weight=NORMAL, font_size=10, color="#FFFFFF").set_opacity(0.65).next_to(footer_line, DOWN, buff=0.12).to_edge(RIGHT, buff=0.55)
+    footer_line = Line(LEFT * 3.5, RIGHT * 3.5, color="#334155", stroke_width=1.5).move_to(DOWN * 3.35)
+    footer_line.set_opacity(0.6)
+    left_text = Text(cat_str, font="Arial", weight=NORMAL, font_size=10, color="#64748b").next_to(footer_line, DOWN, buff=0.12).to_edge(LEFT, buff=0.55)
+    right_text = Text("deepDive podcast", font="Arial", weight=NORMAL, font_size=10, color="#64748b").next_to(footer_line, DOWN, buff=0.12).to_edge(RIGHT, buff=0.55)
     return title, footer_line, left_text, right_text
 
 def setup_base_scene(scene=None, *args, **kwargs):
@@ -147,12 +149,12 @@ def setup_base_scene(scene=None, *args, **kwargs):
 
 setup_scene_base = setup_base_scene
 
-def get_footer(scene=None, category="ECONOMIC AUTONOMY", *args, **kwargs):
-    line = Line(LEFT * 3.5, RIGHT * 3.5, color="#FFFFFF", stroke_width=1.5).move_to(DOWN * 3.35)
-    line.set_opacity(0.4)
-    cat_text = category if isinstance(category, str) else "ECONOMIC AUTONOMY"
-    t_left = Text(cat_text, font="Arial", weight=BOLD, font_size=10, color="#FFFFFF").set_opacity(0.65).next_to(line, DOWN, buff=0.12).to_edge(LEFT, buff=0.55)
-    t_right = Text("DEEP DIVE PODCAST • EP. 248", font="Arial", weight=NORMAL, font_size=10, color="#FFFFFF").set_opacity(0.65).next_to(line, DOWN, buff=0.12).to_edge(RIGHT, buff=0.55)
+def get_footer(scene=None, category="KineticVector", *args, **kwargs):
+    line = Line(LEFT * 3.5, RIGHT * 3.5, color="#334155", stroke_width=1.5).move_to(DOWN * 3.35)
+    line.set_opacity(0.6)
+    cat_text = category if isinstance(category, str) else "KineticVector"
+    t_left = Text(cat_text, font="Arial", weight=NORMAL, font_size=10, color="#64748b").next_to(line, DOWN, buff=0.12).to_edge(LEFT, buff=0.55)
+    t_right = Text("deepDive podcast", font="Arial", weight=NORMAL, font_size=10, color="#64748b").next_to(line, DOWN, buff=0.12).to_edge(RIGHT, buff=0.55)
     if scene and hasattr(scene, "add"):
         scene.add(line, t_left, t_right)
     return VGroup(line, t_left, t_right)

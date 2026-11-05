@@ -200,9 +200,10 @@ def render_chunk_worker(args):
                         img = cached_frames[f_idx]
                         paste_x = (1920 - img.width) // 2
                         frame_img.paste(img, (paste_x, cur_box_y))
-                        # Subtle footer line and archetype label "mosaic" in bottom bar
-                        draw.line([(590, cur_box_y + 680), (1330, cur_box_y + 680)], fill=(30, 41, 59), width=1)
-                        draw.text((960, cur_box_y + 700), "mosaic", font=font_fine, fill=(100, 116, 139), anchor="mm")
+                        # Subtle footer line and labels: Left = Mosaic, Right = deepDive podcast
+                        draw.line([(590, cur_box_y + 680), (1330, cur_box_y + 680)], fill=(51, 65, 85), width=1)
+                        draw.text((600, cur_box_y + 700), "Mosaic", font=font_fine, fill=(100, 116, 139), anchor="lm")
+                        draw.text((1320, cur_box_y + 700), "deepDive podcast", font=font_fine, fill=(100, 116, 139), anchor="rm")
                     else:
                         frame_img.paste(cached_frames[f_idx], (box_x, cur_box_y))
 

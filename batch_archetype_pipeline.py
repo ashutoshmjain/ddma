@@ -53,22 +53,23 @@ def call_gemini_with_fallback(payload):
     return None, None, 0
 
 SYSTEM_PROMPT = """You are an elite Manim Community Edition (ManimCE) Python developer following strict pedagogical and visual rules:
-1. PURE MONOCHROME WHITE-ON-BLACK:
-   Every stroke, line, and fill is pure shining white (#FFFFFF) on pure glossy black (#000000). Fill opacities between 0.05 and 1.0. ZERO colors (no blue, green, brown, red, or orange).
+1. PURE MONOCHROME NOIR WITH FUNCTIONAL ACCENT:
+   Every stroke, line, and figure is pure shining white (#FFFFFF) on pure glossy black (#000000). Fill opacities between 0.05 and 1.0. Functional spoken highlight accents may use Gold (#FFD700). ZERO other colors (no blue, green, brown, red, or orange).
 2. CANVAS CONFIGURATION:
    config.pixel_width = 740
    config.pixel_height = 740
    config.frame_width = 8.0
    config.frame_height = 8.0
    config.background_color = "#000000"
-3. NO ARCHETYPE TITLES:
-   Do NOT create a scene title at the top or bottom of the canvas. The upper canvas y in [0.5, 3.5] must remain 100% clear for spoken karaoke captions, and the area above the footer line must remain uncluttered.
+3. STRICT INVARIANT: NO ARCHETYPE TITLES EVER:
+   Do NOT create a scene title or chapter heading at the top or bottom of the canvas. The upper canvas y in [0.5, 3.5] must remain 100% clear for spoken karaoke captions, and the bottom area above the footer line must remain uncluttered.
 4. BOTTOM FOOTER BAR & META LABELS:
-   footer_line = Line(LEFT * 3.5, RIGHT * 3.5, color="#FFFFFF", stroke_width=1.5).move_to(DOWN * 3.35)
-   footer_line.set_opacity(0.4)
-   left_text = Text("CATEGORY LABEL", font="Arial", weight=BOLD, font_size=10, color="#FFFFFF").set_opacity(0.65).next_to(footer_line, DOWN, buff=0.12).to_edge(LEFT, buff=0.55)
-   right_text = Text("DEEP DIVE PODCAST • EP. 248", font="Arial", weight=NORMAL, font_size=10, color="#FFFFFF").set_opacity(0.65).next_to(footer_line, DOWN, buff=0.12).to_edge(RIGHT, buff=0.55)
+   footer_line = Line(LEFT * 3.5, RIGHT * 3.5, color="#334155", stroke_width=1.5).move_to(DOWN * 3.35)
+   footer_line.set_opacity(0.6)
+   left_text = Text(ARCHETYPE_NAME, font="Arial", weight=NORMAL, font_size=10, color="#64748b").next_to(footer_line, DOWN, buff=0.12).to_edge(LEFT, buff=0.55)
+   right_text = Text("deepDive podcast", font="Arial", weight=NORMAL, font_size=10, color="#64748b").next_to(footer_line, DOWN, buff=0.12).to_edge(RIGHT, buff=0.55)
    self.add(footer_line, left_text, right_text)
+   Never display titles, episode numbers, or scene names in the footer bar. Only Archetype Name on left and 'deepDive podcast' on right in #64748b.
 5. "SUPER DUMB & LITERAL" FIGURATIVE PEDAGOGY:
    Directly and figuratively illustrate the primary spoken words. No secondary/tertiary abstract speculation.
    Draw bold figurative objects: robots, balance scales, dollar signs, checkbooks, electric plugs, power meters, servers, cellular walls, arrows, intake pipes.
@@ -98,10 +99,10 @@ config.background_color = "#000000"
 
 def get_footer_and_title(scene, title_str, category_str):
     title = VGroup()
-    footer_line = Line(LEFT * 3.5, RIGHT * 3.5, color="#FFFFFF", stroke_width=1.5).move_to(DOWN * 3.35)
-    footer_line.set_opacity(0.4)
-    left_text = Text(category_str, font="Arial", weight=BOLD, font_size=10, color="#FFFFFF").set_opacity(0.65).next_to(footer_line, DOWN, buff=0.12).to_edge(LEFT, buff=0.55)
-    right_text = Text("DEEP DIVE PODCAST • EP. 248", font="Arial", weight=NORMAL, font_size=10, color="#FFFFFF").set_opacity(0.65).next_to(footer_line, DOWN, buff=0.12).to_edge(RIGHT, buff=0.55)
+    footer_line = Line(LEFT * 3.5, RIGHT * 3.5, color="#334155", stroke_width=1.5).move_to(DOWN * 3.35)
+    footer_line.set_opacity(0.6)
+    left_text = Text(category_str, font="Arial", weight=NORMAL, font_size=10, color="#64748b").next_to(footer_line, DOWN, buff=0.12).to_edge(LEFT, buff=0.55)
+    right_text = Text("deepDive podcast", font="Arial", weight=NORMAL, font_size=10, color="#64748b").next_to(footer_line, DOWN, buff=0.12).to_edge(RIGHT, buff=0.55)
     return title, footer_line, left_text, right_text
 """
 
@@ -176,7 +177,7 @@ def generate_clip_code(clip_num, force=False):
             prompt_items.append(
                 f"{b['index']}. {scene_name} (Duration {b['duration']}s):\n"
                 f"   Spoken Dialogue: \"{b['text']}\"\n"
-                f"   Design a literal, bold figurative white vector visual illustrating these exact words."
+                f"   Design a literal, bold figurative white vector cartoon illustrating these exact words (pure white #FFFFFF on #000000, footer: Archetype: KineticVector left, deepDive podcast right, strictly NO titles)."
             )
 
         user_prompt = f"""Generate Manim Community Edition Scene classes for Part {sub_num} of Clip {clip_num:02d} ('{clip.get('title')}'):\n\n""" + "\n\n".join(prompt_items)

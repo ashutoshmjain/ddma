@@ -13,6 +13,219 @@ from typing import Optional
 
 app = typer.Typer(help="DeepDive Media Automator (DDMA) CLI Tool")
 
+
+def cast_tripartite_plan_with_gemini(t_data: dict, num_clips: Optional[int] = None, api_key: Optional[str] = None, default_visual_source: str = "mosaic") -> list:
+    """
+    Parses a NotebookLM tripartite podcast transcript where each clip consists of:
+    1. Punchline Hook (10-20s): Spoken thesis statement, announcing clip number and/or title.
+    2. Core Deliberation (~2 mins): In-depth discussion between Satosha and Satoshi.
+    3. Outro Teaser (10-20s): Spoken bridge stating what to look for in the next clip.
+
+    Prompts Gemini to identify every clip boundary, casts dynamic Intro Cards & Outro Cards,
+    and snaps boundary timestamps via Whisper word-level timestamps (Zero Manual Trimming).
+    """
+    words = []
+    for s in t_data.get("segments", []):
+        words.extend(s.get("words", []))
+    if not words:
+        return []
+
+    total_dur = words[-1]["end"]
+    if not num_clips:
+        num_clips = max(1, int(round(total_dur / 150.0)))
+
+    # Resolve Gemini API Key
+    if not api_key:
+        api_key = get_gemini_api_key() if "get_gemini_api_key" in globals() else None
+    if not api_key:
+        sett_file = os.path.join(os.path.dirname(__file__), "settings.json")
+        if os.path.exists(sett_file):
+            try:
+                with open(sett_file, "r", encoding="utf-8") as sf:
+                    api_key = json.load(sf).get("gemini_api_key")
+            except Exception:
+                pass
+    if not api_key:
+        api_key = os.environ.get("GEMINI_API_KEY", "")
+
+    # Build timed sample of transcript for Gemini
+    sample_lines = []
+    for seg in t_data.get("segments", []):
+        st = seg.get("start", 0.0)
+        et = seg.get("end", 0.0)
+        txt = seg.get("text", "").strip()
+        sample_lines.append(f"[{st:.1f}s - {et:.1f}s] {txt}")
+
+    transcript_sample = "\n".join(sample_lines[:120]) + "\n...\n" + "\n".join(sample_lines[-60:]) if len(sample_lines) > 180 else "\n".join(sample_lines)
+
+    prompt = f"""You are the Executive Producer for the "Deep Dive with Gemini" podcast pipeline.
+The provided episode transcript is generated using NotebookLM's structured tripartite pattern:
+Every clip consists of 3 distinct spoken parts:
+1. Punchline Hook (10–20s): Spoken thesis statement, announcing the clip number and title.
+2. Core Deliberation (~2 mins): In-depth conversational discussion between Satosha and Satoshi.
+3. Outro Teaser (10–20s): Spoken bridge stating what to look for in the next clip.
+
+Episode Transcript Sample:
+{transcript_sample}
+
+Task:
+Analyze the transcript and identify all tripartite clips (target approximately {num_clips} clips).
+For each clip, return a JSON object with:
+- "num": integer (1, 2, 3...)
+- "title": Short punchy title (3-6 words) announced in the spoken punchline or summarizing the thesis
+- "hook_quote": Exact spoken opening thesis statement (1-2 sentences, 10-20s)
+- "punchline_start_phrase": First 3-5 words spoken in the punchline hook
+- "punchline_end_phrase": Last 3-5 words of the punchline hook before deliberation
+- "deliberation_start_phrase": First 3-5 words of the core deliberation
+- "deliberation_end_phrase": Last 3-5 words of the core deliberation before teaser
+- "teaser_start_phrase": First 3-5 words of the outro teaser (e.g. "In the next clip", "Coming up next")
+- "teaser_end_phrase": Last 3-5 words of the outro teaser
+- "coming_up_title": Title of the next clip teased in the outro teaser
+- "bridge_question": Curious question teased for the outro billboard card
+- "visual_source": "{default_visual_source}"
+
+Return ONLY a JSON array of objects without Markdown formatting."""
+
+    parsed_clips = []
+    if api_key and not api_key.startswith("AQ."):
+        models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
+        for m in models:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={api_key}"
+            payload = {
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"temperature": 0.2, "responseMimeType": "application/json"}
+            }
+            try:
+                req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"})
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    resp_json = json.loads(resp.read().decode("utf-8"))
+                    raw_text = resp_json["candidates"][0]["content"]["parts"][0]["text"]
+                    parsed = json.loads(raw_text)
+                    if isinstance(parsed, list) and len(parsed) > 0:
+                        parsed_clips = parsed
+                        typer.echo(f"[Gemini Caster] Successfully cast {len(parsed_clips)} tripartite clips with {m}!")
+                        break
+            except Exception as ge:
+                typer.echo(f"[Gemini Caster] [{m}] Notice: {ge}")
+
+    # Fallback heuristic if API call failed
+    if not parsed_clips:
+        typer.echo("[Tripartite Caster] Utilizing deterministic sentence snapping fallback...")
+        target_clip_dur = total_dur / max(1, num_clips)
+        curr_s = 0.0
+        for i in range(num_clips):
+            c_num = i + 1
+            curr_e = min(total_dur, curr_s + target_clip_dur)
+            c_obj = build_rough_cut_segments(c_num, curr_s, curr_e, t_data.get("segments", []), num_clips)
+            c_obj["visual_source"] = default_visual_source
+            parsed_clips.append(c_obj)
+            curr_s = curr_e
+        return parsed_clips
+
+    # Snap phrase boundaries to Whisper word-level timestamps
+    final_clips = []
+    cursor_time = 0.0
+
+    for idx, c in enumerate(parsed_clips):
+        c_num = c.get("num", idx + 1)
+        title = c.get("title", f"Part {c_num}")
+        hook_quote = c.get("hook_quote", "")
+        p_start_p = c.get("punchline_start_phrase", "")
+        p_end_p = c.get("punchline_end_phrase", "")
+        d_start_p = c.get("deliberation_start_phrase", "")
+        d_end_p = c.get("deliberation_end_phrase", "")
+        t_start_p = c.get("teaser_start_phrase", "")
+        t_end_p = c.get("teaser_end_phrase", "")
+
+        # 1. Snap Punchline Hook (10-20s)
+        h_start, _ = snap_quote_to_words(p_start_p, words, search_start_sec=cursor_time)
+        if h_start is None:
+            h_start = cursor_time
+        _, h_end = snap_quote_to_words(p_end_p, words, search_start_sec=h_start + 8.0)
+        if h_end is None or h_end <= h_start:
+            h_end = round(min(total_dur, h_start + 18.0), 2)
+
+        # 2. Mid Sting (Bluesy Vibes or Howling)
+        mid_music = "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3" if c_num % 2 == 1 else "Howling (Sting) - Gunnar Olsen.mp3"
+
+        # 3. Snap Deliberation
+        d_start, _ = snap_quote_to_words(d_start_p, words, search_start_sec=h_end)
+        if d_start is None:
+            d_start = round(h_end + 0.1, 2)
+        _, d_end = snap_quote_to_words(d_end_p, words, search_start_sec=d_start + 60.0)
+        if d_end is None or d_end <= d_start:
+            d_end = round(min(total_dur, d_start + 110.0), 2)
+
+        # 4. Snap Outro Teaser
+        t_start, _ = snap_quote_to_words(t_start_p, words, search_start_sec=d_end)
+        if t_start is None:
+            t_start = round(d_end + 0.1, 2)
+        _, t_end = snap_quote_to_words(t_end_p, words, search_start_sec=t_start + 8.0)
+        if t_end is None or t_end <= t_start:
+            t_end = round(min(total_dur, t_start + 18.0), 2)
+
+        # Build segments list
+        segs = [
+            {
+                "type": "audio",
+                "start": h_start,
+                "end": h_end,
+                "duration": round(h_end - h_start, 2),
+                "text": hook_quote
+            },
+            {
+                "type": "music",
+                "music_file": mid_music,
+                "duration": 5.5,
+                "silence_before": 0.2,
+                "fade_out": 2.0,
+                "crossfade": 0.5,
+                "volume": 1.0
+            },
+            {
+                "type": "audio",
+                "start": d_start,
+                "end": d_end,
+                "duration": round(d_end - d_start, 2),
+                "text": f"Deliberation: {title}"
+            },
+            {
+                "type": "audio",
+                "start": t_start,
+                "end": t_end,
+                "duration": round(t_end - t_start, 2),
+                "text": f"Teaser: Coming up in {c.get('coming_up_title', 'Next Part')}"
+            },
+            {
+                "type": "music",
+                "music_file": "deepDive-conclusion.mp3",
+                "duration": 5.5,
+                "silence_before": 0.2,
+                "fade_out": 2.0,
+                "crossfade": 0.0,
+                "volume": 1.0
+            }
+        ]
+
+        bridge_q = c.get("bridge_question") or f"Coming up in Part {c_num + 1}: {c.get('coming_up_title', 'Next Part')} — What is the deeper secret?"
+
+        final_clips.append({
+            "num": c_num,
+            "title": title,
+            "hook_quote": hook_quote,
+            "coming_up_title": c.get("coming_up_title", ""),
+            "start": h_start,
+            "end": t_end,
+            "duration": round(t_end - h_start, 2),
+            "bridge_text": [bridge_q],
+            "segments": segs,
+            "locked": False,
+            "visual_source": c.get("visual_source", default_visual_source)
+        })
+        cursor_time = t_end
+
+    return final_clips
+
 @app.command()
 def transcribe(
     audio: str = typer.Option(..., help="Path to input audio file"),
@@ -257,7 +470,8 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
         "duration": round(main_end - h_start, 2),
         "bridge_text": [bridge_question],
         "segments": seg_list,
-        "locked": False
+        "locked": False,
+        "visual_source": "mosaic"
     }
 
 @app.command()
@@ -2278,7 +2492,7 @@ def ingest_episode(
     episode: int = typer.Option(..., help="Episode number (e.g. 246)"),
     title: str = typer.Option(..., help="Episode title"),
     num_clips: int = typer.Option(18, help="Number of structural clips to divide into (default 18)"),
-    mode: str = typer.Option("structured", help="Ingestion mode: 'structured' (fast uniform sentence snapping) or 'unstructured' (Gemini AI topic discovery)")
+    mode: str = typer.Option("tripartite", help="Ingestion mode: 'structured' (fast uniform sentence snapping) or 'unstructured' (Gemini AI topic discovery)")
 ):
     """
     Automated end-to-end ingestion pipeline: project setup, transcription, plan generation,
@@ -2333,7 +2547,11 @@ def ingest_episode(
         typer.echo(f"Generating structural plan with {num_clips} clips...")
         with open(trans_path, "r", encoding="utf-8") as tf:
             t_data = json.load(tf)
-        words = []
+        if mode == "tripartite":
+            typer.echo(f"Casting NotebookLM tripartite audio with Gemini and snapping Whisper word timestamps...")
+            clips_list = cast_tripartite_plan_with_gemini(t_data, num_clips=num_clips, default_visual_source="mosaic")
+        if not clips_list:
+            words = []
         for seg in t_data.get("segments", []):
             words.extend(seg.get("words", []))
         total_dur = words[-1]["end"] if words else 0
@@ -2449,3 +2667,27 @@ def ingest_episode(
 
 if __name__ == "__main__":
     app()
+
+
+@app.command("cast-tripartite")
+def cast_tripartite_cmd(
+    transcription: str = typer.Option("transcription.json", help="Path to Whisper transcription JSON"),
+    num_clips: Optional[int] = typer.Option(None, help="Optional number of clips to structure"),
+    out: str = typer.Option("plan.json", help="Path to save generated tripartite plan JSON"),
+    source: str = typer.Option("mosaic", help="Default active visual master ('mosaic' or 'manim')")
+):
+    """
+    Automated zero-trim plan generator for NotebookLM tripartite audio:
+    Discovers Punchline Hook, Deliberation, and Outro Teaser boundaries via Gemini,
+    casts Intro/Outro Cards, and snaps word timestamps via Whisper.
+    """
+    if not os.path.exists(transcription):
+        typer.echo(f"Error: Transcription {transcription} not found.", err=True)
+        return
+    with open(transcription, "r", encoding="utf-8") as f:
+        t_data = json.load(f)
+
+    clips = cast_tripartite_plan_with_gemini(t_data, num_clips=num_clips, default_visual_source=source)
+    with open(out, "w", encoding="utf-8") as f:
+        json.dump(clips, f, indent=2)
+    typer.echo(f"Successfully cast {len(clips)} tripartite clips saved to {out}!")

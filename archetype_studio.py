@@ -611,10 +611,10 @@ Rewrite ONLY the single Manim Scene class `{class_name}` below according to the 
 
 STRICT VISUAL & TECHNICAL RULES:
 1. Class definition MUST remain exact: `class {class_name}(Scene):`
-2. PURE MONOCHROME WHITE-ON-BLACK: Every stroke, line, and fill is pure shining white ("#FFFFFF") on pure black ("#000000"). ZERO other colors.
-3. NO ARCHETYPE TITLES: Do NOT draw a big title at the top or bottom. Call `get_footer(self)` at the start of `construct(self)`.
+2. PURE MONOCHROME NOIR WITH FUNCTIONAL ACCENT: Every stroke, line, and fill is pure shining white ("#FFFFFF") on pure black ("#000000"). Functional accents may use gold ("#FFD700"). ZERO other colors.
+3. STRICT INVARIANT: NO ARCHETYPE TITLES EVER: Do NOT draw a title at the top or bottom of the scene. Call `get_footer(self)` at the start of `construct(self)`. The footer renders Archetype Name on the left and 'deepDive podcast' on the right in #64748b.
 4. SAFE ILLUSTRATION ZONE: Keep all geometry centered within x in [-3.0, 3.0] and y in [-1.8, 0.8] so it sits cleanly in the middle of the viewport.
-5. SUPER DUMB & LITERAL FIGURATIVE STORYTELLING: Draw clear, bold figurative objects (3px-6px strokes) that immediately illustrate the Producer's request and spoken words. Include a `# Visual: <description>` comment at the top of `construct(self)`.
+5. "SUPER DUMB & LITERAL" FIGURATIVE CARTOON STORYTELLING: Draw clear, bold figurative objects (4px-12px strokes) that immediately illustrate the Producer's request and spoken words (e.g. faucet dripping into mug, forklift, airplane, prism, balance scale). Never stuff animations with number tables, tiny telemetry cards, or dense academic text. Include a `# Visual: <description>` comment at the top of `construct(self)`.
 6. TIMING & PERSISTENCE INVARIANT: Total `run_time` + `self.wait()` must equal approximately {duration:.1f} seconds. NEVER call `FadeOut` on the main illustration at the end of the scene! The final visual state MUST persist on screen (`self.wait(...)`) until the next beat takes over so the screen is NEVER empty!
 7. Use only standard ManimCE primitives: Line, DashedLine, Circle, Rectangle, RoundedRectangle, Polygon, Triangle, Arc, Arrow, DoubleArrow, Text, VGroup, Create, Write, FadeIn, GrowFromCenter, Transform, Rotate.
 
