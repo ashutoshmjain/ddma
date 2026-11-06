@@ -3005,7 +3005,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 json_data = json.loads(post_data.decode('utf-8'))
                 segments = json_data.get("segments", [])
-                clip_num = json_data.get("clip_num", 1)
+                clip_num = json_data.get("clip_num", 0)
                 title = json_data.get("title", f"Clip-{clip_num}")
                 export_format = json_data.get("export_format", "audio")
                 resolution = json_data.get("resolution", "1080x1080")
@@ -4099,7 +4099,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             try:
                 query = parse_qs(parsed_url.query)
                 project_id = query.get('id', [None])[0]
-                clip_num = int(query.get('num', [1])[0])
+                clip_num = int(query.get('num', [0])[0])
                 content_len = int(self.headers.get('Content-Length', 0))
                 req_body = json.loads(self.rfile.read(content_len).decode('utf-8')) if content_len > 0 else {}
 
@@ -4613,7 +4613,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     if isinstance(plan_data, list):
                         for c in plan_data:
                             c_num = c.get("num")
-                            if c_num and c.get("mosaic_run_id"):
+                            if c_num is not None and c.get("mosaic_run_id"):
                                 m_run_id = c.get("mosaic_run_id")
                                 v_file = os.path.join(clips_dir, f"{ep_num}-{c_num}-mosaic-{m_run_id}.mp4")
                                 orig_file = os.path.join(clips_dir, f"{ep_num}-{c_num}-original.mp4")

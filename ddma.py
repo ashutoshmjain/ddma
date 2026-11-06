@@ -577,28 +577,28 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
     mid_duration = 5.5
 
     # 4. Main Body Audio Segment: Starts at the very next sentence start, ends at sentence end
-        if all_words and hook_segment:
-            body_start_idx = best_hook_idx + 1
-            if body_start_idx < len(all_words):
-                main_start = round(all_words[body_start_idx]["start"], 2)
-            else:
-                main_start = round(h_end + 0.3, 2)
-                body_start_idx = len(all_words) - 1
-            h_end_acoustic = resolve_acoustic_word_end(h_end, main_start)
-            hook_segment["end"] = h_end_acoustic
-            hook_segment["duration"] = round(h_end_acoustic - h_start, 2)
+    if all_words and hook_segment:
+        body_start_idx = best_hook_idx + 1
+        if body_start_idx < len(all_words):
+            main_start = round(all_words[body_start_idx]["start"], 2)
+        else:
+            main_start = round(h_end + 0.3, 2)
+            body_start_idx = len(all_words) - 1
+        h_end_acoustic = resolve_acoustic_word_end(h_end, main_start)
+        hook_segment["end"] = h_end_acoustic
+        hook_segment["duration"] = round(h_end_acoustic - h_start, 2)
 
-            cand_body_ends = [idx for idx in sentence_ends if idx >= body_start_idx]
-            if cand_body_ends:
-                best_end_idx = min(cand_body_ends, key=lambda idx: abs(all_words[idx]["end"] - end_time))
-            else:
-                best_end_idx = len(all_words) - 1
+        cand_body_ends = [idx for idx in sentence_ends if idx >= body_start_idx]
+        if cand_body_ends:
+            best_end_idx = min(cand_body_ends, key=lambda idx: abs(all_words[idx]["end"] - end_time))
+        else:
+            best_end_idx = len(all_words) - 1
 
-            raw_main_end = round(all_words[best_end_idx]["end"], 2)
-            next_w_s = all_words[best_end_idx + 1]["start"] if best_end_idx + 1 < len(all_words) else raw_main_end + 0.5
-            main_end = resolve_acoustic_word_end(raw_main_end, next_w_s)
-            body_words = [w.get("word", "").strip() for w in all_words[body_start_idx : best_end_idx + 1]]
-            main_text = " ".join(body_words)
+        raw_main_end = round(all_words[best_end_idx]["end"], 2)
+        next_w_s = all_words[best_end_idx + 1]["start"] if best_end_idx + 1 < len(all_words) else raw_main_end + 0.5
+        main_end = resolve_acoustic_word_end(raw_main_end, next_w_s)
+        body_words = [w.get("word", "").strip() for w in all_words[body_start_idx : best_end_idx + 1]]
+        main_text = " ".join(body_words)
     else:
         main_start = round(h_end + 0.1, 2)
         main_end = round(end_time, 2)
