@@ -14,6 +14,167 @@ from typing import Optional
 app = typer.Typer(help="DeepDive Media Automator (DDMA) CLI Tool")
 
 
+def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = "mosaic") -> list:
+    """
+    Deterministically detects spoken NotebookLM clip cues ('Clip 1', 'Clip one', etc.)
+    and snaps tripartite boundaries:
+    - Clip 0 (Show Prologue / Ep Intro)
+    - Clips 1..N with Punchline Hook, Mid-Sting, Core Deliberation, Outro Teaser, Outro-Sting.
+    """
+    segments = t_data.get("segments", [])
+    if not segments:
+        return []
+
+    all_words = []
+    for s in segments:
+        all_words.extend(s.get("words", []))
+    if not all_words:
+        return []
+
+    word_to_num = {
+        "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7,
+        "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "thirteen": 13,
+        "fourteen": 14, "fifteen": 15, "sixteen": 16, "seventeen": 17, "eighteen": 18,
+        "nineteen": 19, "twenty": 20
+    }
+
+    raw_cues = []
+    for i, s in enumerate(segments):
+        t = s.get("text", "")
+        m = re.search(r"\bclip\s+(\w+)\b", t, re.IGNORECASE)
+        if m and "next clip" not in t.lower() and "final clip" not in t.lower():
+            w_val = m.group(1).lower()
+            c_num = int(w_val) if w_val.isdigit() else word_to_num.get(w_val)
+            if c_num is not None:
+                w_start = s["start"]
+                for w in s.get("words", []):
+                    if "clip" in w.get("word", "").lower():
+                        w_start = w["start"]
+                        break
+                intro_start = s["start"] if (s["start"] < w_start and (w_start - s["start"]) < 4.0) else w_start
+                raw_cues.append({"num": c_num, "seg_idx": i, "start": intro_start, "seg": s})
+
+    if len(raw_cues) < 3:
+        return []
+
+    raw_cues.sort(key=lambda x: x["start"])
+    cues = []
+    seen_nums = set()
+    for rc in raw_cues:
+        if rc["num"] not in seen_nums:
+            cues.append(rc)
+            seen_nums.add(rc["num"])
+
+    total_audio_dur = all_words[-1]["end"]
+
+    def get_words_between(st, et):
+        return [w for w in all_words if w["start"] >= st - 0.05 and w["end"] <= et + 0.05]
+
+    def get_text_between(st, et):
+        w_list = get_words_between(st, et)
+        return " ".join(w["word"].strip() for w in w_list).strip()
+
+    clips = []
+    first_cue_start = cues[0]["start"]
+
+    # Clip 0: Prologue (if there is content before first clip cue)
+    if first_cue_start > 20.0:
+        c0_end = round(first_cue_start, 2)
+        c0_words = get_words_between(0.0, c0_end)
+        c0_hook_end = min(20.0, c0_end)
+        for w in c0_words:
+            if 12.0 <= w["end"] <= 28.0 and any(w.get("word", "").strip().endswith(p) for p in [".", "?", "!"]):
+                c0_hook_end = round(w["end"], 2)
+                break
+        delib_start = c0_hook_end + 0.3
+        for w in c0_words:
+            if w["start"] >= c0_hook_end - 0.05:
+                delib_start = w["start"]
+                break
+        c0_hook_text = get_text_between(0.0, c0_hook_end)
+        c0_body_text = get_text_between(delib_start, c0_end)
+        clips.append({
+            "num": 0,
+            "title": "Show Prologue / Ep Intro",
+            "start": 0.0,
+            "end": c0_end,
+            "duration": c0_end,
+            "bridge_text": [f"What is waiting in Clip {cues[0]['num']}?"],
+            "segments": [
+                {"type": "audio", "start": 0.0, "end": c0_hook_end, "duration": c0_hook_end, "text": c0_hook_text},
+                {"type": "music", "start": None, "end": None, "duration": 5.5, "gap": 0.2, "fade_out": 2.0, "crossfade": 0.5, "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"},
+                {"type": "audio", "start": round(delib_start, 2), "end": c0_end, "duration": round(c0_end - delib_start, 2), "text": c0_body_text},
+                {"type": "music", "start": None, "end": None, "duration": 5.5, "gap": 0.2, "fade_out": 2.0, "music_file": "music/deepDive-conclusion.mp3"}
+            ],
+            "locked": False,
+            "visual_source": default_visual_source
+        })
+
+    for idx, cue in enumerate(cues):
+        c_num = cue["num"]
+        st = round(cue["start"], 2)
+        if idx + 1 < len(cues):
+            next_st = cues[idx + 1]["start"]
+            w_prev = [w for w in all_words if w["end"] <= next_st]
+            et = round(w_prev[-1]["end"], 2) if w_prev else round(next_st, 2)
+        else:
+            et = round(total_audio_dur, 2)
+
+        clip_words = get_words_between(st, et)
+        if not clip_words:
+            continue
+
+        h_end = None
+        for w in clip_words:
+            w_dur = w["end"] - st
+            w_txt = w.get("word", "").strip()
+            if w_dur >= 7.0 and any(w_txt.endswith(p) for p in [".", "?", "!"]):
+                h_end = round(w["end"], 2)
+                break
+        if not h_end:
+            h_end = round(min(et, st + 15.0), 2)
+
+        next_words = [w for w in clip_words if w["start"] >= h_end - 0.05]
+        delib_start = next_words[0]["start"] if next_words else h_end + 0.3
+
+        hook_text = get_text_between(st, h_end)
+        body_text = get_text_between(delib_start, et)
+
+        title = f"Part {c_num}"
+        m_title = re.search(r"clip\s+\w+[\s,.:\-]+([^.!?\n]+)", hook_text, re.IGNORECASE)
+        if m_title:
+            cand = m_title.group(1).strip()
+            cand = re.sub(r"\s*-\s*", "-", cand)
+            if len(cand.split()) <= 8:
+                title = cand.title()
+
+        bridge_q = f"What happens next in Part {c_num + 1}?"
+        m_bridge = re.search(r"(coming up in (?:the )?(?:next|final) clip[^.!?\n]+[.!?])", body_text, re.IGNORECASE)
+        if m_bridge:
+            bridge_q = m_bridge.group(1).strip()
+
+        sting_file = "music/Howling (Sting) - Gunnar Olsen.mp3" if c_num % 2 == 1 else "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
+
+        clips.append({
+            "num": c_num,
+            "title": title,
+            "start": st,
+            "end": et,
+            "duration": round(et - st, 2),
+            "bridge_text": [bridge_q],
+            "segments": [
+                {"type": "audio", "start": st, "end": h_end, "duration": round(h_end - st, 2), "text": hook_text},
+                {"type": "music", "start": None, "end": None, "duration": 5.5, "gap": 0.2, "fade_out": 2.0, "crossfade": 0.5, "music_file": sting_file},
+                {"type": "audio", "start": round(delib_start, 2), "end": et, "duration": round(et - delib_start, 2), "text": body_text},
+                {"type": "music", "start": None, "end": None, "duration": 5.5, "gap": 0.2, "fade_out": 2.0, "music_file": "music/deepDive-conclusion.mp3"}
+            ],
+            "locked": False,
+            "visual_source": default_visual_source
+        })
+
+    return clips
+
+
 def cast_tripartite_plan_with_gemini(t_data: dict, num_clips: Optional[int] = None, api_key: Optional[str] = None, default_visual_source: str = "mosaic") -> list:
     """
     Parses a NotebookLM tripartite podcast transcript where each clip consists of:
@@ -21,9 +182,14 @@ def cast_tripartite_plan_with_gemini(t_data: dict, num_clips: Optional[int] = No
     2. Core Deliberation (~2 mins): In-depth discussion between Satosha and Satoshi.
     3. Outro Teaser (10-20s): Spoken bridge stating what to look for in the next clip.
 
-    Prompts Gemini to identify every clip boundary, casts dynamic Intro Cards & Outro Cards,
-    and snaps boundary timestamps via Whisper word-level timestamps (Zero Manual Trimming).
+    First checks for deterministic spoken clip cues ('Clip 1', 'Clip one', etc.) with microsecond snapping.
+    Otherwise prompts Gemini to identify every clip boundary.
     """
+    spoken_clips = parse_spoken_cue_tripartite_plan(t_data, default_visual_source=default_visual_source)
+    if spoken_clips:
+        typer.echo(f"[Spoken Cue Caster] Detected {len(spoken_clips)} spoken tripartite clip cues with exact boundary snapping!")
+        return spoken_clips
+
     words = []
     for s in t_data.get("segments", []):
         words.extend(s.get("words", []))
@@ -569,6 +735,14 @@ def plan(
             c_obj = build_rough_cut_segments(idx + 1, start_aligned, end_aligned, segments, len(range_strs))
             clips_plan.append(c_obj)
     else:
+        spoken_clips = parse_spoken_cue_tripartite_plan(data, default_visual_source="mosaic")
+        if spoken_clips:
+            typer.echo(f"[Spoken Cue Caster] Detected {len(spoken_clips)} spoken tripartite clip cues! Writing plan to {out}...")
+            with open(out, "w", encoding="utf-8") as f:
+                json.dump(spoken_clips, f, indent=2)
+            typer.echo(f"Plan saved to {out}")
+            return
+
         # Automated forward chronological partitioning with clip integrity focus
         boundary_candidates = []
         for idx, seg in enumerate(segments):
@@ -1419,7 +1593,8 @@ def write_ass_file(
     chunks: list,
     ass_path: str,
     body_duration: float = 0.0,
-    intro_offset: float = 0.0
+    intro_offset: float = 0.0,
+    visual_source: str = "mosaic"
 ):
     """Write exact ASS v4+ caption file for 1080x1920 vertical canvas with studio ribbon above captions."""
     os.makedirs(os.path.dirname(ass_path) if os.path.dirname(ass_path) else ".", exist_ok=True)
@@ -1436,6 +1611,8 @@ def write_ass_file(
         "Style: Caption,DejaVu Sans Mono,46,&H00FFFFFF,&H000019FF,&H80000000,&H80000000,1,0,0,0,100,100,1.2,0,1,2,0,8,60,60,465,1",
         "Style: HostRibbon,Arial,17,&H00CBD5E1,&H00CBD5E1,&H00000000,&H00000000,1,0,0,0,100,100,2.5,0,1,0,0,5,40,40,60,1",
         "Style: MicShape,Arial,18,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,1,0,0,0,100,100,0,0,1,0,0,5,40,40,60,1",
+        "Style: FooterBar,DejaVu Sans Mono,18,&H008B7464,&H008B7464,&H00000000,&H00000000,0,0,0,0,100,100,0.5,0,1,0,0,5,40,40,60,1",
+        "Style: FooterLine,Arial,1,&H00554133,&H00554133,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,40,40,60,1",
         "",
         "[Events]",
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
@@ -1515,6 +1692,16 @@ def write_ass_file(
                 lines.append(f"Dialogue: 0,{start_str},{end_str},Caption,,0,0,0,,{txt}")
 
     lines.extend(header_events)
+
+    # Bottom footer bar strip (subtle horizontal delimiter line at y=1336 directly below central 740x740 deck, left source label, right deepDive podcast)
+    left_label = "Archetype: KineticVector" if visual_source == "manim" else "Mosaic"
+    footer_events = [
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},FooterLine,,0,0,0,,{{\\pos(540,1336)\\an5\\c&H00554133&\\p1}}m -370 -1 l 370 -1 l 370 1 l -370 1{{\\p0}}",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},FooterBar,,0,0,0,,{{\\pos(170,1355)\\an4\\c&H008B7464&}}{left_label}",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},FooterBar,,0,0,0,,{{\\pos(910,1355)\\an6\\c&H008B7464&}}deepDive podcast",
+    ]
+    lines.extend(footer_events)
+
     with open(ass_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
 
@@ -2213,14 +2400,16 @@ def compile_clip(
             caption_chunks,
             temp_ass_path,
             body_duration=body_duration,
-            intro_offset=intro_duration
+            intro_offset=intro_duration,
+            visual_source=compile_source
         )
         os.makedirs("captions", exist_ok=True)
         write_ass_file(
             caption_chunks,
             os.path.join("captions", f"{base_name}.ass"),
             body_duration=body_duration,
-            intro_offset=intro_duration
+            intro_offset=intro_duration,
+            visual_source=compile_source
         )
         typer.echo(f"Prepared {len(caption_chunks)} ASS caption events (1080x1920 vertical spec) -> {temp_ass_path}")
 
