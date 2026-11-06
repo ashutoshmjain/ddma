@@ -141,11 +141,17 @@ def extract_clip_transcript_beats(clip_data, target_beat_duration=7.5):
     num_beats = max(1, int(round(total_dur / target_beat_duration)))
     beat_dur = total_dur / num_beats
 
+    is_relative_words = bool(words and float(words[0].get("start", 0)) < (c_start / 2) if c_start > 10 else False)
+
     beats = []
     for b_idx in range(num_beats):
         b_st = c_start + b_idx * beat_dur
         b_en = c_start + (b_idx + 1) * beat_dur
-        b_words = [w["word"] for w in words if b_st <= float(w.get("start", 0)) < b_en]
+        if is_relative_words:
+            w_st, w_en = b_idx * beat_dur, (b_idx + 1) * beat_dur
+            b_words = [w["word"] for w in words if w_st <= float(w.get("start", 0)) < w_en]
+        else:
+            b_words = [w["word"] for w in words if b_st <= float(w.get("start", 0)) < b_en]
         b_text = " ".join(b_words).strip()
         if not b_text:
             b_text = f"Discussion on {clip_data.get('title', 'AI Autonomy')}"
