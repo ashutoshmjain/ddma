@@ -1,19 +1,19 @@
 [
     {
         "num": 0,
-        "title": "Show Prologue / Ep Intro",
-        "start": 0.0,
+        "title": "What Exactly Is Reality?",
+        "start": 0,
         "end": 134.18,
-        "duration": 139.69,
+        "duration": 134.18,
         "bridge_text": [
-            "What is waiting in Clip 1?"
+            "What is 8D Totality !"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 0.0,
-                "end": 17.22,
-                "duration": 17.22,
+                "start": 0,
+                "end": 17.41,
+                "duration": 17.41,
                 "text": "So what if the reason you age, the reason time just relentlessly moves forward has absolutely nothing to do with the universe itself? Right. Like what if it's entirely about your own biology? Exactly. What if time isn't, you know, a flowing river, but basically just the exhaust fume of your five senses?"
             },
             {
@@ -21,9 +21,10 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
             },
             {
@@ -38,4523 +39,33 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
-        "locked": false,
+        "locked": true,
         "visual_source": "mosaic",
-        "_caption_words": [
-            {
-                "word": "So",
-                "start": 0.0,
-                "end": 0.22
-            },
-            {
-                "word": "what",
-                "start": 0.22,
-                "end": 0.62
-            },
-            {
-                "word": "if",
-                "start": 0.62,
-                "end": 0.86
-            },
-            {
-                "word": "the",
-                "start": 0.86,
-                "end": 1.08
-            },
-            {
-                "word": "reason",
-                "start": 1.08,
-                "end": 1.4
-            },
-            {
-                "word": "you",
-                "start": 1.4,
-                "end": 1.56
-            },
-            {
-                "word": "age,",
-                "start": 1.56,
-                "end": 2.02
-            },
-            {
-                "word": "the",
-                "start": 2.26,
-                "end": 3.18
-            },
-            {
-                "word": "reason",
-                "start": 3.18,
-                "end": 3.38
-            },
-            {
-                "word": "time",
-                "start": 3.38,
-                "end": 3.6
-            },
-            {
-                "word": "just",
-                "start": 3.6,
-                "end": 3.86
-            },
-            {
-                "word": "relentlessly",
-                "start": 3.86,
-                "end": 5.02
-            },
-            {
-                "word": "moves",
-                "start": 5.02,
-                "end": 5.3
-            },
-            {
-                "word": "forward",
-                "start": 5.3,
-                "end": 5.6
-            },
-            {
-                "word": "has",
-                "start": 5.6,
-                "end": 5.94
-            },
-            {
-                "word": "absolutely",
-                "start": 5.94,
-                "end": 6.62
-            },
-            {
-                "word": "nothing",
-                "start": 6.62,
-                "end": 6.92
-            },
-            {
-                "word": "to",
-                "start": 6.92,
-                "end": 7.1
-            },
-            {
-                "word": "do",
-                "start": 7.1,
-                "end": 7.22
-            },
-            {
-                "word": "with",
-                "start": 7.22,
-                "end": 7.4
-            },
-            {
-                "word": "the",
-                "start": 7.4,
-                "end": 7.54
-            },
-            {
-                "word": "universe",
-                "start": 7.54,
-                "end": 7.84
-            },
-            {
-                "word": "itself?",
-                "start": 7.84,
-                "end": 8.24
-            },
-            {
-                "word": "Right.",
-                "start": 8.44,
-                "end": 8.66
-            },
-            {
-                "word": "Like",
-                "start": 8.72,
-                "end": 8.84
-            },
-            {
-                "word": "what",
-                "start": 8.84,
-                "end": 8.96
-            },
-            {
-                "word": "if",
-                "start": 8.96,
-                "end": 9.08
-            },
-            {
-                "word": "it's",
-                "start": 9.08,
-                "end": 9.34
-            },
-            {
-                "word": "entirely",
-                "start": 9.34,
-                "end": 9.92
-            },
-            {
-                "word": "about",
-                "start": 9.92,
-                "end": 10.2
-            },
-            {
-                "word": "your",
-                "start": 10.2,
-                "end": 10.36
-            },
-            {
-                "word": "own",
-                "start": 10.36,
-                "end": 10.48
-            },
-            {
-                "word": "biology?",
-                "start": 10.48,
-                "end": 10.88
-            },
-            {
-                "word": "Exactly.",
-                "start": 11.14,
-                "end": 11.52
-            },
-            {
-                "word": "What",
-                "start": 11.8,
-                "end": 12.0
-            },
-            {
-                "word": "if",
-                "start": 12.0,
-                "end": 12.2
-            },
-            {
-                "word": "time",
-                "start": 12.2,
-                "end": 12.54
-            },
-            {
-                "word": "isn't,",
-                "start": 12.54,
-                "end": 12.84
-            },
-            {
-                "word": "you",
-                "start": 12.92,
-                "end": 13.02
-            },
-            {
-                "word": "know,",
-                "start": 13.02,
-                "end": 13.08
-            },
-            {
-                "word": "a",
-                "start": 13.16,
-                "end": 13.28
-            },
-            {
-                "word": "flowing",
-                "start": 13.28,
-                "end": 13.66
-            },
-            {
-                "word": "river,",
-                "start": 13.66,
-                "end": 13.96
-            },
-            {
-                "word": "but",
-                "start": 14.08,
-                "end": 14.24
-            },
-            {
-                "word": "basically",
-                "start": 14.24,
-                "end": 15.32
-            },
-            {
-                "word": "just",
-                "start": 15.32,
-                "end": 15.54
-            },
-            {
-                "word": "the",
-                "start": 15.54,
-                "end": 15.68
-            },
-            {
-                "word": "exhaust",
-                "start": 15.68,
-                "end": 16.08
-            },
-            {
-                "word": "fume",
-                "start": 16.08,
-                "end": 16.4
-            },
-            {
-                "word": "of",
-                "start": 16.4,
-                "end": 16.54
-            },
-            {
-                "word": "your",
-                "start": 16.54,
-                "end": 16.66
-            },
-            {
-                "word": "five",
-                "start": 16.66,
-                "end": 16.86
-            },
-            {
-                "word": "senses?",
-                "start": 16.86,
-                "end": 17.22
-            },
-            {
-                "word": "It's",
-                "start": 22.42,
-                "end": 22.84
-            },
-            {
-                "word": "a",
-                "start": 22.84,
-                "end": 22.92
-            },
-            {
-                "word": "wild",
-                "start": 22.92,
-                "end": 23.14
-            },
-            {
-                "word": "thought.",
-                "start": 23.14,
-                "end": 23.44
-            },
-            {
-                "word": "It",
-                "start": 23.66,
-                "end": 23.82
-            },
-            {
-                "word": "really",
-                "start": 23.82,
-                "end": 24.16
-            },
-            {
-                "word": "is.",
-                "start": 24.16,
-                "end": 24.48
-            },
-            {
-                "word": "Today",
-                "start": 24.8,
-                "end": 25.28
-            },
-            {
-                "word": "we",
-                "start": 25.28,
-                "end": 25.56
-            },
-            {
-                "word": "are",
-                "start": 25.56,
-                "end": 25.7
-            },
-            {
-                "word": "going",
-                "start": 25.7,
-                "end": 25.9
-            },
-            {
-                "word": "on",
-                "start": 25.9,
-                "end": 26.12
-            },
-            {
-                "word": "a",
-                "start": 26.12,
-                "end": 26.28
-            },
-            {
-                "word": "massive",
-                "start": 26.28,
-                "end": 26.76
-            },
-            {
-                "word": "deep",
-                "start": 26.76,
-                "end": 27.16
-            },
-            {
-                "word": "dive.",
-                "start": 27.16,
-                "end": 27.48
-            },
-            {
-                "word": "We're",
-                "start": 27.68,
-                "end": 28.06
-            },
-            {
-                "word": "taking",
-                "start": 28.06,
-                "end": 28.26
-            },
-            {
-                "word": "that",
-                "start": 28.26,
-                "end": 28.46
-            },
-            {
-                "word": "desire",
-                "start": 28.46,
-                "end": 28.8
-            },
-            {
-                "word": "for",
-                "start": 28.8,
-                "end": 29.1
-            },
-            {
-                "word": "visible,",
-                "start": 29.1,
-                "end": 29.7
-            },
-            {
-                "word": "categorized",
-                "start": 30.08,
-                "end": 30.54
-            },
-            {
-                "word": "precision,",
-                "start": 30.54,
-                "end": 30.9
-            },
-            {
-                "word": "like",
-                "start": 30.9,
-                "end": 31.24
-            },
-            {
-                "word": "what",
-                "start": 31.24,
-                "end": 31.56
-            },
-            {
-                "word": "you'd",
-                "start": 31.56,
-                "end": 31.74
-            },
-            {
-                "word": "want",
-                "start": 31.74,
-                "end": 31.92
-            },
-            {
-                "word": "from",
-                "start": 31.92,
-                "end": 32.06
-            },
-            {
-                "word": "a",
-                "start": 32.06,
-                "end": 32.18
-            },
-            {
-                "word": "medical",
-                "start": 32.18,
-                "end": 32.44
-            },
-            {
-                "word": "x",
-                "start": 32.44,
-                "end": 32.76
-            },
-            {
-                "word": "-ray,",
-                "start": 32.76,
-                "end": 32.92
-            },
-            {
-                "word": "and",
-                "start": 33.12,
-                "end": 33.58
-            },
-            {
-                "word": "we're",
-                "start": 33.58,
-                "end": 33.76
-            },
-            {
-                "word": "applying",
-                "start": 33.76,
-                "end": 34.06
-            },
-            {
-                "word": "it",
-                "start": 34.06,
-                "end": 34.28
-            },
-            {
-                "word": "to",
-                "start": 34.28,
-                "end": 34.42
-            },
-            {
-                "word": "the",
-                "start": 34.42,
-                "end": 34.56
-            },
-            {
-                "word": "fundamental",
-                "start": 34.56,
-                "end": 35.0
-            },
-            {
-                "word": "nature",
-                "start": 35.0,
-                "end": 35.38
-            },
-            {
-                "word": "of",
-                "start": 35.38,
-                "end": 35.98
-            },
-            {
-                "word": "reality.",
-                "start": 35.98,
-                "end": 36.5
-            },
-            {
-                "word": "And",
-                "start": 36.88,
-                "end": 37.36
-            },
-            {
-                "word": "I",
-                "start": 37.36,
-                "end": 37.44
-            },
-            {
-                "word": "got",
-                "start": 37.44,
-                "end": 37.56
-            },
-            {
-                "word": "to",
-                "start": 37.56,
-                "end": 37.66
-            },
-            {
-                "word": "warn",
-                "start": 37.66,
-                "end": 37.82
-            },
-            {
-                "word": "you,",
-                "start": 37.82,
-                "end": 38.0
-            },
-            {
-                "word": "the",
-                "start": 38.16,
-                "end": 38.46
-            },
-            {
-                "word": "diagnostic",
-                "start": 38.46,
-                "end": 38.94
-            },
-            {
-                "word": "landscape",
-                "start": 38.94,
-                "end": 39.4
-            },
-            {
-                "word": "we",
-                "start": 39.4,
-                "end": 39.66
-            },
-            {
-                "word": "are",
-                "start": 39.66,
-                "end": 39.76
-            },
-            {
-                "word": "looking",
-                "start": 39.76,
-                "end": 40.02
-            },
-            {
-                "word": "at",
-                "start": 40.02,
-                "end": 40.28
-            },
-            {
-                "word": "in",
-                "start": 40.28,
-                "end": 40.76
-            },
-            {
-                "word": "this",
-                "start": 40.76,
-                "end": 40.94
-            },
-            {
-                "word": "research",
-                "start": 40.94,
-                "end": 41.32
-            },
-            {
-                "word": "is,",
-                "start": 41.32,
-                "end": 41.7
-            },
-            {
-                "word": "well,",
-                "start": 41.86,
-                "end": 42.3
-            },
-            {
-                "word": "it",
-                "start": 42.46,
-                "end": 42.58
-            },
-            {
-                "word": "is",
-                "start": 42.58,
-                "end": 42.72
-            },
-            {
-                "word": "completely",
-                "start": 42.72,
-                "end": 43.14
-            },
-            {
-                "word": "mind",
-                "start": 43.14,
-                "end": 43.48
-            },
-            {
-                "word": "bending.",
-                "start": 43.48,
-                "end": 43.72
-            },
-            {
-                "word": "Yeah,",
-                "start": 43.9,
-                "end": 44.08
-            },
-            {
-                "word": "to",
-                "start": 44.22,
-                "end": 44.32
-            },
-            {
-                "word": "say",
-                "start": 44.32,
-                "end": 44.52
-            },
-            {
-                "word": "the",
-                "start": 44.52,
-                "end": 44.72
-            },
-            {
-                "word": "least.",
-                "start": 44.72,
-                "end": 45.1
-            },
-            {
-                "word": "So",
-                "start": 45.4,
-                "end": 45.92
-            },
-            {
-                "word": "what's",
-                "start": 45.92,
-                "end": 46.58
-            },
-            {
-                "word": "our",
-                "start": 46.58,
-                "end": 46.66
-            },
-            {
-                "word": "mission",
-                "start": 46.66,
-                "end": 46.88
-            },
-            {
-                "word": "today?",
-                "start": 46.88,
-                "end": 47.12
-            },
-            {
-                "word": "We",
-                "start": 47.38,
-                "end": 47.82
-            },
-            {
-                "word": "are",
-                "start": 47.82,
-                "end": 48.0
-            },
-            {
-                "word": "going",
-                "start": 48.0,
-                "end": 48.14
-            },
-            {
-                "word": "to",
-                "start": 48.14,
-                "end": 48.26
-            },
-            {
-                "word": "explore",
-                "start": 48.26,
-                "end": 48.54
-            },
-            {
-                "word": "this",
-                "start": 48.54,
-                "end": 48.74
-            },
-            {
-                "word": "incredible",
-                "start": 48.74,
-                "end": 49.12
-            },
-            {
-                "word": "white",
-                "start": 49.12,
-                "end": 49.34
-            },
-            {
-                "word": "paper",
-                "start": 49.34,
-                "end": 49.6
-            },
-            {
-                "word": "that",
-                "start": 49.6,
-                "end": 49.8
-            },
-            {
-                "word": "redefines",
-                "start": 49.8,
-                "end": 50.38
-            },
-            {
-                "word": "reality",
-                "start": 50.38,
-                "end": 50.98
-            },
-            {
-                "word": "through",
-                "start": 50.98,
-                "end": 51.64
-            },
-            {
-                "word": "pure",
-                "start": 51.64,
-                "end": 51.94
-            },
-            {
-                "word": "geometry.",
-                "start": 51.94,
-                "end": 52.42
-            },
-            {
-                "word": "Right.",
-                "start": 52.58,
-                "end": 52.72
-            },
-            {
-                "word": "For",
-                "start": 53.12,
-                "end": 53.42
-            },
-            {
-                "word": "a",
-                "start": 53.42,
-                "end": 53.54
-            },
-            {
-                "word": "century,",
-                "start": 53.54,
-                "end": 53.86
-            },
-            {
-                "word": "quantum",
-                "start": 54.34,
-                "end": 54.6
-            },
-            {
-                "word": "physics",
-                "start": 54.6,
-                "end": 54.98
-            },
-            {
-                "word": "has",
-                "start": 54.98,
-                "end": 55.18
-            },
-            {
-                "word": "relied",
-                "start": 55.18,
-                "end": 55.44
-            },
-            {
-                "word": "on",
-                "start": 55.44,
-                "end": 55.6
-            },
-            {
-                "word": "these",
-                "start": 55.6,
-                "end": 55.78
-            },
-            {
-                "word": "murky,",
-                "start": 55.78,
-                "end": 56.48
-            },
-            {
-                "word": "highly",
-                "start": 56.7,
-                "end": 56.92
-            },
-            {
-                "word": "abstract",
-                "start": 56.92,
-                "end": 57.32
-            },
-            {
-                "word": "symmetries.",
-                "start": 57.32,
-                "end": 57.88
-            },
-            {
-                "word": "But",
-                "start": 58.18,
-                "end": 58.7
-            },
-            {
-                "word": "this",
-                "start": 58.7,
-                "end": 59.04
-            },
-            {
-                "word": "research",
-                "start": 59.04,
-                "end": 59.4
-            },
-            {
-                "word": "replaces",
-                "start": 59.4,
-                "end": 59.82
-            },
-            {
-                "word": "all",
-                "start": 59.82,
-                "end": 60.08
-            },
-            {
-                "word": "that",
-                "start": 60.08,
-                "end": 60.24
-            },
-            {
-                "word": "quantum",
-                "start": 60.24,
-                "end": 60.64
-            },
-            {
-                "word": "magic",
-                "start": 60.64,
-                "end": 61.06
-            },
-            {
-                "word": "with",
-                "start": 61.06,
-                "end": 61.74
-            },
-            {
-                "word": "inescapable",
-                "start": 61.74,
-                "end": 62.48
-            },
-            {
-                "word": "three",
-                "start": 62.48,
-                "end": 62.72
-            },
-            {
-                "word": "-dimensional",
-                "start": 62.72,
-                "end": 63.04
-            },
-            {
-                "word": "geometry.",
-                "start": 63.04,
-                "end": 63.56
-            },
-            {
-                "word": "I",
-                "start": 63.8,
-                "end": 63.94
-            },
-            {
-                "word": "mean,",
-                "start": 63.94,
-                "end": 64.06
-            },
-            {
-                "word": "we're",
-                "start": 64.16,
-                "end": 64.32
-            },
-            {
-                "word": "talking",
-                "start": 64.32,
-                "end": 64.56
-            },
-            {
-                "word": "about",
-                "start": 64.56,
-                "end": 64.74
-            },
-            {
-                "word": "showing",
-                "start": 64.74,
-                "end": 64.98
-            },
-            {
-                "word": "how",
-                "start": 64.98,
-                "end": 65.18
-            },
-            {
-                "word": "quarks,",
-                "start": 65.18,
-                "end": 65.74
-            },
-            {
-                "word": "photons,",
-                "start": 66.06,
-                "end": 66.52
-            },
-            {
-                "word": "charge,",
-                "start": 66.74,
-                "end": 66.92
-            },
-            {
-                "word": "and",
-                "start": 66.94,
-                "end": 67.1
-            },
-            {
-                "word": "even",
-                "start": 67.1,
-                "end": 67.32
-            },
-            {
-                "word": "time",
-                "start": 67.32,
-                "end": 67.68
-            },
-            {
-                "word": "itself",
-                "start": 67.68,
-                "end": 68.04
-            },
-            {
-                "word": "just",
-                "start": 68.04,
-                "end": 68.34
-            },
-            {
-                "word": "emerge",
-                "start": 68.34,
-                "end": 69.06
-            },
-            {
-                "word": "from",
-                "start": 69.06,
-                "end": 69.44
-            },
-            {
-                "word": "spatial",
-                "start": 69.44,
-                "end": 69.84
-            },
-            {
-                "word": "rotations.",
-                "start": 69.84,
-                "end": 70.34
-            },
-            {
-                "word": "Exactly.",
-                "start": 70.6,
-                "end": 70.86
-            },
-            {
-                "word": "But",
-                "start": 71.16,
-                "end": 71.36
-            },
-            {
-                "word": "we're",
-                "start": 71.36,
-                "end": 71.88
-            },
-            {
-                "word": "going",
-                "start": 71.88,
-                "end": 71.94
-            },
-            {
-                "word": "to",
-                "start": 71.94,
-                "end": 72.0
-            },
-            {
-                "word": "take",
-                "start": 72.0,
-                "end": 72.16
-            },
-            {
-                "word": "our",
-                "start": 72.16,
-                "end": 72.26
-            },
-            {
-                "word": "time.",
-                "start": 72.26,
-                "end": 72.52
-            },
-            {
-                "word": "This",
-                "start": 72.86,
-                "end": 73.16
-            },
-            {
-                "word": "deep",
-                "start": 73.16,
-                "end": 73.34
-            },
-            {
-                "word": "dive",
-                "start": 73.34,
-                "end": 73.56
-            },
-            {
-                "word": "is",
-                "start": 73.56,
-                "end": 73.74
-            },
-            {
-                "word": "going",
-                "start": 73.74,
-                "end": 73.84
-            },
-            {
-                "word": "to",
-                "start": 73.84,
-                "end": 73.9
-            },
-            {
-                "word": "be",
-                "start": 73.9,
-                "end": 73.98
-            },
-            {
-                "word": "slow,",
-                "start": 73.98,
-                "end": 74.44
-            },
-            {
-                "word": "recursive,",
-                "start": 74.64,
-                "end": 75.38
-            },
-            {
-                "word": "layered.",
-                "start": 75.5,
-                "end": 75.76
-            },
-            {
-                "word": "We",
-                "start": 75.94,
-                "end": 76.04
-            },
-            {
-                "word": "really",
-                "start": 76.04,
-                "end": 76.56
-            },
-            {
-                "word": "want",
-                "start": 76.56,
-                "end": 76.76
-            },
-            {
-                "word": "to",
-                "start": 76.76,
-                "end": 76.86
-            },
-            {
-                "word": "build",
-                "start": 76.86,
-                "end": 77.0
-            },
-            {
-                "word": "this",
-                "start": 77.0,
-                "end": 77.18
-            },
-            {
-                "word": "from",
-                "start": 77.18,
-                "end": 77.32
-            },
-            {
-                "word": "the",
-                "start": 77.32,
-                "end": 77.42
-            },
-            {
-                "word": "ground",
-                "start": 77.42,
-                "end": 77.62
-            },
-            {
-                "word": "up.",
-                "start": 77.62,
-                "end": 77.86
-            },
-            {
-                "word": "Yeah,",
-                "start": 78.06,
-                "end": 78.36
-            },
-            {
-                "word": "you",
-                "start": 78.4,
-                "end": 78.48
-            },
-            {
-                "word": "really",
-                "start": 78.48,
-                "end": 78.68
-            },
-            {
-                "word": "have",
-                "start": 78.68,
-                "end": 78.9
-            },
-            {
-                "word": "to",
-                "start": 78.9,
-                "end": 79.02
-            },
-            {
-                "word": "with",
-                "start": 79.02,
-                "end": 79.16
-            },
-            {
-                "word": "this",
-                "start": 79.16,
-                "end": 79.28
-            },
-            {
-                "word": "material.",
-                "start": 79.28,
-                "end": 79.58
-            },
-            {
-                "word": "So",
-                "start": 80.22,
-                "end": 80.66
-            },
-            {
-                "word": "we",
-                "start": 80.66,
-                "end": 80.96
-            },
-            {
-                "word": "need",
-                "start": 80.96,
-                "end": 81.32
-            },
-            {
-                "word": "to",
-                "start": 81.32,
-                "end": 81.48
-            },
-            {
-                "word": "establish",
-                "start": 81.48,
-                "end": 81.94
-            },
-            {
-                "word": "an",
-                "start": 81.94,
-                "end": 82.38
-            },
-            {
-                "word": "anchor",
-                "start": 82.38,
-                "end": 82.76
-            },
-            {
-                "word": "line",
-                "start": 82.76,
-                "end": 83.14
-            },
-            {
-                "word": "right",
-                "start": 83.14,
-                "end": 83.68
-            },
-            {
-                "word": "now,",
-                "start": 83.68,
-                "end": 83.94
-            },
-            {
-                "word": "a",
-                "start": 83.98,
-                "end": 84.28
-            },
-            {
-                "word": "premise",
-                "start": 84.28,
-                "end": 84.58
-            },
-            {
-                "word": "you",
-                "start": 84.58,
-                "end": 84.78
-            },
-            {
-                "word": "need",
-                "start": 84.78,
-                "end": 84.88
-            },
-            {
-                "word": "to",
-                "start": 84.88,
-                "end": 85.0
-            },
-            {
-                "word": "keep",
-                "start": 85.0,
-                "end": 85.32
-            },
-            {
-                "word": "in",
-                "start": 85.32,
-                "end": 85.56
-            },
-            {
-                "word": "the",
-                "start": 85.56,
-                "end": 85.68
-            },
-            {
-                "word": "back",
-                "start": 85.68,
-                "end": 85.88
-            },
-            {
-                "word": "of",
-                "start": 85.88,
-                "end": 86.0
-            },
-            {
-                "word": "your",
-                "start": 86.0,
-                "end": 86.1
-            },
-            {
-                "word": "mind",
-                "start": 86.1,
-                "end": 86.26
-            },
-            {
-                "word": "for",
-                "start": 86.26,
-                "end": 86.42
-            },
-            {
-                "word": "this",
-                "start": 86.42,
-                "end": 86.58
-            },
-            {
-                "word": "whole",
-                "start": 86.58,
-                "end": 86.84
-            },
-            {
-                "word": "deep",
-                "start": 86.84,
-                "end": 87.06
-            },
-            {
-                "word": "dive.",
-                "start": 87.06,
-                "end": 87.36
-            },
-            {
-                "word": "Are",
-                "start": 87.56,
-                "end": 87.66
-            },
-            {
-                "word": "you",
-                "start": 87.66,
-                "end": 87.74
-            },
-            {
-                "word": "ready?",
-                "start": 87.74,
-                "end": 87.92
-            },
-            {
-                "word": "Let's",
-                "start": 87.92,
-                "end": 88.5
-            },
-            {
-                "word": "hear",
-                "start": 88.5,
-                "end": 88.6
-            },
-            {
-                "word": "it.",
-                "start": 88.6,
-                "end": 88.7
-            },
-            {
-                "word": "Okay.",
-                "start": 88.92,
-                "end": 89.02
-            },
-            {
-                "word": "So",
-                "start": 89.22,
-                "end": 89.34
-            },
-            {
-                "word": "intelligence",
-                "start": 89.34,
-                "end": 90.32
-            },
-            {
-                "word": "is",
-                "start": 90.32,
-                "end": 90.7
-            },
-            {
-                "word": "nothing",
-                "start": 90.7,
-                "end": 90.98
-            },
-            {
-                "word": "but",
-                "start": 90.98,
-                "end": 91.32
-            },
-            {
-                "word": "an",
-                "start": 91.32,
-                "end": 91.5
-            },
-            {
-                "word": "abstraction",
-                "start": 91.5,
-                "end": 91.98
-            },
-            {
-                "word": "of",
-                "start": 91.98,
-                "end": 92.38
-            },
-            {
-                "word": "the",
-                "start": 92.38,
-                "end": 92.5
-            },
-            {
-                "word": "physical",
-                "start": 92.5,
-                "end": 92.84
-            },
-            {
-                "word": "world.",
-                "start": 92.84,
-                "end": 93.18
-            },
-            {
-                "word": "Right.",
-                "start": 93.54,
-                "end": 93.82
-            },
-            {
-                "word": "Or",
-                "start": 94.02,
-                "end": 94.22
-            },
-            {
-                "word": "to",
-                "start": 94.22,
-                "end": 94.36
-            },
-            {
-                "word": "flip",
-                "start": 94.36,
-                "end": 94.52
-            },
-            {
-                "word": "it",
-                "start": 94.52,
-                "end": 94.62
-            },
-            {
-                "word": "around,",
-                "start": 94.62,
-                "end": 94.9
-            },
-            {
-                "word": "the",
-                "start": 95.1,
-                "end": 95.16
-            },
-            {
-                "word": "physical",
-                "start": 95.16,
-                "end": 95.48
-            },
-            {
-                "word": "world",
-                "start": 95.48,
-                "end": 95.82
-            },
-            {
-                "word": "is",
-                "start": 95.82,
-                "end": 96.16
-            },
-            {
-                "word": "a",
-                "start": 96.16,
-                "end": 96.3
-            },
-            {
-                "word": "chiral",
-                "start": 96.3,
-                "end": 96.84
-            },
-            {
-                "word": "instantiation",
-                "start": 96.84,
-                "end": 97.62
-            },
-            {
-                "word": "of",
-                "start": 97.62,
-                "end": 98.0
-            },
-            {
-                "word": "intelligence.",
-                "start": 98.0,
-                "end": 98.56
-            },
-            {
-                "word": "Which",
-                "start": 98.9,
-                "end": 99.38
-            },
-            {
-                "word": "is",
-                "start": 99.38,
-                "end": 99.5
-            },
-            {
-                "word": "a",
-                "start": 99.5,
-                "end": 99.58
-            },
-            {
-                "word": "heavy",
-                "start": 99.58,
-                "end": 99.8
-            },
-            {
-                "word": "sentence,",
-                "start": 99.8,
-                "end": 100.2
-            },
-            {
-                "word": "I",
-                "start": 100.22,
-                "end": 100.5
-            },
-            {
-                "word": "know.",
-                "start": 100.5,
-                "end": 100.6
-            },
-            {
-                "word": "Right.",
-                "start": 100.66,
-                "end": 100.8
-            },
-            {
-                "word": "But",
-                "start": 101.04,
-                "end": 101.6
-            },
-            {
-                "word": "here's",
-                "start": 101.6,
-                "end": 102.16
-            },
-            {
-                "word": "the",
-                "start": 102.16,
-                "end": 102.22
-            },
-            {
-                "word": "rest",
-                "start": 102.22,
-                "end": 102.38
-            },
-            {
-                "word": "of",
-                "start": 102.38,
-                "end": 102.5
-            },
-            {
-                "word": "it.",
-                "start": 102.5,
-                "end": 102.64
-            },
-            {
-                "word": "Our",
-                "start": 102.86,
-                "end": 103.34
-            },
-            {
-                "word": "five",
-                "start": 103.34,
-                "end": 103.54
-            },
-            {
-                "word": "senses",
-                "start": 103.54,
-                "end": 103.88
-            },
-            {
-                "word": "basically",
-                "start": 103.88,
-                "end": 104.38
-            },
-            {
-                "word": "split",
-                "start": 104.38,
-                "end": 104.86
-            },
-            {
-                "word": "an",
-                "start": 104.86,
-                "end": 105.14
-            },
-            {
-                "word": "eight",
-                "start": 105.14,
-                "end": 105.44
-            },
-            {
-                "word": "-dimensional,",
-                "start": 105.44,
-                "end": 106.02
-            },
-            {
-                "word": "non",
-                "start": 106.32,
-                "end": 106.68
-            },
-            {
-                "word": "-associative",
-                "start": 106.68,
-                "end": 107.28
-            },
-            {
-                "word": "logic",
-                "start": 107.28,
-                "end": 107.64
-            },
-            {
-                "word": "into",
-                "start": 107.64,
-                "end": 107.96
-            },
-            {
-                "word": "two",
-                "start": 107.96,
-                "end": 108.24
-            },
-            {
-                "word": "parts.",
-                "start": 108.24,
-                "end": 108.66
-            },
-            {
-                "word": "And",
-                "start": 108.86,
-                "end": 109.42
-            },
-            {
-                "word": "each",
-                "start": 109.42,
-                "end": 109.62
-            },
-            {
-                "word": "of",
-                "start": 109.62,
-                "end": 109.7
-            },
-            {
-                "word": "those",
-                "start": 109.7,
-                "end": 109.86
-            },
-            {
-                "word": "parts",
-                "start": 109.86,
-                "end": 110.12
-            },
-            {
-                "word": "has",
-                "start": 110.12,
-                "end": 110.34
-            },
-            {
-                "word": "four",
-                "start": 110.34,
-                "end": 110.62
-            },
-            {
-                "word": "dimensions",
-                "start": 110.62,
-                "end": 111.04
-            },
-            {
-                "word": "of",
-                "start": 111.04,
-                "end": 111.46
-            },
-            {
-                "word": "associative",
-                "start": 111.46,
-                "end": 112.16
-            },
-            {
-                "word": "logic.",
-                "start": 112.16,
-                "end": 112.5
-            },
-            {
-                "word": "Which",
-                "start": 112.78,
-                "end": 113.32
-            },
-            {
-                "word": "is",
-                "start": 113.32,
-                "end": 113.44
-            },
-            {
-                "word": "the",
-                "start": 113.44,
-                "end": 113.52
-            },
-            {
-                "word": "abstraction",
-                "start": 113.52,
-                "end": 113.88
-            },
-            {
-                "word": "part.",
-                "start": 113.88,
-                "end": 114.16
-            },
-            {
-                "word": "Yeah,",
-                "start": 114.58,
-                "end": 115.04
-            },
-            {
-                "word": "that",
-                "start": 115.1,
-                "end": 115.22
-            },
-            {
-                "word": "anchor",
-                "start": 115.22,
-                "end": 115.44
-            },
-            {
-                "word": "line",
-                "start": 115.44,
-                "end": 115.66
-            },
-            {
-                "word": "is",
-                "start": 115.66,
-                "end": 116.08
-            },
-            {
-                "word": "dense.",
-                "start": 116.08,
-                "end": 116.58
-            },
-            {
-                "word": "Literally",
-                "start": 117.92,
-                "end": 118.28
-            },
-            {
-                "word": "the",
-                "start": 118.28,
-                "end": 118.52
-            },
-            {
-                "word": "master",
-                "start": 118.52,
-                "end": 118.78
-            },
-            {
-                "word": "key",
-                "start": 118.78,
-                "end": 119.04
-            },
-            {
-                "word": "to",
-                "start": 119.04,
-                "end": 119.38
-            },
-            {
-                "word": "this",
-                "start": 119.38,
-                "end": 119.58
-            },
-            {
-                "word": "entire",
-                "start": 119.58,
-                "end": 119.82
-            },
-            {
-                "word": "paper.",
-                "start": 119.82,
-                "end": 120.1
-            },
-            {
-                "word": "It",
-                "start": 120.28,
-                "end": 120.4
-            },
-            {
-                "word": "is.",
-                "start": 120.4,
-                "end": 120.7
-            },
-            {
-                "word": "And",
-                "start": 121.3,
-                "end": 121.82
-            },
-            {
-                "word": "don't",
-                "start": 121.82,
-                "end": 122.2
-            },
-            {
-                "word": "worry,",
-                "start": 122.2,
-                "end": 122.4
-            },
-            {
-                "word": "we",
-                "start": 122.5,
-                "end": 122.58
-            },
-            {
-                "word": "promise",
-                "start": 122.58,
-                "end": 122.86
-            },
-            {
-                "word": "we",
-                "start": 122.86,
-                "end": 123.04
-            },
-            {
-                "word": "aren't",
-                "start": 123.04,
-                "end": 123.3
-            },
-            {
-                "word": "just",
-                "start": 123.3,
-                "end": 123.7
-            },
-            {
-                "word": "going",
-                "start": 123.7,
-                "end": 123.86
-            },
-            {
-                "word": "to",
-                "start": 123.86,
-                "end": 123.96
-            },
-            {
-                "word": "read",
-                "start": 123.96,
-                "end": 124.28
-            },
-            {
-                "word": "raw",
-                "start": 124.28,
-                "end": 124.66
-            },
-            {
-                "word": "mathematical",
-                "start": 124.66,
-                "end": 125.24
-            },
-            {
-                "word": "equations",
-                "start": 125.24,
-                "end": 125.82
-            },
-            {
-                "word": "at",
-                "start": 125.82,
-                "end": 126.06
-            },
-            {
-                "word": "you.",
-                "start": 126.06,
-                "end": 126.2
-            },
-            {
-                "word": "No,",
-                "start": 126.36,
-                "end": 126.6
-            },
-            {
-                "word": "absolutely",
-                "start": 126.74,
-                "end": 127.08
-            },
-            {
-                "word": "not.",
-                "start": 127.08,
-                "end": 127.34
-            },
-            {
-                "word": "We'll",
-                "start": 127.56,
-                "end": 128.04
-            },
-            {
-                "word": "describe",
-                "start": 128.04,
-                "end": 128.5
-            },
-            {
-                "word": "the",
-                "start": 128.5,
-                "end": 128.76
-            },
-            {
-                "word": "geometric",
-                "start": 128.76,
-                "end": 129.16
-            },
-            {
-                "word": "essence",
-                "start": 129.16,
-                "end": 129.56
-            },
-            {
-                "word": "of",
-                "start": 129.56,
-                "end": 129.74
-            },
-            {
-                "word": "it.",
-                "start": 129.74,
-                "end": 129.92
-            },
-            {
-                "word": "Though",
-                "start": 130.4,
-                "end": 130.92
-            },
-            {
-                "word": "we",
-                "start": 130.92,
-                "end": 131.34
-            },
-            {
-                "word": "do",
-                "start": 131.34,
-                "end": 131.58
-            },
-            {
-                "word": "highly",
-                "start": 131.58,
-                "end": 131.88
-            },
-            {
-                "word": "encourage",
-                "start": 131.88,
-                "end": 132.2
-            },
-            {
-                "word": "you",
-                "start": 132.2,
-                "end": 132.34
-            },
-            {
-                "word": "to",
-                "start": 132.34,
-                "end": 132.44
-            },
-            {
-                "word": "keep",
-                "start": 132.44,
-                "end": 132.6
-            },
-            {
-                "word": "the",
-                "start": 132.6,
-                "end": 132.8
-            },
-            {
-                "word": "deep",
-                "start": 132.8,
-                "end": 133.02
-            },
-            {
-                "word": "dive",
-                "start": 133.02,
-                "end": 133.2
-            },
-            {
-                "word": "website",
-                "start": 133.2,
-                "end": 133.5
-            },
-            {
-                "word": "open",
-                "start": 133.5,
-                "end": 133.78
-            },
-            {
-                "word": "while",
-                "start": 133.78,
-                "end": 134.02
-            },
-            {
-                "word": "you",
-                "start": 134.02,
-                "end": 134.14
-            },
-            {
-                "word": "listen.",
-                "start": 134.14,
-                "end": 134.4
-            },
-            {
-                "word": "So",
-                "start": 134.54,
-                "end": 135.06
-            },
-            {
-                "word": "you",
-                "start": 135.06,
-                "end": 135.2
-            },
-            {
-                "word": "can",
-                "start": 135.2,
-                "end": 135.34
-            },
-            {
-                "word": "check",
-                "start": 135.34,
-                "end": 135.62
-            },
-            {
-                "word": "the",
-                "start": 135.62,
-                "end": 135.76
-            },
-            {
-                "word": "specific",
-                "start": 135.76,
-                "end": 136.06
-            },
-            {
-                "word": "equations",
-                "start": 136.06,
-                "end": 136.56
-            },
-            {
-                "word": "and",
-                "start": 136.56,
-                "end": 136.96
-            },
-            {
-                "word": "3D",
-                "start": 136.96,
-                "end": 137.62
-            },
-            {
-                "word": "visual",
-                "start": 137.62,
-                "end": 137.9
-            },
-            {
-                "word": "renditions.",
-                "start": 137.9,
-                "end": 138.34
-            },
-            {
-                "word": "For",
-                "start": 138.56,
-                "end": 138.72
-            },
-            {
-                "word": "sure.",
-                "start": 138.72,
-                "end": 138.92
-            }
-        ],
-        "_caption_words_sig": "a7a76b4f37a60ce30d2db883bdf10875",
-        "caption_chunks": [
-            {
-                "start": 1.5,
-                "end": 3.06,
-                "text": "so what if the reason you",
-                "words": [
-                    {
-                        "word": "so",
-                        "start": 1.5,
-                        "end": 1.72
-                    },
-                    {
-                        "word": "what",
-                        "start": 1.72,
-                        "end": 2.12
-                    },
-                    {
-                        "word": "if",
-                        "start": 2.12,
-                        "end": 2.36
-                    },
-                    {
-                        "word": "the",
-                        "start": 2.36,
-                        "end": 2.58
-                    },
-                    {
-                        "word": "reason",
-                        "start": 2.58,
-                        "end": 2.9
-                    },
-                    {
-                        "word": "you",
-                        "start": 2.9,
-                        "end": 3.06
-                    }
-                ]
-            },
-            {
-                "start": 3.06,
-                "end": 5.36,
-                "text": "age, the reason time just",
-                "words": [
-                    {
-                        "word": "age,",
-                        "start": 3.06,
-                        "end": 3.52
-                    },
-                    {
-                        "word": "the",
-                        "start": 3.76,
-                        "end": 4.68
-                    },
-                    {
-                        "word": "reason",
-                        "start": 4.68,
-                        "end": 4.88
-                    },
-                    {
-                        "word": "time",
-                        "start": 4.88,
-                        "end": 5.1
-                    },
-                    {
-                        "word": "just",
-                        "start": 5.1,
-                        "end": 5.36
-                    }
-                ]
-            },
-            {
-                "start": 5.36,
-                "end": 7.44,
-                "text": "relentlessly moves forward has",
-                "words": [
-                    {
-                        "word": "relentlessly",
-                        "start": 5.36,
-                        "end": 6.52
-                    },
-                    {
-                        "word": "moves",
-                        "start": 6.52,
-                        "end": 6.8
-                    },
-                    {
-                        "word": "forward",
-                        "start": 6.8,
-                        "end": 7.1
-                    },
-                    {
-                        "word": "has",
-                        "start": 7.1,
-                        "end": 7.44
-                    }
-                ]
-            },
-            {
-                "start": 7.44,
-                "end": 9.04,
-                "text": "absolutely nothing to do with the",
-                "words": [
-                    {
-                        "word": "absolutely",
-                        "start": 7.44,
-                        "end": 8.12
-                    },
-                    {
-                        "word": "nothing",
-                        "start": 8.12,
-                        "end": 8.42
-                    },
-                    {
-                        "word": "to",
-                        "start": 8.42,
-                        "end": 8.6
-                    },
-                    {
-                        "word": "do",
-                        "start": 8.6,
-                        "end": 8.72
-                    },
-                    {
-                        "word": "with",
-                        "start": 8.72,
-                        "end": 8.9
-                    },
-                    {
-                        "word": "the",
-                        "start": 8.9,
-                        "end": 9.04
-                    }
-                ]
-            },
-            {
-                "start": 9.04,
-                "end": 10.22,
-                "text": "universe itself? right.",
-                "words": [
-                    {
-                        "word": "universe",
-                        "start": 9.04,
-                        "end": 9.34
-                    },
-                    {
-                        "word": "itself?",
-                        "start": 9.34,
-                        "end": 9.74
-                    },
-                    {
-                        "word": "right.",
-                        "start": 9.94,
-                        "end": 10.16
-                    }
-                ]
-            },
-            {
-                "start": 10.22,
-                "end": 11.7,
-                "text": "like what if it's entirely about",
-                "words": [
-                    {
-                        "word": "like",
-                        "start": 10.22,
-                        "end": 10.34
-                    },
-                    {
-                        "word": "what",
-                        "start": 10.34,
-                        "end": 10.46
-                    },
-                    {
-                        "word": "if",
-                        "start": 10.46,
-                        "end": 10.58
-                    },
-                    {
-                        "word": "it's",
-                        "start": 10.58,
-                        "end": 10.84
-                    },
-                    {
-                        "word": "entirely",
-                        "start": 10.84,
-                        "end": 11.42
-                    },
-                    {
-                        "word": "about",
-                        "start": 11.42,
-                        "end": 11.7
-                    }
-                ]
-            },
-            {
-                "start": 11.7,
-                "end": 12.64,
-                "text": "your own biology?",
-                "words": [
-                    {
-                        "word": "your",
-                        "start": 11.7,
-                        "end": 11.86
-                    },
-                    {
-                        "word": "own",
-                        "start": 11.86,
-                        "end": 11.98
-                    },
-                    {
-                        "word": "biology?",
-                        "start": 11.98,
-                        "end": 12.38
-                    }
-                ]
-            },
-            {
-                "start": 12.64,
-                "end": 14.42,
-                "text": "exactly. what if time isn't,",
-                "words": [
-                    {
-                        "word": "exactly.",
-                        "start": 12.64,
-                        "end": 13.02
-                    },
-                    {
-                        "word": "what",
-                        "start": 13.3,
-                        "end": 13.5
-                    },
-                    {
-                        "word": "if",
-                        "start": 13.5,
-                        "end": 13.7
-                    },
-                    {
-                        "word": "time",
-                        "start": 13.7,
-                        "end": 14.04
-                    },
-                    {
-                        "word": "isn't,",
-                        "start": 14.04,
-                        "end": 14.34
-                    }
-                ]
-            },
-            {
-                "start": 14.42,
-                "end": 15.58,
-                "text": "you know, a flowing river,",
-                "words": [
-                    {
-                        "word": "you",
-                        "start": 14.42,
-                        "end": 14.52
-                    },
-                    {
-                        "word": "know,",
-                        "start": 14.52,
-                        "end": 14.58
-                    },
-                    {
-                        "word": "a",
-                        "start": 14.66,
-                        "end": 14.78
-                    },
-                    {
-                        "word": "flowing",
-                        "start": 14.78,
-                        "end": 15.16
-                    },
-                    {
-                        "word": "river,",
-                        "start": 15.16,
-                        "end": 15.46
-                    }
-                ]
-            },
-            {
-                "start": 15.58,
-                "end": 17.58,
-                "text": "but basically just the exhaust",
-                "words": [
-                    {
-                        "word": "but",
-                        "start": 15.58,
-                        "end": 15.74
-                    },
-                    {
-                        "word": "basically",
-                        "start": 15.74,
-                        "end": 16.82
-                    },
-                    {
-                        "word": "just",
-                        "start": 16.82,
-                        "end": 17.04
-                    },
-                    {
-                        "word": "the",
-                        "start": 17.04,
-                        "end": 17.18
-                    },
-                    {
-                        "word": "exhaust",
-                        "start": 17.18,
-                        "end": 17.58
-                    }
-                ]
-            },
-            {
-                "start": 17.58,
-                "end": 23.92,
-                "text": "fume of your five senses?",
-                "words": [
-                    {
-                        "word": "fume",
-                        "start": 17.58,
-                        "end": 17.9
-                    },
-                    {
-                        "word": "of",
-                        "start": 17.9,
-                        "end": 18.04
-                    },
-                    {
-                        "word": "your",
-                        "start": 18.04,
-                        "end": 18.16
-                    },
-                    {
-                        "word": "five",
-                        "start": 18.16,
-                        "end": 18.36
-                    },
-                    {
-                        "word": "senses?",
-                        "start": 18.36,
-                        "end": 18.72
-                    }
-                ]
-            },
-            {
-                "start": 23.92,
-                "end": 25.16,
-                "text": "it's a wild thought.",
-                "words": [
-                    {
-                        "word": "it's",
-                        "start": 23.92,
-                        "end": 24.34
-                    },
-                    {
-                        "word": "a",
-                        "start": 24.34,
-                        "end": 24.42
-                    },
-                    {
-                        "word": "wild",
-                        "start": 24.42,
-                        "end": 24.64
-                    },
-                    {
-                        "word": "thought.",
-                        "start": 24.64,
-                        "end": 24.94
-                    }
-                ]
-            },
-            {
-                "start": 25.16,
-                "end": 26.3,
-                "text": "it really is.",
-                "words": [
-                    {
-                        "word": "it",
-                        "start": 25.16,
-                        "end": 25.32
-                    },
-                    {
-                        "word": "really",
-                        "start": 25.32,
-                        "end": 25.66
-                    },
-                    {
-                        "word": "is.",
-                        "start": 25.66,
-                        "end": 25.98
-                    }
-                ]
-            },
-            {
-                "start": 26.3,
-                "end": 27.78,
-                "text": "today we are going on a",
-                "words": [
-                    {
-                        "word": "today",
-                        "start": 26.3,
-                        "end": 26.78
-                    },
-                    {
-                        "word": "we",
-                        "start": 26.78,
-                        "end": 27.06
-                    },
-                    {
-                        "word": "are",
-                        "start": 27.06,
-                        "end": 27.2
-                    },
-                    {
-                        "word": "going",
-                        "start": 27.2,
-                        "end": 27.4
-                    },
-                    {
-                        "word": "on",
-                        "start": 27.4,
-                        "end": 27.62
-                    },
-                    {
-                        "word": "a",
-                        "start": 27.62,
-                        "end": 27.78
-                    }
-                ]
-            },
-            {
-                "start": 27.78,
-                "end": 29.18,
-                "text": "massive deep dive.",
-                "words": [
-                    {
-                        "word": "massive",
-                        "start": 27.78,
-                        "end": 28.26
-                    },
-                    {
-                        "word": "deep",
-                        "start": 28.26,
-                        "end": 28.66
-                    },
-                    {
-                        "word": "dive.",
-                        "start": 28.66,
-                        "end": 28.98
-                    }
-                ]
-            },
-            {
-                "start": 29.18,
-                "end": 30.6,
-                "text": "we're taking that desire for",
-                "words": [
-                    {
-                        "word": "we're",
-                        "start": 29.18,
-                        "end": 29.56
-                    },
-                    {
-                        "word": "taking",
-                        "start": 29.56,
-                        "end": 29.76
-                    },
-                    {
-                        "word": "that",
-                        "start": 29.76,
-                        "end": 29.96
-                    },
-                    {
-                        "word": "desire",
-                        "start": 29.96,
-                        "end": 30.3
-                    },
-                    {
-                        "word": "for",
-                        "start": 30.3,
-                        "end": 30.6
-                    }
-                ]
-            },
-            {
-                "start": 30.6,
-                "end": 32.4,
-                "text": "visible, categorized precision,",
-                "words": [
-                    {
-                        "word": "visible,",
-                        "start": 30.6,
-                        "end": 31.2
-                    },
-                    {
-                        "word": "categorized",
-                        "start": 31.58,
-                        "end": 32.04
-                    },
-                    {
-                        "word": "precision,",
-                        "start": 32.04,
-                        "end": 32.4
-                    }
-                ]
-            },
-            {
-                "start": 32.4,
-                "end": 33.68,
-                "text": "like what you'd want from a",
-                "words": [
-                    {
-                        "word": "like",
-                        "start": 32.4,
-                        "end": 32.74
-                    },
-                    {
-                        "word": "what",
-                        "start": 32.74,
-                        "end": 33.06
-                    },
-                    {
-                        "word": "you'd",
-                        "start": 33.06,
-                        "end": 33.24
-                    },
-                    {
-                        "word": "want",
-                        "start": 33.24,
-                        "end": 33.42
-                    },
-                    {
-                        "word": "from",
-                        "start": 33.42,
-                        "end": 33.56
-                    },
-                    {
-                        "word": "a",
-                        "start": 33.56,
-                        "end": 33.68
-                    }
-                ]
-            },
-            {
-                "start": 33.68,
-                "end": 34.62,
-                "text": "medical x -ray,",
-                "words": [
-                    {
-                        "word": "medical",
-                        "start": 33.68,
-                        "end": 33.94
-                    },
-                    {
-                        "word": "x",
-                        "start": 33.94,
-                        "end": 34.26
-                    },
-                    {
-                        "word": "-ray,",
-                        "start": 34.26,
-                        "end": 34.42
-                    }
-                ]
-            },
-            {
-                "start": 34.62,
-                "end": 36.06,
-                "text": "and we're applying it to the",
-                "words": [
-                    {
-                        "word": "and",
-                        "start": 34.62,
-                        "end": 35.08
-                    },
-                    {
-                        "word": "we're",
-                        "start": 35.08,
-                        "end": 35.26
-                    },
-                    {
-                        "word": "applying",
-                        "start": 35.26,
-                        "end": 35.56
-                    },
-                    {
-                        "word": "it",
-                        "start": 35.56,
-                        "end": 35.78
-                    },
-                    {
-                        "word": "to",
-                        "start": 35.78,
-                        "end": 35.92
-                    },
-                    {
-                        "word": "the",
-                        "start": 35.92,
-                        "end": 36.06
-                    }
-                ]
-            },
-            {
-                "start": 36.06,
-                "end": 38.38,
-                "text": "fundamental nature of reality.",
-                "words": [
-                    {
-                        "word": "fundamental",
-                        "start": 36.06,
-                        "end": 36.5
-                    },
-                    {
-                        "word": "nature",
-                        "start": 36.5,
-                        "end": 36.88
-                    },
-                    {
-                        "word": "of",
-                        "start": 36.88,
-                        "end": 37.48
-                    },
-                    {
-                        "word": "reality.",
-                        "start": 37.48,
-                        "end": 38.0
-                    }
-                ]
-            },
-            {
-                "start": 38.38,
-                "end": 39.66,
-                "text": "and i got to warn you,",
-                "words": [
-                    {
-                        "word": "and",
-                        "start": 38.38,
-                        "end": 38.86
-                    },
-                    {
-                        "word": "i",
-                        "start": 38.86,
-                        "end": 38.94
-                    },
-                    {
-                        "word": "got",
-                        "start": 38.94,
-                        "end": 39.06
-                    },
-                    {
-                        "word": "to",
-                        "start": 39.06,
-                        "end": 39.16
-                    },
-                    {
-                        "word": "warn",
-                        "start": 39.16,
-                        "end": 39.32
-                    },
-                    {
-                        "word": "you,",
-                        "start": 39.32,
-                        "end": 39.5
-                    }
-                ]
-            },
-            {
-                "start": 39.66,
-                "end": 41.26,
-                "text": "the diagnostic landscape we are",
-                "words": [
-                    {
-                        "word": "the",
-                        "start": 39.66,
-                        "end": 39.96
-                    },
-                    {
-                        "word": "diagnostic",
-                        "start": 39.96,
-                        "end": 40.44
-                    },
-                    {
-                        "word": "landscape",
-                        "start": 40.44,
-                        "end": 40.9
-                    },
-                    {
-                        "word": "we",
-                        "start": 40.9,
-                        "end": 41.16
-                    },
-                    {
-                        "word": "are",
-                        "start": 41.16,
-                        "end": 41.26
-                    }
-                ]
-            },
-            {
-                "start": 41.26,
-                "end": 43.36,
-                "text": "looking at in this research is,",
-                "words": [
-                    {
-                        "word": "looking",
-                        "start": 41.26,
-                        "end": 41.52
-                    },
-                    {
-                        "word": "at",
-                        "start": 41.52,
-                        "end": 41.78
-                    },
-                    {
-                        "word": "in",
-                        "start": 41.78,
-                        "end": 42.26
-                    },
-                    {
-                        "word": "this",
-                        "start": 42.26,
-                        "end": 42.44
-                    },
-                    {
-                        "word": "research",
-                        "start": 42.44,
-                        "end": 42.82
-                    },
-                    {
-                        "word": "is,",
-                        "start": 42.82,
-                        "end": 43.2
-                    }
-                ]
-            },
-            {
-                "start": 43.36,
-                "end": 44.98,
-                "text": "well, it is completely mind",
-                "words": [
-                    {
-                        "word": "well,",
-                        "start": 43.36,
-                        "end": 43.8
-                    },
-                    {
-                        "word": "it",
-                        "start": 43.96,
-                        "end": 44.08
-                    },
-                    {
-                        "word": "is",
-                        "start": 44.08,
-                        "end": 44.22
-                    },
-                    {
-                        "word": "completely",
-                        "start": 44.22,
-                        "end": 44.64
-                    },
-                    {
-                        "word": "mind",
-                        "start": 44.64,
-                        "end": 44.98
-                    }
-                ]
-            },
-            {
-                "start": 44.98,
-                "end": 46.9,
-                "text": "bending. yeah, to say the least.",
-                "words": [
-                    {
-                        "word": "bending.",
-                        "start": 44.98,
-                        "end": 45.22
-                    },
-                    {
-                        "word": "yeah,",
-                        "start": 45.4,
-                        "end": 45.58
-                    },
-                    {
-                        "word": "to",
-                        "start": 45.72,
-                        "end": 45.82
-                    },
-                    {
-                        "word": "say",
-                        "start": 45.82,
-                        "end": 46.02
-                    },
-                    {
-                        "word": "the",
-                        "start": 46.02,
-                        "end": 46.22
-                    },
-                    {
-                        "word": "least.",
-                        "start": 46.22,
-                        "end": 46.6
-                    }
-                ]
-            },
-            {
-                "start": 46.9,
-                "end": 48.88,
-                "text": "so what's our mission today?",
-                "words": [
-                    {
-                        "word": "so",
-                        "start": 46.9,
-                        "end": 47.42
-                    },
-                    {
-                        "word": "what's",
-                        "start": 47.42,
-                        "end": 48.08
-                    },
-                    {
-                        "word": "our",
-                        "start": 48.08,
-                        "end": 48.16
-                    },
-                    {
-                        "word": "mission",
-                        "start": 48.16,
-                        "end": 48.38
-                    },
-                    {
-                        "word": "today?",
-                        "start": 48.38,
-                        "end": 48.62
-                    }
-                ]
-            },
-            {
-                "start": 48.88,
-                "end": 50.24,
-                "text": "we are going to explore this",
-                "words": [
-                    {
-                        "word": "we",
-                        "start": 48.88,
-                        "end": 49.32
-                    },
-                    {
-                        "word": "are",
-                        "start": 49.32,
-                        "end": 49.5
-                    },
-                    {
-                        "word": "going",
-                        "start": 49.5,
-                        "end": 49.64
-                    },
-                    {
-                        "word": "to",
-                        "start": 49.64,
-                        "end": 49.76
-                    },
-                    {
-                        "word": "explore",
-                        "start": 49.76,
-                        "end": 50.04
-                    },
-                    {
-                        "word": "this",
-                        "start": 50.04,
-                        "end": 50.24
-                    }
-                ]
-            },
-            {
-                "start": 50.24,
-                "end": 51.3,
-                "text": "incredible white paper that",
-                "words": [
-                    {
-                        "word": "incredible",
-                        "start": 50.24,
-                        "end": 50.62
-                    },
-                    {
-                        "word": "white",
-                        "start": 50.62,
-                        "end": 50.84
-                    },
-                    {
-                        "word": "paper",
-                        "start": 50.84,
-                        "end": 51.1
-                    },
-                    {
-                        "word": "that",
-                        "start": 51.1,
-                        "end": 51.3
-                    }
-                ]
-            },
-            {
-                "start": 51.3,
-                "end": 53.44,
-                "text": "redefines reality through pure",
-                "words": [
-                    {
-                        "word": "redefines",
-                        "start": 51.3,
-                        "end": 51.88
-                    },
-                    {
-                        "word": "reality",
-                        "start": 51.88,
-                        "end": 52.48
-                    },
-                    {
-                        "word": "through",
-                        "start": 52.48,
-                        "end": 53.14
-                    },
-                    {
-                        "word": "pure",
-                        "start": 53.14,
-                        "end": 53.44
-                    }
-                ]
-            },
-            {
-                "start": 53.44,
-                "end": 55.84,
-                "text": "geometry. right. for a century,",
-                "words": [
-                    {
-                        "word": "geometry.",
-                        "start": 53.44,
-                        "end": 53.92
-                    },
-                    {
-                        "word": "right.",
-                        "start": 54.08,
-                        "end": 54.22
-                    },
-                    {
-                        "word": "for",
-                        "start": 54.62,
-                        "end": 54.92
-                    },
-                    {
-                        "word": "a",
-                        "start": 54.92,
-                        "end": 55.04
-                    },
-                    {
-                        "word": "century,",
-                        "start": 55.04,
-                        "end": 55.36
-                    }
-                ]
-            },
-            {
-                "start": 55.84,
-                "end": 57.1,
-                "text": "quantum physics has relied on",
-                "words": [
-                    {
-                        "word": "quantum",
-                        "start": 55.84,
-                        "end": 56.1
-                    },
-                    {
-                        "word": "physics",
-                        "start": 56.1,
-                        "end": 56.48
-                    },
-                    {
-                        "word": "has",
-                        "start": 56.48,
-                        "end": 56.68
-                    },
-                    {
-                        "word": "relied",
-                        "start": 56.68,
-                        "end": 56.94
-                    },
-                    {
-                        "word": "on",
-                        "start": 56.94,
-                        "end": 57.1
-                    }
-                ]
-            },
-            {
-                "start": 57.1,
-                "end": 58.82,
-                "text": "these murky, highly abstract",
-                "words": [
-                    {
-                        "word": "these",
-                        "start": 57.1,
-                        "end": 57.28
-                    },
-                    {
-                        "word": "murky,",
-                        "start": 57.28,
-                        "end": 57.98
-                    },
-                    {
-                        "word": "highly",
-                        "start": 58.2,
-                        "end": 58.42
-                    },
-                    {
-                        "word": "abstract",
-                        "start": 58.42,
-                        "end": 58.82
-                    }
-                ]
-            },
-            {
-                "start": 58.82,
-                "end": 60.9,
-                "text": "symmetries. but this research",
-                "words": [
-                    {
-                        "word": "symmetries.",
-                        "start": 58.82,
-                        "end": 59.38
-                    },
-                    {
-                        "word": "but",
-                        "start": 59.68,
-                        "end": 60.2
-                    },
-                    {
-                        "word": "this",
-                        "start": 60.2,
-                        "end": 60.54
-                    },
-                    {
-                        "word": "research",
-                        "start": 60.54,
-                        "end": 60.9
-                    }
-                ]
-            },
-            {
-                "start": 60.9,
-                "end": 62.56,
-                "text": "replaces all that quantum magic",
-                "words": [
-                    {
-                        "word": "replaces",
-                        "start": 60.9,
-                        "end": 61.32
-                    },
-                    {
-                        "word": "all",
-                        "start": 61.32,
-                        "end": 61.58
-                    },
-                    {
-                        "word": "that",
-                        "start": 61.58,
-                        "end": 61.74
-                    },
-                    {
-                        "word": "quantum",
-                        "start": 61.74,
-                        "end": 62.14
-                    },
-                    {
-                        "word": "magic",
-                        "start": 62.14,
-                        "end": 62.56
-                    }
-                ]
-            },
-            {
-                "start": 62.56,
-                "end": 64.22,
-                "text": "with inescapable three",
-                "words": [
-                    {
-                        "word": "with",
-                        "start": 62.56,
-                        "end": 63.24
-                    },
-                    {
-                        "word": "inescapable",
-                        "start": 63.24,
-                        "end": 63.98
-                    },
-                    {
-                        "word": "three",
-                        "start": 63.98,
-                        "end": 64.22
-                    }
-                ]
-            },
-            {
-                "start": 64.22,
-                "end": 65.66,
-                "text": "-dimensional geometry. i mean,",
-                "words": [
-                    {
-                        "word": "-dimensional",
-                        "start": 64.22,
-                        "end": 64.54
-                    },
-                    {
-                        "word": "geometry.",
-                        "start": 64.54,
-                        "end": 65.06
-                    },
-                    {
-                        "word": "i",
-                        "start": 65.3,
-                        "end": 65.44
-                    },
-                    {
-                        "word": "mean,",
-                        "start": 65.44,
-                        "end": 65.56
-                    }
-                ]
-            },
-            {
-                "start": 65.66,
-                "end": 66.68,
-                "text": "we're talking about showing how",
-                "words": [
-                    {
-                        "word": "we're",
-                        "start": 65.66,
-                        "end": 65.82
-                    },
-                    {
-                        "word": "talking",
-                        "start": 65.82,
-                        "end": 66.06
-                    },
-                    {
-                        "word": "about",
-                        "start": 66.06,
-                        "end": 66.24
-                    },
-                    {
-                        "word": "showing",
-                        "start": 66.24,
-                        "end": 66.48
-                    },
-                    {
-                        "word": "how",
-                        "start": 66.48,
-                        "end": 66.68
-                    }
-                ]
-            },
-            {
-                "start": 66.68,
-                "end": 68.44,
-                "text": "quarks, photons, charge,",
-                "words": [
-                    {
-                        "word": "quarks,",
-                        "start": 66.68,
-                        "end": 67.24
-                    },
-                    {
-                        "word": "photons,",
-                        "start": 67.56,
-                        "end": 68.02
-                    },
-                    {
-                        "word": "charge,",
-                        "start": 68.24,
-                        "end": 68.42
-                    }
-                ]
-            },
-            {
-                "start": 68.44,
-                "end": 70.56,
-                "text": "and even time itself just emerge",
-                "words": [
-                    {
-                        "word": "and",
-                        "start": 68.44,
-                        "end": 68.6
-                    },
-                    {
-                        "word": "even",
-                        "start": 68.6,
-                        "end": 68.82
-                    },
-                    {
-                        "word": "time",
-                        "start": 68.82,
-                        "end": 69.18
-                    },
-                    {
-                        "word": "itself",
-                        "start": 69.18,
-                        "end": 69.54
-                    },
-                    {
-                        "word": "just",
-                        "start": 69.54,
-                        "end": 69.84
-                    },
-                    {
-                        "word": "emerge",
-                        "start": 69.84,
-                        "end": 70.56
-                    }
-                ]
-            },
-            {
-                "start": 70.56,
-                "end": 72.1,
-                "text": "from spatial rotations.",
-                "words": [
-                    {
-                        "word": "from",
-                        "start": 70.56,
-                        "end": 70.94
-                    },
-                    {
-                        "word": "spatial",
-                        "start": 70.94,
-                        "end": 71.34
-                    },
-                    {
-                        "word": "rotations.",
-                        "start": 71.34,
-                        "end": 71.84
-                    }
-                ]
-            },
-            {
-                "start": 72.1,
-                "end": 73.66,
-                "text": "exactly. but we're going to take",
-                "words": [
-                    {
-                        "word": "exactly.",
-                        "start": 72.1,
-                        "end": 72.36
-                    },
-                    {
-                        "word": "but",
-                        "start": 72.66,
-                        "end": 72.86
-                    },
-                    {
-                        "word": "we're",
-                        "start": 72.86,
-                        "end": 73.38
-                    },
-                    {
-                        "word": "going",
-                        "start": 73.38,
-                        "end": 73.44
-                    },
-                    {
-                        "word": "to",
-                        "start": 73.44,
-                        "end": 73.5
-                    },
-                    {
-                        "word": "take",
-                        "start": 73.5,
-                        "end": 73.66
-                    }
-                ]
-            },
-            {
-                "start": 73.66,
-                "end": 75.24,
-                "text": "our time. this deep dive is",
-                "words": [
-                    {
-                        "word": "our",
-                        "start": 73.66,
-                        "end": 73.76
-                    },
-                    {
-                        "word": "time.",
-                        "start": 73.76,
-                        "end": 74.02
-                    },
-                    {
-                        "word": "this",
-                        "start": 74.36,
-                        "end": 74.66
-                    },
-                    {
-                        "word": "deep",
-                        "start": 74.66,
-                        "end": 74.84
-                    },
-                    {
-                        "word": "dive",
-                        "start": 74.84,
-                        "end": 75.06
-                    },
-                    {
-                        "word": "is",
-                        "start": 75.06,
-                        "end": 75.24
-                    }
-                ]
-            },
-            {
-                "start": 75.24,
-                "end": 76.14,
-                "text": "going to be slow,",
-                "words": [
-                    {
-                        "word": "going",
-                        "start": 75.24,
-                        "end": 75.34
-                    },
-                    {
-                        "word": "to",
-                        "start": 75.34,
-                        "end": 75.4
-                    },
-                    {
-                        "word": "be",
-                        "start": 75.4,
-                        "end": 75.48
-                    },
-                    {
-                        "word": "slow,",
-                        "start": 75.48,
-                        "end": 75.94
-                    }
-                ]
-            },
-            {
-                "start": 76.14,
-                "end": 78.26,
-                "text": "recursive, layered. we really want",
-                "words": [
-                    {
-                        "word": "recursive,",
-                        "start": 76.14,
-                        "end": 76.88
-                    },
-                    {
-                        "word": "layered.",
-                        "start": 77.0,
-                        "end": 77.26
-                    },
-                    {
-                        "word": "we",
-                        "start": 77.44,
-                        "end": 77.54
-                    },
-                    {
-                        "word": "really",
-                        "start": 77.54,
-                        "end": 78.06
-                    },
-                    {
-                        "word": "want",
-                        "start": 78.06,
-                        "end": 78.26
-                    }
-                ]
-            },
-            {
-                "start": 78.26,
-                "end": 79.12,
-                "text": "to build this from the ground",
-                "words": [
-                    {
-                        "word": "to",
-                        "start": 78.26,
-                        "end": 78.36
-                    },
-                    {
-                        "word": "build",
-                        "start": 78.36,
-                        "end": 78.5
-                    },
-                    {
-                        "word": "this",
-                        "start": 78.5,
-                        "end": 78.68
-                    },
-                    {
-                        "word": "from",
-                        "start": 78.68,
-                        "end": 78.82
-                    },
-                    {
-                        "word": "the",
-                        "start": 78.82,
-                        "end": 78.92
-                    },
-                    {
-                        "word": "ground",
-                        "start": 78.92,
-                        "end": 79.12
-                    }
-                ]
-            },
-            {
-                "start": 79.12,
-                "end": 80.52,
-                "text": "up. yeah, you really have to",
-                "words": [
-                    {
-                        "word": "up.",
-                        "start": 79.12,
-                        "end": 79.36
-                    },
-                    {
-                        "word": "yeah,",
-                        "start": 79.56,
-                        "end": 79.86
-                    },
-                    {
-                        "word": "you",
-                        "start": 79.9,
-                        "end": 79.98
-                    },
-                    {
-                        "word": "really",
-                        "start": 79.98,
-                        "end": 80.18
-                    },
-                    {
-                        "word": "have",
-                        "start": 80.18,
-                        "end": 80.4
-                    },
-                    {
-                        "word": "to",
-                        "start": 80.4,
-                        "end": 80.52
-                    }
-                ]
-            },
-            {
-                "start": 80.52,
-                "end": 81.72,
-                "text": "with this material.",
-                "words": [
-                    {
-                        "word": "with",
-                        "start": 80.52,
-                        "end": 80.66
-                    },
-                    {
-                        "word": "this",
-                        "start": 80.66,
-                        "end": 80.78
-                    },
-                    {
-                        "word": "material.",
-                        "start": 80.78,
-                        "end": 81.08
-                    }
-                ]
-            },
-            {
-                "start": 81.72,
-                "end": 83.88,
-                "text": "so we need to establish an",
-                "words": [
-                    {
-                        "word": "so",
-                        "start": 81.72,
-                        "end": 82.16
-                    },
-                    {
-                        "word": "we",
-                        "start": 82.16,
-                        "end": 82.46
-                    },
-                    {
-                        "word": "need",
-                        "start": 82.46,
-                        "end": 82.82
-                    },
-                    {
-                        "word": "to",
-                        "start": 82.82,
-                        "end": 82.98
-                    },
-                    {
-                        "word": "establish",
-                        "start": 82.98,
-                        "end": 83.44
-                    },
-                    {
-                        "word": "an",
-                        "start": 83.44,
-                        "end": 83.88
-                    }
-                ]
-            },
-            {
-                "start": 83.88,
-                "end": 85.48,
-                "text": "anchor line right now,",
-                "words": [
-                    {
-                        "word": "anchor",
-                        "start": 83.88,
-                        "end": 84.26
-                    },
-                    {
-                        "word": "line",
-                        "start": 84.26,
-                        "end": 84.64
-                    },
-                    {
-                        "word": "right",
-                        "start": 84.64,
-                        "end": 85.18
-                    },
-                    {
-                        "word": "now,",
-                        "start": 85.18,
-                        "end": 85.44
-                    }
-                ]
-            },
-            {
-                "start": 85.48,
-                "end": 86.82,
-                "text": "a premise you need to keep",
-                "words": [
-                    {
-                        "word": "a",
-                        "start": 85.48,
-                        "end": 85.78
-                    },
-                    {
-                        "word": "premise",
-                        "start": 85.78,
-                        "end": 86.08
-                    },
-                    {
-                        "word": "you",
-                        "start": 86.08,
-                        "end": 86.28
-                    },
-                    {
-                        "word": "need",
-                        "start": 86.28,
-                        "end": 86.38
-                    },
-                    {
-                        "word": "to",
-                        "start": 86.38,
-                        "end": 86.5
-                    },
-                    {
-                        "word": "keep",
-                        "start": 86.5,
-                        "end": 86.82
-                    }
-                ]
-            },
-            {
-                "start": 86.82,
-                "end": 87.76,
-                "text": "in the back of your mind",
-                "words": [
-                    {
-                        "word": "in",
-                        "start": 86.82,
-                        "end": 87.06
-                    },
-                    {
-                        "word": "the",
-                        "start": 87.06,
-                        "end": 87.18
-                    },
-                    {
-                        "word": "back",
-                        "start": 87.18,
-                        "end": 87.38
-                    },
-                    {
-                        "word": "of",
-                        "start": 87.38,
-                        "end": 87.5
-                    },
-                    {
-                        "word": "your",
-                        "start": 87.5,
-                        "end": 87.6
-                    },
-                    {
-                        "word": "mind",
-                        "start": 87.6,
-                        "end": 87.76
-                    }
-                ]
-            },
-            {
-                "start": 87.76,
-                "end": 89.06,
-                "text": "for this whole deep dive.",
-                "words": [
-                    {
-                        "word": "for",
-                        "start": 87.76,
-                        "end": 87.92
-                    },
-                    {
-                        "word": "this",
-                        "start": 87.92,
-                        "end": 88.08
-                    },
-                    {
-                        "word": "whole",
-                        "start": 88.08,
-                        "end": 88.34
-                    },
-                    {
-                        "word": "deep",
-                        "start": 88.34,
-                        "end": 88.56
-                    },
-                    {
-                        "word": "dive.",
-                        "start": 88.56,
-                        "end": 88.86
-                    }
-                ]
-            },
-            {
-                "start": 89.06,
-                "end": 89.42,
-                "text": "are you ready?",
-                "words": [
-                    {
-                        "word": "are",
-                        "start": 89.06,
-                        "end": 89.16
-                    },
-                    {
-                        "word": "you",
-                        "start": 89.16,
-                        "end": 89.24
-                    },
-                    {
-                        "word": "ready?",
-                        "start": 89.24,
-                        "end": 89.42
-                    }
-                ]
-            },
-            {
-                "start": 89.42,
-                "end": 90.42,
-                "text": "let's hear it.",
-                "words": [
-                    {
-                        "word": "let's",
-                        "start": 89.42,
-                        "end": 90.0
-                    },
-                    {
-                        "word": "hear",
-                        "start": 90.0,
-                        "end": 90.1
-                    },
-                    {
-                        "word": "it.",
-                        "start": 90.1,
-                        "end": 90.2
-                    }
-                ]
-            },
-            {
-                "start": 90.42,
-                "end": 92.48,
-                "text": "okay. so intelligence is nothing",
-                "words": [
-                    {
-                        "word": "okay.",
-                        "start": 90.42,
-                        "end": 90.52
-                    },
-                    {
-                        "word": "so",
-                        "start": 90.72,
-                        "end": 90.84
-                    },
-                    {
-                        "word": "intelligence",
-                        "start": 90.84,
-                        "end": 91.82
-                    },
-                    {
-                        "word": "is",
-                        "start": 91.82,
-                        "end": 92.2
-                    },
-                    {
-                        "word": "nothing",
-                        "start": 92.2,
-                        "end": 92.48
-                    }
-                ]
-            },
-            {
-                "start": 92.48,
-                "end": 94.34,
-                "text": "but an abstraction of the physical",
-                "words": [
-                    {
-                        "word": "but",
-                        "start": 92.48,
-                        "end": 92.82
-                    },
-                    {
-                        "word": "an",
-                        "start": 92.82,
-                        "end": 93.0
-                    },
-                    {
-                        "word": "abstraction",
-                        "start": 93.0,
-                        "end": 93.48
-                    },
-                    {
-                        "word": "of",
-                        "start": 93.48,
-                        "end": 93.88
-                    },
-                    {
-                        "word": "the",
-                        "start": 93.88,
-                        "end": 94.0
-                    },
-                    {
-                        "word": "physical",
-                        "start": 94.0,
-                        "end": 94.34
-                    }
-                ]
-            },
-            {
-                "start": 94.34,
-                "end": 96.12,
-                "text": "world. right. or to flip it",
-                "words": [
-                    {
-                        "word": "world.",
-                        "start": 94.34,
-                        "end": 94.68
-                    },
-                    {
-                        "word": "right.",
-                        "start": 95.04,
-                        "end": 95.32
-                    },
-                    {
-                        "word": "or",
-                        "start": 95.52,
-                        "end": 95.72
-                    },
-                    {
-                        "word": "to",
-                        "start": 95.72,
-                        "end": 95.86
-                    },
-                    {
-                        "word": "flip",
-                        "start": 95.86,
-                        "end": 96.02
-                    },
-                    {
-                        "word": "it",
-                        "start": 96.02,
-                        "end": 96.12
-                    }
-                ]
-            },
-            {
-                "start": 96.12,
-                "end": 97.8,
-                "text": "around, the physical world is a",
-                "words": [
-                    {
-                        "word": "around,",
-                        "start": 96.12,
-                        "end": 96.4
-                    },
-                    {
-                        "word": "the",
-                        "start": 96.6,
-                        "end": 96.66
-                    },
-                    {
-                        "word": "physical",
-                        "start": 96.66,
-                        "end": 96.98
-                    },
-                    {
-                        "word": "world",
-                        "start": 96.98,
-                        "end": 97.32
-                    },
-                    {
-                        "word": "is",
-                        "start": 97.32,
-                        "end": 97.66
-                    },
-                    {
-                        "word": "a",
-                        "start": 97.66,
-                        "end": 97.8
-                    }
-                ]
-            },
-            {
-                "start": 97.8,
-                "end": 99.5,
-                "text": "chiral instantiation of",
-                "words": [
-                    {
-                        "word": "chiral",
-                        "start": 97.8,
-                        "end": 98.34
-                    },
-                    {
-                        "word": "instantiation",
-                        "start": 98.34,
-                        "end": 99.12
-                    },
-                    {
-                        "word": "of",
-                        "start": 99.12,
-                        "end": 99.5
-                    }
-                ]
-            },
-            {
-                "start": 99.5,
-                "end": 101.3,
-                "text": "intelligence. which is a heavy",
-                "words": [
-                    {
-                        "word": "intelligence.",
-                        "start": 99.5,
-                        "end": 100.06
-                    },
-                    {
-                        "word": "which",
-                        "start": 100.4,
-                        "end": 100.88
-                    },
-                    {
-                        "word": "is",
-                        "start": 100.88,
-                        "end": 101.0
-                    },
-                    {
-                        "word": "a",
-                        "start": 101.0,
-                        "end": 101.08
-                    },
-                    {
-                        "word": "heavy",
-                        "start": 101.08,
-                        "end": 101.3
-                    }
-                ]
-            },
-            {
-                "start": 101.3,
-                "end": 102.16,
-                "text": "sentence, i know.",
-                "words": [
-                    {
-                        "word": "sentence,",
-                        "start": 101.3,
-                        "end": 101.7
-                    },
-                    {
-                        "word": "i",
-                        "start": 101.72,
-                        "end": 102.0
-                    },
-                    {
-                        "word": "know.",
-                        "start": 102.0,
-                        "end": 102.1
-                    }
-                ]
-            },
-            {
-                "start": 102.16,
-                "end": 104.0,
-                "text": "right. but here's the rest of",
-                "words": [
-                    {
-                        "word": "right.",
-                        "start": 102.16,
-                        "end": 102.3
-                    },
-                    {
-                        "word": "but",
-                        "start": 102.54,
-                        "end": 103.1
-                    },
-                    {
-                        "word": "here's",
-                        "start": 103.1,
-                        "end": 103.66
-                    },
-                    {
-                        "word": "the",
-                        "start": 103.66,
-                        "end": 103.72
-                    },
-                    {
-                        "word": "rest",
-                        "start": 103.72,
-                        "end": 103.88
-                    },
-                    {
-                        "word": "of",
-                        "start": 103.88,
-                        "end": 104.0
-                    }
-                ]
-            },
-            {
-                "start": 104.0,
-                "end": 105.88,
-                "text": "it. our five senses basically",
-                "words": [
-                    {
-                        "word": "it.",
-                        "start": 104.0,
-                        "end": 104.14
-                    },
-                    {
-                        "word": "our",
-                        "start": 104.36,
-                        "end": 104.84
-                    },
-                    {
-                        "word": "five",
-                        "start": 104.84,
-                        "end": 105.04
-                    },
-                    {
-                        "word": "senses",
-                        "start": 105.04,
-                        "end": 105.38
-                    },
-                    {
-                        "word": "basically",
-                        "start": 105.38,
-                        "end": 105.88
-                    }
-                ]
-            },
-            {
-                "start": 105.88,
-                "end": 107.82,
-                "text": "split an eight -dimensional,",
-                "words": [
-                    {
-                        "word": "split",
-                        "start": 105.88,
-                        "end": 106.36
-                    },
-                    {
-                        "word": "an",
-                        "start": 106.36,
-                        "end": 106.64
-                    },
-                    {
-                        "word": "eight",
-                        "start": 106.64,
-                        "end": 106.94
-                    },
-                    {
-                        "word": "-dimensional,",
-                        "start": 106.94,
-                        "end": 107.52
-                    }
-                ]
-            },
-            {
-                "start": 107.82,
-                "end": 109.74,
-                "text": "non -associative logic into two",
-                "words": [
-                    {
-                        "word": "non",
-                        "start": 107.82,
-                        "end": 108.18
-                    },
-                    {
-                        "word": "-associative",
-                        "start": 108.18,
-                        "end": 108.78
-                    },
-                    {
-                        "word": "logic",
-                        "start": 108.78,
-                        "end": 109.14
-                    },
-                    {
-                        "word": "into",
-                        "start": 109.14,
-                        "end": 109.46
-                    },
-                    {
-                        "word": "two",
-                        "start": 109.46,
-                        "end": 109.74
-                    }
-                ]
-            },
-            {
-                "start": 109.74,
-                "end": 111.62,
-                "text": "parts. and each of those parts",
-                "words": [
-                    {
-                        "word": "parts.",
-                        "start": 109.74,
-                        "end": 110.16
-                    },
-                    {
-                        "word": "and",
-                        "start": 110.36,
-                        "end": 110.92
-                    },
-                    {
-                        "word": "each",
-                        "start": 110.92,
-                        "end": 111.12
-                    },
-                    {
-                        "word": "of",
-                        "start": 111.12,
-                        "end": 111.2
-                    },
-                    {
-                        "word": "those",
-                        "start": 111.2,
-                        "end": 111.36
-                    },
-                    {
-                        "word": "parts",
-                        "start": 111.36,
-                        "end": 111.62
-                    }
-                ]
-            },
-            {
-                "start": 111.62,
-                "end": 113.66,
-                "text": "has four dimensions of associative",
-                "words": [
-                    {
-                        "word": "has",
-                        "start": 111.62,
-                        "end": 111.84
-                    },
-                    {
-                        "word": "four",
-                        "start": 111.84,
-                        "end": 112.12
-                    },
-                    {
-                        "word": "dimensions",
-                        "start": 112.12,
-                        "end": 112.54
-                    },
-                    {
-                        "word": "of",
-                        "start": 112.54,
-                        "end": 112.96
-                    },
-                    {
-                        "word": "associative",
-                        "start": 112.96,
-                        "end": 113.66
-                    }
-                ]
-            },
-            {
-                "start": 113.66,
-                "end": 115.38,
-                "text": "logic. which is the abstraction",
-                "words": [
-                    {
-                        "word": "logic.",
-                        "start": 113.66,
-                        "end": 114.0
-                    },
-                    {
-                        "word": "which",
-                        "start": 114.28,
-                        "end": 114.82
-                    },
-                    {
-                        "word": "is",
-                        "start": 114.82,
-                        "end": 114.94
-                    },
-                    {
-                        "word": "the",
-                        "start": 114.94,
-                        "end": 115.02
-                    },
-                    {
-                        "word": "abstraction",
-                        "start": 115.02,
-                        "end": 115.38
-                    }
-                ]
-            },
-            {
-                "start": 115.38,
-                "end": 117.58,
-                "text": "part. yeah, that anchor line is",
-                "words": [
-                    {
-                        "word": "part.",
-                        "start": 115.38,
-                        "end": 115.66
-                    },
-                    {
-                        "word": "yeah,",
-                        "start": 116.08,
-                        "end": 116.54
-                    },
-                    {
-                        "word": "that",
-                        "start": 116.6,
-                        "end": 116.72
-                    },
-                    {
-                        "word": "anchor",
-                        "start": 116.72,
-                        "end": 116.94
-                    },
-                    {
-                        "word": "line",
-                        "start": 116.94,
-                        "end": 117.16
-                    },
-                    {
-                        "word": "is",
-                        "start": 117.16,
-                        "end": 117.58
-                    }
-                ]
-            },
-            {
-                "start": 117.58,
-                "end": 120.88,
-                "text": "dense. literally the master key to",
-                "words": [
-                    {
-                        "word": "dense.",
-                        "start": 117.58,
-                        "end": 118.08
-                    },
-                    {
-                        "word": "literally",
-                        "start": 119.42,
-                        "end": 119.78
-                    },
-                    {
-                        "word": "the",
-                        "start": 119.78,
-                        "end": 120.02
-                    },
-                    {
-                        "word": "master",
-                        "start": 120.02,
-                        "end": 120.28
-                    },
-                    {
-                        "word": "key",
-                        "start": 120.28,
-                        "end": 120.54
-                    },
-                    {
-                        "word": "to",
-                        "start": 120.54,
-                        "end": 120.88
-                    }
-                ]
-            },
-            {
-                "start": 120.88,
-                "end": 121.78,
-                "text": "this entire paper.",
-                "words": [
-                    {
-                        "word": "this",
-                        "start": 120.88,
-                        "end": 121.08
-                    },
-                    {
-                        "word": "entire",
-                        "start": 121.08,
-                        "end": 121.32
-                    },
-                    {
-                        "word": "paper.",
-                        "start": 121.32,
-                        "end": 121.6
-                    }
-                ]
-            },
-            {
-                "start": 121.78,
-                "end": 124.0,
-                "text": "it is. and don't worry,",
-                "words": [
-                    {
-                        "word": "it",
-                        "start": 121.78,
-                        "end": 121.9
-                    },
-                    {
-                        "word": "is.",
-                        "start": 121.9,
-                        "end": 122.2
-                    },
-                    {
-                        "word": "and",
-                        "start": 122.8,
-                        "end": 123.32
-                    },
-                    {
-                        "word": "don't",
-                        "start": 123.32,
-                        "end": 123.7
-                    },
-                    {
-                        "word": "worry,",
-                        "start": 123.7,
-                        "end": 123.9
-                    }
-                ]
-            },
-            {
-                "start": 124.0,
-                "end": 125.36,
-                "text": "we promise we aren't just going",
-                "words": [
-                    {
-                        "word": "we",
-                        "start": 124.0,
-                        "end": 124.08
-                    },
-                    {
-                        "word": "promise",
-                        "start": 124.08,
-                        "end": 124.36
-                    },
-                    {
-                        "word": "we",
-                        "start": 124.36,
-                        "end": 124.54
-                    },
-                    {
-                        "word": "aren't",
-                        "start": 124.54,
-                        "end": 124.8
-                    },
-                    {
-                        "word": "just",
-                        "start": 124.8,
-                        "end": 125.2
-                    },
-                    {
-                        "word": "going",
-                        "start": 125.2,
-                        "end": 125.36
-                    }
-                ]
-            },
-            {
-                "start": 125.36,
-                "end": 127.32,
-                "text": "to read raw mathematical equations",
-                "words": [
-                    {
-                        "word": "to",
-                        "start": 125.36,
-                        "end": 125.46
-                    },
-                    {
-                        "word": "read",
-                        "start": 125.46,
-                        "end": 125.78
-                    },
-                    {
-                        "word": "raw",
-                        "start": 125.78,
-                        "end": 126.16
-                    },
-                    {
-                        "word": "mathematical",
-                        "start": 126.16,
-                        "end": 126.74
-                    },
-                    {
-                        "word": "equations",
-                        "start": 126.74,
-                        "end": 127.32
-                    }
-                ]
-            },
-            {
-                "start": 127.32,
-                "end": 128.24,
-                "text": "at you. no,",
-                "words": [
-                    {
-                        "word": "at",
-                        "start": 127.32,
-                        "end": 127.56
-                    },
-                    {
-                        "word": "you.",
-                        "start": 127.56,
-                        "end": 127.7
-                    },
-                    {
-                        "word": "no,",
-                        "start": 127.86,
-                        "end": 128.1
-                    }
-                ]
-            },
-            {
-                "start": 128.24,
-                "end": 130.26,
-                "text": "absolutely not. we'll describe the",
-                "words": [
-                    {
-                        "word": "absolutely",
-                        "start": 128.24,
-                        "end": 128.58
-                    },
-                    {
-                        "word": "not.",
-                        "start": 128.58,
-                        "end": 128.84
-                    },
-                    {
-                        "word": "we'll",
-                        "start": 129.06,
-                        "end": 129.54
-                    },
-                    {
-                        "word": "describe",
-                        "start": 129.54,
-                        "end": 130.0
-                    },
-                    {
-                        "word": "the",
-                        "start": 130.0,
-                        "end": 130.26
-                    }
-                ]
-            },
-            {
-                "start": 130.26,
-                "end": 131.9,
-                "text": "geometric essence of it.",
-                "words": [
-                    {
-                        "word": "geometric",
-                        "start": 130.26,
-                        "end": 130.66
-                    },
-                    {
-                        "word": "essence",
-                        "start": 130.66,
-                        "end": 131.06
-                    },
-                    {
-                        "word": "of",
-                        "start": 131.06,
-                        "end": 131.24
-                    },
-                    {
-                        "word": "it.",
-                        "start": 131.24,
-                        "end": 131.42
-                    }
-                ]
-            },
-            {
-                "start": 131.9,
-                "end": 133.84,
-                "text": "though we do highly encourage you",
-                "words": [
-                    {
-                        "word": "though",
-                        "start": 131.9,
-                        "end": 132.42
-                    },
-                    {
-                        "word": "we",
-                        "start": 132.42,
-                        "end": 132.84
-                    },
-                    {
-                        "word": "do",
-                        "start": 132.84,
-                        "end": 133.08
-                    },
-                    {
-                        "word": "highly",
-                        "start": 133.08,
-                        "end": 133.38
-                    },
-                    {
-                        "word": "encourage",
-                        "start": 133.38,
-                        "end": 133.7
-                    },
-                    {
-                        "word": "you",
-                        "start": 133.7,
-                        "end": 133.84
-                    }
-                ]
-            },
-            {
-                "start": 133.84,
-                "end": 134.72,
-                "text": "to keep the deep dive",
-                "words": [
-                    {
-                        "word": "to",
-                        "start": 133.84,
-                        "end": 133.94
-                    },
-                    {
-                        "word": "keep",
-                        "start": 133.94,
-                        "end": 134.1
-                    },
-                    {
-                        "word": "the",
-                        "start": 134.1,
-                        "end": 134.3
-                    },
-                    {
-                        "word": "deep",
-                        "start": 134.3,
-                        "end": 134.52
-                    },
-                    {
-                        "word": "dive",
-                        "start": 134.52,
-                        "end": 134.7
-                    }
-                ]
-            }
-        ],
-        "_caption_sig": "cfff596550eab53f2702b74dbb09b31f",
-        "rendered_duration": 139.69,
-        "audio_duration": 134.22,
-        "intro_offset": 1.5,
-        "outro_duration": 5.0,
-        "source_start": 0.0,
-        "source_end": 134.18,
-        "_audio_sig": "a7a76b4f37a60ce30d2db883bdf10875",
-        "_compiled_sig": "be305ac199ead274465d24bed17f7caa"
+        "coming_up_title": "The Eight-Dimensional Totality",
+        "mosaic_run_id": "43295e65-7ea7-428e-98c4-4708bc58600c"
     },
     {
         "num": 1,
-        "title": "The Eight-Dimensional Totality",
+        "title": "8D Totality",
         "start": 134.18,
-        "end": 244.66,
-        "duration": 110.48,
+        "end": 244.78,
+        "duration": 110.6,
         "bridge_text": [
-            "Coming up in the next clip, we're going to see what happens to those lost dimensions."
+            "What Is Sensory Split ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 134.18,
-                "end": 143.98,
-                "duration": 9.8,
+                "end": 144.1,
+                "duration": 9.92,
                 "text": "Okay. So let's just jump right in. Clip one, the eight -dimensional totality. Reality is an eight -dimensional unbracketed sentence and your brain is the editor."
             },
             {
@@ -4562,16 +73,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Howling (Sting) - Gunnar Olsen.mp3"
             },
             {
                 "type": "audio",
                 "start": 144.38,
-                "end": 244.66,
-                "duration": 100.28,
+                "end": 244.78,
+                "duration": 100.4,
                 "text": "Okay. Let's unpack this. To understand where our 3D reality comes from, the research zooms way, way out. Like beyond normal math? Way beyond. It starts in this eight -dimensional mathematical space known as the Octonians. Okay. Octonians? That sounds super intimidating. Paint a picture for us. Okay. Think of an eight -dimensional non -associative space. Right. The best analogy is imagining you're reading a massive sentence, but there are zero spaces between the words. Oh, wow. So just a wall of letters? Exactly. No punctuation, no spaces. It's a continuous, undefined totality. It holds all the potential meaning, but you can't actually read a specific story from it. Because it's completely unbracketed. Right. In algebraic topology, to make any sense of non -associative algebra, you literally have to bracket it. You have to invent punctuation. Okay. So like grouping the letters into actual words? Yep. And the people mentions the stash of a sociohedron, which is just the geometric space of all those possible brackets. So wait, let me push back on this. If the universe at its base is this crazy 8D unbunctuated sentence, how do we experience it as a linear story, like a normal Tuesday? Well, that connects to the paper's main heuristic. Our five sensory modalities, sight, sound, touch, taste, smell, they act as biological filters. Oh, I see. They literally strip away five dimensions. We don't perceive the 8D totality because we biologically can't. That is wild. Yeah. Coming up in the next clip, we're going to see what happens to those lost dimensions. They basically become the very thing that ages us. Time. Yeah."
             },
             {
@@ -4579,29 +91,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "The Sensory Split"
     },
     {
         "num": 2,
-        "title": "The Sensory Split",
+        "title": "Sensory Split",
         "start": 245.42,
-        "end": 347.94,
-        "duration": 102.52,
+        "end": 348.06,
+        "duration": 102.64,
         "bridge_text": [
-            "Coming up in the next clip, we drop down to the math of our 3D reality using the four division algebras."
+            "Why Four Division Algebras ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 245.42,
-                "end": 255.4,
-                "duration": 9.98,
+                "end": 255.53,
+                "duration": 10.11,
                 "text": "Clip two, the sensory split. Your five senses don't just observe the world. They slice it, leaving behind 3D space and the illusion of time."
             },
             {
@@ -4609,16 +124,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
             },
             {
                 "type": "audio",
                 "start": 255.96,
-                "end": 347.94,
-                "duration": 91.98,
+                "end": 348.06,
+                "duration": 92.1,
                 "text": "What's fascinating here is how this actually works biologically, or at least conceptually. Right. Because my eyes aren't doing math. No. But sensory perception actively forces this continuous, non -associative reality into an associative neural representation that your brain can handle. Okay. There's this concept called event segmentation theory. It's how the brain slices reality into discrete events. You don't remember a continuous stream. You remember chapters. Like making breakfast, then driving to work. Exactly. I want to emphasize, though, that this isn't a strict biological mapping. It's a profound conceptual heuristic from the paper. We subtract five sensory dimensions from the 8D base, and it leaves us with three spatial dimensions. The 3D world we know. But the crazy part is, what happens to the dimensions we discard it? They don't just vanish, right? No, they don't. The paper brings in the Conravelli thermal time hypothesis. When you discard higher degrees of freedom, when you coarse -grained a system, entropy inherently increases. Oh, wow. So the lost dimensions... ...manifest as the thermodynamic arrow of time. Time is just the exhaust fume of the dimensions we couldn't process. That is just... I mean, it completely changes how you look at a clock. And by the way, make sure to check the Deep Dive website for the visual infographic of this sensory split. It's super helpful. It really is. Coming up in the next clip, we drop down to the math of our 3D reality using the four division algebras. Right into the structure."
             },
             {
@@ -4626,29 +142,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "The Division Algebras"
     },
     {
         "num": 3,
-        "title": "The Division Algebras",
+        "title": "Division Algebras",
         "start": 348.44,
-        "end": 425.14,
-        "duration": 76.7,
+        "end": 425.26,
+        "duration": 76.82,
         "bridge_text": [
-            "Coming up in the next clip, we meet the actual architect of the spatial house, the scalar observer."
+            "Who Is Scalar Observer ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 348.44,
-                "end": 358.38,
-                "duration": 9.94,
+                "end": 358.5,
+                "duration": 10.06,
                 "text": "Clip three. The division algebras. Why does nature paint physical reality with exactly four dimensions? So we established that the 8D octonians are too chaotic."
             },
             {
@@ -4656,16 +175,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Howling (Sting) - Gunnar Olsen.mp3"
             },
             {
                 "type": "audio",
                 "start": 358.58,
-                "end": 425.14,
-                "duration": 66.56,
+                "end": 425.26,
+                "duration": 66.68,
                 "text": "They can't form stable physical knots because they aren't associative. Right. The brackets keep shifting, which brings up the Hurwitz and Frobenius theorems from the research. Yeah. These theorems prove that the universe is restricted. It only has four normed division algebras to work with. That's the real numbers, complex numbers, quaternions, and octonians, right? Exactly. Nature has a very limited menu. So to get a stable physical universe, we have to drop down from 8D to 4D to the quaternions. Okay. So dimensional loss is functionally required for stability. Yes. The quaternions have one real scalar axis and three spatial axes. Which perfectly matches our 3D space plus time. Literally the exact mathematical language of it. Think about it like building a stable house. You need associative brackets, like walls that connect predictably to hold the structure together. If the walls keep shifting, you don't have a house. Quaternions give us those stable walls. Coming up in the next clip, we meet the actual architect of the spatial house, the scalar observer. This is where it gets personal."
             },
             {
@@ -4673,29 +193,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "The Scalar Observer"
     },
     {
         "num": 4,
-        "title": "The Scalar Observer",
+        "title": "Scalar Observer",
         "start": 426.74,
-        "end": 505.5,
-        "duration": 78.76,
+        "end": 505.68,
+        "duration": 78.94,
         "bridge_text": [
-            "Coming up in the next clip, we finally demystify the quaternion itself and define what a 3D spasm is."
+            "How Do Quaternions Work ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 426.74,
-                "end": 438.58,
-                "duration": 11.84,
+                "end": 438.78,
+                "duration": 12.04,
                 "text": "Clip four, the scalar observer. You are the one -dimensional anchor in a three -dimensional storm. If we connect this to the bigger picture, we have to look at that 1D real number from the division algebras."
             },
             {
@@ -4703,16 +226,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
             },
             {
                 "type": "audio",
                 "start": 438.82,
-                "end": 505.5,
-                "duration": 66.68,
+                "end": 505.68,
+                "duration": 66.86,
                 "text": "That first axis in the quaternions. Right. In physical reality, the paper defines this as the realm of the scalar observer. So that's us. It's the absolute reference point of awareness. Space doesn't just exist out in a void. It projects from a localized origin point, U. Here's where it gets really interesting. Here's where the origin point, then time. Yeah. Time isn't a flowing river carrying you along. It's simply the ordinal sequence of spatial transformations executed relative to you. Time is literally just you counting your steps. The sequential tracking of spatial changes. It's a total paradigm shift. And hey, just a quick note for everyone listening. If you wanna really grasp these deep spatial concepts, all our Deep Dive episodes are now available in a public notebook LM. Which is such a cool tool. It really is. The link is on the Deep Dive landing page. This is true open sourcing of knowledge. So check it out, ask questions, let us know what you think. Highly recommended. Coming up in the next clip, we finally demystify the quaternion itself and define what a 3D spasm is. Getting into the gears."
             },
             {
@@ -4720,29 +244,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "Quaternions"
     },
     {
         "num": 5,
         "title": "Quaternions",
         "start": 506.46,
-        "end": 591.0,
-        "duration": 84.54,
+        "end": 591.32,
+        "duration": 84.86,
         "bridge_text": [
-            "Coming up in the next clip, we look at what happens when space takes a two -dimensional spasm."
+            "What Is 2D Spasm ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 506.46,
-                "end": 517.46,
-                "duration": 11.0,
+                "end": 517.59,
+                "duration": 11.13,
                 "text": "Clip five, quaternions. There is nothing imaginary about I, J, and K. They are the gears of reality. In a lot of math classes, I, J, and K are taught as imaginary units."
             },
             {
@@ -4750,16 +277,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Howling (Sting) - Gunnar Olsen.mp3"
             },
             {
                 "type": "audio",
                 "start": 517.88,
-                "end": 591.0,
-                "duration": 73.12,
+                "end": 591.32,
+                "duration": 73.44,
                 "text": "Right, like abstract tricks to solve equations. But the paper clarifies a major point here. We have to completely discard the word imaginary. Completely. They are concrete, physical, 90 degree spatial rotation generators. Okay, so I is a 90 degree rotation around the X axis, J is around the Y axis, and K is around the Z axis. Exactly. To visualize this, the research uses a 3D dice model. Ooh, I love this analogy. Imagine a large playing die on your desk. Every 90 degree flip you make with your hand is one of these operational generators. Okay, so I roll it forward, and that's I. Right. And because we're in a 3D world, these orthogonal operations anti -commute. Meaning the order strictly matters. Yes. If you roll it forward, then right. It ends up facing a completely different way than if you rolled it right, then forward. The physical history changes the outcome. And again, don't worry about visualizing matrix math in your head. You can see the exact interactive dice simulation on our Deep Dive website. It makes it so clear. Coming up in the next clip, we look at what happens when space takes a two -dimensional spasm. Moving from the dice to the waves."
             },
             {
@@ -4767,29 +295,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "The 2D Spasm"
     },
     {
         "num": 6,
-        "title": "The 2D Spasm",
+        "title": "2D Spasm",
         "start": 591.9,
-        "end": 662.76,
-        "duration": 70.86,
+        "end": 662.88,
+        "duration": 70.98,
         "bridge_text": [
-            "Coming up in the next clip, what happens when that jump rope actually wraps into the third dimension?"
+            "How Light Becomes Matter ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 591.9,
-                "end": 600.06,
-                "duration": 8.16,
+                "end": 600.31,
+                "duration": 8.41,
                 "text": "Clip six. The 2D spasm. Light is just a two -dimensional shiver in the fabric of space. So now we have our gears, I, J, and K."
             },
             {
@@ -4797,16 +328,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
             },
             {
                 "type": "audio",
                 "start": 600.62,
-                "end": 662.76,
-                "duration": 62.14,
+                "end": 662.88,
+                "duration": 62.26,
                 "text": "Let's look at Maxwell's classical electromagnetic wave. Right, normally described as electric and magnetic fields oscillating. How does this geometric lens explain it? Through this lens, a photon is described as a planar spasm. It's space literally shivering. But only using two dimensions. It uses only two orthogonal spatial generators, say the electric axis I and the magnetic axis J. So it's like shaking a jump rope up and down? Perfect analogy. The wave just travels forward, unconfined along the rope because it's only moving in two dimensions. And those correspond to the two polarization states of a photon. Right. And because it doesn't wrap around into the third dimension, it never closes off. Oh, I see. Which means it can never trap energy in a localized point. Therefore, it carries no rest mass. It's just pure, unconfined energy forced to move at the speed of light. Wow. Coming up in the next clip, what happens when that jump rope actually wraps into the third dimension? We get matter. Tying the knot."
             },
             {
@@ -4814,29 +346,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "The Volumetric Knot"
     },
     {
         "num": 7,
-        "title": "The Volumetric Knot",
-        "start": 664.0,
-        "end": 727.94,
-        "duration": 63.94,
+        "title": "Volumetric Knot",
+        "start": 664,
+        "end": 728.26,
+        "duration": 64.26,
         "bridge_text": [
-            "Coming up in the next clip, we roll the 3D dice again to discover the illusion of commutativity."
+            "Is Commutativity An Illusion ?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 664.0,
-                "end": 671.5,
-                "duration": 7.5,
+                "start": 664,
+                "end": 671.62,
+                "duration": 7.62,
                 "text": "Clip seven, the volumetric knot. If light is a 2D spasm, a quark is that exact same photon trapped in a 3D knot."
             },
             {
@@ -4844,46 +379,50 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Howling (Sting) - Gunnar Olsen.mp3"
             },
             {
                 "type": "audio",
-                "start": 671.5,
-                "end": 727.94,
-                "duration": 56.44,
-                "text": "So what does this all mean for physical stuff? Yeah, the stuff we can touch. This is the core thesis of the paper. What happens if all three spatial generators, I, J, and K, fire concurrently? Well, the wave can't escape anymore. It's not just a jump rope waving forward. The spatial spasm becomes trapped in its own 3D non -commutative geometry. So it wraps space -time back on itself. Exactly. It creates a localized topological knot. Which raises a huge, huge question. What actually is mass? In this framework, it's just pure geometry. The entrapped spatial energy condenses into rest mass. That's E equals MC squared. So matter isn't some separate stuff placed into empty space. Matter is literally an active knotting of 3D space itself. It resolves wave particle duality completely. That is so elegant. Coming up in the next clip, we roll the 3D dice again to discover the illusion of commutativity. This part is a bit of a mind bender."
+                "start": 672.02,
+                "end": 728.26,
+                "duration": 56.24,
+                "text": "what does this all mean for physical stuff? Yeah, the stuff we can touch. This is the core thesis of the paper. What happens if all three spatial generators, I, J, and K, fire concurrently? Well, the wave can't escape anymore. It's not just a jump rope waving forward. The spatial spasm becomes trapped in its own 3D non -commutative geometry. So it wraps space -time back on itself. Exactly. It creates a localized topological knot. Which raises a huge, huge question. What actually is mass? In this framework, it's just pure geometry. The entrapped spatial energy condenses into rest mass. That's E equals MC squared. So matter isn't some separate stuff placed into empty space. Matter is literally an active knotting of 3D space itself. It resolves wave particle duality completely. That is so elegant. Coming up in the next clip, we roll the 3D dice again to discover the illusion of commutativity. This part is a bit of a mind bender."
             },
             {
                 "type": "music",
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "The Illusion Of Commutativity"
     },
     {
         "num": 8,
-        "title": "The Illusion Of Commutativity",
+        "title": "Commutativity Illusion",
         "start": 728.46,
-        "end": 809.58,
-        "duration": 81.12,
+        "end": 809.9,
+        "duration": 81.44,
         "bridge_text": [
-            "Coming up in the next clip, this geometric illusion explains one of the greatest mysteries of quantum physics, color charge."
+            "What Is Color Charge ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 728.46,
-                "end": 735.82,
-                "duration": 7.36,
+                "end": 736.14,
+                "duration": 7.68,
                 "text": "Clip eight. The illusion of commutativity. How three completely different paths can lead to the exact same physical knot."
             },
             {
@@ -4891,16 +430,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
             },
             {
                 "type": "audio",
                 "start": 736.46,
-                "end": 809.58,
-                "duration": 73.12,
+                "end": 809.9,
+                "duration": 73.44,
                 "text": "We establish that order matters. Right. Anti -commutativity. Right. I then J is different from J then I. But the paper highlights this really weird geometric loophole when you use all three dimensions. Okay, lay it on me. If you execute a full three -step sequence, I then J then K, you end up at a specific mathematical boundary. Negative one. Okay. But if you cycle the starting point, J then K then I, you also get negative one. And K then I then J, also negative one. Wait, really? How does that work if order matters? It's because moving an element past two neighbors in quaternions requires two sign flips. A negative times a negative is a positive. Right, okay. So cycling the order perfectly preserves the final scalar boundary. Let's use the dice analogy again. You rotate it three completely different ways, traversing three distinct paths, and the dice ends up looking physically identical as a closed volume. But internally, the net 90 -degree axis alignment is totally different. The destination is the same, but the history is different. Incredible. Coming up in the next clip, this geometric illusion explains one of the greatest mysteries of quantum physics, color charge. Gang into the quantum realm."
             },
             {
@@ -4908,29 +448,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "Color Charge"
     },
     {
         "num": 9,
         "title": "Color Charge",
         "start": 810.42,
-        "end": 875.68,
-        "duration": 65.26,
+        "end": 875.97,
+        "duration": 65.55,
         "bridge_text": [
-            "Coming up in the next clip, how these three colors lock together to form the building blocks of you and me."
+            "Why Are Quarks Confined ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 810.42,
-                "end": 817.62,
-                "duration": 7.2,
+                "end": 817.94,
+                "duration": 7.52,
                 "text": "Clip nine, color charge. Red, blue, and green aren't quantum magic. They are just the three possible paths to tie a knot."
             },
             {
@@ -4938,16 +481,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Howling (Sting) - Gunnar Olsen.mp3"
             },
             {
                 "type": "audio",
                 "start": 818.2,
-                "end": 875.68,
-                "duration": 57.48,
+                "end": 875.97,
+                "duration": 57.77,
                 "text": "So in standard quantum chromodynamics, color charge uses these incredibly complex SU3 matrices. Right, it's usually treated as this totally abstract property. But in this quaternionic 3D geometry, color charge is suddenly dead simple. It's simply the permutation order of the three orthogonal rotations we just talked about. Oh. So we can just map it out. IJK is red, JKI is blue, and KIJ is green. Exactly. They all form the exact same topological physical mass, that negative one boundary. But their internal state information is different. Yes. And the paper posits that this internal state information is the primordial foundation of intelligence. Wait, really? Yeah. It's the how you got there, not just the what you built. It's embedded information. Spatial memory before biological brains even existed. You got it. That's profound. Coming up in the next clip, how these three colors lock together to form the building blocks of you and me. Protons and neutrons."
             },
             {
@@ -4955,29 +499,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "Color Confinement"
     },
     {
         "num": 10,
-        "title": "Part 10",
+        "title": "Color Confinement",
         "start": 876.32,
         "end": 945.02,
         "duration": 68.7,
         "bridge_text": [
-            "Coming up in the next clip, we hit the rewind button to generate antimatter."
+            "How Rewinding Creates Antimatter ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 876.32,
-                "end": 884.18,
-                "duration": 7.86,
+                "end": 884.5,
+                "duration": 8.18,
                 "text": "Clip 10, color confinement, why quarks can never be found alone in nature. This explains a strict rule in particle physics called color confinement."
             },
             {
@@ -4985,9 +532,10 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
             },
             {
@@ -5002,29 +550,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "Anticolors"
     },
     {
         "num": 11,
         "title": "Anticolors",
         "start": 945.02,
-        "end": 1012.36,
-        "duration": 67.34,
+        "end": 1012.59,
+        "duration": 67.57,
         "bridge_text": [
-            "Coming up in the next clip, we redefine electric charge as a global chiral mirror."
+            "What Is Electric Charge ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 945.02,
-                "end": 952.16,
-                "duration": 7.14,
+                "end": 952.31,
+                "duration": 7.29,
                 "text": "Clip 11. Anticolors. To undo the knot, you can't just move forward. You must walk backward through the exact same steps."
             },
             {
@@ -5032,16 +583,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Howling (Sting) - Gunnar Olsen.mp3"
             },
             {
                 "type": "audio",
                 "start": 952.76,
-                "end": 1012.36,
-                "duration": 59.6,
+                "end": 1012.59,
+                "duration": 59.83,
                 "text": "So, we know red is the forward path i, j, k. But what is anti -red? I'd instinctively think you just apply another forward sequence, like tying another knot on top. But the paper states you can't do that. To return to the flat vacuum, you must apply the inverse operations in reverse order, k, j, i. Okay, so the reverse anticyclic path flips the algebraic sign from negative one to positive one. Yes, and that positive scalar boundary is the geometric root of antimatter. So, what happens if a forward color, like red at negative one, hits its anti -color, anti -red at positive one? Mason annihilation. The structural knotting meets the untangling sequence. And the topological distortion just cancels out perfectly to zero. The knot untangles entirely back into the scalar vacuum. The mass dissolves. Boom. Coming up in the next clip, we redefine electric charge as a global chiral mirror. From colors to electromagnetism."
             },
             {
@@ -5049,29 +601,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "Electric Charge"
     },
     {
         "num": 12,
         "title": "Electric Charge",
         "start": 1013.48,
-        "end": 1082.46,
-        "duration": 68.98,
+        "end": 1082.26,
+        "duration": 68.78,
         "bridge_text": [
-            "Coming up in the next clip, the profound realization that cognitive intelligence is the antimatter to physical creation."
+            "Is Intelligence Physical Antimatter ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 1013.48,
-                "end": 1024.26,
-                "duration": 10.78,
+                "end": 1024.58,
+                "duration": 11.1,
                 "text": "Clip 12. Electric charge. Charge is not a fraction, it is the chiral orientation of your spatial geometry. So, we connected color charge to the internal, non -commutative order."
             },
             {
@@ -5079,46 +634,50 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
             },
             {
                 "type": "audio",
-                "start": 1024.26,
-                "end": 1082.46,
-                "duration": 58.2,
-                "text": "Now, we connect electric charge to the associative global sequence. Right. The global sign flip, negative one versus positive one, defines the two opposite chiral poles of electromagnetic charge. Okay, let me make sure I have this. Negative charge minus Q represents forward projection, spatial condensation into localized matter. Exactly. And positive charge plus Q is the reversed sequence, untangling reflection back to equilibrium. The paper uses the Argand plane analogy here, right? Yeah, graphing real and imaginary numbers. Negative one and positive one aren't destructive arithmetic opposites that just crush each other. They're chiral conjugate mirrors of each other, like a left and a right hand. Identical structure, inverted orientation. Perfectly stated. Coming up in the next clip, the profound realization that cognitive intelligence is the antimatter to physical creation. This is the philosophical peak of the paper. Clip"
+                "start": 1025.34,
+                "end": 1082.26,
+                "duration": 56.92,
+                "text": "we connect electric charge to the associative global sequence. Right. The global sign flip, negative one versus positive one, defines the two opposite chiral poles of electromagnetic charge. Okay, let me make sure I have this. Negative charge minus Q represents forward projection, spatial condensation into localized matter. Exactly. And positive charge plus Q is the reversed sequence, untangling reflection back to equilibrium. The paper uses the Argand plane analogy here, right? Yeah, graphing real and imaginary numbers. Negative one and positive one aren't destructive arithmetic opposites that just crush each other. They're chiral conjugate mirrors of each other, like a left and a right hand. Identical structure, inverted orientation. Perfectly stated. Coming up in the next clip, the profound realization that cognitive intelligence is the antimatter to physical creation. This is the philosophical peak of the paper."
             },
             {
                 "type": "music",
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "The Chiral Mirror"
     },
     {
         "num": 13,
-        "title": "The Chiral Mirror",
+        "title": "Chiral Mirror",
         "start": 1082.46,
-        "end": 1150.38,
-        "duration": 67.92,
+        "end": 1150.5,
+        "duration": 68.04,
         "bridge_text": [
-            "Coming up in the next clip, we tackle the strangest topology in physics."
+            "Why Does 360 Flip ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 1082.46,
-                "end": 1091.52,
-                "duration": 9.06,
+                "end": 1091.64,
+                "duration": 9.18,
                 "text": "Clip 13. The chiral mirror. Physical matter and cognitive intelligence are inseparable chiral replicas of the exact same knot."
             },
             {
@@ -5126,16 +685,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Howling (Sting) - Gunnar Olsen.mp3"
             },
             {
                 "type": "audio",
                 "start": 1091.92,
-                "end": 1150.38,
-                "duration": 58.46,
+                "end": 1150.5,
+                "duration": 58.58,
                 "text": "Okay, let's unpack this carefully. A quark, which is plus MC squared, cannot be mathematically separated from its anti -quark counterpart, minus IMC squared. Wait, why? Because physical manifestation, the bluing spasm, and cognitive observation, decoding the state info, are dual brackets. So the forward sequence builds the physical mass. Right. And the reverse sequence represents cognitive reflection, intelligence untangling the physical structure back to the observer. Let me get this straight. You're saying intelligence isn't just an emergent property of wet brains evolving over millions of years? No. In this framework, it is a fundamental geometric bracket required to observe the physical knot in the first place. That is just, it's staggering. Physical creation and primordial intelligence are tethered together. At the genesis of space. Coming up in the next clip, we tackle the strangest topology in physics. Spin one half. The quantum weirdness."
             },
             {
@@ -5143,29 +703,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "Spin One Half"
     },
     {
         "num": 14,
         "title": "Spin One Half",
         "start": 1151.02,
-        "end": 1239.76,
-        "duration": 88.74,
+        "end": 1240.08,
+        "duration": 89.06,
         "bridge_text": [
-            "Coming up in the next clip, how this geometric model dictates the two distinct arrows of time."
+            "Why Two Time Arrows ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 1151.02,
-                "end": 1162.16,
-                "duration": 11.14,
+                "end": 1162.28,
+                "duration": 11.26,
                 "text": "Clip 14. Spin one half. In the quantum world, turning around once leaves you upside down. If you look at fermions, like electrons or quarks, they have spin one half."
             },
             {
@@ -5173,46 +736,50 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
             },
             {
                 "type": "audio",
-                "start": 1162.16,
-                "end": 1239.76,
-                "duration": 77.6,
-                "text": "Right. In classical mechanics, turning 360 degrees puts you exactly back to where you started. But in quantum mechanics, it flips your sign. You need 720 degrees to get back to normal. Which sounds insane, right? Right. Until you demystify it using quaternionic kinematics. Specifically, the Euler -Rodriguez rotor. The sandwich product. Right. It relies on the half angle formula used in quaternions. When you input a 360 degree physical rotation into the math, it halves it to 180 degrees. And then the cosine of 180 is negative one. So the spatial knot hasn't returned to normal, it accumulated an internal twist. Exactly. It's like holding a coffee cup and twisting your arm inward. You can rotate the cup 360 degrees, but your arm is strained. To return to the absolute identity of positive one, you have to do a full 720 degree rotation. It untwists the tether. We really explicitly point listeners to the visual infographic of the double cover property on the Deep Dive website for this one. Seeing the 720 degree twist visualized is crucial. It makes it make so much sense. Coming up in the next clip, how this geometric model dictates the two distinct arrows of time. Not just one arrow anymore."
+                "start": 1163.42,
+                "end": 1240.08,
+                "duration": 76.66,
+                "text": "In classical mechanics, turning 360 degrees puts you exactly back to where you started. But in quantum mechanics, it flips your sign. You need 720 degrees to get back to normal. Which sounds insane, right? Right. Until you demystify it using quaternionic kinematics. Specifically, the Euler -Rodriguez rotor. The sandwich product. Right. It relies on the half angle formula used in quaternions. When you input a 360 degree physical rotation into the math, it halves it to 180 degrees. And then the cosine of 180 is negative one. So the spatial knot hasn't returned to normal, it accumulated an internal twist. Exactly. It's like holding a coffee cup and twisting your arm inward. You can rotate the cup 360 degrees, but your arm is strained. To return to the absolute identity of positive one, you have to do a full 720 degree rotation. It untwists the tether. We really explicitly point listeners to the visual infographic of the double cover property on the Deep Dive website for this one. Seeing the 720 degree twist visualized is crucial. It makes it make so much sense. Coming up in the next clip, how this geometric model dictates the two distinct arrows of time. Not just one arrow anymore."
             },
             {
                 "type": "music",
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "The Arrow Of Time"
     },
     {
         "num": 15,
-        "title": "The Arrow Of Time",
+        "title": "Arrows Of Time",
         "start": 1240.66,
-        "end": 1304.72,
-        "duration": 64.06,
+        "end": 1304.89,
+        "duration": 64.23,
         "bridge_text": [
-            "Coming up in the next clip, we rewrite the absolute foundation of physics, the conservation of energy."
+            "Is Energy Conservation Wrong ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 1240.66,
-                "end": 1247.76,
-                "duration": 7.1,
+                "end": 1248.08,
+                "duration": 7.42,
                 "text": "Clip 15. The arrow of time. Time doesn't just march forward. Intelligence marches it backward."
             },
             {
@@ -5220,16 +787,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Howling (Sting) - Gunnar Olsen.mp3"
             },
             {
                 "type": "audio",
                 "start": 1248.88,
-                "end": 1304.72,
-                "duration": 55.84,
+                "end": 1304.89,
+                "duration": 56.01,
                 "text": "Standard physics says time only has one direction. The thermodynamic arrow. Entropy moving forward. But in the paper, because of the dual chiral brackets, there are actually two arrows operating. Yes. Forward projection. The ijk negative one. Builds mass and establishes that thermodynamic arrow, moving toward positive infinity. Physical matter expanding and breaking down. But the reverse sequence, the KJI, positive one, decodes that structure. Right, it reflects information back toward the origin singularity. Which is the inward cognitive arrow, time moving toward zero. So intelligence literally acts as the countercurrent to entropy, while the physical universe ages outward, intelligence pulls inward, making sense of it. It's a beautiful cosmic tug of war. Coming up in the next clip, we rewrite the absolute foundation of physics, the conservation of energy. Throwing out the static, closed box."
             },
             {
@@ -5237,29 +805,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "Chiral Vector Equilibrium"
     },
     {
         "num": 16,
-        "title": "Chiral Vector Equilibrium",
+        "title": "Chiral Equilibrium",
         "start": 1305.7,
-        "end": 1383.36,
-        "duration": 77.66,
+        "end": 1383.63,
+        "duration": 77.93,
         "bridge_text": [
-            "Coming up in the next clip, we use this to prove why a proton lives forever, but a free neutron dies in 15 minutes."
+            "Why Do Neutrons Decay ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 1305.7,
-                "end": 1313.0,
-                "duration": 7.3,
+                "end": 1313.19,
+                "duration": 7.49,
                 "text": "Clip 16, chiral vector equilibrium. The universe isn't a closed box of energy, it's an elegantly balanced scale."
             },
             {
@@ -5267,16 +838,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
             },
             {
                 "type": "audio",
                 "start": 1313.54,
-                "end": 1383.36,
-                "duration": 69.82,
+                "end": 1383.63,
+                "duration": 70.09,
                 "text": "What's fascinating here is that classical physics treats the universe as a closed container, static energy conservation. The first law of thermodynamics. But this paper replaces that with dual chiral equilibrium. Okay, let me make sure I have the math right. The net energetic cost of the entire universe, relative to the singularity observer, is identically zero at all times. Identically zero. Negative one plus positive one equals zero. So structural mass energy plus mc squared is perfectly counterbalanced by cognitive comprehension minus ic squared? The universe doesn't have a fixed energy limit. It has a symmetry requirement. That is just brilliant. And I want to pause real quick. If this kind of paradigm shifting logic sparks your own theories, and you have AI -based independent research, head over to shoe -tree .com, that's S -H -U -T -R -I .com. Definitely submit your white paper there. Yeah, if it's accepted, we will create free infographics and an audio podcast for you. Okay, back to the equilibrium. Coming up in the next clip, we use this to prove why a proton lives forever, but a free neutron dies in 15 minutes. Real world application."
             },
             {
@@ -5284,29 +856,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "The Imbalance Delta"
     },
     {
         "num": 17,
-        "title": "The Imbalance Delta",
+        "title": "Imbalance Delta",
         "start": 1383.88,
-        "end": 1450.52,
-        "duration": 66.64,
+        "end": 1450.84,
+        "duration": 66.96,
         "bridge_text": [
-            "Coming up in the next clip, what happens when a system achieves perfect balance?"
+            "What Creates An Observer ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 1383.88,
-                "end": 1391.32,
-                "duration": 7.44,
+                "end": 1391.6,
+                "duration": 7.72,
                 "text": "Clip 17. The imbalance delta. The secret to immortality in the subatomic realm is perfect cognitive balance."
             },
             {
@@ -5314,16 +889,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Howling (Sting) - Gunnar Olsen.mp3"
             },
             {
                 "type": "audio",
                 "start": 1392.1,
-                "end": 1450.52,
-                "duration": 58.42,
+                "end": 1450.84,
+                "duration": 58.74,
                 "text": "So how does this apply to actual particles? The paper defines the chiral imbalance delta. Delta being the difference between physical mass and its balancing informational state. Right. Inside a proton, the three quark knot achieves exact chiral equilibrium with its cognitive state. So delta is zero. Exactly. The entropic decay rate is zero, making the proton completely stable. But an isolated free neutron? It loses its nuclear binding context. A non -zero chiral delta appears. Ah, so there's uncompensated tension. And that tension causes it to decay rapidly. Beta decay in about 880 seconds. Just about 15 minutes. Again, direct yourself to the Deep Dive website to view the decay rate mathematical derivations. It's perfectly mapped out. Coming up in the next clip, what happens when a system achieves perfect balance? It becomes an observer. The phase boundary."
             },
             {
@@ -5331,29 +907,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "The Observer"
     },
     {
         "num": 18,
         "title": "The Observer",
         "start": 1451.1,
-        "end": 1508.4,
-        "duration": 57.3,
+        "end": 1508.72,
+        "duration": 57.62,
         "bridge_text": [
-            "Coming up in the next clip, if creation costs zero energy, what is the limit to how much universe we can build?"
+            "Does Creation Cost Zero ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 1451.1,
-                "end": 1462.94,
-                "duration": 11.84,
+                "end": 1463.18,
+                "duration": 12.08,
                 "text": "Clip 18. The observer. You are not just looking at the universe. You are the symmetry that stabilizes it. The paper introduces a rigorous boundary between the observer and the observed."
             },
             {
@@ -5361,16 +940,17 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
             },
             {
                 "type": "audio",
                 "start": 1463.42,
-                "end": 1508.4,
-                "duration": 44.98,
+                "end": 1508.72,
+                "duration": 45.3,
                 "text": "Based on that delta variable, right? Systems achieving exact chiral symbiosis, where delta is zero, function as observers. Because they are stable enough to wield new trial geometries without decaying. Exactly. But systems that are imbalanced, where delta is greater than zero. They belong to the domain of the observed. They suffer structural tension and decay. So observing isn't a passive act. It's the act of maintenance of topological balance. Intelligence holds the knot in equilibrium. Coming up in the next clip, if creation costs zero energy, what is the limit to how much universe we can build? The infinite potential."
             },
             {
@@ -5378,29 +958,32 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "Infinite Creation"
     },
     {
         "num": 19,
         "title": "Infinite Creation",
         "start": 1509.3,
-        "end": 1562.84,
-        "duration": 53.54,
+        "end": 1562.2,
+        "duration": 52.9,
         "bridge_text": [
-            "Coming up in the final clip, what exactly is the singularity and how does this all end?"
+            "What Is State Zero ?"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 1509.3,
-                "end": 1516.44,
-                "duration": 7.14,
+                "end": 1516.61,
+                "duration": 7.31,
                 "text": "Clip 19. Infinite creation. The universe has no limits. As long as it thinks as much as it builds."
             },
             {
@@ -5408,30 +991,34 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Howling (Sting) - Gunnar Olsen.mp3"
             },
             {
                 "type": "audio",
                 "start": 1516.9,
-                "end": 1562.84,
-                "duration": 45.94,
-                "text": "Here's where it gets really interesting mathematically. Yeah, if the net costs zero, what stops the universe from just making infinite matter? Nothing. Mathematically, nothing stops it. Really? The field equation shows infinite matter can be created as long as physical structure and cognition remain in strict counterbalance. So creation isn't bounded by a static, energetic ceiling. No, it's bounded solely by the capacity for cognitive intelligence to mirror the physical complexity. If it builds a knot, it has to generate the intelligence to comprehend it. If it doesn't, delta spikes and it decays. It literally has to think as much as it builds. It's a beautiful self -regulating symmetry. Coming up in the final clip, what exactly is the singularity and how does this all end? Taking it all back to zero. Clip"
+                "end": 1562.2,
+                "duration": 45.3,
+                "text": "Here's where it gets really interesting mathematically. Yeah, if the net costs zero, what stops the universe from just making infinite matter? Nothing. Mathematically, nothing stops it. Really? The field equation shows infinite matter can be created as long as physical structure and cognition remain in strict counterbalance. So creation isn't bounded by a static, energetic ceiling. No, it's bounded solely by the capacity for cognitive intelligence to mirror the physical complexity. If it builds a knot, it has to generate the intelligence to comprehend it. If it doesn't, delta spikes and it decays. It literally has to think as much as it builds. It's a beautiful self -regulating symmetry. Coming up in the final clip, what exactly is the singularity and how does this all end? Taking it all back to zero."
             },
             {
                 "type": "music",
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": "State Zero"
     },
     {
         "num": 20,
@@ -5440,14 +1027,14 @@
         "end": 1684.16,
         "duration": 121.32,
         "bridge_text": [
-            "What happens next in Part 21?"
+            "Widen Your Sensory Bandwidth !"
         ],
         "segments": [
             {
                 "type": "audio",
                 "start": 1562.84,
-                "end": 1577.12,
-                "duration": 14.28,
+                "end": 1577.44,
+                "duration": 14.6,
                 "text": "Clip 20. State zero. Untangling the universe doesn't destroy it. It returns it to the ultimate observer. If we connect this back to the absolute beginning, standard physics describes a cosmic singularity as this infinitely dense physical dot."
             },
             {
@@ -5455,9 +1042,10 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
-                "crossfade": 0.5,
+                "fade_out": 2,
+                "crossfade": 1,
                 "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
             },
             {
@@ -5472,12 +1060,15 @@
                 "start": null,
                 "end": null,
                 "duration": 5.5,
+                "silence_before": 0.2,
                 "gap": 0.2,
-                "fade_out": 2.0,
+                "fade_out": 2,
+                "crossfade": 0,
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
         "locked": false,
-        "visual_source": "mosaic"
+        "visual_source": "mosaic",
+        "coming_up_title": ""
     }
 ]

@@ -14,7 +14,41 @@ from typing import Optional
 app = typer.Typer(help="DeepDive Media Automator (DDMA) CLI Tool")
 
 
-def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = "mosaic") -> list:
+def resolve_acoustic_word_end(raw_end: float, next_word_start: Optional[float] = None, audio_path: Optional[str] = None) -> float:
+    """
+    Extends a Whisper word end timestamp into the natural breath pause so trailing sibilants/plosives
+    (e.g., "-es" in "senses") are never clipped in half.
+    Uses an 180ms sibilant safety cushion clamped 40ms before next_word_start, refined by 16kHz PCM RMS energy if audio_path is available.
+    """
+    max_extend = min(0.32, max(0.0, (next_word_start - raw_end) - 0.04)) if next_word_start is not None else 0.22
+    if max_extend <= 0.02:
+        return round(raw_end, 2)
+    default_ext = round(raw_end + min(0.18, max_extend), 2)
+    if not audio_path or not os.path.exists(audio_path):
+        return default_ext
+    try:
+        import numpy as np
+        win_start = max(0.0, raw_end - 0.05)
+        win_dur = 0.05 + max_extend
+        p = subprocess.run(
+            ["ffmpeg", "-v", "error", "-ss", f"{win_start:.3f}", "-t", f"{win_dur:.3f}", "-i", audio_path, "-f", "s16le", "-ac", "1", "-ar", "16000", "-"],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        arr = np.frombuffer(p.stdout, dtype=np.int16).astype(np.float32) / 32768.0
+        if len(arr) < 160:
+            return default_ext
+        last_active_t = raw_end + min(0.12, max_extend)
+        for i in range(800, len(arr) - 160, 160):
+            rms = float(np.sqrt(np.mean(arr[i:i + 160] ** 2)))
+            t_frame = win_start + (i + 160) / 16000.0
+            if rms > 0.0020:
+                last_active_t = t_frame + 0.03
+        return round(min(raw_end + max_extend, max(raw_end + min(0.12, max_extend), last_active_t)), 2)
+    except Exception:
+        return default_ext
+
+
+def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = "mosaic", audio_path: Optional[str] = None) -> list:
     """
     Deterministically detects spoken NotebookLM clip cues ('Clip 1', 'Clip one', etc.)
     and snaps tripartite boundaries:
@@ -79,32 +113,35 @@ def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = 
 
     # Clip 0: Prologue (if there is content before first clip cue)
     if first_cue_start > 20.0:
-        c0_end = round(first_cue_start, 2)
-        c0_words = get_words_between(0.0, c0_end)
-        c0_hook_end = min(20.0, c0_end)
+        w_prev_c0 = [w for w in all_words if w["start"] < first_cue_start - 0.02]
+        raw_c0_end = round(w_prev_c0[-1]["end"], 2) if w_prev_c0 else round(first_cue_start, 2)
+        c0_end = resolve_acoustic_word_end(raw_c0_end, first_cue_start, audio_path)
+        c0_words = get_words_between(0.0, raw_c0_end)
+        raw_c0_hook_end = min(20.0, raw_c0_end)
         for w in c0_words:
             if 12.0 <= w["end"] <= 28.0 and any(w.get("word", "").strip().endswith(p) for p in [".", "?", "!"]):
-                c0_hook_end = round(w["end"], 2)
+                raw_c0_hook_end = round(w["end"], 2)
                 break
-        delib_start = c0_hook_end + 0.3
+        delib_start = raw_c0_hook_end + 0.3
         for w in c0_words:
-            if w["start"] >= c0_hook_end - 0.05:
+            if w["start"] > raw_c0_hook_end + 0.01:
                 delib_start = w["start"]
                 break
-        c0_hook_text = get_text_between(0.0, c0_hook_end)
-        c0_body_text = get_text_between(delib_start, c0_end)
+        c0_hook_end = resolve_acoustic_word_end(raw_c0_hook_end, delib_start, audio_path)
+        c0_hook_text = get_text_between(0.0, raw_c0_hook_end)
+        c0_body_text = get_text_between(delib_start, raw_c0_end)
         clips.append({
             "num": 0,
-            "title": "Show Prologue / Ep Intro",
+            "title": "What Exactly Is Reality?",
             "start": 0.0,
             "end": c0_end,
             "duration": c0_end,
-            "bridge_text": [f"What is waiting in Clip {cues[0]['num']}?"],
+            "bridge_text": [f"What Is Clip {cues[0]['num']} ?"],
             "segments": [
                 {"type": "audio", "start": 0.0, "end": c0_hook_end, "duration": c0_hook_end, "text": c0_hook_text},
-                {"type": "music", "start": None, "end": None, "duration": 5.5, "gap": 0.2, "fade_out": 2.0, "crossfade": 0.5, "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"},
+                {"type": "music", "start": None, "end": None, "duration": 5.5, "silence_before": 0.2, "gap": 0.2, "fade_out": 2.0, "crossfade": 1.0, "music_file": "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"},
                 {"type": "audio", "start": round(delib_start, 2), "end": c0_end, "duration": round(c0_end - delib_start, 2), "text": c0_body_text},
-                {"type": "music", "start": None, "end": None, "duration": 5.5, "gap": 0.2, "fade_out": 2.0, "music_file": "music/deepDive-conclusion.mp3"}
+                {"type": "music", "start": None, "end": None, "duration": 5.5, "silence_before": 0.2, "gap": 0.2, "fade_out": 2.0, "crossfade": 0.0, "music_file": "music/deepDive-conclusion.mp3"}
             ],
             "locked": False,
             "visual_source": default_visual_source
@@ -115,43 +152,56 @@ def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = 
         st = round(cue["start"], 2)
         if idx + 1 < len(cues):
             next_st = cues[idx + 1]["start"]
-            w_prev = [w for w in all_words if w["end"] <= next_st]
-            et = round(w_prev[-1]["end"], 2) if w_prev else round(next_st, 2)
+            # Use strict '< next_st - 0.02' so zero-duration words ('Clip' at next_st) are never included in previous clip
+            w_prev = [w for w in all_words if w["start"] < next_st - 0.02]
+            raw_et = round(w_prev[-1]["end"], 2) if w_prev else round(next_st, 2)
+            et = resolve_acoustic_word_end(raw_et, next_st, audio_path)
         else:
-            et = round(total_audio_dur, 2)
+            raw_et = round(total_audio_dur, 2)
+            et = raw_et
 
-        clip_words = get_words_between(st, et)
+        clip_words = get_words_between(st, raw_et)
         if not clip_words:
             continue
 
-        h_end = None
+        raw_h_end = None
         for w in clip_words:
             w_dur = w["end"] - st
             w_txt = w.get("word", "").strip()
             if w_dur >= 7.0 and any(w_txt.endswith(p) for p in [".", "?", "!"]):
-                h_end = round(w["end"], 2)
+                raw_h_end = round(w["end"], 2)
                 break
-        if not h_end:
-            h_end = round(min(et, st + 15.0), 2)
+        if not raw_h_end:
+            raw_h_end = round(min(raw_et, st + 15.0), 2)
 
-        next_words = [w for w in clip_words if w["start"] >= h_end - 0.05]
-        delib_start = next_words[0]["start"] if next_words else h_end + 0.3
+        next_words = [w for w in clip_words if w["start"] > raw_h_end + 0.01]
+        delib_start = next_words[0]["start"] if next_words else raw_h_end + 0.3
+        h_end = resolve_acoustic_word_end(raw_h_end, delib_start, audio_path)
 
-        hook_text = get_text_between(st, h_end)
-        body_text = get_text_between(delib_start, et)
+        hook_text = get_text_between(st, raw_h_end)
+        body_text = get_text_between(delib_start, raw_et)
 
         title = f"Part {c_num}"
         m_title = re.search(r"clip\s+\w+[\s,.:\-]+([^.!?\n]+)", hook_text, re.IGNORECASE)
         if m_title:
             cand = m_title.group(1).strip()
             cand = re.sub(r"\s*-\s*", "-", cand)
-            if len(cand.split()) <= 8:
+            cand = re.sub(r"^(?:the|a|an)\s+", "", cand, flags=re.IGNORECASE)
+            cand_words = cand.split()
+            if 1 <= len(cand_words) <= 3:
                 title = cand.title()
+            elif len(cand_words) > 3:
+                title = " ".join(cand_words[:3]).title()
 
-        bridge_q = f"What happens next in Part {c_num + 1}?"
-        m_bridge = re.search(r"(coming up in (?:the )?(?:next|final) clip[^.!?\n]+[.!?])", body_text, re.IGNORECASE)
-        if m_bridge:
-            bridge_q = m_bridge.group(1).strip()
+        bridge_q = f"What Is Part {c_num + 1} ?"
+        if idx + 1 < len(cues):
+            next_hook = get_text_between(cues[idx + 1]["start"], min(total_audio_dur, cues[idx + 1]["start"] + 15.0))
+            m_next_t = re.search(r"clip\s+\w+[\s,.:\-]+([^.!?\n]+)", next_hook, re.IGNORECASE)
+            if m_next_t:
+                nt = re.sub(r"^(?:the|a|an)\s+", "", m_next_t.group(1).strip(), flags=re.IGNORECASE)
+                nt_words = nt.split()[:3]
+                if nt_words:
+                    bridge_q = f"What Is {' '.join(nt_words).title()} !"
 
         sting_file = "music/Howling (Sting) - Gunnar Olsen.mp3" if c_num % 2 == 1 else "music/Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
 
@@ -164,9 +214,9 @@ def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = 
             "bridge_text": [bridge_q],
             "segments": [
                 {"type": "audio", "start": st, "end": h_end, "duration": round(h_end - st, 2), "text": hook_text},
-                {"type": "music", "start": None, "end": None, "duration": 5.5, "gap": 0.2, "fade_out": 2.0, "crossfade": 0.5, "music_file": sting_file},
+                {"type": "music", "start": None, "end": None, "duration": 5.5, "silence_before": 0.2, "gap": 0.2, "fade_out": 2.0, "crossfade": 1.0, "music_file": sting_file},
                 {"type": "audio", "start": round(delib_start, 2), "end": et, "duration": round(et - delib_start, 2), "text": body_text},
-                {"type": "music", "start": None, "end": None, "duration": 5.5, "gap": 0.2, "fade_out": 2.0, "music_file": "music/deepDive-conclusion.mp3"}
+                {"type": "music", "start": None, "end": None, "duration": 5.5, "silence_before": 0.2, "gap": 0.2, "fade_out": 2.0, "crossfade": 0.0, "music_file": "music/deepDive-conclusion.mp3"}
             ],
             "locked": False,
             "visual_source": default_visual_source
@@ -175,7 +225,7 @@ def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = 
     return clips
 
 
-def cast_tripartite_plan_with_gemini(t_data: dict, num_clips: Optional[int] = None, api_key: Optional[str] = None, default_visual_source: str = "mosaic") -> list:
+def cast_tripartite_plan_with_gemini(t_data: dict, num_clips: Optional[int] = None, api_key: Optional[str] = None, default_visual_source: str = "mosaic", audio_path: Optional[str] = None) -> list:
     """
     Parses a NotebookLM tripartite podcast transcript where each clip consists of:
     1. Punchline Hook (10-20s): Spoken thesis statement, announcing clip number and/or title.
@@ -185,7 +235,7 @@ def cast_tripartite_plan_with_gemini(t_data: dict, num_clips: Optional[int] = No
     First checks for deterministic spoken clip cues ('Clip 1', 'Clip one', etc.) with microsecond snapping.
     Otherwise prompts Gemini to identify every clip boundary.
     """
-    spoken_clips = parse_spoken_cue_tripartite_plan(t_data, default_visual_source=default_visual_source)
+    spoken_clips = parse_spoken_cue_tripartite_plan(t_data, default_visual_source=default_visual_source, audio_path=audio_path)
     if spoken_clips:
         typer.echo(f"[Spoken Cue Caster] Detected {len(spoken_clips)} spoken tripartite clip cues with exact boundary snapping!")
         return spoken_clips
@@ -236,9 +286,12 @@ Episode Transcript Sample:
 
 Task:
 Analyze the transcript and identify all tripartite clips (target approximately {num_clips} clips).
+- Number clips starting at 0 (`num: 0`) for the Episode Prologue / Cold Open (before the hosts announce "Clip 1"), then `num: 1` for spoken "Clip 1", `num: 2` for spoken "Clip 2", etc., so clip numbers strictly mirror the spoken word!
 For each clip, return a JSON object with:
-- "num": integer (1, 2, 3...)
-- "title": Short punchy title (3-6 words) announced in the spoken punchline or summarizing the thesis
+- "num": integer (0, 1, 2, 3...)
+- "title":
+  * For Clip 0 (`num == 0`): The overarching Episode Title (3-5 words, e.g. "What Exactly Is Reality?").
+  * For Clip 1+ (`num >= 1`): STRICTLY MAXIMUM 3 WORDS designed to capture attention — typically the scientific concept, scientist name, or core idea (e.g. "8D Totality", "Sensory Split", "Division Algebras", "Quaternions"). Drop leading articles like "The" if needed to stay ≤ 3 words.
 - "hook_quote": Exact spoken opening thesis statement (1-2 sentences, 10-20s)
 - "punchline_start_phrase": First 3-5 words spoken in the punchline hook
 - "punchline_end_phrase": Last 3-5 words of the punchline hook before deliberation
@@ -246,8 +299,8 @@ For each clip, return a JSON object with:
 - "deliberation_end_phrase": Last 3-5 words of the core deliberation before teaser
 - "teaser_start_phrase": First 3-5 words of the outro teaser (e.g. "In the next clip", "Coming up next")
 - "teaser_end_phrase": Last 3-5 words of the outro teaser
-- "coming_up_title": Title of the next clip teased in the outro teaser
-- "bridge_question": Curious question teased for the outro billboard card
+- "coming_up_title": Short title (≤ 3 words) of the next clip teased in the outro teaser
+- "bridge_question": STRICTLY MAXIMUM 5 WORDS punchy curiosity question/exclamation for the outro card (e.g. "What is 8D Totality !", "Why Four Division Algebras ?"). NEVER write "Coming up in Clip..." or long story sentences because the hosts already speak that aloud!
 - "visual_source": "{default_visual_source}"
 
 Return ONLY a JSON array of objects without Markdown formatting."""
@@ -307,30 +360,30 @@ Return ONLY a JSON array of objects without Markdown formatting."""
         h_start, _ = snap_quote_to_words(p_start_p, words, search_start_sec=cursor_time)
         if h_start is None:
             h_start = cursor_time
-        _, h_end = snap_quote_to_words(p_end_p, words, search_start_sec=h_start + 8.0)
-        if h_end is None or h_end <= h_start:
-            h_end = round(min(total_dur, h_start + 18.0), 2)
+        _, raw_h_end = snap_quote_to_words(p_end_p, words, search_start_sec=h_start + 8.0)
+        if raw_h_end is None or raw_h_end <= h_start:
+            raw_h_end = round(min(total_dur, h_start + 18.0), 2)
 
         # 2. Mid Sting (Bluesy Vibes or Howling)
         mid_music = "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3" if c_num % 2 == 1 else "Howling (Sting) - Gunnar Olsen.mp3"
 
-        # 3. Snap Deliberation
-        d_start, _ = snap_quote_to_words(d_start_p, words, search_start_sec=h_end)
+        # 3. Snap Deliberation + Spoken Outro Teaser (single continuous body audio segment)
+        d_start, _ = snap_quote_to_words(d_start_p, words, search_start_sec=raw_h_end)
         if d_start is None:
-            d_start = round(h_end + 0.1, 2)
-        _, d_end = snap_quote_to_words(d_end_p, words, search_start_sec=d_start + 60.0)
-        if d_end is None or d_end <= d_start:
-            d_end = round(min(total_dur, d_start + 110.0), 2)
+            d_start = round(raw_h_end + 0.3, 2)
+        h_end = resolve_acoustic_word_end(raw_h_end, d_start, audio_path)
 
-        # 4. Snap Outro Teaser
-        t_start, _ = snap_quote_to_words(t_start_p, words, search_start_sec=d_end)
-        if t_start is None:
-            t_start = round(d_end + 0.1, 2)
-        _, t_end = snap_quote_to_words(t_end_p, words, search_start_sec=t_start + 8.0)
-        if t_end is None or t_end <= t_start:
-            t_end = round(min(total_dur, t_start + 18.0), 2)
+        _, raw_t_end = snap_quote_to_words(t_end_p, words, search_start_sec=d_start + 60.0)
+        if raw_t_end is None or raw_t_end <= d_start:
+            _, raw_t_end = snap_quote_to_words(d_end_p, words, search_start_sec=d_start + 60.0)
+        if raw_t_end is None or raw_t_end <= d_start:
+            raw_t_end = round(min(total_dur, d_start + 115.0), 2)
 
-        # Build segments list
+        next_ws = [w["start"] for w in words if w["start"] > raw_t_end + 0.01]
+        next_w_start = next_ws[0] if next_ws else raw_t_end + 0.5
+        t_end = resolve_acoustic_word_end(raw_t_end, next_w_start, audio_path)
+
+        # Build canonical 4-element segments list: Hook -> Mid-Sting -> Deliberation+Teaser -> Outro-Sting
         segs = [
             {
                 "type": "audio",
@@ -344,36 +397,31 @@ Return ONLY a JSON array of objects without Markdown formatting."""
                 "music_file": mid_music,
                 "duration": 5.5,
                 "silence_before": 0.2,
+                "gap": 0.2,
                 "fade_out": 2.0,
-                "crossfade": 0.5,
+                "crossfade": 1.0,
                 "volume": 1.0
             },
             {
                 "type": "audio",
                 "start": d_start,
-                "end": d_end,
-                "duration": round(d_end - d_start, 2),
-                "text": f"Deliberation: {title}"
-            },
-            {
-                "type": "audio",
-                "start": t_start,
                 "end": t_end,
-                "duration": round(t_end - t_start, 2),
-                "text": f"Teaser: Coming up in {c.get('coming_up_title', 'Next Part')}"
+                "duration": round(t_end - d_start, 2),
+                "text": f"Deliberation & Teaser: {title}"
             },
             {
                 "type": "music",
                 "music_file": "deepDive-conclusion.mp3",
                 "duration": 5.5,
                 "silence_before": 0.2,
+                "gap": 0.2,
                 "fade_out": 2.0,
                 "crossfade": 0.0,
                 "volume": 1.0
             }
         ]
 
-        bridge_q = c.get("bridge_question") or f"Coming up in Part {c_num + 1}: {c.get('coming_up_title', 'Next Part')} — What is the deeper secret?"
+        bridge_q = c.get("bridge_question") or f"What Is {c.get('coming_up_title', f'Part {c_num + 1}')} ?"
 
         final_clips.append({
             "num": c_num,
@@ -529,23 +577,28 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
     mid_duration = 5.5
 
     # 4. Main Body Audio Segment: Starts at the very next sentence start, ends at sentence end
-    if all_words and hook_segment:
-        body_start_idx = best_hook_idx + 1
-        if body_start_idx < len(all_words):
-            main_start = round(all_words[body_start_idx]["start"], 2)
-        else:
-            main_start = round(h_end + 0.1, 2)
-            body_start_idx = len(all_words) - 1
+        if all_words and hook_segment:
+            body_start_idx = best_hook_idx + 1
+            if body_start_idx < len(all_words):
+                main_start = round(all_words[body_start_idx]["start"], 2)
+            else:
+                main_start = round(h_end + 0.3, 2)
+                body_start_idx = len(all_words) - 1
+            h_end_acoustic = resolve_acoustic_word_end(h_end, main_start)
+            hook_segment["end"] = h_end_acoustic
+            hook_segment["duration"] = round(h_end_acoustic - h_start, 2)
 
-        cand_body_ends = [idx for idx in sentence_ends if idx >= body_start_idx]
-        if cand_body_ends:
-            best_end_idx = min(cand_body_ends, key=lambda idx: abs(all_words[idx]["end"] - end_time))
-        else:
-            best_end_idx = len(all_words) - 1
+            cand_body_ends = [idx for idx in sentence_ends if idx >= body_start_idx]
+            if cand_body_ends:
+                best_end_idx = min(cand_body_ends, key=lambda idx: abs(all_words[idx]["end"] - end_time))
+            else:
+                best_end_idx = len(all_words) - 1
 
-        main_end = round(all_words[best_end_idx]["end"], 2)
-        body_words = [w.get("word", "").strip() for w in all_words[body_start_idx : best_end_idx + 1]]
-        main_text = " ".join(body_words)
+            raw_main_end = round(all_words[best_end_idx]["end"], 2)
+            next_w_s = all_words[best_end_idx + 1]["start"] if best_end_idx + 1 < len(all_words) else raw_main_end + 0.5
+            main_end = resolve_acoustic_word_end(raw_main_end, next_w_s)
+            body_words = [w.get("word", "").strip() for w in all_words[body_start_idx : best_end_idx + 1]]
+            main_text = " ".join(body_words)
     else:
         main_start = round(h_end + 0.1, 2)
         main_end = round(end_time, 2)
@@ -588,7 +641,7 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
                     formatted.append(w.capitalize())
             if formatted:
                 formatted[0] = formatted[0].capitalize()
-            clip_title = " ".join(formatted)
+            clip_title = " ".join(formatted[:3])
 
     # Build canonical 4-part segment structure:
     # 1. Hook (audio)
@@ -602,8 +655,9 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
             "music_file": mid_music,
             "duration": mid_duration,
             "silence_before": 0.2,
+            "gap": 0.2,
             "fade_out": 2.0,
-            "crossfade": 0.5,
+            "crossfade": 1.0,
             "volume": 1.0
         },
         {
@@ -618,15 +672,14 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
             "music_file": "deepDive-conclusion.mp3",
             "duration": 5.5,
             "silence_before": 0.2,
+            "gap": 0.2,
             "fade_out": 2.0,
             "crossfade": 0.0,
             "volume": 1.0
         }
     ]
 
-    bridge_question = f"What is the deeper secret behind Part {clip_num}?"
-    if clip_num < total_clips:
-        bridge_question = f"What happens when intelligence expands in Part {clip_num + 1}?"
+    bridge_question = f"What Is Part {clip_num + 1} ?"
 
     return {
         "num": clip_num,
@@ -735,7 +788,7 @@ def plan(
             c_obj = build_rough_cut_segments(idx + 1, start_aligned, end_aligned, segments, len(range_strs))
             clips_plan.append(c_obj)
     else:
-        spoken_clips = parse_spoken_cue_tripartite_plan(data, default_visual_source="mosaic")
+        spoken_clips = parse_spoken_cue_tripartite_plan(data, default_visual_source="mosaic", audio_path=audio)
         if spoken_clips:
             typer.echo(f"[Spoken Cue Caster] Detected {len(spoken_clips)} spoken tripartite clip cues! Writing plan to {out}...")
             with open(out, "w", encoding="utf-8") as f:
@@ -930,13 +983,13 @@ def cut(
                     s_dur = max(0.1, s_end - s_start)
 
                     if s_idx > 0 and segments[s_idx - 1].get("type") == "music":
-                        # Crossfade 0.5s into fading sting tail (no silence addition)
-                        cf_dur = float(segments[s_idx - 1].get("crossfade", 0.5))
+                        # Music fades out over 2.0s; speech enters 1.0s before music ends at 100% FULL volume (zero afade=in on human voice!)
+                        cf_dur = float(segments[s_idx - 1].get("crossfade", 1.0))
                         t_speech = max(0.0, t_cursor - cf_dur)
                         t_speech_ms = int(round(t_speech * 1000))
                         inputs.extend(["-ss", f"{s_start:.3f}", "-t", f"{s_dur:.3f}", "-i", audio])
                         filter_parts.append(
-                            f"[{in_idx}:a]afade=t=in:ss=0:d={cf_dur:.3f},adelay={t_speech_ms}|{t_speech_ms}[sp{in_idx}];"
+                            f"[{in_idx}:a]adelay={t_speech_ms}|{t_speech_ms}[sp{in_idx}];"
                         )
                         labels.append(f"[sp{in_idx}]")
                         t_cursor = t_speech + s_dur
@@ -958,7 +1011,7 @@ def cut(
                     dur_m = float(seg.get("duration", 5.5))
                     fade_out = float(seg.get("fade_out", 2.0))
                     fade_out_st = max(0.0, dur_m - fade_out)
-                    silence_front = float(seg.get("silence_before", 0.2))
+                    silence_front = float(seg.get("silence_before", seg.get("gap", 0.2)))
 
                     t_sting = t_cursor + silence_front
                     t_sting_ms = int(round(t_sting * 1000))
@@ -1343,7 +1396,7 @@ def extract_clip_words(clip: dict, plan_file: str, audio_path: Optional[str] = N
                             s_end = float(s.get("end", 0.0))
                             eff_dur = s_end - s_start if s_end > s_start else dur
                             if idx > 0 and segments[idx - 1].get("type") == "music":
-                                cf = float(segments[idx - 1].get("crossfade", 0.5))
+                                cf = float(segments[idx - 1].get("crossfade", 1.0))
                                 t_speech_start = max(0.0, t_cursor - cf)
                             else:
                                 t_speech_start = t_cursor
@@ -1363,7 +1416,7 @@ def extract_clip_words(clip: dict, plan_file: str, audio_path: Optional[str] = N
                                         })
                             t_cursor = t_speech_start + eff_dur
                         elif s.get("type") == "music":
-                            silence_front = float(s.get("silence_before", 0.2))
+                            silence_front = float(s.get("silence_before", s.get("gap", 0.2)))
                             t_cursor = t_cursor + silence_front + dur
                 else:
                     c_start = float(clip.get("start", 0.0))
@@ -1804,16 +1857,8 @@ def compile_clip(
         typer.echo(f"Error: Clip {num} not found in plan.", err=True)
         raise typer.Exit(code=1)
 
-    # Dynamic music resolution from clip segments
-    segments = clip.get("segments", [])
-    if segments and isinstance(segments, list):
-        for seg in segments:
-            if seg.get("type") == "music" and seg.get("music_file"):
-                m_cand = seg["music_file"].split('/').pop().split('\\').pop()
-                m_path = os.path.join("music", m_cand)
-                if os.path.exists(m_path):
-                    music = m_path
-                    break
+    # Keep dedicated title card music (e.g. title-card-music.mp3 or deepDive-soft-ok.mp3) for the 1.5s Intro Card
+    # Never overwrite `music` with the mid-sting (Bluesy Vibes / Howling) from clip["segments"]!
 
     # 1. Locate the master clip (e.g. clips/245-4.mp4)
     ep_prefix = None
@@ -2064,14 +2109,10 @@ def compile_clip(
             except Exception:
                 pass
 
-        sub_text = f"EPISODE {episode}" if num == 1 else f"EPISODE {episode} • PART {num}"
-        title_text = title if title else f"Part {num}"
+        sub_text = f"EPISODE {episode}" if num == 0 else f"EPISODE {episode} • PART {num}"
+        title_text = title if title else (ep_title if num == 0 else f"Part {num}")
 
-        # Create overlay layer for semi-transparent charcoal banner
-        overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
-        draw_overlay = ImageDraw.Draw(overlay)
-
-        # Centered charcoal banner
+        # Pure Glossy Black (#000000) canvas per Monochrome Noir standard — zero gray banner box
         box_width = int(width * 0.88)
         box_height = 320
         x0 = (width - box_width) // 2
@@ -2079,15 +2120,13 @@ def compile_clip(
         x1 = x0 + box_width
         y1 = y0 + box_height
 
-        draw_overlay.rounded_rectangle([(x0, y0), (x1, y1)], radius=15, fill=(18, 18, 18, 210))
-
         def draw_centered_text_overlay(draw_obj, text, font, y_pos, color=(255, 255, 255, 255)):
             bbox = draw_obj.textbbox((0, 0), text, font=font)
             text_width = bbox[2] - bbox[0]
             x_pos = (width - text_width) // 2
             draw_obj.text((x_pos, y_pos), text, font=font, fill=color)
 
-        draw_centered_text_overlay(draw_overlay, sub_text, font_sub, y0 + 35, color=(150, 150, 150, 255))
+        draw_centered_text_overlay(draw_overlay, sub_text, font_sub, y0 + 35, color=(180, 180, 180, 255))
 
         # Force title into balanced rows, honoring explicit newlines if present
         def split_title_into_lines(text):
@@ -2098,7 +2137,7 @@ def compile_clip(
                 return [parts[0].strip(), parts[1].strip()]
             
             words = text.split()
-            if len(words) <= 1:
+            if len(words) <= 3:
                 return [text]
             
             best_diff = float('inf')
@@ -2139,8 +2178,8 @@ def compile_clip(
         line_x_start = (width - line_width) // 2
         draw_overlay.line([(line_x_start, line_y), (line_x_start + line_width, line_y)], fill=(80, 80, 80, 255), width=2)
 
-        # Composite the overlay onto the frame
-        final_image = Image.alpha_composite(image, overlay).convert("RGB")
+        # Save pure black canvas title card directly
+        final_image = image.convert("RGB")
         final_image.save(temp_img_path)
         typer.echo(f"Saved dynamic title card overlay to {temp_img_path}")
 
@@ -2738,68 +2777,51 @@ def ingest_episode(
             t_data = json.load(tf)
         if mode == "tripartite":
             typer.echo(f"Casting NotebookLM tripartite audio with Gemini and snapping Whisper word timestamps...")
-            clips_list = cast_tripartite_plan_with_gemini(t_data, num_clips=num_clips, default_visual_source="mosaic")
+            clips_list = cast_tripartite_plan_with_gemini(t_data, num_clips=num_clips, default_visual_source="mosaic", audio_path=audio_dest_path)
+            if clips_list and clips_list[0].get("num") == 0 and title and not title.lower().startswith("episode"):
+                clips_list[0]["title"] = title
         if not clips_list:
             words = []
-        for seg in t_data.get("segments", []):
-            words.extend(seg.get("words", []))
-        total_dur = words[-1]["end"] if words else 0
-        target_dur = total_dur / max(1, num_clips)
+            for seg in t_data.get("segments", []):
+                words.extend(seg.get("words", []))
+            total_dur = words[-1]["end"] if words else 0
+            target_dur = total_dur / max(1, num_clips)
 
-        curr_start = 0
-        for i in range(num_clips):
-            target_end = (i + 1) * target_dur
-            if i == num_clips - 1:
-                end_idx = len(words) - 1
-            else:
-                best_idx = curr_start
-                min_diff = 999999
-                for idx in range(curr_start + 15, len(words) - 10):
-                    w = words[idx]
-                    diff = abs(w["end"] - target_end)
-                    text = w.get("word", "").strip()
-                    if text.endswith(".") or text.endswith("?") or text.endswith("!"):
-                        diff -= 10.0
-                    if diff < min_diff:
-                        min_diff = diff
-                        best_idx = idx
-                end_idx = best_idx
-            
-            s_time = round(words[curr_start]["start"], 3)
-            e_time = round(words[end_idx]["end"], 3)
-            c_num = i + 1
+            curr_start = 0
+            for i in range(num_clips):
+                target_end = (i + 1) * target_dur
+                if i == num_clips - 1:
+                    end_idx = len(words) - 1
+                else:
+                    best_idx = curr_start
+                    min_diff = 999999
+                    for idx in range(curr_start + 15, len(words) - 10):
+                        w = words[idx]
+                        diff = abs(w["end"] - target_end)
+                        text = w.get("word", "").strip()
+                        if text.endswith(".") or text.endswith("?") or text.endswith("!"):
+                            diff -= 10.0
+                        if diff < min_diff:
+                            min_diff = diff
+                            best_idx = idx
+                    end_idx = best_idx
+                
+                s_time = round(words[curr_start]["start"], 3)
+                e_time = round(words[end_idx]["end"], 3)
+                c_num = i + 1
 
-            c_obj = build_rough_cut_segments(c_num, s_time, e_time, t_data.get("segments", []), num_clips)
-            clips_list.append(c_obj)
-            curr_start = end_idx + 1
-            if curr_start >= len(words):
-                break
-
-        # Pass 2: Intelligent Outro Bridge Questions based on NEXT clip's transcript content!
-        for i in range(len(clips_list) - 1):
-            curr_c = clips_list[i]
-            next_c = clips_list[i + 1]
-            
-            next_title = next_c.get("title", f"Part {i+2}")
-            next_text = ""
-            for seg in next_c.get("segments", []):
-                if seg.get("type") == "audio":
-                    next_text += " " + seg.get("text", "")
-            
-            # Look for a direct question sentence in the next clip's text
-            found_q = None
-            sentences = re.split(r'(?<=[.!?])\s+', next_text.strip())
-            for s in sentences:
-                if s.endswith("?") and 15 <= len(s) <= 120:
-                    found_q = s.strip()
+                c_obj = build_rough_cut_segments(c_num, s_time, e_time, t_data.get("segments", []), num_clips)
+                clips_list.append(c_obj)
+                curr_start = end_idx + 1
+                if curr_start >= len(words):
                     break
-            
-            if found_q:
-                bridge_q = found_q
-            else:
-                bridge_q = f"Coming up in Part {i+2}: {next_title} — What is the deeper secret?"
-            
-            curr_c["bridge_text"] = [bridge_q]
+
+            # Pass 2 (for fallback rough cuts only): Concise <= 5-word Outro Bridge Questions based on NEXT clip's title!
+            for i in range(len(clips_list) - 1):
+                curr_c = clips_list[i]
+                next_c = clips_list[i + 1]
+                next_title = " ".join(next_c.get("title", f"Part {next_c.get('num', i+2)}").split()[:3])
+                curr_c["bridge_text"] = [f"What Is {next_title} ?"]
 
         with open(plan_path, "w", encoding="utf-8") as pf:
             json.dump(clips_list, pf, indent=2)

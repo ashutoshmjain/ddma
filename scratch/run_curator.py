@@ -623,7 +623,7 @@ def compile_segments_helper(segments, output_path, audio_source_path):
     Compiles clip segments preview using exact sample-accurate timeline mixing:
     - Hook speech: 0 to h_dur
     - Mid Sting: 0.2s silence gap, dur_m, 2.0s fade out
-    - Body speech: crossfades 0.5s into fading sting tail (afade=t=in:ss=0:d=0.5)
+    - Body speech: enters 1.0s into the 2.0s fading sting tail at 100% FULL volume (zero afade=in on human voice!)
     - Outro Sting: 0.2s silence gap after body speech, 2.0s fade out
     - Normalized to -16 LUFS
     """
@@ -665,12 +665,12 @@ def compile_segments_helper(segments, output_path, audio_source_path):
             s_dur = max(0.1, s_end - s_start)
 
             if s_idx > 0 and segments[s_idx - 1].get("type") == "music":
-                cf_dur = float(segments[s_idx - 1].get("crossfade", 0.5))
+                cf_dur = float(segments[s_idx - 1].get("crossfade", 1.0))
                 t_speech = max(0.0, t_cursor - cf_dur)
                 t_speech_ms = int(round(t_speech * 1000))
                 inputs.extend(["-ss", f"{s_start:.3f}", "-t", f"{s_dur:.3f}", "-i", audio_source_path])
                 filter_parts.append(
-                    f"[{in_idx}:a]afade=t=in:ss=0:d={cf_dur:.3f},adelay={t_speech_ms}|{t_speech_ms}[sp{in_idx}];"
+                    f"[{in_idx}:a]adelay={t_speech_ms}|{t_speech_ms}[sp{in_idx}];"
                 )
                 labels.append(f"[sp{in_idx}]")
                 t_cursor = t_speech + s_dur
@@ -692,7 +692,7 @@ def compile_segments_helper(segments, output_path, audio_source_path):
             dur_m = float(seg.get("duration", 5.5))
             fade_out = float(seg.get("fade_out", 2.0))
             fade_out_st = max(0.0, dur_m - fade_out)
-            silence_front = float(seg.get("silence_before", 0.2))
+            silence_front = float(seg.get("silence_before", seg.get("gap", 0.2)))
 
             t_sting = t_cursor + silence_front
             t_sting_ms = int(round(t_sting * 1000))
@@ -936,13 +936,17 @@ def get_gemini_default_prompt():
         "1. **Total Duration**: The total duration of the clip MUST be strictly under 2 minutes and 55 seconds (175 seconds).\n"
         "   Calculated as: `Total = Sum(segment_durations) - Sum(segment_crossfades)`.\n"
         "2. **Storyboard Structure**:\n"
-        "   - Begin with a short welcome hook / high-power speech segment (10-15 seconds) from the transcript.\n"
-        "   - Followed by a quick music sting (typically 4.0 - 5.0 seconds long, 0.3s crossfade, 1.0 volume).\n"
-        "   - Followed by the main audio segment (content/discussion).\n"
-        "   - Followed by ending music (music segment at the end that leads into the outro).\n"
-        "3. **Bridge Text**: Provide a single bold curiosity-provoking transition question in \"bridge_text\" (a list of string(s)). This question must act as a forward-looking narrative bridge that introduces the topic/theme of the *next* clip in the storyboard (to transition the viewer's interest), rather than summarizing this current clip.\n"
-        "4. **Tone & Continuity**: Reference the narrative arc from the preceding locked clips to ensure this clip continues the story logically and maintains engaging hook titles.\n"
-        "5. **Standalone Thought Integrity**: Every clip MUST stand on its own as a complete, coherent, and interesting statement. Avoid creating 'part 2' or dependent continuation clips. If the preceding locked clips have already fully covered or resolved a topic, do not repeat or continue discussing it; skip ahead in the neighborhood transcript to a new high-engagement standalone concept.\n"
+        "   - Begin with a short welcome hook / high-power speech segment (10-20 seconds) from the transcript.\n"
+        "   - Followed by a quick music sting (5.5 seconds long, 0.2s silence_before, 2.0s fade_out, 1.0s crossfade, 1.0 volume).\n"
+        "   - Followed by the main audio segment (core deliberation + spoken outro teaser, entering at 100% full volume over the last 1.0s of the fading music sting).\n"
+        "   - Followed by ending music (`deepDive-conclusion.mp3`, 5.5s, 0.2s silence_before, 2.0s fade_out, 0.0s crossfade, 1.0 volume).\n"
+        "3. **Intro Card Title (STRICTLY MAX 3 WORDS for Clip 1+)**:\n"
+        "   - For `Clip 0` (`num == 0`): Use the overarching Episode Title (e.g. \"What Exactly Is Reality?\"), rendered with `EPISODE <number>` and NO Part number.\n"
+        "   - For `Clip 1+` (`num >= 1`): Title MUST be **STRICTLY MAXIMUM 3 WORDS** designed to capture attention — typically the scientific concept, scientist name, or core idea (e.g. \"8D Totality\", \"Sensory Split\", \"Division Algebras\", \"Quaternions\").\n"
+        "4. **Outro Card Bridge Text (STRICTLY MAX 5 WORDS)**:\n"
+        "   - Provide a single ultra-concise curiosity question/exclamation in \"bridge_text\" (a 1-element list of strings) that is **STRICTLY MAXIMUM 5 WORDS** (e.g. \"What is 8D Totality !\", \"Why Four Division Algebras ?\").\n"
+        "   - NEVER write \"Coming up in Clip...\" or long story sentences because the hosts already speak that aloud in the audio!\n"
+        "5. **Standalone Thought Integrity**: Every clip MUST stand on its own as a complete, coherent, and interesting statement.\n"
         "6. **Deep Dive Music Sting Restrictions**: Under NO circumstances use deepDive-strong in video clips (reserved strictly for the full podcast). Clip structure is always: Hook audio segment -> Mid music sting (alternating Bluesy Vibes and Howling) -> Body audio segment -> Outro music sting (deepDive-conclusion.mp3)."
     )
 
@@ -961,30 +965,44 @@ def get_gemini_episode_default_prompt():
             
     return (
         "You are the Executive Producer & AI Storyboard Curator for the DeepDive Media Automator (DDMA).\n"
-        "Your task is to analyze the full raw episode transcript and structure it into a sequence of high-engagement, standalone podcast/social video clips (typically 12 to 18 clips per episode).\n\n"
-        "### 🎬 EPISODE STORYBOARDING & PRODUCTION RULES:\n"
-        "1. **Strict Duration Limits**: Each clip MUST be between 60 seconds (1 minute) and 165 seconds (2 minutes 45 seconds). No clip may ever exceed 2 minutes 55 seconds (175 seconds) to maintain YouTube Shorts & Instagram Reels compliance.\n"
-        "2. **Four-Element Clip Structure**: Every clip is structured into a 4-element flow: (1) Intro Title Card (2s), (2) Speech Punchline / Hook (10-15s audio segment), (3) Intro Music Sting (4-5s, full volume 1.0), (4) Main Speech Discussion Audio Segment, and (5) Ending Music Sting (4-5s, full volume 1.0) before the (6) Outro Curiosity Question Card.\n"
-        "3. **Selective Forward Chronology & Standalone Integrity**: Scan the transcript chronologically from start to finish. Identify complete, high-impact thematic concepts, metaphors, and logical statements. Every clip MUST stand on its own as a self-contained, coherent, high-value thought without requiring context from previous clips. Do not create dependent \"part 2\" fragments or include unedited filler.\n"
-        "4. **Punchy Social Titles**: Assign a concise, high-curiosity title (under 8 words) for each clip. DO NOT include colons, slashes, or quotes in the title text (use dashes or spaces instead) so titles are clean, readable, and safe for media files.\n"
-        "5. **Verbatim Word-Level Quote Anchors**: For each clip, output exact 3-7 word verbatim transcript quote fragments (\"start_quote\" and \"end_quote\") matching the spoken transcript text so DDMA can snap clip boundaries sample-accurately to Whisper word timestamps.\n"
-        "6. **Curiosity Question Bridge Cards**: Provide a single bold, forward-looking curiosity question under \"bridge_text\" (a 1-element list of strings). This question acts as a narrative bridge introducing the topic of the NEXT clip to retain audience curiosity across transitions.\n"
-        "7. **Music Sting Restrictions & Volume**: Music volume must ALWAYS be set to 1.0 (100% full volume).\n"
-        "   - **Clip 1 & Clip 2**: Never use deepDive-strong in clips. Use Bluesy Vibes or Howling as mid sting, and deepDive-conclusion as outro sting.\n"
-        "   - **Clip 3+**: Assign standard stings (`deepDive-main.mp3`, `Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3`, or `Cartoon Bank Heist (Sting) - Doug Maxwell_Media Right Productions.mp3`). Welcome stings are STRICTLY PROHIBITED on Clip 3+ to prevent repetitive intro audio.\n\n"
+        "Your task is to analyze the full raw episode transcript and structure it into a sequence of high-engagement, standalone podcast/social video clips.\n\n"
+        "### 🎬 EPISODE STORYBOARDING & CLIP DYNAMICS RULES:\n"
+        "1. **0-Based Clip Numbering (`<ep>-0`, `<ep>-1`, ...)**:\n"
+        "   - Number the Prologue / Cold Open clip (before hosts announce \"Clip 1\") as `\"num\": 0` (`<ep>-0`).\n"
+        "   - Number all subsequent clips `\"num\": 1`, `\"num\": 2`, etc. (`<ep>-1`, `<ep>-2`, ...) so that clip numbers strictly mirror the spoken word (\"Clip 1\", \"Clip 2\", etc. in the transcript).\n"
+        "2. **Strict Duration Limits**: Each clip MUST be between 60 seconds (1 minute) and 165 seconds (2 minutes 45 seconds). No clip may ever exceed 2 minutes 55 seconds (175 seconds).\n"
+        "3. **Tripartite Spoken Flow & Music Stings**: Every clip is structured into: (1) Intro Title Card (1.5s), (2) Speech Punchline / Hook (10-20s audio segment), (3) Mid Music Sting (5.5s, alternating `Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3` and `Howling (Sting) - Gunnar Olsen.mp3`), (4) Core Deliberation + Spoken Outro Teaser Audio Segment, (5) Outro Music Sting (`deepDive-conclusion.mp3`, 5.5s), and (6) Outro Curiosity Question Card (5.0s).\n"
+        "4. **Concise Intro Card Titles (MAX 3 WORDS for Clip 1+)**:\n"
+        "   - For `Clip 0` (`num: 0`): Assign the overarching Episode Title (e.g. `\"What Exactly Is Reality?\"`), displayed with `EPISODE <number>` and NO Part number.\n"
+        "   - For `Clip 1+` (`num >= 1`): Assign a title of **STRICTLY MAXIMUM 3 WORDS** designed to capture attention — typically the scientific concept, scientist name, or core idea (e.g. `\"8D Totality\"`, `\"Sensory Split\"`, `\"Division Algebras\"`, `\"Quaternions\"`). Drop leading articles like \"The\" if needed to stay ≤ 3 words.\n"
+        "5. **Concise Outro Card Bridge Text (MAX 5 WORDS)**:\n"
+        "   - Under `\"bridge_text\"` (a 1-element list of strings), provide an ultra-concise punchy question or exclamation of **STRICTLY MAXIMUM 5 WORDS** introducing the next clip's core concept (e.g. `[\"What is 8D Totality !\"]`, `[\"Why Four Division Algebras ?\"]`).\n"
+        "   - NEVER write \"Coming up in the next clip...\" or multi-clause sentences because the hosts are already speaking that transition aloud!\n"
+        "6. **Verbatim Word-Level Quote Anchors**: For each clip, output exact 3-7 word verbatim transcript quote fragments (`\"start_quote\"` and `\"end_quote\"`) matching the spoken transcript text so DDMA snaps clip boundaries sample-accurately to Whisper word timestamps.\n\n"
         "### 📋 OUTPUT FORMAT (JSON ARRAY ONLY):\n"
         "Return ONLY a valid JSON array of clip objects with no markdown codeblock wrapping or extra conversational text:\n"
         "[\n"
         "  {\n"
-        "    \"num\": 1,\n"
-        "    \"title\": \"High-Curiosity Two-Line Title\",\n"
-        "    \"start_quote\": \"exact 3-7 words from start of clip speech\",\n"
-        "    \"end_quote\": \"exact 3-7 words from end of clip speech (70s-150s after start_quote)\",\n"
+        "    \"num\": 0,\n"
+        "    \"title\": \"What Exactly Is Reality?\",\n"
+        "    \"start_quote\": \"exact 3-7 words from start of prologue\",\n"
+        "    \"end_quote\": \"exact 3-7 words from end of prologue\",\n"
         "    \"approx_start\": 0.0,\n"
-        "    \"approx_end\": 125.5,\n"
-        "    \"music\": \"deepDive-soft-ok.mp3\",\n"
+        "    \"approx_end\": 135.0,\n"
+        "    \"music\": \"Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3\",\n"
         "    \"music_volume\": 1.0,\n"
-        "    \"bridge_text\": [\"Curiosity question for next topic?\"]\n"
+        "    \"bridge_text\": [\"What is 8D Totality !\"]\n"
+        "  },\n"
+        "  {\n"
+        "    \"num\": 1,\n"
+        "    \"title\": \"8D Totality\",\n"
+        "    \"start_quote\": \"exact 3-7 words from start of clip 1\",\n"
+        "    \"end_quote\": \"exact 3-7 words from end of clip 1\",\n"
+        "    \"approx_start\": 135.0,\n"
+        "    \"approx_end\": 275.0,\n"
+        "    \"music\": \"Howling (Sting) - Gunnar Olsen.mp3\",\n"
+        "    \"music_volume\": 1.0,\n"
+        "    \"bridge_text\": [\"What Is Sensory Split ?\"]\n"
         "  }\n"
         "]"
     )
@@ -1658,7 +1676,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 from ddma import snap_quote_to_words
                 new_plan = []
                 for c_idx, raw_c in enumerate(ai_clips_raw):
-                    c_num = c_idx + 1
+                    c_num = raw_c.get("num", c_idx) if (ai_clips_raw and ai_clips_raw[0].get("num") == 0) else raw_c.get("num", c_idx + 1)
                     s_quote = raw_c.get("start_quote", "")
                     e_quote = raw_c.get("end_quote", "")
                     approx_start = float(raw_c.get("approx_start", c_idx * 115.0))
@@ -1756,7 +1774,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         "locked": False,
                         "music": music_file,
                         "music_volume": 1.0,
-                        "bridge_text": raw_c.get("bridge_text", [f"What happens in Part {c_num + 1}?"]),
+                        "bridge_text": raw_c.get("bridge_text", [f"What Is Part {c_num + 1} ?"]),
                         "segments": segments
                     })
 
@@ -2487,7 +2505,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
             try:
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing project id or clip number.")
                 clip_num = int(clip_num)
                 
@@ -2513,44 +2531,11 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 ep_num_match = re.search(r'\d+', project_id)
                 ep_num = ep_num_match.group(0) if ep_num_match else project_id
                 
-                title_text = title if title else f"Part {clip_num}"
-                
                 from PIL import Image, ImageDraw, ImageFont
-                import glob
-                search_pattern = os.path.join("clips", f"*-{clip_num}.mp4")
-                master_files = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
-                
-                extracted = False
-                temp_extracted = f"temp_preview_frame_{project_id}_{clip_num}.png"
-                if master_files:
-                    master_path = master_files[0]
-                    base_name = os.path.splitext(os.path.basename(master_path))[0]
-                    backup_path = os.path.join("clips", f"{base_name}-original.mp4")
-                    target_video = backup_path if os.path.exists(backup_path) else master_path
-                    
-                    cmd_extract = [
-                        "ffmpeg", "-y",
-                        "-ss", "00:00:01.000",
-                        "-i", target_video,
-                        "-vframes", "1",
-                        temp_extracted
-                    ]
-                    try:
-                        res = subprocess.run(cmd_extract, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                        if res.returncode == 0 and os.path.exists(temp_extracted):
-                            extracted = True
-                    except Exception as extract_err:
-                        print(f"Warning: Could not extract preview frame: {extract_err}")
-                
-                if extracted:
-                    img = Image.open(temp_extracted).convert("RGBA")
-                    width, height = img.size
-                else:
-                    width, height = 740, 740
-                    img = Image.new("RGBA", (width, height), (18, 18, 18, 255))
-                
-                overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
-                draw = ImageDraw.Draw(overlay)
+                # Pure Glossy Black (#000000) canvas per Monochrome Noir standard — zero blurred background frame bleed
+                width, height = 740, 740
+                img = Image.new("RGBA", (width, height), (0, 0, 0, 255))
+                draw = ImageDraw.Draw(img)
                 
                 def find_system_fonts():
                     candidates = [
@@ -2564,7 +2549,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 font_bold, font_reg = find_system_fonts()
                 if font_bold and font_reg:
-                    font_title = ImageFont.truetype(font_bold, 40)
+                    font_title = ImageFont.truetype(font_bold, 44)
                     font_sub = ImageFont.truetype(font_reg, 24)
                 else:
                     font_title = ImageFont.load_default()
@@ -2576,14 +2561,14 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 y0 = height // 2 - 160
                 x1 = x0 + box_width
                 y1 = y0 + box_height
-                draw.rounded_rectangle([(x0, y0), (x1, y1)], radius=15, fill=(18, 18, 18, 200))
                 
-                sub_text = f"EPISODE {ep_num}" if clip_num == 1 else f"EPISODE {ep_num} • PART {clip_num}"
-                title_text = title if title else f"Part {clip_num}"
+                # Clip 0 (Show Prologue / Ep Intro) has NO Part number; Clip 1+ shows EPISODE <num> • PART <num>
+                sub_text = f"EPISODE {ep_num}" if clip_num == 0 else f"EPISODE {ep_num} • PART {clip_num}"
+                title_text = title if title else (f"Episode {ep_num}" if clip_num == 0 else f"Part {clip_num}")
                 
                 bbox_sub = draw.textbbox((0, 0), sub_text, font=font_sub)
                 w_sub = bbox_sub[2] - bbox_sub[0]
-                draw.text(((width - w_sub) // 2, y0 + 35), sub_text, font=font_sub, fill=(150, 150, 150, 255))
+                draw.text(((width - w_sub) // 2, y0 + 35), sub_text, font=font_sub, fill=(180, 180, 180, 255))
                 
                 def split_title(text):
                     if "\n" in text:
@@ -2591,7 +2576,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     if " : " in text:
                         return [p.strip() for p in text.split(" : ", 1)]
                     words = text.split()
-                    if len(words) <= 1:
+                    if len(words) <= 3:
                         return [text]
                     best_diff = float('inf')
                     best_idx = 1
@@ -2606,7 +2591,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 title_lines = split_title(title_text)
                 
-                line_spacing = 10
+                line_spacing = 12
                 line_heights = []
                 total_title_h = 0
                 for line in title_lines:
@@ -2632,50 +2617,24 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 line_w = 120
                 draw.line([((width - line_w) // 2, line_y), ((width - line_w) // 2 + line_w, line_y)], fill=(80, 80, 80, 255), width=2)
                 
-                final_img = Image.alpha_composite(img, overlay).convert("RGB")
+                final_img = img.convert("RGB")
                 temp_png = f"temp_intro_preview_{project_id}_{clip_num}.png"
                 final_img.save(temp_png)
-                
-                if os.path.exists(temp_extracted):
-                    try:
-                        os.remove(temp_extracted)
-                    except:
-                        pass
                 
                 os.makedirs("previews", exist_ok=True)
                 out_path = f"previews/intro_{project_id}_{clip_num}.mp4"
                 
                 music_file = None
-                segments = clip.get("segments", [])
-                if segments and isinstance(segments, list):
-                    for seg in segments:
-                        if seg.get("type") == "music" and seg.get("music_file"):
-                            m_candidate = seg["music_file"].split('/').pop().split('\\').pop()
-                            m_path = os.path.join("music", m_candidate)
-                            if os.path.exists(m_path):
-                                music_file = m_path
-                                break
-                            elif os.path.exists(seg["music_file"]):
-                                music_file = seg["music_file"]
-                                break
-                
-                if not music_file and clip.get("music"):
-                    m_candidate = str(clip["music"]).split('/').pop().split('\\').pop()
-                    m_path = os.path.join("music", m_candidate)
-                    if os.path.exists(m_path):
-                        music_file = m_path
-
-                if not music_file or not os.path.exists(music_file):
-                    fallback_music = [
-                        "title-card-music.mp3",
-                        os.path.join("music", "deepDive-soft-ok.mp3"),
-                        os.path.join("music", "deepDive-strong.mp3"),
-                        os.path.join("music", "deepDive-main.mp3")
-                    ]
-                    for cand in fallback_music:
-                        if os.path.exists(cand):
-                            music_file = cand
-                            break
+                fallback_music = [
+                    "title-card-music.mp3",
+                    os.path.join("music", "deepDive-soft-ok.mp3"),
+                    os.path.join("music", "deepDive-main.mp3"),
+                    os.path.join("music", "deepDive-strong.mp3")
+                ]
+                for cand in fallback_music:
+                    if os.path.exists(cand):
+                        music_file = cand
+                        break
                 cmd_ffmpeg = [
                     "ffmpeg", "-y",
                     "-loop", "1",
@@ -2730,7 +2689,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
             try:
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing project id or clip number.")
                 clip_num = int(clip_num)
                 
@@ -3249,7 +3208,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
             try:
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing project id or clip number.")
                 
                 project_dir = os.path.join("projects", project_id)
@@ -3395,7 +3354,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
             try:
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing project id or clip number.")
                 
                 content_length = int(self.headers.get('Content-Length', 0))
@@ -3582,7 +3541,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             clip_num = params.get('num', [None])[0]
             req_source = params.get('source', ['mosaic'])[0].lower()
             try:
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing project id or clip number.")
                 
                 source = "manim" if req_source in ("infographic", "manim") else "mosaic"
@@ -3671,7 +3630,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             is_draft = params.get('draft', ['false'])[0].lower() in ('true', '1')
             req_source = params.get('source', [None])[0]
             try:
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing project id or clip number.")
                 
                 plan_path = os.path.join("projects", project_id, "plan.json")
@@ -3780,7 +3739,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
             try:
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing project id or clip number.")
                 filepath = get_storyboard_filepath(project_id, clip_num)
                 if not os.path.exists(filepath):
@@ -3922,7 +3881,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 clip_num = query.get('num', [None])[0]
                 force_regen = query.get('force', ['false'])[0].lower() in ('true', '1')
 
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing id or num parameter")
 
                 content_len = int(self.headers.get('Content-Length', 0))
@@ -4217,7 +4176,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 clip_num = query.get('num', [None])[0]
                 force_whisper = query.get('whisper', ['false'])[0].lower() == 'true'
 
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing id or num parameter")
 
                 content_len = int(self.headers.get('Content-Length', 0))
@@ -4376,6 +4335,21 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         if os.path.exists(cand):
                             audio_path = cand
                             break
+                    # Automatic fallback to Google Drive agy_inputs/<ep_num> for cloud-ingested episodes
+                    if not audio_path or not os.path.exists(audio_path):
+                        gdrive_dir = os.path.join(r"G:\My Drivegy_inputs", str(ep_num))
+                        if os.path.exists(gdrive_dir):
+                            for fn in sorted(os.listdir(gdrive_dir)):
+                                if fn.lower().endswith((".m4a", ".mp3", ".wav")):
+                                    ext = os.path.splitext(fn)[1].lower()
+                                    dest_cand = os.path.join(project_dir, f"{ep_num}{ext}")
+                                    try:
+                                        shutil.copy2(os.path.join(gdrive_dir, fn), dest_cand)
+                                        audio_path = dest_cand
+                                        print(f"[GDrive Audio Sync] Copied {fn} -> {dest_cand}")
+                                        break
+                                    except Exception as ge:
+                                        print(f"[GDrive Audio Sync] Error copying {fn}: {ge}")
                 if not audio_path or not os.path.exists(audio_path):
                     self.send_error(404, f"Audio file for project {project_id} not found.")
                     return
@@ -4405,7 +4379,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
             try:
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing project id or clip number.")
                 
                 project_dir = os.path.join("projects", project_id)
@@ -4495,7 +4469,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
             try:
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing project id or clip number.")
                 
                 prompt_content = build_gemini_prompt(project_id, int(clip_num))
@@ -4759,7 +4733,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
             try:
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing project id or clip number.")
                 if os.getcwd() not in sys.path:
                     sys.path.insert(0, os.getcwd())
@@ -4809,7 +4783,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             clip_num = params.get('num', [None])[0]
             force_regen = params.get('force', ['false'])[0].lower() in ('true', '1')
             try:
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing project id or clip number.")
                 sb = generate_or_load_storyboard_data(project_id, clip_num, force_regen=force_regen)
                 filepath = get_storyboard_filepath(project_id, clip_num)
@@ -4860,7 +4834,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
             try:
-                if not project_id or not clip_num:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
                     raise Exception("Missing project id or clip number.")
                 
                 job_key = (project_id, int(clip_num))
