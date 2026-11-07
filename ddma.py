@@ -2522,6 +2522,19 @@ def compile_clip(
         if res_concat.returncode == 0:
             typer.echo(f"Successfully compiled clip: {out_path}")
             
+            # Sync compiled reel to Google Drive dd_hub/{mosaics,manims}/<episode>-<num>.mp4 for mobile review & manual uploads
+            try:
+                hub_root = os.environ.get("DD_HUB_ROOT", r"G:\My Drive\dd_hub")
+                if os.path.exists(hub_root) and episode:
+                    hub_reel_folder = "manims" if compile_source == "manim" else "mosaics"
+                    hub_dest_dir = os.path.join(hub_root, hub_reel_folder)
+                    os.makedirs(hub_dest_dir, exist_ok=True)
+                    hub_dest_file = os.path.join(hub_dest_dir, out_filename)
+                    shutil.copy2(variant_path, hub_dest_file)
+                    typer.echo(f"Synced {compile_source} reel to dd_hub/{hub_reel_folder} -> {hub_dest_file}")
+            except Exception as hub_e:
+                typer.echo(f"Warning syncing to dd_hub: {hub_e}")
+
             # Safeguard: If active master, update master out_path and sync to deepDive
             is_active_master = (compile_source == active_master_src)
             if is_active_master:

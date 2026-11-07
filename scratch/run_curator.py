@@ -4335,21 +4335,27 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         if os.path.exists(cand):
                             audio_path = cand
                             break
-                    # Automatic fallback to Google Drive agy_inputs/<ep_num> for cloud-ingested episodes
+                    # Automatic fallback to Google Drive dd_hub/inputs/<ep_num> (and legacy agy_inputs/<ep_num>)
                     if not audio_path or not os.path.exists(audio_path):
-                        gdrive_dir = os.path.join(r"G:\My Drivegy_inputs", str(ep_num))
-                        if os.path.exists(gdrive_dir):
-                            for fn in sorted(os.listdir(gdrive_dir)):
-                                if fn.lower().endswith((".m4a", ".mp3", ".wav")):
-                                    ext = os.path.splitext(fn)[1].lower()
-                                    dest_cand = os.path.join(project_dir, f"{ep_num}{ext}")
-                                    try:
-                                        shutil.copy2(os.path.join(gdrive_dir, fn), dest_cand)
-                                        audio_path = dest_cand
-                                        print(f"[GDrive Audio Sync] Copied {fn} -> {dest_cand}")
-                                        break
-                                    except Exception as ge:
-                                        print(f"[GDrive Audio Sync] Error copying {fn}: {ge}")
+                        for gdrive_base in [
+                            os.path.join(os.environ.get("DD_HUB_ROOT", r"G:\My Drive\dd_hub"), "inputs"),
+                            r"G:\My Drive\agy_inputs",
+                        ]:
+                            gdrive_dir = os.path.join(gdrive_base, str(ep_num))
+                            if os.path.exists(gdrive_dir):
+                                for fn in sorted(os.listdir(gdrive_dir)):
+                                    if fn.lower().endswith((".m4a", ".mp3", ".wav")):
+                                        ext = os.path.splitext(fn)[1].lower()
+                                        dest_cand = os.path.join(project_dir, f"{ep_num}{ext}")
+                                        try:
+                                            shutil.copy2(os.path.join(gdrive_dir, fn), dest_cand)
+                                            audio_path = dest_cand
+                                            print(f"[GDrive Audio Sync] Copied {fn} -> {dest_cand}")
+                                            break
+                                        except Exception as ge:
+                                            print(f"[GDrive Audio Sync] Error copying {fn}: {ge}")
+                            if audio_path and os.path.exists(audio_path):
+                                break
                 if not audio_path or not os.path.exists(audio_path):
                     self.send_error(404, f"Audio file for project {project_id} not found.")
                     return
