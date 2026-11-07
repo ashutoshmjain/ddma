@@ -1008,6 +1008,36 @@ def get_gemini_episode_default_prompt():
     )
 
 
+
+
+def get_gemini_bridge_default_prompt():
+    settings_path = "settings.json"
+    if os.path.exists(settings_path):
+        try:
+            with open(settings_path, "r", encoding="utf-8") as sf:
+                s_data = json.load(sf)
+                prompt = s_data.get("gemini_bridge_prompt_template")
+                if prompt:
+                    return prompt
+        except Exception:
+            pass
+    return (
+        "You are an expert podcast producer and narrative editor for DeepDive Media Automator (DDMA).\n"
+        "Your task is to review and generate curiosity-provoking bridge question cards for transitions between podcast clips.\n"
+        "A bridge card appears AT THE END of Clip N, right before Clip N+1 begins.\n\n"
+        "### 🎬 BRIDGE CARD RULES:\n"
+        "1. For each Clip N (except the last clip of the episode), evaluate the transition into Clip N+1.\n"
+        "2. Ensure the bridge question for Clip N directly teases the core concept, scientist, or question in Clip N+1.\n"
+        "3. **STRICT LENGTH RULE**: Keep each `bridge_text` ultra-concise — **STRICTLY MAXIMUM 5 WORDS** (e.g. `\"What is 8D Totality !\"`, `\"Why Four Division Algebras ?\"`, `\"How Do Quaternions Work ?\"`).\n"
+        "4. **NEVER** write `\"Coming up in Clip...\"` or long story sentences because the hosts already speak that aloud in the audio!\n"
+        "5. Return a JSON array of objects, one for each clip, in the following exact format:\n"
+        "[\n"
+        "  {\"num\": 0, \"bridge_text\": [\"What is 8D Totality !\"]},\n"
+        "  {\"num\": 1, \"bridge_text\": [\"What Is Sensory Split ?\"]}\n"
+        "]"
+    )
+
+
 def build_gemini_prompt(project_id, clip_num, directive=None):
     project_dir = os.path.join("projects", project_id)
     plan_path = os.path.join(project_dir, "plan.json")
@@ -4826,6 +4856,22 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         "resolution": "1080x1080",
                         "bg_color": "black"
                     }
+                def_clip = get_gemini_default_prompt()
+                def_ep = get_gemini_episode_default_prompt()
+                def_bridge = get_gemini_bridge_default_prompt()
+                def_mosaic = get_mosaic_default_prompt()
+                settings_data["default_gemini_remix_prompt"] = def_clip
+                settings_data["default_gemini_episode_prompt"] = def_ep
+                settings_data["default_gemini_bridge_prompt"] = def_bridge
+                settings_data["default_mosaic_prompt"] = def_mosaic
+                if not settings_data.get("gemini_remix_prompt_template"):
+                    settings_data["gemini_remix_prompt_template"] = def_clip
+                if not settings_data.get("gemini_episode_remix_prompt_template"):
+                    settings_data["gemini_episode_remix_prompt_template"] = def_ep
+                if not settings_data.get("gemini_bridge_prompt_template"):
+                    settings_data["gemini_bridge_prompt_template"] = def_bridge
+                if not settings_data.get("mosaic_default_prompt"):
+                    settings_data["mosaic_default_prompt"] = def_mosaic
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')

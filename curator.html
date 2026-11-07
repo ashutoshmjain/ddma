@@ -372,7 +372,7 @@
 
         /* Swapped Layout Columns */
         .left-panel {
-            width: 500px; /* default middle panel width */
+            width: 640px; /* default middle panel width */
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
@@ -673,7 +673,7 @@
             display: flex;
             gap: 0.3rem;
             align-items: center;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
         }
 
         /* Segment Drawer Collapsible */
@@ -1583,23 +1583,13 @@
             <!-- Utility Toolbar for All Actions -->
             <div class="clips-toolbar" id="clipsToolbar" style="display: none; padding: 0.4rem 0.75rem; border-bottom: 1px solid var(--border-color); background-color: var(--panel-bg-darker); align-items: center; justify-content: space-between; gap: 0.6rem;">
                 <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-                    <!-- Group 1: Creation & AI -->
+                    <!-- Group 1: Creation & Undo -->
                     <div style="display: flex; gap: 0.35rem; align-items: center; border-right: 1px solid var(--border-color); padding-right: 0.5rem;">
                         <button class="btn btn-primary btn-mini" id="newClipBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;">➕ New Clip</button>
-                        <button class="btn btn-secondary btn-mini" id="episodeAiAutoPlanBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;" title="Use Gemini AI to analyze raw transcript and discover semantic topic clips">🌌 AI Auto-Plan</button>
-                        <button class="btn btn-secondary btn-mini" id="reviewBridgesBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;" title="Use Gemini AI to review and align transition curiosity questions">✨ AI Bridges</button>
-                    </div>
-                    <!-- Group 2: Output & Playback -->
-                    <div style="display: flex; gap: 0.35rem; align-items: center; border-right: 1px solid var(--border-color); padding-right: 0.5rem;">
-                        <a href="/docs/index.html" target="_blank" style="text-decoration: none;">
-                            <button class="btn btn-secondary btn-mini" id="combineVideoBtn" style="padding: 0.25rem 0.55rem; font-weight: 600; cursor: pointer;" title="Open real-time Editor's Preview player to review compiled clips">🎬 Editor's Preview</button>
-                        </a>
-                        <button class="btn btn-secondary btn-mini" id="openExportModalBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;" title="Export combined audio (MP3), video (MP4), or plan metadata (JSON)">📥 Export</button>
-                        <button class="btn btn-secondary btn-mini" id="playLockedBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;">▶ Play Locked</button>
                         <button class="btn btn-secondary btn-mini" id="undoBtn" disabled style="padding: 0.25rem 0.55rem; font-weight: 600;">↩️ Undo</button>
                         <span style="font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono);" id="undoCountLabel"></span>
                     </div>
-                    <!-- Group 3: View Toggles -->
+                    <!-- Group 2: View Toggles -->
                     <div style="display: flex; gap: 0.35rem; align-items: center;">
                         <button class="btn btn-secondary btn-mini" id="collapseAllBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;" title="Collapse all clip cards">📁 Collapse All</button>
                         <button class="btn btn-secondary btn-mini" id="expandAllBtn" style="padding: 0.25rem 0.55rem; font-weight: 600;" title="Expand all clip cards">📂 Expand All</button>
@@ -1817,7 +1807,7 @@
                     </h3>
                     <!-- Settings Tab Buttons -->
                     <div style="display: flex; gap: 0.4rem; background: var(--panel-bg-darker); padding: 0.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
-                        <button type="button" class="settings-tab-btn active" data-tab="tab-general" style="padding: 0.4rem 0.8rem; font-size: 0.78rem; font-weight: 600; border-radius: 6px; border: none; cursor: pointer; color: var(--text-main); background: var(--bg-color);">⚙️ General & Export</button>
+                        <button type="button" class="settings-tab-btn active" data-tab="tab-general" style="padding: 0.4rem 0.8rem; font-size: 0.78rem; font-weight: 600; border-radius: 6px; border: none; cursor: pointer; color: var(--text-main); background: var(--bg-color);">⚙️ General & Music</button>
                         <button type="button" class="settings-tab-btn" data-tab="tab-gemini" style="padding: 0.4rem 0.8rem; font-size: 0.78rem; font-weight: 600; border-radius: 6px; border: none; cursor: pointer; color: var(--text-muted); background: transparent;">🤖 Gemini Co-Pilot Prompts</button>
                         <button type="button" class="settings-tab-btn" data-tab="tab-mosaic" style="padding: 0.4rem 0.8rem; font-size: 0.78rem; font-weight: 600; border-radius: 6px; border: none; cursor: pointer; color: var(--text-muted); background: transparent;">🌌 Mosaic Motion Design</button>
                     </div>
@@ -1828,49 +1818,8 @@
             <!-- Tab Body Container -->
             <div style="flex-grow: 1; min-height: 0; overflow-y: auto; padding: 0.5rem 0.2rem;">
                 
-                <!-- TAB 1: General & Export -->
+                <!-- TAB 1: General & Music -->
                 <div class="settings-tab-content active" id="tab-general" style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <div style="display: grid; display: flex; flex-direction: column; gap: 1.2rem;">
-                        <!-- Export Settings -->
-                        <div style="background: var(--panel-bg-darker); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color);">
-                            <label style="font-size: 0.82rem; font-weight: 700; margin-bottom: 0.8rem; display: block; color: var(--text-main);">EXPORT FORMAT & CANVAS</label>
-                            <div class="music-editor-field" style="width: 100%; margin-bottom: 0.8rem;">
-                                <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Default Format:</label>
-                                <select id="exportFormatSelector" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;">
-                                    <option value="audio">🎵 Audio (MP3)</option>
-                                    <option value="video">📹 Video (Muxed MP4)</option>
-                                </select>
-                            </div>
-                            
-                            <div id="videoSettingsArea" style="display: none; flex-direction: column; gap: 0.8rem;">
-                                <div class="music-editor-field" style="width: 100%;">
-                                    <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Video Resolution:</label>
-                                    <select id="videoResolutionSelector" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;">
-                                        <option value="740x740">740 x 740 (Square Draft)</option>
-                                        <option value="1080x1080">1080 x 1080 (HD Square)</option>
-                                        <option value="1080x1920">1080 x 1920 (Vertical Short)</option>
-                                        <option value="1920x1080">1920 x 1080 (Widescreen)</option>
-                                    </select>
-                                </div>
-                                
-                                <div style="display: flex; gap: 0.8rem; width: 100%;">
-                                    <div class="music-editor-field" style="flex: 1;">
-                                        <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Background Color:</label>
-                                        <select id="videoBgPresetSelector" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; cursor: pointer;">
-                                            <option value="black">Black (#000000)</option>
-                                            <option value="#161822">Charcoal (#161822)</option>
-                                            <option value="#475569">Nordic Slate (#475569)</option>
-                                            <option value="custom">Custom Color...</option>
-                                        </select>
-                                    </div>
-                                    <div class="music-editor-field" id="customColorField" style="width: 120px; display: none;">
-                                        <label style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; display: block;">Hex Code:</label>
-                                        <input type="text" id="videoBgCustomInput" value="#000000" style="width: 100%; padding: 0.5rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Global Music Library -->
                     <div style="background: var(--panel-bg-darker); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color);">
@@ -1908,16 +1857,28 @@
                         <textarea id="settingsGeminiDefaultPrompt" placeholder="Enter default Clip Remix instructions..." style="width: 100%; height: 160px; padding: 0.8rem; font-size: 0.8rem; font-family: var(--font-mono); line-height: 1.45; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; resize: vertical; box-sizing: border-box;"></textarea>
                     </div>
 
-                    <!-- Full Episode Remix Prompt -->
+                    <!-- Full Episode Auto-Plan Prompt -->
                     <div style="background: var(--panel-bg-darker); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.6rem;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <label style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: block;">DEFAULT EPISODE REMIX PROMPT (UNSTRUCTURED AUDIO AI AUTO-PLAN)</label>
-                                <span style="font-size: 0.72rem; color: var(--text-muted);">Used when clicking '🌌 Episode AI Auto-Plan' to discover 12-18 topic clips across full transcript.</span>
+                                <label style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: block;">DEFAULT EPISODE AUTO-PLAN PROMPT (TRIPARTITE CLIP CASTING)</label>
+                                <span style="font-size: 0.72rem; color: var(--text-muted);">Used when casting raw episode transcripts into 0-based clips (&lt;ep&gt;-0, &lt;ep&gt;-1, ...) with max 3-word titles.</span>
                             </div>
                             <button type="button" class="btn btn-secondary btn-mini" id="resetEpisodePromptBtn" style="font-size: 0.7rem; font-weight: 600;">↺ Reset to Default</button>
                         </div>
-                        <textarea id="settingsGeminiEpisodeDefaultPrompt" placeholder="Enter default Episode Remix instructions..." style="width: 100%; height: 200px; padding: 0.8rem; font-size: 0.8rem; font-family: var(--font-mono); line-height: 1.45; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; resize: vertical; box-sizing: border-box;"></textarea>
+                        <textarea id="settingsGeminiEpisodeDefaultPrompt" placeholder="Enter default Episode Auto-Plan instructions..." style="width: 100%; height: 190px; padding: 0.8rem; font-size: 0.8rem; font-family: var(--font-mono); line-height: 1.45; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; resize: vertical; box-sizing: border-box;"></textarea>
+                    </div>
+
+                    <!-- Bridge Curiosity Question Review Prompt -->
+                    <div style="background: var(--panel-bg-darker); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.6rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <label style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: block;">DEFAULT BRIDGE CURIOSITY QUESTION PROMPT (MAX 5 WORDS)</label>
+                                <span style="font-size: 0.72rem; color: var(--text-muted);">Used when generating ultra-concise (≤5 words) Outro Bridge curiosity questions between clips.</span>
+                            </div>
+                            <button type="button" class="btn btn-secondary btn-mini" id="resetBridgePromptBtn" style="font-size: 0.7rem; font-weight: 600;">↺ Reset to Default</button>
+                        </div>
+                        <textarea id="settingsGeminiBridgeDefaultPrompt" placeholder="Enter default Bridge Curiosity Question instructions..." style="width: 100%; height: 160px; padding: 0.8rem; font-size: 0.8rem; font-family: var(--font-mono); line-height: 1.45; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; resize: vertical; box-sizing: border-box;"></textarea>
                     </div>
                 </div>
 
@@ -2554,7 +2515,9 @@
                 mosaic_captions_node_id: localStorage.getItem('ddma-mosaic-captions-node-id') || '',
                 gemini_api_key: localStorage.getItem('ddma-gemini-api-key') || '',
                 mosaic_default_prompt: localStorage.getItem('ddma-mosaic-default-prompt') || '',
-                gemini_remix_prompt_template: localStorage.getItem('ddma-gemini-default-prompt') || ''
+                gemini_remix_prompt_template: localStorage.getItem('ddma-gemini-default-prompt') || '',
+                gemini_episode_remix_prompt_template: localStorage.getItem('ddma-gemini-episode-default-prompt') || '',
+                gemini_bridge_prompt_template: localStorage.getItem('ddma-gemini-bridge-default-prompt') || ''
             };
             
             fetch('/save-settings', {
@@ -2578,27 +2541,7 @@
                 applyTheme(savedTheme, false); // pass false so we don't save back immediately
                 // themeSelector removed for unified theme
 
-                // Load saved export settings
-                const savedFormat = localStorage.getItem('ddma-export-format') || 'audio';
-                exportFormatSelector.value = savedFormat;
-                if (savedFormat === 'video') {
-                    videoSettingsArea.style.display = 'flex';
-                } else {
-                    videoSettingsArea.style.display = 'none';
-                }
-                
-                const savedRes = localStorage.getItem('ddma-video-res') || '740x740';
-                videoResolutionSelector.value = savedRes;
-                
-                const savedBg = localStorage.getItem('ddma-video-bg') || 'black';
-                if (savedBg !== 'black' && savedBg !== '#161822' && savedBg !== '#475569') {
-                    videoBgPresetSelector.value = 'custom';
-                    customColorField.style.display = 'flex';
-                    videoBgCustomInput.value = savedBg;
-                } else {
-                    videoBgPresetSelector.value = savedBg;
-                    customColorField.style.display = 'none';
-                }
+                // Export format settings removed (codified in pipeline)
 
                 if (window.location.protocol.startsWith('http')) {
                     console.log("[DEBUG] initApp starting, fetching /list-music...");
@@ -2646,8 +2589,16 @@
                         localStorage.setItem('ddma-mosaic-mogr-node-id', data.mosaic_mogr_node_id || '');
                         localStorage.setItem('ddma-mosaic-captions-node-id', data.mosaic_captions_node_id || '');
                         localStorage.setItem('ddma-gemini-api-key', data.gemini_api_key || '');
-                        localStorage.setItem('ddma-mosaic-default-prompt', data.mosaic_default_prompt || '');
-                        localStorage.setItem('ddma-gemini-default-prompt', data.gemini_remix_prompt_template || '');
+                        window.serverDefaultPrompts = {
+                            mosaic: data.default_mosaic_prompt || data.mosaic_default_prompt || '',
+                            clip: data.default_gemini_remix_prompt || data.gemini_remix_prompt_template || '',
+                            episode: data.default_gemini_episode_prompt || data.gemini_episode_remix_prompt_template || '',
+                            bridge: data.default_gemini_bridge_prompt || data.gemini_bridge_prompt_template || ''
+                        };
+                        localStorage.setItem('ddma-mosaic-default-prompt', data.mosaic_default_prompt || window.serverDefaultPrompts.mosaic || '');
+                        localStorage.setItem('ddma-gemini-default-prompt', data.gemini_remix_prompt_template || window.serverDefaultPrompts.clip || '');
+                        localStorage.setItem('ddma-gemini-episode-default-prompt', data.gemini_episode_remix_prompt_template || window.serverDefaultPrompts.episode || '');
+                        localStorage.setItem('ddma-gemini-bridge-default-prompt', data.gemini_bridge_prompt_template || window.serverDefaultPrompts.bridge || '');
                     })
                     .catch(err => {
                         console.warn("Could not load settings from server, using local fallback:", err);
@@ -3301,36 +3252,18 @@
         });
 
         function openSettingsModal() {
-            const savedFormat = localStorage.getItem('ddma-export-format') || 'audio';
-            exportFormatSelector.value = savedFormat;
-            if (savedFormat === 'video') {
-                videoSettingsArea.style.display = 'flex';
-            } else {
-                videoSettingsArea.style.display = 'none';
-            }
-            
-            const savedRes = localStorage.getItem('ddma-video-res') || '740x740';
-            videoResolutionSelector.value = savedRes;
-            
-            const savedBg = localStorage.getItem('ddma-video-bg') || 'black';
-            if (savedBg !== 'black' && savedBg !== '#161822' && savedBg !== '#475569') {
-                videoBgPresetSelector.value = 'custom';
-                customColorField.style.display = 'flex';
-                videoBgCustomInput.value = savedBg;
-            } else {
-                videoBgPresetSelector.value = savedBg;
-                customColorField.style.display = 'none';
-            }
-
+            const defaults = window.serverDefaultPrompts || {};
             document.getElementById('settingsMosaicApiKey').value = localStorage.getItem('ddma-mosaic-api-key') || '';
             document.getElementById('settingsMosaicAgentId').value = localStorage.getItem('ddma-mosaic-agent-id') || '';
             document.getElementById('settingsMosaicMogrNodeId').value = localStorage.getItem('ddma-mosaic-mogr-node-id') || '';
             document.getElementById('settingsMosaicCaptionsNodeId').value = localStorage.getItem('ddma-mosaic-captions-node-id') || '';
             document.getElementById('settingsGeminiApiKey').value = localStorage.getItem('ddma-gemini-api-key') || '';
-            document.getElementById('settingsMosaicDefaultPrompt').value = localStorage.getItem('ddma-mosaic-default-prompt') || '';
-            document.getElementById('settingsGeminiDefaultPrompt').value = localStorage.getItem('ddma-gemini-default-prompt') || '';
+            document.getElementById('settingsMosaicDefaultPrompt').value = localStorage.getItem('ddma-mosaic-default-prompt') || defaults.mosaic || '';
+            document.getElementById('settingsGeminiDefaultPrompt').value = localStorage.getItem('ddma-gemini-default-prompt') || defaults.clip || '';
             const epPromptEl = document.getElementById('settingsGeminiEpisodeDefaultPrompt');
-            if (epPromptEl) epPromptEl.value = localStorage.getItem('ddma-gemini-episode-default-prompt') || '';
+            if (epPromptEl) epPromptEl.value = localStorage.getItem('ddma-gemini-episode-default-prompt') || defaults.episode || '';
+            const bridgePromptEl = document.getElementById('settingsGeminiBridgeDefaultPrompt');
+            if (bridgePromptEl) bridgePromptEl.value = localStorage.getItem('ddma-gemini-bridge-default-prompt') || defaults.bridge || '';
 
             renderSettingsMusicList();
             settingsModalOverlay.classList.add('active');
@@ -3347,23 +3280,7 @@
                 settingsModalOverlay.classList.remove('active');
             });
 
-            // Toggle video settings visibility
-            exportFormatSelector.addEventListener('change', function() {
-                if (this.value === 'video') {
-                    videoSettingsArea.style.display = 'flex';
-                } else {
-                    videoSettingsArea.style.display = 'none';
-                }
-            });
 
-            // Toggle custom color input visibility
-            videoBgPresetSelector.addEventListener('change', function() {
-                if (this.value === 'custom') {
-                    customColorField.style.display = 'flex';
-                } else {
-                    customColorField.style.display = 'none';
-                }
-            });
 
             // Tab switching logic for Settings Modal
             const tabBtns = document.querySelectorAll('.settings-tab-btn');
@@ -3389,11 +3306,12 @@
             const resetClipPromptBtn = document.getElementById('resetClipPromptBtn');
             if (resetClipPromptBtn) {
                 resetClipPromptBtn.addEventListener('click', () => {
-                    fetch('/get-gemini-prompt?id=' + (activeProjectId || 'episode_245') + '&num=1')
+                    fetch('/get-settings')
                         .then(r => r.json())
                         .then(d => {
-                            if (d.prompt) {
-                                document.getElementById('settingsGeminiDefaultPrompt').value = d.prompt;
+                            const defVal = d.default_gemini_remix_prompt || (window.serverDefaultPrompts && window.serverDefaultPrompts.clip) || '';
+                            if (defVal) {
+                                document.getElementById('settingsGeminiDefaultPrompt').value = defVal;
                                 showDebug("Reset Clip Remix prompt to default", false);
                             }
                         });
@@ -3403,33 +3321,49 @@
             const resetEpisodePromptBtn = document.getElementById('resetEpisodePromptBtn');
             if (resetEpisodePromptBtn) {
                 resetEpisodePromptBtn.addEventListener('click', () => {
-                    fetch('/get-episode-gemini-prompt?id=' + (activeProjectId || 'episode_245'))
+                    fetch('/get-settings')
                         .then(r => r.json())
                         .then(d => {
-                            if (d.prompt) {
-                                document.getElementById('settingsGeminiEpisodeDefaultPrompt').value = d.prompt;
-                                showDebug("Reset Episode Remix prompt to default", false);
+                            const defVal = d.default_gemini_episode_prompt || (window.serverDefaultPrompts && window.serverDefaultPrompts.episode) || '';
+                            if (defVal) {
+                                document.getElementById('settingsGeminiEpisodeDefaultPrompt').value = defVal;
+                                showDebug("Reset Episode Auto-Plan prompt to default", false);
+                            }
+                        });
+                });
+            }
+
+            const resetBridgePromptBtn = document.getElementById('resetBridgePromptBtn');
+            if (resetBridgePromptBtn) {
+                resetBridgePromptBtn.addEventListener('click', () => {
+                    fetch('/get-settings')
+                        .then(r => r.json())
+                        .then(d => {
+                            const defVal = d.default_gemini_bridge_prompt || (window.serverDefaultPrompts && window.serverDefaultPrompts.bridge) || '';
+                            if (defVal) {
+                                document.getElementById('settingsGeminiBridgeDefaultPrompt').value = defVal;
+                                showDebug("Reset Bridge Curiosity Question prompt to default", false);
+                            }
+                        });
+                });
+            }
+
+            const resetMosaicPromptBtn = document.getElementById('resetMosaicPromptBtn');
+            if (resetMosaicPromptBtn) {
+                resetMosaicPromptBtn.addEventListener('click', () => {
+                    fetch('/get-settings')
+                        .then(r => r.json())
+                        .then(d => {
+                            const defVal = d.default_mosaic_prompt || (window.serverDefaultPrompts && window.serverDefaultPrompts.mosaic) || '';
+                            if (defVal) {
+                                document.getElementById('settingsMosaicDefaultPrompt').value = defVal;
+                                showDebug("Reset Mosaic Motion Design prompt to default", false);
                             }
                         });
                 });
             }
 
             saveSettingsBtn.addEventListener('click', () => {
-                // Standard unified theme active
-
-                const format = exportFormatSelector.value;
-                localStorage.setItem('ddma-export-format', format);
-                localStorage.setItem('ddma-video-res', videoResolutionSelector.value);
-                
-                let bg = videoBgPresetSelector.value;
-                if (bg === 'custom') {
-                    bg = videoBgCustomInput.value.trim() || '#000000';
-                    if (!bg.startsWith('#') && bg.length === 6) {
-                        bg = '#' + bg;
-                    }
-                }
-                localStorage.setItem('ddma-video-bg', bg);
-                
                 localStorage.setItem('ddma-mosaic-api-key', document.getElementById('settingsMosaicApiKey').value.trim());
                 localStorage.setItem('ddma-mosaic-agent-id', document.getElementById('settingsMosaicAgentId').value.trim());
                 localStorage.setItem('ddma-mosaic-mogr-node-id', document.getElementById('settingsMosaicMogrNodeId').value.trim());
@@ -3439,6 +3373,8 @@
                 localStorage.setItem('ddma-gemini-default-prompt', document.getElementById('settingsGeminiDefaultPrompt').value);
                 const saveEpPromptEl = document.getElementById('settingsGeminiEpisodeDefaultPrompt');
                 if (saveEpPromptEl) localStorage.setItem('ddma-gemini-episode-default-prompt', saveEpPromptEl.value);
+                const saveBridgePromptEl = document.getElementById('settingsGeminiBridgeDefaultPrompt');
+                if (saveBridgePromptEl) localStorage.setItem('ddma-gemini-bridge-default-prompt', saveBridgePromptEl.value);
                 
                 saveSettingsToServer();
 
@@ -3623,7 +3559,7 @@
                     if (dockToggleBtn) dockToggleBtn.innerHTML = '⊟ Dock Bottom';
                     if (resizer) resizer.style.cursor = 'col-resize';
                     if (leftPanel && !rightPanel.classList.contains('collapsed')) {
-                        leftPanel.style.width = `${lastLeftPanelWidth || 500}px`;
+                        leftPanel.style.width = `${lastLeftPanelWidth || 640}px`;
                         leftPanel.style.flex = 'none';
                     }
                 }
@@ -3682,7 +3618,7 @@
         }
 
         // Transcript panel collapse logic
-        let lastLeftPanelWidth = 500;
+        let lastLeftPanelWidth = 640;
         function setupTranscriptCollapse() {
             collapseTranscriptBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -5559,7 +5495,7 @@
                 
                 playBtn.textContent = '▶';
                 activeClipPlayIdx = null;
-                playLockedBtn.innerHTML = '▶ Play Locked';
+                if (playLockedBtn) playLockedBtn.innerHTML = '▶ Play Locked';
                 updateStateBar("Ready");
             }
         }
@@ -5649,7 +5585,7 @@
         }
 
         // Play Locked button listener
-        playLockedBtn.addEventListener('click', () => {
+        if (playLockedBtn) playLockedBtn.addEventListener('click', () => {
             if (!activeProjectId) return;
             
             if (activeLockedSequence !== null) {
@@ -6724,70 +6660,16 @@
                         }
                         
                         if (seg.type === "audio") {
-                            let audioEditorHtml = "";
-                            const isAudioDrawerOpen = Boolean(window.segDrawersState && window.segDrawersState[`audio_drawer_${index}_${segIdx}`]);
-                            if (!isLocked) {
-                                const trimStartVal = (seg.trim_start !== undefined ? seg.trim_start : 0.0).toFixed(2);
-                                const trimEndVal = (seg.trim_end !== undefined ? seg.trim_end : 0.1).toFixed(2);
-                                const fadeInVal = (seg.fade_in !== undefined ? seg.fade_in : 0.0).toFixed(2);
-                                const fadeOutVal = (seg.fade_out !== undefined ? seg.fade_out : 0.0).toFixed(2);
-                                const crossfadeVal = (seg.crossfade !== undefined ? seg.crossfade : 0.0).toFixed(2);
-                                const volumeVal = (seg.volume !== undefined ? seg.volume : 1.0).toFixed(2);
-
-                                audioEditorHtml = `
-                                    <div class="music-editor-row seg-tune-drawer ${isAudioDrawerOpen ? '' : 'drawer-collapsed'}" id="audio_drawer_${index}_${segIdx}" style="margin-top: 0.35rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; padding: 0.35rem 0.5rem; background: rgba(0,0,0,0.03); border-radius: 6px; border: 1px dashed var(--border-color);" onclick="event.stopPropagation();">
-                                        <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
-                                            <label style="font-size: 0.65rem; color: #38bdf8; font-weight: 600;">Trim In:</label>
-                                            <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'trim_start', -0.05)">-</button>
-                                            <input type="number" class="audio-trim-start" step="0.05" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${trimStartVal}" data-clip="${index}" data-seg="${segIdx}">
-                                            <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'trim_start', 0.05)">+</button>
-                                        </div>
-                                        <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
-                                            <label style="font-size: 0.65rem; color: #38bdf8; font-weight: 600;">Trim Out:</label>
-                                            <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'trim_end', -0.05)">-</button>
-                                            <input type="number" class="audio-trim-end" step="0.05" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${trimEndVal}" data-clip="${index}" data-seg="${segIdx}">
-                                            <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'trim_end', 0.05)">+</button>
-                                        </div>
-                                        <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
-                                            <label style="font-size: 0.65rem; color: #a855f7; font-weight: 600;">Fade In:</label>
-                                            <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_in', -0.1)">-</button>
-                                            <input type="number" class="audio-fade-in" step="0.1" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${fadeInVal}" data-clip="${index}" data-seg="${segIdx}">
-                                            <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_in', 0.1)">+</button>
-                                        </div>
-                                        <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
-                                            <label style="font-size: 0.65rem; color: #a855f7; font-weight: 600;">Fade Out:</label>
-                                            <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_out', -0.5)">-</button>
-                                            <input type="number" class="audio-fade-out" step="0.5" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${fadeOutVal}" data-clip="${index}" data-seg="${segIdx}">
-                                            <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_out', 0.5)">+</button>
-                                        </div>
-                                        <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
-                                            <label style="font-size: 0.65rem; color: #f59e0b; font-weight: 600;">Crossfade:</label>
-                                            <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'crossfade', -0.1)">-</button>
-                                            <input type="number" class="audio-crossfade" step="0.1" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${crossfadeVal}" data-clip="${index}" data-seg="${segIdx}">
-                                            <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'crossfade', 0.1)">+</button>
-                                        </div>
-                                        <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
-                                            <label style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600;">Vol:</label>
-                                            <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'volume', -0.05)">-</button>
-                                            <input type="number" class="audio-volume" step="0.05" min="0" max="2" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${volumeVal}" data-clip="${index}" data-seg="${segIdx}">
-                                            <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'volume', 0.05)">+</button>
-                                        </div>
-                                    </div>
-                                `;
-                            }
-                            const tuneBtnHtml = !isLocked ? `<button class="btn btn-secondary btn-mini toggle-seg-drawer-btn ${isAudioDrawerOpen ? 'active' : ''}" data-drawer="audio_drawer_${index}_${segIdx}" style="padding: 0.12rem 0.4rem; font-size: 0.65rem; font-weight: 600;" title="Toggle fine-tune steppers (Trim, Fades, Crossfade, Vol)">🎛️ Tune</button>` : '';
                             segmentsHtml += `
                                 <div class="segment-row audio-seg" data-clip="${index}" data-seg="${segIdx}" style="${rowStyle}">
                                     <div class="segment-info" style="width: 100%;">
                                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.4rem; width: 100%;">
                                             <span class="segment-meta audio-meta" style="color: #38bdf8; font-weight: 700;">${segIdx === 0 ? "🎙 Hook Audio Segment" : "🎙 Discussion Audio Segment"} (${formatTime(seg.duration)})</span>
                                             <div style="display: flex; align-items: center; gap: 0.3rem; margin-left: auto;">
-                                                ${tuneBtnHtml}
                                                 ${segmentActionsHtml}
                                             </div>
                                         </div>
                                         <span class="segment-text" style="margin-top: 0.2rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">"${seg.text}"</span>
-                                        ${audioEditorHtml}
                                     </div>
                                 </div>
                             `;
@@ -6798,21 +6680,16 @@
                                 musicOptionsHtml += `<option value="${f}" ${isSelected}>${f}</option>`;
                             });
 
-                            const isMusicDrawerOpen = Boolean(window.segDrawersState && window.segDrawersState[`music_drawer_${index}_${segIdx}`]);
                             const isOutro = (segIdx === clip.segments.length - 1);
                             const musicTitle = isOutro ? "🎵 Outro Conclusion Sting" : "🎵 Mid Transition Sting";
                             const silenceVal = (seg.silence_before !== undefined ? seg.silence_before : (seg.gap !== undefined ? seg.gap : 0.2)).toFixed(2);
-                            const fadeInVal = (seg.fade_in !== undefined ? seg.fade_in : 0.0).toFixed(2);
                             const fadeOutVal = (seg.fade_out !== undefined ? seg.fade_out : 2.0).toFixed(2);
                             const crossfadeVal = (seg.crossfade !== undefined ? seg.crossfade : (isOutro ? 0.0 : 1.0)).toFixed(2);
-                            const volumeVal = (seg.volume !== undefined ? seg.volume : 1.0).toFixed(2);
 
                             const badgeHtml = isOutro 
                                 ? `<span style="font-size: 0.65rem; background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.3); color: #d8b4fe; padding: 0.1rem 0.35rem; border-radius: 4px; font-family: var(--font-mono); margin-left: 0.35rem;">⚡ Gap: ${silenceVal}s | 📉 Fade: ${fadeOutVal}s</span>`
                                 : `<span style="font-size: 0.65rem; background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.3); color: #d8b4fe; padding: 0.1rem 0.35rem; border-radius: 4px; font-family: var(--font-mono); margin-left: 0.35rem;">⚡ Gap: ${silenceVal}s | 📉 Fade: ${fadeOutVal}s | 🔀 XFade: ${crossfadeVal}s</span>`;
 
-                            const musicTuneBtnHtml = !isLocked ? `<button class="btn btn-secondary btn-mini toggle-seg-drawer-btn ${isMusicDrawerOpen ? 'active' : ''}" data-drawer="music_drawer_${index}_${segIdx}" style="padding: 0.12rem 0.4rem; font-size: 0.65rem; font-weight: 600;" title="Toggle fine-tune steppers (Silence, Fades, Crossfade, Vol)">🎛️ Tune</button>` : '';
-                            
                             segmentsHtml += `
                                 <div class="segment-row music-seg" data-clip="${index}" data-seg="${segIdx}">
                                     <div class="segment-info" style="width: 100%;">
@@ -6822,7 +6699,6 @@
                                                 ${badgeHtml}
                                             </div>
                                             <div style="display: flex; align-items: center; gap: 0.3rem; margin-left: auto;">
-                                                ${musicTuneBtnHtml}
                                                 ${segmentActionsHtml}
                                             </div>
                                         </div>
@@ -6836,32 +6712,6 @@
                                             <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
                                                 <label style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600;">Dur (s):</label>
                                                 <input type="number" class="music-duration" step="any" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${seg.duration}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
-                                            </div>
-                                        </div>
-                                        <div class="music-editor-row seg-tune-drawer ${isMusicDrawerOpen ? '' : 'drawer-collapsed'}" id="music_drawer_${index}_${segIdx}" style="margin-top: 0.35rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; padding: 0.35rem 0.5rem; background: rgba(0,0,0,0.03); border-radius: 6px; border: 1px dashed var(--border-color);" onclick="event.stopPropagation();">
-                                            <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
-                                                <label style="font-size: 0.65rem; color: #38bdf8; font-weight: 600;">Silence:</label>
-                                                <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'silence_before', -0.05)" ${isLocked ? 'disabled' : ''}>-</button>
-                                                <input type="number" class="music-silence" step="0.05" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${silenceVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
-                                                <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'silence_before', 0.05)" ${isLocked ? 'disabled' : ''}>+</button>
-                                            </div>
-                                            <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
-                                                <label style="font-size: 0.65rem; color: #a855f7; font-weight: 600;">Fade Out:</label>
-                                                <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_out', -0.5)" ${isLocked ? 'disabled' : ''}>-</button>
-                                                <input type="number" class="music-fade-out" step="0.5" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${fadeOutVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
-                                                <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'fade_out', 0.5)" ${isLocked ? 'disabled' : ''}>+</button>
-                                            </div>
-                                            <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
-                                                <label style="font-size: 0.65rem; color: #f59e0b; font-weight: 600;">Crossfade:</label>
-                                                <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'crossfade', -0.1)" ${isLocked ? 'disabled' : ''}>-</button>
-                                                <input type="number" class="music-crossfade" step="0.1" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${crossfadeVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
-                                                <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'crossfade', 0.1)" ${isLocked ? 'disabled' : ''}>+</button>
-                                            </div>
-                                            <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.15rem;">
-                                                <label style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600;">Vol:</label>
-                                                <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'volume', -0.05)" ${isLocked ? 'disabled' : ''}>-</button>
-                                                <input type="number" class="music-volume" step="0.05" min="0" max="2" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${volumeVal}" data-clip="${index}" data-seg="${segIdx}" ${isLocked ? 'disabled' : ''}>
-                                                <button class="step-btn" onclick="stepSegField(${index}, ${segIdx}, 'volume', 0.05)" ${isLocked ? 'disabled' : ''}>+</button>
                                             </div>
                                         </div>
                                     </div>
@@ -6964,21 +6814,21 @@
                 let infographicBtnHtml = "";
                 if (isLocked) {
                     if (isCompilingInfographic) {
-                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-success" id="infographicCardBtn_${index}" style="font-weight: 600; cursor: wait;" disabled title="Rendering Local 740×740 Dan Koe Infographic &amp; 1080×1920 Captions...">⏳ Rendering...</button>`;
+                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-success" id="infographicCardBtn_${index}" style="font-weight: 600; cursor: wait;" disabled title="Rendering Local 740×740 Manim Vector Reel &amp; 1080×1920 Captions...">⏳ Rendering...</button>`;
                     } else if (hasInfographicRender) {
                         const activeStyle = isInfographicActive
                             ? 'font-weight: 700; box-shadow: 0 0 0 2px #38bdf8;'
                             : 'font-weight: 600; opacity: 0.78;';
-                        const activeLabel = isInfographicActive ? '🟢 Infographic ✓' : '🟢 Infographic';
+                        const activeLabel = isInfographicActive ? '🟢 Manim ✓' : '🟢 Manim';
                         const activeTip = isInfographicActive
-                            ? 'ACTIVE MASTER for deepDive / shutri.com • Left-click to play • Right-click for custom instructions / re-render'
-                            : 'Click to switch Active Master to Local Infographic (updates clips/' + episodeNum + '-' + clip.num + '.mp4 &amp; deepDive) • Right-click to re-render';
+                            ? 'ACTIVE MASTER for deepDive / shutri.com (synced to dd_hub/manims) • Left-click to play • Right-click for custom instructions / re-render'
+                            : 'Click to switch Active Master to Manim (updates clips/' + episodeNum + '-' + clip.num + '.mp4 &amp; dd_hub/manims) • Right-click to re-render';
                         infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-success" id="infographicCardBtn_${index}" style="${activeStyle}" title="${activeTip}">${activeLabel}</button>`;
                     } else {
-                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-purple" id="infographicCardBtn_${index}" style="font-weight: 600;" title="Left-click: 1-click render Local 740×740 Dan Koe Infographic + 1080×1920 Captions ($0 cost) • Right-click: Custom visual instructions">✨ Infographic</button>`;
+                        infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-purple" id="infographicCardBtn_${index}" style="font-weight: 600;" title="Left-click: 1-click render Local 740×740 Manim Reel + 1080×1920 Captions ($0 cost, synced to dd_hub/manims) • Right-click: Custom visual instructions">🧮 Manim</button>`;
                     }
                 } else {
-                    infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-gray" style="font-weight: 600; opacity: 0.4; cursor: not-allowed;" disabled title="Lock clip first to enable Local Infographic">✨ Infographic</button>`;
+                    infographicBtnHtml = `<button class="btn btn-mini btn-card-infographic btn-status-gray" style="font-weight: 600; opacity: 0.4; cursor: not-allowed;" disabled title="Lock clip first to enable Manim render">🧮 Manim</button>`;
                 }
 
                 let mosaicBtnHtml = "";
@@ -6998,11 +6848,11 @@
                             : 'font-weight: 600; opacity: 0.78;';
                         const activeLabel = isMosaicActive ? '🟢 Mosaic ✓' : '🟢 Mosaic';
                         const activeTip = isMosaicActive
-                            ? 'ACTIVE MASTER for deepDive / shutri.com • Click to preview or re-run Mosaic'
+                            ? 'ACTIVE MASTER for deepDive / shutri.com (synced to dd_hub/mosaics) • Click to preview or re-run Mosaic'
                             : 'Cached locally • Click [OK] to switch Active Master back to Mosaic';
                         mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-success" id="mosaicCardBtn_${index}" style="${activeStyle}" title="${activeTip}">${activeLabel}</button>`;
                     } else {
-                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-purple" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Send draft video to Mosaic API for AI Motion Graphics">🌌 Mosaic</button>`;
+                        mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-purple" id="mosaicCardBtn_${index}" style="font-weight: 600;" title="Send draft video to Mosaic API for AI Motion Graphics (synced to dd_hub/mosaics)">🌌 Mosaic</button>`;
                     }
                 } else {
                     mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-gray" style="font-weight: 600; opacity: 0.4; cursor: not-allowed;" disabled title="Lock clip first to enable Mosaic">🌌 Mosaic</button>`;
@@ -7026,11 +6876,9 @@
                             </div>
                         </div>
 
-                        <!-- Deck 2: Action Ribbon & Inline Controls -->
+                        <!-- Deck 2: Simplified Action Ribbon -->
                         <div class="clip-card-deck-actions">
                             <div class="clip-card-actions">
-                                <button class="btn btn-secondary btn-mini btn-card-intro ${introStatusClass}" id="introCardBtn_${index}" style="font-weight:600;" title="Preview Intro Clip (Title Card + Music)">🎬 Intro</button>
-                                <button class="btn btn-secondary btn-mini btn-card-outro ${outroStatusClass}" id="outroCardBtn_${index}" style="font-weight:600;" ${outroBtnDisabled} title="Preview Outro Clip (Bridge Card Question + Fadeout)">🎬 Outro</button>
                                 <button class="btn-card-play ${audioStatusClass}" id="playCardBtn_${index}">▶ Audio</button>
                                 ${videoBtnHtml}
                                 
@@ -7039,22 +6887,6 @@
                                 <button class="btn btn-secondary btn-mini btn-card-text" id="textCardBtn_${index}" data-index="${index}" style="font-weight:600;" title="View, edit, and align 1080×1920 burned ASS captions & spoken transcript">💬 Captions</button>
                                 ${infographicBtnHtml}
                                 ${mosaicBtnHtml}
-                                <button class="btn btn-mini btn-card-remix btn-status-purple" id="remixCardBtn_${index}" style="font-weight:600;" ${isLocked ? '' : 'disabled style="opacity: 0.4; cursor: not-allowed;" title="Lock clip first to enable Gemini Remix"'} title="Recast this clip using Creative AI based on preceding locked clips">🔄 Remix</button>
-                            </div>
-
-                            <div class="music-editor-row" style="margin: 0; padding: 0.15rem 0.4rem; background: var(--bg-light); border-radius: 4px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.4rem; font-size: 0.7rem; flex-shrink: 0;" onclick="event.stopPropagation();">
-                                <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.2rem;">
-                                    <label style="font-size: 0.68rem; font-weight: 600;">Vol:</label>
-                                    <input type="number" class="clip-volume" step="any" min="0" max="2" style="width: 44px; text-align: center; font-size: 0.7rem; padding: 0.1rem;" value="${clip.volume !== undefined ? clip.volume : 1.00}" data-index="${index}">
-                                </div>
-                                <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.2rem;">
-                                    <label style="font-size: 0.68rem; font-weight: 600;">Xfade:</label>
-                                    <input type="number" class="clip-crossfade" step="any" min="0" style="width: 44px; text-align: center; font-size: 0.7rem;" value="${clip.crossfade !== undefined ? clip.crossfade : 0.0}" data-index="${index}">
-                                </div>
-                                <div class="music-editor-field" style="display: flex; align-items: center; gap: 0.2rem;">
-                                    <input type="checkbox" class="clip-audio-only-checkbox" id="clipAudioOnly_${index}" data-index="${index}" ${clip.audio_only ? 'checked' : ''} ${isLocked ? 'disabled' : ''} style="cursor: pointer;">
-                                    <label for="clipAudioOnly_${index}" style="font-size: 0.68rem; cursor: pointer; user-select: none; font-weight: 600; color: var(--text-muted); white-space: nowrap;">Audio Only</label>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -7109,26 +6941,6 @@
                     }
                 });
 
-                card.querySelector('.clip-volume').addEventListener('change', function(e) {
-                    const val = parseFloat(e.target.value);
-                    clips[index].volume = isNaN(val) ? 1.00 : val;
-                    savePlanToServer();
-                });
-
-                card.querySelector('.clip-crossfade').addEventListener('change', function(e) {
-                    const val = parseFloat(e.target.value);
-                    clips[index].crossfade = isNaN(val) ? 0.0 : val;
-                    savePlanToServer();
-                });
-
-                const audioOnlyCheck = card.querySelector('.clip-audio-only-checkbox');
-                if (audioOnlyCheck) {
-                    audioOnlyCheck.addEventListener('change', function(e) {
-                        clips[index].audio_only = this.checked;
-                        savePlanToServer();
-                    });
-                }
-
                 card.querySelector(`#textCardBtn_${index}`)?.addEventListener('click', function(e) {
                     e.stopPropagation();
                     openClipTextModal(index);
@@ -7140,80 +6952,6 @@
 
                 card.querySelector(`#playCardBtn_${index}`).addEventListener('click', function(e) {
                     playFFmpegPreview(index, this, e);
-                });
-
-                card.querySelector(`#introCardBtn_${index}`).addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const btn = this;
-                    btn.innerHTML = '⏳ Compiling...';
-                    btn.disabled = true;
-                    updateStateBar("Rendering 2-second intro title card clip...");
-                    
-                    fetch(`/get-clip-intro?id=${activeProjectId}&num=${clip.num}`, {
-                        method: 'POST'
-                    })
-                    .then(res => {
-                        if (!res.ok) return res.json().then(data => { throw new Error(data.error || "Server error"); });
-                        return res.json();
-                    })
-                    .then(data => {
-                        btn.classList.remove('btn-status-warning', 'btn-status-gray');
-                        btn.classList.add('btn-status-success');
-                        
-                        const cacheBustIntroUrl = data.preview_url + '?t=' + Date.now();
-                        openVideoModal(
-                            cacheBustIntroUrl,
-                            clip.num === 0 ? `INTRO PREVIEW - Episode ${episodeNum}: ${clip.title}` : `INTRO PREVIEW - Part ${clip.num}: ${clip.title}`,
-                            `previews/intro_${activeProjectId}_${clip.num}.mp4`
-                        );
-                        
-                        updateStateBar("Playing intro card preview");
-                    })
-                    .catch(err => {
-                        alert("Error rendering intro: " + err.message);
-                        updateStateBar("Ready");
-                    })
-                    .finally(() => {
-                        btn.innerHTML = '🎬 Intro';
-                        btn.disabled = false;
-                    });
-                });
-
-                card.querySelector(`#outroCardBtn_${index}`).addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const btn = this;
-                    btn.innerHTML = '⏳ Compiling...';
-                    btn.disabled = true;
-                    updateStateBar("Rendering 5-second outro bridge card clip...");
-                    
-                    fetch(`/get-clip-outro?id=${activeProjectId}&num=${clip.num}`, {
-                        method: 'POST'
-                    })
-                    .then(res => {
-                        if (!res.ok) return res.json().then(data => { throw new Error(data.error || "Server error"); });
-                        return res.json();
-                    })
-                    .then(data => {
-                        btn.classList.remove('btn-status-warning', 'btn-status-gray');
-                        btn.classList.add('btn-status-success');
-                        
-                        const cacheBustOutroUrl = data.preview_url + '?t=' + Date.now();
-                        openVideoModal(
-                            cacheBustOutroUrl,
-                            `OUTRO PREVIEW (Bridge Card) - Part ${clip.num}`,
-                            `previews/outro_${activeProjectId}_${clip.num}.mp4`
-                        );
-                        
-                        updateStateBar("Playing outro bridge preview");
-                    })
-                    .catch(err => {
-                        alert("Error rendering outro: " + err.message);
-                        updateStateBar("Ready");
-                    })
-                    .finally(() => {
-                        btn.innerHTML = '🎬 Outro';
-                        btn.disabled = false;
-                    });
                 });
 
                 const outroInput = card.querySelector('.outro-bridge-text-input');
@@ -7346,7 +7084,7 @@
                                 if (liveBtn) {
                                     liveBtn.classList.remove('btn-status-purple', 'btn-status-gray');
                                     liveBtn.classList.add('btn-status-success');
-                                    liveBtn.innerHTML = (clip.visual_source === 'infographic') ? '🟢 Infographic ✓' : '🟢 Infographic';
+                                    liveBtn.innerHTML = (clip.visual_source === 'infographic') ? '🟢 Manim ✓' : '🟢 Manim';
                                     liveBtn.style.fontWeight = (clip.visual_source === 'infographic') ? '700' : '600';
                                     liveBtn.style.boxShadow = (clip.visual_source === 'infographic') ? '0 0 0 2px #38bdf8' : '';
                                     liveBtn.style.opacity = (clip.visual_source === 'infographic') ? '1' : '0.78';
@@ -7465,7 +7203,7 @@
                                             liveBtn.style.cursor = '';
                                         }
                                         if (otherInfoBtn && clip.visual_source === 'mosaic' && otherInfoBtn.classList.contains('btn-status-success')) {
-                                            otherInfoBtn.innerHTML = '🟢 Infographic';
+                                            otherInfoBtn.innerHTML = '🟢 Manim';
                                             otherInfoBtn.style.fontWeight = '600';
                                             otherInfoBtn.style.boxShadow = '';
                                             otherInfoBtn.style.opacity = '0.78';
@@ -7983,7 +7721,7 @@
 
 
         // Open Export Assets Modal
-        openExportModalBtn.addEventListener('click', function() {
+        if (openExportModalBtn) openExportModalBtn.addEventListener('click', function() {
             if (clips.length === 0) {
                 alert("Please add some clips to the plan first.");
                 return;
