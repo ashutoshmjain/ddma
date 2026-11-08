@@ -48,6 +48,53 @@ def resolve_acoustic_word_end(raw_end: float, next_word_start: Optional[float] =
         return default_ext
 
 
+def resolve_acoustic_word_start(raw_start: float, prev_word_end: Optional[float] = None, audio_path: Optional[str] = None) -> float:
+    """
+    Extends a Whisper word start timestamp backward into the preceding breath/silence pause
+    so initial consonants, plosives, and attack transients (e.g., 'Cl-' in 'Clip', 'P', 'T', 'S', 'Th-')
+    are never cut in half.
+    Uses a 120ms attack safety cushion clamped 40ms after prev_word_end, refined by 16kHz PCM RMS energy if audio_path is available.
+    """
+    max_backup = min(0.35, max(0.0, (raw_start - prev_word_end) - 0.04)) if prev_word_end is not None else min(0.25, max(0.0, raw_start))
+    if max_backup <= 0.02:
+        return round(raw_start, 2)
+    default_start = round(max(0.0, raw_start - min(0.12, max_backup)), 2)
+    if not audio_path or not os.path.exists(audio_path):
+        return default_start
+    try:
+        import numpy as np
+        win_start = max(0.0, raw_start - max_backup)
+        win_dur = max_backup + 0.05
+        p = subprocess.run(
+            ["ffmpeg", "-v", "error", "-ss", f"{win_start:.3f}", "-t", f"{win_dur:.3f}", "-i", audio_path, "-f", "s16le", "-ac", "1", "-ar", "16000", "-"],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        arr = np.frombuffer(p.stdout, dtype=np.int16).astype(np.float32) / 32768.0
+        if len(arr) < 160:
+            return default_start
+
+        start_sample = int(round(max_backup * 16000))
+        onset_sample = start_sample
+        frame_len = 160  # 10ms frame at 16kHz
+
+        cur = start_sample
+        while cur >= frame_len:
+            frame = arr[cur - frame_len : cur]
+            rms = float(np.sqrt(np.mean(frame ** 2)))
+            if rms > 0.0020:
+                cur -= frame_len
+                onset_sample = cur
+            else:
+                break
+
+        cushion_samples = int(0.030 * 16000)  # 30ms pre-attack cushion into breath pause
+        resolved_sample = max(0, onset_sample - cushion_samples)
+        resolved_time = win_start + resolved_sample / 16000.0
+        return round(min(raw_start, max(win_start, resolved_time)), 2)
+    except Exception:
+        return default_start
+
+
 def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = "mosaic", audio_path: Optional[str] = None) -> list:
     """
     Deterministically detects spoken NotebookLM clip cues ('Clip 1', 'Clip one', etc.)
@@ -122,11 +169,12 @@ def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = 
             if 12.0 <= w["end"] <= 28.0 and any(w.get("word", "").strip().endswith(p) for p in [".", "?", "!"]):
                 raw_c0_hook_end = round(w["end"], 2)
                 break
-        delib_start = raw_c0_hook_end + 0.3
+        delib_raw_start = raw_c0_hook_end + 0.3
         for w in c0_words:
             if w["start"] > raw_c0_hook_end + 0.01:
-                delib_start = w["start"]
+                delib_raw_start = w["start"]
                 break
+        delib_start = resolve_acoustic_word_start(delib_raw_start, raw_c0_hook_end, audio_path)
         c0_hook_end = resolve_acoustic_word_end(raw_c0_hook_end, delib_start, audio_path)
         c0_hook_text = get_text_between(0.0, raw_c0_hook_end)
         c0_body_text = get_text_between(delib_start, raw_c0_end)
@@ -149,7 +197,10 @@ def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = 
 
     for idx, cue in enumerate(cues):
         c_num = cue["num"]
-        st = round(cue["start"], 2)
+        raw_st = round(cue["start"], 2)
+        w_before = [w for w in all_words if w["end"] <= cue["start"] + 0.02]
+        prev_w_end = w_before[-1]["end"] if w_before else None
+        st = resolve_acoustic_word_start(raw_st, prev_w_end, audio_path)
         if idx + 1 < len(cues):
             next_st = cues[idx + 1]["start"]
             # Use strict '< next_st - 0.02' so zero-duration words ('Clip' at next_st) are never included in previous clip
@@ -175,7 +226,8 @@ def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = 
             raw_h_end = round(min(raw_et, st + 15.0), 2)
 
         next_words = [w for w in clip_words if w["start"] > raw_h_end + 0.01]
-        delib_start = next_words[0]["start"] if next_words else raw_h_end + 0.3
+        raw_delib_start = next_words[0]["start"] if next_words else raw_h_end + 0.3
+        delib_start = resolve_acoustic_word_start(raw_delib_start, raw_h_end, audio_path)
         h_end = resolve_acoustic_word_end(raw_h_end, delib_start, audio_path)
 
         hook_text = get_text_between(st, raw_h_end)
@@ -357,20 +409,24 @@ Return ONLY a JSON array of objects without Markdown formatting."""
         t_end_p = c.get("teaser_end_phrase", "")
 
         # 1. Snap Punchline Hook (10-20s)
-        h_start, _ = snap_quote_to_words(p_start_p, words, search_start_sec=cursor_time)
-        if h_start is None:
-            h_start = cursor_time
-        _, raw_h_end = snap_quote_to_words(p_end_p, words, search_start_sec=h_start + 8.0)
-        if raw_h_end is None or raw_h_end <= h_start:
-            raw_h_end = round(min(total_dur, h_start + 18.0), 2)
+        raw_h_start, _ = snap_quote_to_words(p_start_p, words, search_start_sec=cursor_time)
+        if raw_h_start is None:
+            raw_h_start = cursor_time
+        w_before = [w for w in words if w["end"] <= raw_h_start + 0.02]
+        prev_w_end = w_before[-1]["end"] if w_before else None
+        h_start = resolve_acoustic_word_start(raw_h_start, prev_w_end, audio_path)
+        _, raw_h_end = snap_quote_to_words(p_end_p, words, search_start_sec=raw_h_start + 8.0)
+        if raw_h_end is None or raw_h_end <= raw_h_start:
+            raw_h_end = round(min(total_dur, raw_h_start + 18.0), 2)
 
         # 2. Mid Sting (Bluesy Vibes or Howling)
         mid_music = "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3" if c_num % 2 == 1 else "Howling (Sting) - Gunnar Olsen.mp3"
 
         # 3. Snap Deliberation + Spoken Outro Teaser (single continuous body audio segment)
-        d_start, _ = snap_quote_to_words(d_start_p, words, search_start_sec=raw_h_end)
-        if d_start is None:
-            d_start = round(raw_h_end + 0.3, 2)
+        raw_d_start, _ = snap_quote_to_words(d_start_p, words, search_start_sec=raw_h_end)
+        if raw_d_start is None:
+            raw_d_start = round(raw_h_end + 0.3, 2)
+        d_start = resolve_acoustic_word_start(raw_d_start, raw_h_end, audio_path)
         h_end = resolve_acoustic_word_end(raw_h_end, d_start, audio_path)
 
         _, raw_t_end = snap_quote_to_words(t_end_p, words, search_start_sec=d_start + 60.0)
@@ -533,7 +589,9 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
     else:
         # Closest sentence start to start_time
         start_idx = min(sentence_starts, key=lambda idx: abs(all_words[idx]["start"] - start_time))
-        h_start = round(all_words[start_idx]["start"], 2)
+        raw_h_start = round(all_words[start_idx]["start"], 2)
+        prev_w_end = all_words[start_idx - 1]["end"] if start_idx > 0 else 0.0
+        h_start = resolve_acoustic_word_start(raw_h_start, prev_w_end)
 
     # 2. Extract Hook Audio (15-25s snapped to complete sentence end)
     target_hook_end = h_start + 20.0
@@ -580,10 +638,11 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
     if all_words and hook_segment:
         body_start_idx = best_hook_idx + 1
         if body_start_idx < len(all_words):
-            main_start = round(all_words[body_start_idx]["start"], 2)
+            raw_main_start = round(all_words[body_start_idx]["start"], 2)
         else:
-            main_start = round(h_end + 0.3, 2)
+            raw_main_start = round(h_end + 0.3, 2)
             body_start_idx = len(all_words) - 1
+        main_start = resolve_acoustic_word_start(raw_main_start, h_end)
         h_end_acoustic = resolve_acoustic_word_end(h_end, main_start)
         hook_segment["end"] = h_end_acoustic
         hook_segment["duration"] = round(h_end_acoustic - h_start, 2)
@@ -948,6 +1007,8 @@ def cut(
             else:
                 start_val = 0.0
                 end_val = 0.0
+        start_val = resolve_acoustic_word_start(float(start_val), audio_path=audio)
+        end_val = resolve_acoustic_word_end(float(end_val), audio_path=audio)
         start_str = to_time_str(start_val)
         end_str = to_time_str(end_val)
 
@@ -978,8 +1039,10 @@ def cut(
             for s_idx, seg in enumerate(segments):
                 seg_type = seg.get("type")
                 if seg_type == "audio":
-                    s_start = float(seg.get("start", start_val))
-                    s_end = float(seg.get("end", end_val))
+                    raw_s_start = float(seg.get("start", start_val))
+                    raw_s_end = float(seg.get("end", end_val))
+                    s_start = resolve_acoustic_word_start(raw_s_start, audio_path=audio)
+                    s_end = resolve_acoustic_word_end(raw_s_end, audio_path=audio)
                     s_dur = max(0.1, s_end - s_start)
 
                     if s_idx > 0 and segments[s_idx - 1].get("type") == "music":

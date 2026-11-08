@@ -13837,18 +13837,18 @@
     {
         "num": 4,
         "title": "Scalar Observer",
-        "start": 426.74,
+        "start": 426.61,
         "end": 505.68,
-        "duration": 78.94,
+        "duration": 79.07,
         "bridge_text": [
             "How Do Quaternions Work ?"
         ],
         "segments": [
             {
                 "type": "audio",
-                "start": 426.74,
+                "start": 426.61,
                 "end": 438.78,
-                "duration": 12.04,
+                "duration": 12.17,
                 "text": "Clip four, the scalar observer. You are the one -dimensional anchor in a three -dimensional storm. If we connect this to the bigger picture, we have to look at that 1D real number from the division algebras."
             },
             {
@@ -13881,7 +13881,7 @@
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
-        "locked": false,
+        "locked": true,
         "visual_source": "mosaic",
         "coming_up_title": "Quaternions"
     },
