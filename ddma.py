@@ -1749,9 +1749,9 @@ def write_ass_file(
     # Bottom footer bar strip (subtle horizontal delimiter line at y=1336 directly below central 740x740 deck, left source label, right deepDive podcast)
     left_label = "Archetype: KineticVector" if visual_source == "manim" else "Mosaic"
     footer_events = [
-        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},FooterLine,,0,0,0,,{{\\pos(540,1336)\\an5\\c&H00554133&\\p1}}m -370 -1 l 370 -1 l 370 1 l -370 1{{\\p0}}",
-        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},FooterBar,,0,0,0,,{{\\pos(170,1355)\\an4\\c&H008B7464&}}{left_label}",
-        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},FooterBar,,0,0,0,,{{\\pos(910,1355)\\an6\\c&H008B7464&}}deepDive podcast",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},FooterLine,,0,0,0,,{{\\pos(170,1336)\\an7\\c&H554133&\\p1}}m 0 0 l 740 0 l 740 2 l 0 2{{\\p0}}",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},FooterBar,,0,0,0,,{{\\pos(170,1355)\\an4\\c&H8B7464&}}{left_label}",
+        f"Dialogue: 1,{s_start_ribbon},{s_end_ribbon},FooterBar,,0,0,0,,{{\\pos(910,1355)\\an6\\c&H8B7464&}}deepDive podcast",
     ]
     lines.extend(footer_events)
 
@@ -1881,7 +1881,11 @@ def compile_clip(
             master_files = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
         if not master_files:
             search_pattern = os.path.join(master_dir, f"*-{num}.mp4")
-            master_files = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
+            candidates = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4") and not os.path.basename(f).startswith("audio-")]
+            if not candidates:
+                candidates = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
+            candidates.sort(key=lambda x: (not os.path.basename(x).split("-")[0].isdigit(), x))
+            master_files = candidates
 
     if not master_files:
         typer.echo(f"Error: Could not generate or locate video file in {master_dir} for clip {num}.", err=True)

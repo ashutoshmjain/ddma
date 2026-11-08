@@ -20,6 +20,7 @@ env/
 242.mp3
 243.mp3
 244.m4a
+transcription.json
 
 # Shared resources stings (allow default MP3 stings)
 music/*
