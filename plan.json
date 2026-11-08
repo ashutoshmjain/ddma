@@ -8238,9 +8238,10 @@
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
-        "locked": false,
+        "locked": true,
         "visual_source": "mosaic",
-        "coming_up_title": "The Scalar Observer"
+        "coming_up_title": "The Scalar Observer",
+        "mosaic_run_id": "972b1c19-0b6d-4023-b8a2-36eced1ca878"
     },
     {
         "num": 4,
