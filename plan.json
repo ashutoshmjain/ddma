@@ -8187,9 +8187,10 @@
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
-        "locked": false,
+        "locked": true,
         "visual_source": "mosaic",
-        "coming_up_title": "The Division Algebras"
+        "coming_up_title": "The Division Algebras",
+        "mosaic_run_id": "26606fbc-7a51-420c-a286-2726c5a91769"
     },
     {
         "num": 3,
