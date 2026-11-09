@@ -13839,7 +13839,7 @@
         "title": "Scalar Observer",
         "start": 426.61,
         "end": 505.68,
-        "duration": 79.07,
+        "duration": 95.04,
         "bridge_text": [
             "How Do Quaternions Work ?"
         ],
@@ -13883,7 +13883,2658 @@
         ],
         "locked": true,
         "visual_source": "mosaic",
-        "coming_up_title": "Quaternions"
+        "coming_up_title": "Quaternions",
+        "mosaic_run_id": "3ed55339-7281-44b0-a7d6-cfbee3b1c511",
+        "_caption_words": [
+            {
+                "word": "Clip",
+                "start": 0.13,
+                "end": 0.17
+            },
+            {
+                "word": "four,",
+                "start": 0.17,
+                "end": 0.47
+            },
+            {
+                "word": "the",
+                "start": 0.77,
+                "end": 0.87
+            },
+            {
+                "word": "scalar",
+                "start": 0.87,
+                "end": 1.29
+            },
+            {
+                "word": "observer.",
+                "start": 1.29,
+                "end": 1.69
+            },
+            {
+                "word": "You",
+                "start": 2.55,
+                "end": 2.69
+            },
+            {
+                "word": "are",
+                "start": 2.69,
+                "end": 2.83
+            },
+            {
+                "word": "the",
+                "start": 2.83,
+                "end": 2.95
+            },
+            {
+                "word": "one",
+                "start": 2.95,
+                "end": 3.19
+            },
+            {
+                "word": "-dimensional",
+                "start": 3.19,
+                "end": 3.49
+            },
+            {
+                "word": "anchor",
+                "start": 3.49,
+                "end": 3.83
+            },
+            {
+                "word": "in",
+                "start": 3.83,
+                "end": 4.05
+            },
+            {
+                "word": "a",
+                "start": 4.05,
+                "end": 4.17
+            },
+            {
+                "word": "three",
+                "start": 4.17,
+                "end": 4.39
+            },
+            {
+                "word": "-dimensional",
+                "start": 4.39,
+                "end": 4.71
+            },
+            {
+                "word": "storm.",
+                "start": 4.71,
+                "end": 5.17
+            },
+            {
+                "word": "If",
+                "start": 6.15,
+                "end": 6.25
+            },
+            {
+                "word": "we",
+                "start": 6.25,
+                "end": 6.37
+            },
+            {
+                "word": "connect",
+                "start": 6.37,
+                "end": 6.59
+            },
+            {
+                "word": "this",
+                "start": 6.59,
+                "end": 6.75
+            },
+            {
+                "word": "to",
+                "start": 6.75,
+                "end": 6.87
+            },
+            {
+                "word": "the",
+                "start": 6.87,
+                "end": 6.97
+            },
+            {
+                "word": "bigger",
+                "start": 6.97,
+                "end": 7.17
+            },
+            {
+                "word": "picture,",
+                "start": 7.17,
+                "end": 7.47
+            },
+            {
+                "word": "we",
+                "start": 7.81,
+                "end": 8.01
+            },
+            {
+                "word": "have",
+                "start": 8.01,
+                "end": 8.17
+            },
+            {
+                "word": "to",
+                "start": 8.17,
+                "end": 8.29
+            },
+            {
+                "word": "look",
+                "start": 8.29,
+                "end": 8.43
+            },
+            {
+                "word": "at",
+                "start": 8.43,
+                "end": 8.53
+            },
+            {
+                "word": "that",
+                "start": 8.53,
+                "end": 8.67
+            },
+            {
+                "word": "1D",
+                "start": 8.67,
+                "end": 9.39
+            },
+            {
+                "word": "real",
+                "start": 9.39,
+                "end": 10.19
+            },
+            {
+                "word": "number",
+                "start": 10.19,
+                "end": 10.57
+            },
+            {
+                "word": "from",
+                "start": 10.57,
+                "end": 10.89
+            },
+            {
+                "word": "the",
+                "start": 10.89,
+                "end": 11.05
+            },
+            {
+                "word": "division",
+                "start": 11.05,
+                "end": 11.41
+            },
+            {
+                "word": "algebras.",
+                "start": 11.41,
+                "end": 11.97
+            },
+            {
+                "word": "That",
+                "start": 16.89,
+                "end": 17.03
+            },
+            {
+                "word": "first",
+                "start": 17.03,
+                "end": 17.51
+            },
+            {
+                "word": "axis",
+                "start": 17.51,
+                "end": 18.01
+            },
+            {
+                "word": "in",
+                "start": 18.01,
+                "end": 18.19
+            },
+            {
+                "word": "the",
+                "start": 18.19,
+                "end": 18.29
+            },
+            {
+                "word": "quaternions.",
+                "start": 18.29,
+                "end": 18.77
+            },
+            {
+                "word": "Right.",
+                "start": 19.07,
+                "end": 19.21
+            },
+            {
+                "word": "In",
+                "start": 19.73,
+                "end": 19.85
+            },
+            {
+                "word": "physical",
+                "start": 19.85,
+                "end": 20.15
+            },
+            {
+                "word": "reality,",
+                "start": 20.15,
+                "end": 20.63
+            },
+            {
+                "word": "the",
+                "start": 20.99,
+                "end": 21.15
+            },
+            {
+                "word": "paper",
+                "start": 21.15,
+                "end": 21.35
+            },
+            {
+                "word": "defines",
+                "start": 21.35,
+                "end": 21.67
+            },
+            {
+                "word": "this",
+                "start": 21.67,
+                "end": 21.93
+            },
+            {
+                "word": "as",
+                "start": 21.93,
+                "end": 22.21
+            },
+            {
+                "word": "the",
+                "start": 22.21,
+                "end": 22.45
+            },
+            {
+                "word": "realm",
+                "start": 22.45,
+                "end": 22.67
+            },
+            {
+                "word": "of",
+                "start": 22.67,
+                "end": 22.93
+            },
+            {
+                "word": "the",
+                "start": 22.93,
+                "end": 23.23
+            },
+            {
+                "word": "scalar",
+                "start": 23.23,
+                "end": 24.05
+            },
+            {
+                "word": "observer.",
+                "start": 24.05,
+                "end": 24.67
+            },
+            {
+                "word": "So",
+                "start": 25.11,
+                "end": 25.19
+            },
+            {
+                "word": "that's",
+                "start": 25.19,
+                "end": 25.45
+            },
+            {
+                "word": "us.",
+                "start": 25.45,
+                "end": 25.63
+            },
+            {
+                "word": "It's",
+                "start": 26.45,
+                "end": 26.51
+            },
+            {
+                "word": "the",
+                "start": 26.51,
+                "end": 26.61
+            },
+            {
+                "word": "absolute",
+                "start": 26.61,
+                "end": 26.97
+            },
+            {
+                "word": "reference",
+                "start": 26.97,
+                "end": 27.33
+            },
+            {
+                "word": "point",
+                "start": 27.33,
+                "end": 27.67
+            },
+            {
+                "word": "of",
+                "start": 27.67,
+                "end": 28.09
+            },
+            {
+                "word": "awareness.",
+                "start": 28.09,
+                "end": 28.55
+            },
+            {
+                "word": "Space",
+                "start": 29.41,
+                "end": 29.45
+            },
+            {
+                "word": "doesn't",
+                "start": 29.41,
+                "end": 29.79
+            },
+            {
+                "word": "just",
+                "start": 29.79,
+                "end": 30.05
+            },
+            {
+                "word": "exist",
+                "start": 30.05,
+                "end": 30.61
+            },
+            {
+                "word": "out",
+                "start": 30.61,
+                "end": 30.91
+            },
+            {
+                "word": "in",
+                "start": 30.91,
+                "end": 31.11
+            },
+            {
+                "word": "a",
+                "start": 31.11,
+                "end": 31.25
+            },
+            {
+                "word": "void.",
+                "start": 31.25,
+                "end": 31.57
+            },
+            {
+                "word": "It",
+                "start": 32.15,
+                "end": 32.27
+            },
+            {
+                "word": "projects",
+                "start": 32.27,
+                "end": 32.57
+            },
+            {
+                "word": "from",
+                "start": 32.57,
+                "end": 32.85
+            },
+            {
+                "word": "a",
+                "start": 32.85,
+                "end": 33.01
+            },
+            {
+                "word": "localized",
+                "start": 33.01,
+                "end": 33.39
+            },
+            {
+                "word": "origin",
+                "start": 33.39,
+                "end": 33.75
+            },
+            {
+                "word": "point,",
+                "start": 33.75,
+                "end": 34.17
+            },
+            {
+                "word": "U.",
+                "start": 34.81,
+                "end": 34.91
+            },
+            {
+                "word": "Here's",
+                "start": 35.21,
+                "end": 35.67
+            },
+            {
+                "word": "where",
+                "start": 35.67,
+                "end": 35.81
+            },
+            {
+                "word": "it",
+                "start": 35.81,
+                "end": 35.89
+            },
+            {
+                "word": "gets",
+                "start": 35.89,
+                "end": 36.05
+            },
+            {
+                "word": "really",
+                "start": 36.05,
+                "end": 36.49
+            },
+            {
+                "word": "interesting.",
+                "start": 36.49,
+                "end": 37.03
+            },
+            {
+                "word": "Here's",
+                "start": 37.31,
+                "end": 37.47
+            },
+            {
+                "word": "where",
+                "start": 37.47,
+                "end": 37.59
+            },
+            {
+                "word": "the",
+                "start": 37.59,
+                "end": 37.71
+            },
+            {
+                "word": "origin",
+                "start": 37.71,
+                "end": 37.95
+            },
+            {
+                "word": "point,",
+                "start": 37.95,
+                "end": 38.31
+            },
+            {
+                "word": "then",
+                "start": 38.81,
+                "end": 38.93
+            },
+            {
+                "word": "time.",
+                "start": 38.93,
+                "end": 39.39
+            },
+            {
+                "word": "Yeah.",
+                "start": 39.77,
+                "end": 39.97
+            },
+            {
+                "word": "Time",
+                "start": 40.75,
+                "end": 40.79
+            },
+            {
+                "word": "isn't",
+                "start": 40.75,
+                "end": 40.95
+            },
+            {
+                "word": "a",
+                "start": 40.95,
+                "end": 41.09
+            },
+            {
+                "word": "flowing",
+                "start": 41.09,
+                "end": 41.35
+            },
+            {
+                "word": "river",
+                "start": 41.35,
+                "end": 41.71
+            },
+            {
+                "word": "carrying",
+                "start": 41.71,
+                "end": 42.07
+            },
+            {
+                "word": "you",
+                "start": 42.07,
+                "end": 42.37
+            },
+            {
+                "word": "along.",
+                "start": 42.37,
+                "end": 42.73
+            },
+            {
+                "word": "It's",
+                "start": 43.35,
+                "end": 43.65
+            },
+            {
+                "word": "simply",
+                "start": 43.65,
+                "end": 43.89
+            },
+            {
+                "word": "the",
+                "start": 43.89,
+                "end": 44.29
+            },
+            {
+                "word": "ordinal",
+                "start": 44.29,
+                "end": 44.67
+            },
+            {
+                "word": "sequence",
+                "start": 44.67,
+                "end": 45.07
+            },
+            {
+                "word": "of",
+                "start": 45.07,
+                "end": 45.33
+            },
+            {
+                "word": "spatial",
+                "start": 45.33,
+                "end": 45.83
+            },
+            {
+                "word": "transformations",
+                "start": 45.83,
+                "end": 46.57
+            },
+            {
+                "word": "executed",
+                "start": 46.57,
+                "end": 47.43
+            },
+            {
+                "word": "relative",
+                "start": 47.43,
+                "end": 47.83
+            },
+            {
+                "word": "to",
+                "start": 47.83,
+                "end": 48.47
+            },
+            {
+                "word": "you.",
+                "start": 48.47,
+                "end": 48.75
+            },
+            {
+                "word": "Time",
+                "start": 49.07,
+                "end": 49.21
+            },
+            {
+                "word": "is",
+                "start": 49.21,
+                "end": 49.37
+            },
+            {
+                "word": "literally",
+                "start": 49.37,
+                "end": 49.67
+            },
+            {
+                "word": "just",
+                "start": 49.67,
+                "end": 49.97
+            },
+            {
+                "word": "you",
+                "start": 49.97,
+                "end": 50.17
+            },
+            {
+                "word": "counting",
+                "start": 50.17,
+                "end": 50.41
+            },
+            {
+                "word": "your",
+                "start": 50.41,
+                "end": 50.63
+            },
+            {
+                "word": "steps.",
+                "start": 50.63,
+                "end": 50.85
+            },
+            {
+                "word": "The",
+                "start": 51.35,
+                "end": 51.57
+            },
+            {
+                "word": "sequential",
+                "start": 51.57,
+                "end": 51.95
+            },
+            {
+                "word": "tracking",
+                "start": 51.95,
+                "end": 52.45
+            },
+            {
+                "word": "of",
+                "start": 52.45,
+                "end": 52.63
+            },
+            {
+                "word": "spatial",
+                "start": 52.63,
+                "end": 52.93
+            },
+            {
+                "word": "changes.",
+                "start": 52.93,
+                "end": 53.39
+            },
+            {
+                "word": "It's",
+                "start": 53.77,
+                "end": 53.89
+            },
+            {
+                "word": "a",
+                "start": 53.89,
+                "end": 54.45
+            },
+            {
+                "word": "total",
+                "start": 54.45,
+                "end": 54.69
+            },
+            {
+                "word": "paradigm",
+                "start": 54.69,
+                "end": 55.07
+            },
+            {
+                "word": "shift.",
+                "start": 55.07,
+                "end": 55.39
+            },
+            {
+                "word": "And",
+                "start": 56.17,
+                "end": 56.21
+            },
+            {
+                "word": "hey,",
+                "start": 56.17,
+                "end": 56.31
+            },
+            {
+                "word": "just",
+                "start": 56.47,
+                "end": 56.55
+            },
+            {
+                "word": "a",
+                "start": 56.55,
+                "end": 56.69
+            },
+            {
+                "word": "quick",
+                "start": 56.69,
+                "end": 56.83
+            },
+            {
+                "word": "note",
+                "start": 56.83,
+                "end": 57.03
+            },
+            {
+                "word": "for",
+                "start": 57.03,
+                "end": 57.25
+            },
+            {
+                "word": "everyone",
+                "start": 57.25,
+                "end": 57.51
+            },
+            {
+                "word": "listening.",
+                "start": 57.51,
+                "end": 57.83
+            },
+            {
+                "word": "If",
+                "start": 58.13,
+                "end": 58.21
+            },
+            {
+                "word": "you",
+                "start": 58.21,
+                "end": 58.33
+            },
+            {
+                "word": "wanna",
+                "start": 58.33,
+                "end": 58.51
+            },
+            {
+                "word": "really",
+                "start": 58.51,
+                "end": 59.17
+            },
+            {
+                "word": "grasp",
+                "start": 59.17,
+                "end": 59.69
+            },
+            {
+                "word": "these",
+                "start": 59.69,
+                "end": 60.03
+            },
+            {
+                "word": "deep",
+                "start": 60.03,
+                "end": 60.37
+            },
+            {
+                "word": "spatial",
+                "start": 60.37,
+                "end": 60.85
+            },
+            {
+                "word": "concepts,",
+                "start": 60.85,
+                "end": 61.41
+            },
+            {
+                "word": "all",
+                "start": 61.87,
+                "end": 62.03
+            },
+            {
+                "word": "our",
+                "start": 62.03,
+                "end": 62.23
+            },
+            {
+                "word": "Deep",
+                "start": 62.23,
+                "end": 62.37
+            },
+            {
+                "word": "Dive",
+                "start": 62.37,
+                "end": 62.53
+            },
+            {
+                "word": "episodes",
+                "start": 62.53,
+                "end": 62.91
+            },
+            {
+                "word": "are",
+                "start": 62.91,
+                "end": 63.13
+            },
+            {
+                "word": "now",
+                "start": 63.13,
+                "end": 63.31
+            },
+            {
+                "word": "available",
+                "start": 63.31,
+                "end": 63.67
+            },
+            {
+                "word": "in",
+                "start": 63.67,
+                "end": 64.03
+            },
+            {
+                "word": "a",
+                "start": 64.03,
+                "end": 64.15
+            },
+            {
+                "word": "public",
+                "start": 64.15,
+                "end": 64.45
+            },
+            {
+                "word": "notebook",
+                "start": 64.45,
+                "end": 64.85
+            },
+            {
+                "word": "LM.",
+                "start": 64.85,
+                "end": 65.19
+            },
+            {
+                "word": "Which",
+                "start": 65.37,
+                "end": 65.55
+            },
+            {
+                "word": "is",
+                "start": 65.55,
+                "end": 65.77
+            },
+            {
+                "word": "such",
+                "start": 65.77,
+                "end": 65.93
+            },
+            {
+                "word": "a",
+                "start": 65.93,
+                "end": 66.09
+            },
+            {
+                "word": "cool",
+                "start": 66.09,
+                "end": 66.29
+            },
+            {
+                "word": "tool.",
+                "start": 66.29,
+                "end": 66.53
+            },
+            {
+                "word": "It",
+                "start": 66.61,
+                "end": 66.69
+            },
+            {
+                "word": "really",
+                "start": 66.69,
+                "end": 66.81
+            },
+            {
+                "word": "is.",
+                "start": 66.81,
+                "end": 67.07
+            },
+            {
+                "word": "The",
+                "start": 67.27,
+                "end": 67.45
+            },
+            {
+                "word": "link",
+                "start": 67.45,
+                "end": 67.61
+            },
+            {
+                "word": "is",
+                "start": 67.61,
+                "end": 67.77
+            },
+            {
+                "word": "on",
+                "start": 67.77,
+                "end": 67.89
+            },
+            {
+                "word": "the",
+                "start": 67.89,
+                "end": 68.01
+            },
+            {
+                "word": "Deep",
+                "start": 68.01,
+                "end": 68.17
+            },
+            {
+                "word": "Dive",
+                "start": 68.17,
+                "end": 68.35
+            },
+            {
+                "word": "landing",
+                "start": 68.35,
+                "end": 68.63
+            },
+            {
+                "word": "page.",
+                "start": 68.63,
+                "end": 69.05
+            },
+            {
+                "word": "This",
+                "start": 69.31,
+                "end": 69.41
+            },
+            {
+                "word": "is",
+                "start": 69.41,
+                "end": 69.55
+            },
+            {
+                "word": "true",
+                "start": 69.55,
+                "end": 69.83
+            },
+            {
+                "word": "open",
+                "start": 69.83,
+                "end": 70.27
+            },
+            {
+                "word": "sourcing",
+                "start": 70.27,
+                "end": 70.57
+            },
+            {
+                "word": "of",
+                "start": 70.57,
+                "end": 70.81
+            },
+            {
+                "word": "knowledge.",
+                "start": 70.81,
+                "end": 71.01
+            },
+            {
+                "word": "So",
+                "start": 71.25,
+                "end": 71.31
+            },
+            {
+                "word": "check",
+                "start": 71.31,
+                "end": 71.71
+            },
+            {
+                "word": "it",
+                "start": 71.71,
+                "end": 71.83
+            },
+            {
+                "word": "out,",
+                "start": 71.83,
+                "end": 72.05
+            },
+            {
+                "word": "ask",
+                "start": 72.17,
+                "end": 72.39
+            },
+            {
+                "word": "questions,",
+                "start": 72.39,
+                "end": 72.81
+            },
+            {
+                "word": "let",
+                "start": 73.01,
+                "end": 73.13
+            },
+            {
+                "word": "us",
+                "start": 73.13,
+                "end": 73.23
+            },
+            {
+                "word": "know",
+                "start": 73.23,
+                "end": 73.37
+            },
+            {
+                "word": "what",
+                "start": 73.37,
+                "end": 73.47
+            },
+            {
+                "word": "you",
+                "start": 73.47,
+                "end": 73.57
+            },
+            {
+                "word": "think.",
+                "start": 73.57,
+                "end": 73.77
+            },
+            {
+                "word": "Highly",
+                "start": 74.23,
+                "end": 74.35
+            },
+            {
+                "word": "recommended.",
+                "start": 74.35,
+                "end": 74.79
+            },
+            {
+                "word": "Coming",
+                "start": 75.49,
+                "end": 75.75
+            },
+            {
+                "word": "up",
+                "start": 75.75,
+                "end": 75.89
+            },
+            {
+                "word": "in",
+                "start": 75.89,
+                "end": 75.99
+            },
+            {
+                "word": "the",
+                "start": 75.99,
+                "end": 76.09
+            },
+            {
+                "word": "next",
+                "start": 76.09,
+                "end": 76.27
+            },
+            {
+                "word": "clip,",
+                "start": 76.27,
+                "end": 76.49
+            },
+            {
+                "word": "we",
+                "start": 76.69,
+                "end": 76.99
+            },
+            {
+                "word": "finally",
+                "start": 76.99,
+                "end": 77.79
+            },
+            {
+                "word": "demystify",
+                "start": 77.79,
+                "end": 78.55
+            },
+            {
+                "word": "the",
+                "start": 78.55,
+                "end": 78.81
+            },
+            {
+                "word": "quaternion",
+                "start": 78.81,
+                "end": 79.23
+            },
+            {
+                "word": "itself",
+                "start": 79.23,
+                "end": 79.57
+            },
+            {
+                "word": "and",
+                "start": 79.57,
+                "end": 80.13
+            },
+            {
+                "word": "define",
+                "start": 80.13,
+                "end": 80.41
+            },
+            {
+                "word": "what",
+                "start": 80.41,
+                "end": 80.61
+            },
+            {
+                "word": "a",
+                "start": 80.61,
+                "end": 80.79
+            },
+            {
+                "word": "3D",
+                "start": 80.79,
+                "end": 81.29
+            },
+            {
+                "word": "spasm",
+                "start": 81.29,
+                "end": 81.85
+            },
+            {
+                "word": "is.",
+                "start": 81.85,
+                "end": 82.53
+            },
+            {
+                "word": "Getting",
+                "start": 82.85,
+                "end": 82.95
+            },
+            {
+                "word": "into",
+                "start": 82.95,
+                "end": 83.17
+            },
+            {
+                "word": "the",
+                "start": 83.17,
+                "end": 83.31
+            },
+            {
+                "word": "gears.",
+                "start": 83.31,
+                "end": 83.55
+            }
+        ],
+        "_caption_words_sig": "298edc27d0d5585c1c4c7f7e50d7a94e",
+        "caption_chunks": [
+            {
+                "start": 1.63,
+                "end": 4.05,
+                "text": "clip four, the scalar observer.",
+                "words": [
+                    {
+                        "word": "clip",
+                        "start": 1.63,
+                        "end": 1.67
+                    },
+                    {
+                        "word": "four,",
+                        "start": 1.67,
+                        "end": 1.97
+                    },
+                    {
+                        "word": "the",
+                        "start": 2.27,
+                        "end": 2.37
+                    },
+                    {
+                        "word": "scalar",
+                        "start": 2.37,
+                        "end": 2.79
+                    },
+                    {
+                        "word": "observer.",
+                        "start": 2.79,
+                        "end": 3.19
+                    }
+                ]
+            },
+            {
+                "start": 4.05,
+                "end": 4.99,
+                "text": "you are the one -dimensional",
+                "words": [
+                    {
+                        "word": "you",
+                        "start": 4.05,
+                        "end": 4.19
+                    },
+                    {
+                        "word": "are",
+                        "start": 4.19,
+                        "end": 4.33
+                    },
+                    {
+                        "word": "the",
+                        "start": 4.33,
+                        "end": 4.45
+                    },
+                    {
+                        "word": "one",
+                        "start": 4.45,
+                        "end": 4.69
+                    },
+                    {
+                        "word": "-dimensional",
+                        "start": 4.69,
+                        "end": 4.99
+                    }
+                ]
+            },
+            {
+                "start": 4.99,
+                "end": 6.21,
+                "text": "anchor in a three -dimensional",
+                "words": [
+                    {
+                        "word": "anchor",
+                        "start": 4.99,
+                        "end": 5.33
+                    },
+                    {
+                        "word": "in",
+                        "start": 5.33,
+                        "end": 5.55
+                    },
+                    {
+                        "word": "a",
+                        "start": 5.55,
+                        "end": 5.67
+                    },
+                    {
+                        "word": "three",
+                        "start": 5.67,
+                        "end": 5.89
+                    },
+                    {
+                        "word": "-dimensional",
+                        "start": 5.89,
+                        "end": 6.21
+                    }
+                ]
+            },
+            {
+                "start": 6.21,
+                "end": 8.37,
+                "text": "storm. if we connect this to",
+                "words": [
+                    {
+                        "word": "storm.",
+                        "start": 6.21,
+                        "end": 6.67
+                    },
+                    {
+                        "word": "if",
+                        "start": 7.65,
+                        "end": 7.75
+                    },
+                    {
+                        "word": "we",
+                        "start": 7.75,
+                        "end": 7.87
+                    },
+                    {
+                        "word": "connect",
+                        "start": 7.87,
+                        "end": 8.09
+                    },
+                    {
+                        "word": "this",
+                        "start": 8.09,
+                        "end": 8.25
+                    },
+                    {
+                        "word": "to",
+                        "start": 8.25,
+                        "end": 8.37
+                    }
+                ]
+            },
+            {
+                "start": 8.37,
+                "end": 9.31,
+                "text": "the bigger picture,",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 8.37,
+                        "end": 8.47
+                    },
+                    {
+                        "word": "bigger",
+                        "start": 8.47,
+                        "end": 8.67
+                    },
+                    {
+                        "word": "picture,",
+                        "start": 8.67,
+                        "end": 8.97
+                    }
+                ]
+            },
+            {
+                "start": 9.31,
+                "end": 10.17,
+                "text": "we have to look at that",
+                "words": [
+                    {
+                        "word": "we",
+                        "start": 9.31,
+                        "end": 9.51
+                    },
+                    {
+                        "word": "have",
+                        "start": 9.51,
+                        "end": 9.67
+                    },
+                    {
+                        "word": "to",
+                        "start": 9.67,
+                        "end": 9.79
+                    },
+                    {
+                        "word": "look",
+                        "start": 9.79,
+                        "end": 9.93
+                    },
+                    {
+                        "word": "at",
+                        "start": 9.93,
+                        "end": 10.03
+                    },
+                    {
+                        "word": "that",
+                        "start": 10.03,
+                        "end": 10.17
+                    }
+                ]
+            },
+            {
+                "start": 10.17,
+                "end": 12.91,
+                "text": "1d real number from the division",
+                "words": [
+                    {
+                        "word": "1d",
+                        "start": 10.17,
+                        "end": 10.89
+                    },
+                    {
+                        "word": "real",
+                        "start": 10.89,
+                        "end": 11.69
+                    },
+                    {
+                        "word": "number",
+                        "start": 11.69,
+                        "end": 12.07
+                    },
+                    {
+                        "word": "from",
+                        "start": 12.07,
+                        "end": 12.39
+                    },
+                    {
+                        "word": "the",
+                        "start": 12.39,
+                        "end": 12.55
+                    },
+                    {
+                        "word": "division",
+                        "start": 12.55,
+                        "end": 12.91
+                    }
+                ]
+            },
+            {
+                "start": 12.91,
+                "end": 19.79,
+                "text": "algebras. that first axis in the",
+                "words": [
+                    {
+                        "word": "algebras.",
+                        "start": 12.91,
+                        "end": 13.47
+                    },
+                    {
+                        "word": "that",
+                        "start": 18.39,
+                        "end": 18.53
+                    },
+                    {
+                        "word": "first",
+                        "start": 18.53,
+                        "end": 19.01
+                    },
+                    {
+                        "word": "axis",
+                        "start": 19.01,
+                        "end": 19.51
+                    },
+                    {
+                        "word": "in",
+                        "start": 19.51,
+                        "end": 19.69
+                    },
+                    {
+                        "word": "the",
+                        "start": 19.69,
+                        "end": 19.79
+                    }
+                ]
+            },
+            {
+                "start": 19.79,
+                "end": 21.65,
+                "text": "quaternions. right. in physical",
+                "words": [
+                    {
+                        "word": "quaternions.",
+                        "start": 19.79,
+                        "end": 20.27
+                    },
+                    {
+                        "word": "right.",
+                        "start": 20.57,
+                        "end": 20.71
+                    },
+                    {
+                        "word": "in",
+                        "start": 21.23,
+                        "end": 21.35
+                    },
+                    {
+                        "word": "physical",
+                        "start": 21.35,
+                        "end": 21.65
+                    }
+                ]
+            },
+            {
+                "start": 21.65,
+                "end": 23.71,
+                "text": "reality, the paper defines this as",
+                "words": [
+                    {
+                        "word": "reality,",
+                        "start": 21.65,
+                        "end": 22.13
+                    },
+                    {
+                        "word": "the",
+                        "start": 22.49,
+                        "end": 22.65
+                    },
+                    {
+                        "word": "paper",
+                        "start": 22.65,
+                        "end": 22.85
+                    },
+                    {
+                        "word": "defines",
+                        "start": 22.85,
+                        "end": 23.17
+                    },
+                    {
+                        "word": "this",
+                        "start": 23.17,
+                        "end": 23.43
+                    },
+                    {
+                        "word": "as",
+                        "start": 23.43,
+                        "end": 23.71
+                    }
+                ]
+            },
+            {
+                "start": 23.71,
+                "end": 26.61,
+                "text": "the realm of the scalar observer.",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 23.71,
+                        "end": 23.95
+                    },
+                    {
+                        "word": "realm",
+                        "start": 23.95,
+                        "end": 24.17
+                    },
+                    {
+                        "word": "of",
+                        "start": 24.17,
+                        "end": 24.43
+                    },
+                    {
+                        "word": "the",
+                        "start": 24.43,
+                        "end": 24.73
+                    },
+                    {
+                        "word": "scalar",
+                        "start": 24.73,
+                        "end": 25.55
+                    },
+                    {
+                        "word": "observer.",
+                        "start": 25.55,
+                        "end": 26.17
+                    }
+                ]
+            },
+            {
+                "start": 26.61,
+                "end": 27.95,
+                "text": "so that's us.",
+                "words": [
+                    {
+                        "word": "so",
+                        "start": 26.61,
+                        "end": 26.69
+                    },
+                    {
+                        "word": "that's",
+                        "start": 26.69,
+                        "end": 26.95
+                    },
+                    {
+                        "word": "us.",
+                        "start": 26.95,
+                        "end": 27.13
+                    }
+                ]
+            },
+            {
+                "start": 27.95,
+                "end": 29.17,
+                "text": "it's the absolute reference point",
+                "words": [
+                    {
+                        "word": "it's",
+                        "start": 27.95,
+                        "end": 28.01
+                    },
+                    {
+                        "word": "the",
+                        "start": 28.01,
+                        "end": 28.11
+                    },
+                    {
+                        "word": "absolute",
+                        "start": 28.11,
+                        "end": 28.47
+                    },
+                    {
+                        "word": "reference",
+                        "start": 28.47,
+                        "end": 28.83
+                    },
+                    {
+                        "word": "point",
+                        "start": 28.83,
+                        "end": 29.17
+                    }
+                ]
+            },
+            {
+                "start": 29.17,
+                "end": 31.55,
+                "text": "of awareness. space doesn't just",
+                "words": [
+                    {
+                        "word": "of",
+                        "start": 29.17,
+                        "end": 29.59
+                    },
+                    {
+                        "word": "awareness.",
+                        "start": 29.59,
+                        "end": 30.05
+                    },
+                    {
+                        "word": "space",
+                        "start": 30.91,
+                        "end": 30.95
+                    },
+                    {
+                        "word": "doesn't",
+                        "start": 30.91,
+                        "end": 31.29
+                    },
+                    {
+                        "word": "just",
+                        "start": 31.29,
+                        "end": 31.55
+                    }
+                ]
+            },
+            {
+                "start": 31.55,
+                "end": 33.65,
+                "text": "exist out in a void.",
+                "words": [
+                    {
+                        "word": "exist",
+                        "start": 31.55,
+                        "end": 32.11
+                    },
+                    {
+                        "word": "out",
+                        "start": 32.11,
+                        "end": 32.41
+                    },
+                    {
+                        "word": "in",
+                        "start": 32.41,
+                        "end": 32.61
+                    },
+                    {
+                        "word": "a",
+                        "start": 32.61,
+                        "end": 32.75
+                    },
+                    {
+                        "word": "void.",
+                        "start": 32.75,
+                        "end": 33.07
+                    }
+                ]
+            },
+            {
+                "start": 33.65,
+                "end": 34.89,
+                "text": "it projects from a localized",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 33.65,
+                        "end": 33.77
+                    },
+                    {
+                        "word": "projects",
+                        "start": 33.77,
+                        "end": 34.07
+                    },
+                    {
+                        "word": "from",
+                        "start": 34.07,
+                        "end": 34.35
+                    },
+                    {
+                        "word": "a",
+                        "start": 34.35,
+                        "end": 34.51
+                    },
+                    {
+                        "word": "localized",
+                        "start": 34.51,
+                        "end": 34.89
+                    }
+                ]
+            },
+            {
+                "start": 34.89,
+                "end": 36.71,
+                "text": "origin point, u.",
+                "words": [
+                    {
+                        "word": "origin",
+                        "start": 34.89,
+                        "end": 35.25
+                    },
+                    {
+                        "word": "point,",
+                        "start": 35.25,
+                        "end": 35.67
+                    },
+                    {
+                        "word": "u.",
+                        "start": 36.31,
+                        "end": 36.41
+                    }
+                ]
+            },
+            {
+                "start": 36.71,
+                "end": 37.99,
+                "text": "here's where it gets really",
+                "words": [
+                    {
+                        "word": "here's",
+                        "start": 36.71,
+                        "end": 37.17
+                    },
+                    {
+                        "word": "where",
+                        "start": 37.17,
+                        "end": 37.31
+                    },
+                    {
+                        "word": "it",
+                        "start": 37.31,
+                        "end": 37.39
+                    },
+                    {
+                        "word": "gets",
+                        "start": 37.39,
+                        "end": 37.55
+                    },
+                    {
+                        "word": "really",
+                        "start": 37.55,
+                        "end": 37.99
+                    }
+                ]
+            },
+            {
+                "start": 37.99,
+                "end": 39.21,
+                "text": "interesting. here's where the",
+                "words": [
+                    {
+                        "word": "interesting.",
+                        "start": 37.99,
+                        "end": 38.53
+                    },
+                    {
+                        "word": "here's",
+                        "start": 38.81,
+                        "end": 38.97
+                    },
+                    {
+                        "word": "where",
+                        "start": 38.97,
+                        "end": 39.09
+                    },
+                    {
+                        "word": "the",
+                        "start": 39.09,
+                        "end": 39.21
+                    }
+                ]
+            },
+            {
+                "start": 39.21,
+                "end": 41.27,
+                "text": "origin point, then time.",
+                "words": [
+                    {
+                        "word": "origin",
+                        "start": 39.21,
+                        "end": 39.45
+                    },
+                    {
+                        "word": "point,",
+                        "start": 39.45,
+                        "end": 39.81
+                    },
+                    {
+                        "word": "then",
+                        "start": 40.31,
+                        "end": 40.43
+                    },
+                    {
+                        "word": "time.",
+                        "start": 40.43,
+                        "end": 40.89
+                    }
+                ]
+            },
+            {
+                "start": 41.27,
+                "end": 43.21,
+                "text": "yeah. time isn't a flowing river",
+                "words": [
+                    {
+                        "word": "yeah.",
+                        "start": 41.27,
+                        "end": 41.47
+                    },
+                    {
+                        "word": "time",
+                        "start": 42.25,
+                        "end": 42.29
+                    },
+                    {
+                        "word": "isn't",
+                        "start": 42.25,
+                        "end": 42.45
+                    },
+                    {
+                        "word": "a",
+                        "start": 42.45,
+                        "end": 42.59
+                    },
+                    {
+                        "word": "flowing",
+                        "start": 42.59,
+                        "end": 42.85
+                    },
+                    {
+                        "word": "river",
+                        "start": 42.85,
+                        "end": 43.21
+                    }
+                ]
+            },
+            {
+                "start": 43.21,
+                "end": 44.85,
+                "text": "carrying you along.",
+                "words": [
+                    {
+                        "word": "carrying",
+                        "start": 43.21,
+                        "end": 43.57
+                    },
+                    {
+                        "word": "you",
+                        "start": 43.57,
+                        "end": 43.87
+                    },
+                    {
+                        "word": "along.",
+                        "start": 43.87,
+                        "end": 44.23
+                    }
+                ]
+            },
+            {
+                "start": 44.85,
+                "end": 46.57,
+                "text": "it's simply the ordinal sequence",
+                "words": [
+                    {
+                        "word": "it's",
+                        "start": 44.85,
+                        "end": 45.15
+                    },
+                    {
+                        "word": "simply",
+                        "start": 45.15,
+                        "end": 45.39
+                    },
+                    {
+                        "word": "the",
+                        "start": 45.39,
+                        "end": 45.79
+                    },
+                    {
+                        "word": "ordinal",
+                        "start": 45.79,
+                        "end": 46.17
+                    },
+                    {
+                        "word": "sequence",
+                        "start": 46.17,
+                        "end": 46.57
+                    }
+                ]
+            },
+            {
+                "start": 46.57,
+                "end": 48.07,
+                "text": "of spatial transformations",
+                "words": [
+                    {
+                        "word": "of",
+                        "start": 46.57,
+                        "end": 46.83
+                    },
+                    {
+                        "word": "spatial",
+                        "start": 46.83,
+                        "end": 47.33
+                    },
+                    {
+                        "word": "transformations",
+                        "start": 47.33,
+                        "end": 48.07
+                    }
+                ]
+            },
+            {
+                "start": 48.07,
+                "end": 50.57,
+                "text": "executed relative to you.",
+                "words": [
+                    {
+                        "word": "executed",
+                        "start": 48.07,
+                        "end": 48.93
+                    },
+                    {
+                        "word": "relative",
+                        "start": 48.93,
+                        "end": 49.33
+                    },
+                    {
+                        "word": "to",
+                        "start": 49.33,
+                        "end": 49.97
+                    },
+                    {
+                        "word": "you.",
+                        "start": 49.97,
+                        "end": 50.25
+                    }
+                ]
+            },
+            {
+                "start": 50.57,
+                "end": 51.67,
+                "text": "time is literally just you",
+                "words": [
+                    {
+                        "word": "time",
+                        "start": 50.57,
+                        "end": 50.71
+                    },
+                    {
+                        "word": "is",
+                        "start": 50.71,
+                        "end": 50.87
+                    },
+                    {
+                        "word": "literally",
+                        "start": 50.87,
+                        "end": 51.17
+                    },
+                    {
+                        "word": "just",
+                        "start": 51.17,
+                        "end": 51.47
+                    },
+                    {
+                        "word": "you",
+                        "start": 51.47,
+                        "end": 51.67
+                    }
+                ]
+            },
+            {
+                "start": 51.67,
+                "end": 52.85,
+                "text": "counting your steps.",
+                "words": [
+                    {
+                        "word": "counting",
+                        "start": 51.67,
+                        "end": 51.91
+                    },
+                    {
+                        "word": "your",
+                        "start": 51.91,
+                        "end": 52.13
+                    },
+                    {
+                        "word": "steps.",
+                        "start": 52.13,
+                        "end": 52.35
+                    }
+                ]
+            },
+            {
+                "start": 52.85,
+                "end": 54.43,
+                "text": "the sequential tracking of spatial",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 52.85,
+                        "end": 53.07
+                    },
+                    {
+                        "word": "sequential",
+                        "start": 53.07,
+                        "end": 53.45
+                    },
+                    {
+                        "word": "tracking",
+                        "start": 53.45,
+                        "end": 53.95
+                    },
+                    {
+                        "word": "of",
+                        "start": 53.95,
+                        "end": 54.13
+                    },
+                    {
+                        "word": "spatial",
+                        "start": 54.13,
+                        "end": 54.43
+                    }
+                ]
+            },
+            {
+                "start": 54.43,
+                "end": 56.57,
+                "text": "changes. it's a total paradigm",
+                "words": [
+                    {
+                        "word": "changes.",
+                        "start": 54.43,
+                        "end": 54.89
+                    },
+                    {
+                        "word": "it's",
+                        "start": 55.27,
+                        "end": 55.39
+                    },
+                    {
+                        "word": "a",
+                        "start": 55.39,
+                        "end": 55.95
+                    },
+                    {
+                        "word": "total",
+                        "start": 55.95,
+                        "end": 56.19
+                    },
+                    {
+                        "word": "paradigm",
+                        "start": 56.19,
+                        "end": 56.57
+                    }
+                ]
+            },
+            {
+                "start": 56.57,
+                "end": 57.97,
+                "text": "shift. and hey,",
+                "words": [
+                    {
+                        "word": "shift.",
+                        "start": 56.57,
+                        "end": 56.89
+                    },
+                    {
+                        "word": "and",
+                        "start": 57.67,
+                        "end": 57.71
+                    },
+                    {
+                        "word": "hey,",
+                        "start": 57.67,
+                        "end": 57.81
+                    }
+                ]
+            },
+            {
+                "start": 57.97,
+                "end": 59.01,
+                "text": "just a quick note for everyone",
+                "words": [
+                    {
+                        "word": "just",
+                        "start": 57.97,
+                        "end": 58.05
+                    },
+                    {
+                        "word": "a",
+                        "start": 58.05,
+                        "end": 58.19
+                    },
+                    {
+                        "word": "quick",
+                        "start": 58.19,
+                        "end": 58.33
+                    },
+                    {
+                        "word": "note",
+                        "start": 58.33,
+                        "end": 58.53
+                    },
+                    {
+                        "word": "for",
+                        "start": 58.53,
+                        "end": 58.75
+                    },
+                    {
+                        "word": "everyone",
+                        "start": 58.75,
+                        "end": 59.01
+                    }
+                ]
+            },
+            {
+                "start": 59.01,
+                "end": 60.67,
+                "text": "listening. if you wanna really",
+                "words": [
+                    {
+                        "word": "listening.",
+                        "start": 59.01,
+                        "end": 59.33
+                    },
+                    {
+                        "word": "if",
+                        "start": 59.63,
+                        "end": 59.71
+                    },
+                    {
+                        "word": "you",
+                        "start": 59.71,
+                        "end": 59.83
+                    },
+                    {
+                        "word": "wanna",
+                        "start": 59.83,
+                        "end": 60.01
+                    },
+                    {
+                        "word": "really",
+                        "start": 60.01,
+                        "end": 60.67
+                    }
+                ]
+            },
+            {
+                "start": 60.67,
+                "end": 63.37,
+                "text": "grasp these deep spatial concepts,",
+                "words": [
+                    {
+                        "word": "grasp",
+                        "start": 60.67,
+                        "end": 61.19
+                    },
+                    {
+                        "word": "these",
+                        "start": 61.19,
+                        "end": 61.53
+                    },
+                    {
+                        "word": "deep",
+                        "start": 61.53,
+                        "end": 61.87
+                    },
+                    {
+                        "word": "spatial",
+                        "start": 61.87,
+                        "end": 62.35
+                    },
+                    {
+                        "word": "concepts,",
+                        "start": 62.35,
+                        "end": 62.91
+                    }
+                ]
+            },
+            {
+                "start": 63.37,
+                "end": 64.63,
+                "text": "all our deep dive episodes are",
+                "words": [
+                    {
+                        "word": "all",
+                        "start": 63.37,
+                        "end": 63.53
+                    },
+                    {
+                        "word": "our",
+                        "start": 63.53,
+                        "end": 63.73
+                    },
+                    {
+                        "word": "deep",
+                        "start": 63.73,
+                        "end": 63.87
+                    },
+                    {
+                        "word": "dive",
+                        "start": 63.87,
+                        "end": 64.03
+                    },
+                    {
+                        "word": "episodes",
+                        "start": 64.03,
+                        "end": 64.41
+                    },
+                    {
+                        "word": "are",
+                        "start": 64.41,
+                        "end": 64.63
+                    }
+                ]
+            },
+            {
+                "start": 64.63,
+                "end": 66.35,
+                "text": "now available in a public notebook",
+                "words": [
+                    {
+                        "word": "now",
+                        "start": 64.63,
+                        "end": 64.81
+                    },
+                    {
+                        "word": "available",
+                        "start": 64.81,
+                        "end": 65.17
+                    },
+                    {
+                        "word": "in",
+                        "start": 65.17,
+                        "end": 65.53
+                    },
+                    {
+                        "word": "a",
+                        "start": 65.53,
+                        "end": 65.65
+                    },
+                    {
+                        "word": "public",
+                        "start": 65.65,
+                        "end": 65.95
+                    },
+                    {
+                        "word": "notebook",
+                        "start": 65.95,
+                        "end": 66.35
+                    }
+                ]
+            },
+            {
+                "start": 66.35,
+                "end": 67.79,
+                "text": "lm. which is such a cool",
+                "words": [
+                    {
+                        "word": "lm.",
+                        "start": 66.35,
+                        "end": 66.69
+                    },
+                    {
+                        "word": "which",
+                        "start": 66.87,
+                        "end": 67.05
+                    },
+                    {
+                        "word": "is",
+                        "start": 67.05,
+                        "end": 67.27
+                    },
+                    {
+                        "word": "such",
+                        "start": 67.27,
+                        "end": 67.43
+                    },
+                    {
+                        "word": "a",
+                        "start": 67.43,
+                        "end": 67.59
+                    },
+                    {
+                        "word": "cool",
+                        "start": 67.59,
+                        "end": 67.79
+                    }
+                ]
+            },
+            {
+                "start": 67.79,
+                "end": 68.77,
+                "text": "tool. it really is.",
+                "words": [
+                    {
+                        "word": "tool.",
+                        "start": 67.79,
+                        "end": 68.03
+                    },
+                    {
+                        "word": "it",
+                        "start": 68.11,
+                        "end": 68.19
+                    },
+                    {
+                        "word": "really",
+                        "start": 68.19,
+                        "end": 68.31
+                    },
+                    {
+                        "word": "is.",
+                        "start": 68.31,
+                        "end": 68.57
+                    }
+                ]
+            },
+            {
+                "start": 68.77,
+                "end": 69.67,
+                "text": "the link is on the deep",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 68.77,
+                        "end": 68.95
+                    },
+                    {
+                        "word": "link",
+                        "start": 68.95,
+                        "end": 69.11
+                    },
+                    {
+                        "word": "is",
+                        "start": 69.11,
+                        "end": 69.27
+                    },
+                    {
+                        "word": "on",
+                        "start": 69.27,
+                        "end": 69.39
+                    },
+                    {
+                        "word": "the",
+                        "start": 69.39,
+                        "end": 69.51
+                    },
+                    {
+                        "word": "deep",
+                        "start": 69.51,
+                        "end": 69.67
+                    }
+                ]
+            },
+            {
+                "start": 69.67,
+                "end": 70.81,
+                "text": "dive landing page.",
+                "words": [
+                    {
+                        "word": "dive",
+                        "start": 69.67,
+                        "end": 69.85
+                    },
+                    {
+                        "word": "landing",
+                        "start": 69.85,
+                        "end": 70.13
+                    },
+                    {
+                        "word": "page.",
+                        "start": 70.13,
+                        "end": 70.55
+                    }
+                ]
+            },
+            {
+                "start": 70.81,
+                "end": 72.31,
+                "text": "this is true open sourcing of",
+                "words": [
+                    {
+                        "word": "this",
+                        "start": 70.81,
+                        "end": 70.91
+                    },
+                    {
+                        "word": "is",
+                        "start": 70.91,
+                        "end": 71.05
+                    },
+                    {
+                        "word": "true",
+                        "start": 71.05,
+                        "end": 71.33
+                    },
+                    {
+                        "word": "open",
+                        "start": 71.33,
+                        "end": 71.77
+                    },
+                    {
+                        "word": "sourcing",
+                        "start": 71.77,
+                        "end": 72.07
+                    },
+                    {
+                        "word": "of",
+                        "start": 72.07,
+                        "end": 72.31
+                    }
+                ]
+            },
+            {
+                "start": 72.31,
+                "end": 73.67,
+                "text": "knowledge. so check it out,",
+                "words": [
+                    {
+                        "word": "knowledge.",
+                        "start": 72.31,
+                        "end": 72.51
+                    },
+                    {
+                        "word": "so",
+                        "start": 72.75,
+                        "end": 72.81
+                    },
+                    {
+                        "word": "check",
+                        "start": 72.81,
+                        "end": 73.21
+                    },
+                    {
+                        "word": "it",
+                        "start": 73.21,
+                        "end": 73.33
+                    },
+                    {
+                        "word": "out,",
+                        "start": 73.33,
+                        "end": 73.55
+                    }
+                ]
+            },
+            {
+                "start": 73.67,
+                "end": 74.97,
+                "text": "ask questions, let us know what",
+                "words": [
+                    {
+                        "word": "ask",
+                        "start": 73.67,
+                        "end": 73.89
+                    },
+                    {
+                        "word": "questions,",
+                        "start": 73.89,
+                        "end": 74.31
+                    },
+                    {
+                        "word": "let",
+                        "start": 74.51,
+                        "end": 74.63
+                    },
+                    {
+                        "word": "us",
+                        "start": 74.63,
+                        "end": 74.73
+                    },
+                    {
+                        "word": "know",
+                        "start": 74.73,
+                        "end": 74.87
+                    },
+                    {
+                        "word": "what",
+                        "start": 74.87,
+                        "end": 74.97
+                    }
+                ]
+            },
+            {
+                "start": 74.97,
+                "end": 76.99,
+                "text": "you think. highly recommended.",
+                "words": [
+                    {
+                        "word": "you",
+                        "start": 74.97,
+                        "end": 75.07
+                    },
+                    {
+                        "word": "think.",
+                        "start": 75.07,
+                        "end": 75.27
+                    },
+                    {
+                        "word": "highly",
+                        "start": 75.73,
+                        "end": 75.85
+                    },
+                    {
+                        "word": "recommended.",
+                        "start": 75.85,
+                        "end": 76.29
+                    }
+                ]
+            },
+            {
+                "start": 76.99,
+                "end": 78.19,
+                "text": "coming up in the next clip,",
+                "words": [
+                    {
+                        "word": "coming",
+                        "start": 76.99,
+                        "end": 77.25
+                    },
+                    {
+                        "word": "up",
+                        "start": 77.25,
+                        "end": 77.39
+                    },
+                    {
+                        "word": "in",
+                        "start": 77.39,
+                        "end": 77.49
+                    },
+                    {
+                        "word": "the",
+                        "start": 77.49,
+                        "end": 77.59
+                    },
+                    {
+                        "word": "next",
+                        "start": 77.59,
+                        "end": 77.77
+                    },
+                    {
+                        "word": "clip,",
+                        "start": 77.77,
+                        "end": 77.99
+                    }
+                ]
+            },
+            {
+                "start": 78.19,
+                "end": 80.31,
+                "text": "we finally demystify the",
+                "words": [
+                    {
+                        "word": "we",
+                        "start": 78.19,
+                        "end": 78.49
+                    },
+                    {
+                        "word": "finally",
+                        "start": 78.49,
+                        "end": 79.29
+                    },
+                    {
+                        "word": "demystify",
+                        "start": 79.29,
+                        "end": 80.05
+                    },
+                    {
+                        "word": "the",
+                        "start": 80.05,
+                        "end": 80.31
+                    }
+                ]
+            },
+            {
+                "start": 80.31,
+                "end": 82.11,
+                "text": "quaternion itself and define what",
+                "words": [
+                    {
+                        "word": "quaternion",
+                        "start": 80.31,
+                        "end": 80.73
+                    },
+                    {
+                        "word": "itself",
+                        "start": 80.73,
+                        "end": 81.07
+                    },
+                    {
+                        "word": "and",
+                        "start": 81.07,
+                        "end": 81.63
+                    },
+                    {
+                        "word": "define",
+                        "start": 81.63,
+                        "end": 81.91
+                    },
+                    {
+                        "word": "what",
+                        "start": 81.91,
+                        "end": 82.11
+                    }
+                ]
+            },
+            {
+                "start": 82.11,
+                "end": 84.35,
+                "text": "a 3d spasm is.",
+                "words": [
+                    {
+                        "word": "a",
+                        "start": 82.11,
+                        "end": 82.29
+                    },
+                    {
+                        "word": "3d",
+                        "start": 82.29,
+                        "end": 82.79
+                    },
+                    {
+                        "word": "spasm",
+                        "start": 82.79,
+                        "end": 83.35
+                    },
+                    {
+                        "word": "is.",
+                        "start": 83.35,
+                        "end": 84.03
+                    }
+                ]
+            },
+            {
+                "start": 84.35,
+                "end": 85.2,
+                "text": "getting into the gears.",
+                "words": [
+                    {
+                        "word": "getting",
+                        "start": 84.35,
+                        "end": 84.45
+                    },
+                    {
+                        "word": "into",
+                        "start": 84.45,
+                        "end": 84.67
+                    },
+                    {
+                        "word": "the",
+                        "start": 84.67,
+                        "end": 84.81
+                    },
+                    {
+                        "word": "gears.",
+                        "start": 84.81,
+                        "end": 85.05
+                    }
+                ]
+            }
+        ],
+        "_caption_sig": "7a45c6fea77378742771c0896e3c31e3",
+        "rendered_duration": 95.04,
+        "audio_duration": 89.47,
+        "intro_offset": 1.5,
+        "outro_duration": 5.0,
+        "source_start": 426.61,
+        "source_end": 505.68,
+        "_audio_sig": "298edc27d0d5585c1c4c7f7e50d7a94e",
+        "_compiled_sig": "6108353ab86185e020a0ed299144ce59"
     },
     {
         "num": 5,
