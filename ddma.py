@@ -95,6 +95,56 @@ def resolve_acoustic_word_start(raw_start: float, prev_word_end: Optional[float]
         return default_start
 
 
+def resolve_segment_boundary(raw_w1_end: float, raw_w2_start: float, audio_path: Optional[str] = None) -> tuple:
+    """
+    Mutually-exclusive acoustic boundary resolver between two adjacent speech segments (Seg 1 end -> Seg 2 start):
+    1. Scans 16kHz PCM audio between raw_w1_end and raw_w2_start to locate the minimum-RMS silence valley.
+    2. Prioritizes the second segment's first word onset (`w2_start`), ensuring the starting word of Seg 2
+       is 100% captured in Seg 2 and never bleeds into the end of Seg 1.
+    3. Clamps Seg 1's end (`w1_end`) strictly at or before the silence valley (`w1_end <= valley_t <= w2_start`),
+       guaranteeing zero word repetition across segment boundaries.
+    """
+    if not audio_path or not os.path.exists(audio_path):
+        mid = round((raw_w1_end + max(raw_w1_end, raw_w2_start)) / 2.0, 2)
+        w2_s = resolve_acoustic_word_start(max(raw_w2_start, mid), prev_word_end=raw_w1_end)
+        w1_e = resolve_acoustic_word_end(raw_w1_end, next_word_start=w2_s)
+        if w1_e > w2_s:
+            w1_e = mid
+            w2_s = mid
+        return w1_e, w2_s
+
+    try:
+        import numpy as np
+        win_start = max(0.0, raw_w1_end - 0.05)
+        win_end = max(raw_w2_start + 0.05, raw_w1_end + 0.35)
+        p = subprocess.run(
+            ["ffmpeg", "-v", "error", "-ss", f"{win_start:.3f}", "-t", f"{win_end - win_start:.3f}", "-i", audio_path, "-f", "s16le", "-ac", "1", "-ar", "16000", "-"],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        arr = np.frombuffer(p.stdout, dtype=np.int16).astype(np.float32) / 32768.0
+        valley_t = (raw_w1_end + max(raw_w1_end, raw_w2_start)) / 2.0
+        min_rms = 999.0
+        search_lo = raw_w1_end - 0.02
+        search_hi = max(raw_w2_start + 0.02, raw_w1_end + 0.32)
+        for i in range(0, max(1, len(arr) - 160), 80):
+            t_cur = win_start + (i + 80) / 16000.0
+            if search_lo <= t_cur <= search_hi:
+                rms = float(np.sqrt(np.mean(arr[i:i + 160] ** 2)))
+                if rms < min_rms:
+                    min_rms = rms
+                    valley_t = t_cur
+
+        eff_w2_start = max(raw_w2_start, valley_t)
+        w2_start = resolve_acoustic_word_start(eff_w2_start, prev_word_end=raw_w1_end, audio_path=audio_path)
+        w2_start = max(round(valley_t, 2), w2_start)
+        w1_end = resolve_acoustic_word_end(raw_w1_end, next_word_start=w2_start, audio_path=audio_path)
+        w1_end = min(round(valley_t, 2), w1_end, w2_start)
+        return round(w1_end, 2), round(w2_start, 2)
+    except Exception:
+        mid = round((raw_w1_end + max(raw_w1_end, raw_w2_start)) / 2.0, 2)
+        return mid, mid
+
+
 def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = "mosaic", audio_path: Optional[str] = None) -> list:
     """
     Deterministically detects spoken NotebookLM clip cues ('Clip 1', 'Clip one', etc.)
@@ -162,7 +212,7 @@ def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = 
     if first_cue_start > 20.0:
         w_prev_c0 = [w for w in all_words if w["start"] < first_cue_start - 0.02]
         raw_c0_end = round(w_prev_c0[-1]["end"], 2) if w_prev_c0 else round(first_cue_start, 2)
-        c0_end = resolve_acoustic_word_end(raw_c0_end, first_cue_start, audio_path)
+        c0_end, _ = resolve_segment_boundary(raw_c0_end, first_cue_start, audio_path)
         c0_words = get_words_between(0.0, raw_c0_end)
         raw_c0_hook_end = min(20.0, raw_c0_end)
         for w in c0_words:
@@ -174,8 +224,7 @@ def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = 
             if w["start"] > raw_c0_hook_end + 0.01:
                 delib_raw_start = w["start"]
                 break
-        delib_start = resolve_acoustic_word_start(delib_raw_start, raw_c0_hook_end, audio_path)
-        c0_hook_end = resolve_acoustic_word_end(raw_c0_hook_end, delib_start, audio_path)
+        c0_hook_end, delib_start = resolve_segment_boundary(raw_c0_hook_end, delib_raw_start, audio_path)
         c0_hook_text = get_text_between(0.0, raw_c0_hook_end)
         c0_body_text = get_text_between(delib_start, raw_c0_end)
         clips.append({
@@ -200,13 +249,16 @@ def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = 
         raw_st = round(cue["start"], 2)
         w_before = [w for w in all_words if w["end"] <= cue["start"] + 0.02]
         prev_w_end = w_before[-1]["end"] if w_before else None
-        st = resolve_acoustic_word_start(raw_st, prev_w_end, audio_path)
+        if prev_w_end is not None:
+            _, st = resolve_segment_boundary(prev_w_end, raw_st, audio_path)
+        else:
+            st = resolve_acoustic_word_start(raw_st, None, audio_path)
         if idx + 1 < len(cues):
             next_st = cues[idx + 1]["start"]
             # Use strict '< next_st - 0.02' so zero-duration words ('Clip' at next_st) are never included in previous clip
             w_prev = [w for w in all_words if w["start"] < next_st - 0.02]
             raw_et = round(w_prev[-1]["end"], 2) if w_prev else round(next_st, 2)
-            et = resolve_acoustic_word_end(raw_et, next_st, audio_path)
+            et, _ = resolve_segment_boundary(raw_et, next_st, audio_path)
         else:
             raw_et = round(total_audio_dur, 2)
             et = raw_et
@@ -225,10 +277,9 @@ def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = 
         if not raw_h_end:
             raw_h_end = round(min(raw_et, st + 15.0), 2)
 
-        next_words = [w for w in clip_words if w["start"] > raw_h_end + 0.01]
+        next_words = [w for w in clip_words if w["start"] >= raw_h_end - 0.01 and w["end"] > raw_h_end + 0.01]
         raw_delib_start = next_words[0]["start"] if next_words else raw_h_end + 0.3
-        delib_start = resolve_acoustic_word_start(raw_delib_start, raw_h_end, audio_path)
-        h_end = resolve_acoustic_word_end(raw_h_end, delib_start, audio_path)
+        h_end, delib_start = resolve_segment_boundary(raw_h_end, raw_delib_start, audio_path)
 
         hook_text = get_text_between(st, raw_h_end)
         body_text = get_text_between(delib_start, raw_et)
@@ -426,8 +477,7 @@ Return ONLY a JSON array of objects without Markdown formatting."""
         raw_d_start, _ = snap_quote_to_words(d_start_p, words, search_start_sec=raw_h_end)
         if raw_d_start is None:
             raw_d_start = round(raw_h_end + 0.3, 2)
-        d_start = resolve_acoustic_word_start(raw_d_start, raw_h_end, audio_path)
-        h_end = resolve_acoustic_word_end(raw_h_end, d_start, audio_path)
+        h_end, d_start = resolve_segment_boundary(raw_h_end, raw_d_start, audio_path)
 
         _, raw_t_end = snap_quote_to_words(t_end_p, words, search_start_sec=d_start + 60.0)
         if raw_t_end is None or raw_t_end <= d_start:
@@ -437,7 +487,7 @@ Return ONLY a JSON array of objects without Markdown formatting."""
 
         next_ws = [w["start"] for w in words if w["start"] > raw_t_end + 0.01]
         next_w_start = next_ws[0] if next_ws else raw_t_end + 0.5
-        t_end = resolve_acoustic_word_end(raw_t_end, next_w_start, audio_path)
+        t_end, _ = resolve_segment_boundary(raw_t_end, next_w_start, audio_path)
 
         # Build canonical 4-element segments list: Hook -> Mid-Sting -> Deliberation+Teaser -> Outro-Sting
         segs = [
@@ -642,8 +692,7 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
         else:
             raw_main_start = round(h_end + 0.3, 2)
             body_start_idx = len(all_words) - 1
-        main_start = resolve_acoustic_word_start(raw_main_start, h_end)
-        h_end_acoustic = resolve_acoustic_word_end(h_end, main_start)
+        h_end_acoustic, main_start = resolve_segment_boundary(h_end, raw_main_start)
         hook_segment["end"] = h_end_acoustic
         hook_segment["duration"] = round(h_end_acoustic - h_start, 2)
 
@@ -1007,8 +1056,8 @@ def cut(
             else:
                 start_val = 0.0
                 end_val = 0.0
-        start_val = resolve_acoustic_word_start(float(start_val), audio_path=audio)
-        end_val = resolve_acoustic_word_end(float(end_val), audio_path=audio)
+        start_val = float(start_val)
+        end_val = float(end_val)
         start_str = to_time_str(start_val)
         end_str = to_time_str(end_val)
 
@@ -1036,13 +1085,25 @@ def cut(
             in_idx = 0
             t_cursor = 0.0
 
+            # Pre-resolve non-overlapping boundaries across all audio segments in this clip
+            audio_indices = [idx for idx, s in enumerate(segments) if s.get("type") == "audio"]
+            resolved_bounds = {}
+            for a_pos, s_idx in enumerate(audio_indices):
+                seg = segments[s_idx]
+                s_start = float(seg.get("start", start_val))
+                s_end = float(seg.get("end", end_val))
+                if a_pos + 1 < len(audio_indices):
+                    next_s_idx = audio_indices[a_pos + 1]
+                    next_s_start = float(segments[next_s_idx].get("start", s_end))
+                    if s_end > next_s_start:
+                        s_end, next_s_start = resolve_segment_boundary(s_end, next_s_start, audio_path=audio)
+                        segments[next_s_idx]["start"] = next_s_start
+                resolved_bounds[s_idx] = (s_start, s_end)
+
             for s_idx, seg in enumerate(segments):
                 seg_type = seg.get("type")
                 if seg_type == "audio":
-                    raw_s_start = float(seg.get("start", start_val))
-                    raw_s_end = float(seg.get("end", end_val))
-                    s_start = resolve_acoustic_word_start(raw_s_start, audio_path=audio)
-                    s_end = resolve_acoustic_word_end(raw_s_end, audio_path=audio)
+                    s_start, s_end = resolved_bounds.get(s_idx, (float(seg.get("start", start_val)), float(seg.get("end", end_val))))
                     s_dur = max(0.1, s_end - s_start)
 
                     if s_idx > 0 and segments[s_idx - 1].get("type") == "music":
