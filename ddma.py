@@ -9,7 +9,39 @@ import re
 import subprocess
 import time
 import shutil
-from typing import Optional
+from typing import Optional, Union
+from pathlib import Path
+
+
+def resolve_deepdive_publication_clips_dir(episode: Union[str, int]) -> Path:
+    """
+    Resolves the canonical deepDive publication clips directory:
+      <deepDive_root>/src/ddma/docs/episodes/<episode>/clips
+    Anchored on __file__ to guarantee reliable resolution across:
+      1. deepDive unified workbench (<deepDive>/ddma/ddma.py)
+      2. Standalone ddma repository (<workspace>/ddma/ddma.py)
+      3. Any arbitrary invocation directory.
+    """
+    script_path = Path(__file__).resolve()
+    candidates = []
+    for parent in script_path.parents:
+        cand_direct = parent / "src" / "ddma" / "docs" / "episodes"
+        if cand_direct.exists():
+            candidates.append(cand_direct)
+            break
+        cand_sibling = parent / "deepDive" / "src" / "ddma" / "docs" / "episodes"
+        if cand_sibling.exists():
+            candidates.append(cand_sibling)
+            break
+    if candidates:
+        chosen = candidates[0] / str(episode) / "clips"
+        return chosen
+    attempted = [str(p / "src/ddma/docs/episodes") for p in script_path.parents] + [
+        str(p / "deepDive/src/ddma/docs/episodes") for p in script_path.parents
+    ]
+    raise FileNotFoundError(
+        f"Could not resolve deepDive publication directory from {script_path}. Attempted candidates: {attempted}"
+    )
 
 app = typer.Typer(help="DeepDive Media Automator (DDMA) CLI Tool")
 
@@ -2671,15 +2703,16 @@ def compile_clip(
                 except Exception:
                     pass
                 if episode:
-                    deepdive_clips_dir = os.path.abspath(os.path.join("..", "deepDive", "src", "ddma", "docs", "episodes", str(episode), "clips"))
-                    if os.path.exists(os.path.dirname(deepdive_clips_dir)):
-                        os.makedirs(deepdive_clips_dir, exist_ok=True)
-                        dest_file = os.path.join(deepdive_clips_dir, out_filename)
-                        try:
-                            shutil.copy2(variant_path, dest_file)
-                            typer.echo(f"Synced ACTIVE MASTER ({compile_source}) to deepDive publication repo -> {dest_file}")
-                        except Exception as e:
-                            typer.echo(f"Warning: Could not sync to deepDive clips: {e}")
+                    try:
+                        deepdive_clips_dir = resolve_deepdive_publication_clips_dir(episode)
+                        typer.echo(f"Resolved deepDive publication root: {deepdive_clips_dir}")
+                        deepdive_clips_dir.mkdir(parents=True, exist_ok=True)
+                        dest_file = os.path.join(str(deepdive_clips_dir), out_filename)
+                        shutil.copy2(variant_path, dest_file)
+                        typer.echo(f"Synced ACTIVE MASTER ({compile_source}) to deepDive publication repo -> {dest_file}")
+                    except Exception as e:
+                        typer.echo(f"ERROR: Failed to sync ACTIVE MASTER to deepDive publication repo: {e}", err=True)
+                        raise
             else:
                 typer.echo(f"[SAFEGUARD] Compiled '{compile_source}' preview to {variant_path}.")
                 typer.echo(f"[SAFEGUARD] deepDive publication repo was NOT modified (active master is locked to '{active_master_src}').")

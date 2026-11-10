@@ -622,6 +622,37 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             except Exception as pe:
                 print(f"Warning: Failed to clean up mosaic_run_id from plan.json on error: {pe}")
         
+
+def resolve_deepdive_publication_clips_dir(episode) -> Path:
+    """
+    Resolves the canonical deepDive publication clips directory:
+      <deepDive_root>/src/ddma/docs/episodes/<episode>/clips
+    Anchored on __file__ to guarantee reliable resolution across:
+      1. deepDive unified workbench (<deepDive>/ddma/scratch/run_curator.py)
+      2. Standalone ddma repository (<workspace>/ddma/scratch/run_curator.py)
+      3. Any arbitrary invocation directory.
+    """
+    script_path = Path(__file__).resolve()
+    candidates = []
+    for parent in script_path.parents:
+        cand_direct = parent / "src" / "ddma" / "docs" / "episodes"
+        if cand_direct.exists():
+            candidates.append(cand_direct)
+            break
+        cand_sibling = parent / "deepDive" / "src" / "ddma" / "docs" / "episodes"
+        if cand_sibling.exists():
+            candidates.append(cand_sibling)
+            break
+    if candidates:
+        chosen = candidates[0] / str(episode) / "clips"
+        return chosen
+    attempted = [str(p / "src/ddma/docs/episodes") for p in script_path.parents] + [
+        str(p / "deepDive/src/ddma/docs/episodes") for p in script_path.parents
+    ]
+    raise FileNotFoundError(
+        f"Could not resolve deepDive publication directory from {script_path}. Attempted candidates: {attempted}"
+    )
+
 def get_project_canonical_audio_path(project_dir: str, project_id: str = None, info: dict = None) -> str:
     """
     Resolves the canonical continuous raw audio source for an episode.
@@ -3711,18 +3742,30 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     target_mp4 = os.path.join("clips", f"{ep_num}-{clip_num}.mp4")
                     shutil.copy2(chosen_variant, target_mp4)
                     
-                    deepdive_clips_dir = os.path.abspath(os.path.join("..", "deepDive", "src", "ddma", "docs", "episodes", str(ep_num), "clips"))
-                    if os.path.exists(os.path.dirname(deepdive_clips_dir)):
-                        os.makedirs(deepdive_clips_dir, exist_ok=True)
-                        dest_deepdive = os.path.join(deepdive_clips_dir, f"{ep_num}-{clip_num}.mp4")
+                    try:
+                        deepdive_clips_dir = resolve_deepdive_publication_clips_dir(ep_num)
+                        print(f"[{project_id}][Clip {clip_num}] Resolved deepDive publication root: {deepdive_clips_dir}")
+                        deepdive_clips_dir.mkdir(parents=True, exist_ok=True)
+                        dest_deepdive = os.path.join(str(deepdive_clips_dir), f"{ep_num}-{clip_num}.mp4")
                         shutil.copy2(target_mp4, dest_deepdive)
                         synced_deepdive = True
                         print(f"[{project_id}][Clip {clip_num}] Promoted {source} to ACTIVE MASTER -> synced to deepDive: {dest_deepdive}")
+                    except Exception as sync_e:
+                        print(f"[{project_id}][Clip {clip_num}] ERROR: Failed to sync promoted active master to deepDive: {sync_e}")
+                        raise Exception(f"Failed to stage active master in deepDive publication repo: {sync_e}")
                 else:
                     # If variant file doesn't exist yet, trigger compile-clip with this source
                     print(f"[{project_id}][Clip {clip_num}] Compiling fresh {source} as active master...")
                     subprocess.run([sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", plan_path, "--source", source], check=True)
-                    synced_deepdive = True
+                    try:
+                        deepdive_clips_dir = resolve_deepdive_publication_clips_dir(ep_num)
+                        dest_deepdive = os.path.join(str(deepdive_clips_dir), f"{ep_num}-{clip_num}.mp4")
+                        if not os.path.exists(dest_deepdive):
+                            raise Exception(f"compile-clip succeeded but active master was not staged to {dest_deepdive}")
+                        synced_deepdive = True
+                    except Exception as verify_e:
+                        print(f"[{project_id}][Clip {clip_num}] ERROR: Verification failed after compile-clip: {verify_e}")
+                        raise Exception(f"Failed to verify staged active master: {verify_e}")
 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
