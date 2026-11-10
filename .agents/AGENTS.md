@@ -44,8 +44,8 @@ When developing or executing segmentation tasks, the agent must enforce the foll
 8.  **Narrative Bridge Cards**: Insert 5.0-second black transition slides containing one single bold curiosity-provoking question between clips to preserve storyboard continuity. The texts are editable under the `"bridge_text"` key in `plan.json`. Text is rendered in **Segoe UI Bold (`34px`)** in white, fully centered on a black background. The slide audio is the final 5.0s of audio extracted from the preceding clip, linearly faded out, to prevent abrupt silences.
 9.  **Timebase Normalization**: When crossfading intro/outro streams using FFmpeg's `xfade`, apply `[in]settb=1/90000[out]` to both input streams to prevent timescale mismatch errors (specifically when combining Remotion-exported assets with custom PIL renders).
 10. **Welcome Music Placement & Placement Restriction**: The welcome music stings (`deepDive-soft-ok.mp3` and `deepDive-strong.mp3`) contain spoken introductory vocals ("Welcome to Deep Dive!"). Because Segment 0 (the top intro sting before the hook) overlaps with the 2-second Title Card, Segment 0 MUST use pure non-vocal music stings (`Bluesy Vibes`, `Howling`, etc.) with a ~1.3s crossfade. Vocal tag stings (`deepDive-strong` / `deepDive-soft-ok`) MUST ONLY be placed as Segment 2 (the transition sting AFTER the hook and before the main body) in Clip 1 or Clip 2, avoiding awkward vocal repetitions at the very top of clips.
-11. **External API & Cost Protection (Mosaic & Gemini Remix)**: Mosaic rendering and Gemini Remix operations incur external processing latency and API costs. External operations MUST NEVER be triggered automatically on input auto-saves. UI buttons for external services (`🌌 Mosaic` and `🤖 Remix`) MUST require explicit card locking (`isLocked === true`) so they can only be invoked intentionally after the human director has finalized the clip structure.
-12. **Master Clip Reference & Specification Hook**: Before modifying, debugging, or extending clip features, the Agent MUST read and adhere to [docs/CLIP_DYNAMICS.md](file:///c:/Users/ashut/OneDrive/Documents/Longs/docs/CLIP_DYNAMICS.md). All code changes and automated tests (`test_curator.js`) must strictly align with the Four-Element Construct Model, content origins, safety latches, and stream duration contracts specified in that document.
+11. **External API & Cost Protection (Mosaic & Gemini Remix)**: Mosaic rendering and Gemini Remix operations incur external processing latency and API costs. External operations MUST NEVER be triggered automatically on input auto-saves. UI buttons for external services (`🌌 Mosaic` and `🤖 Remix`) MUST require explicit card locking (`locked === true`) so they can only be invoked intentionally after the human director has finalized the clip structure.
+12. **Master Clip Reference & Specification Hook**: Before modifying, debugging, or extending clip features, the Agent MUST read and adhere to [.agents/rules/clip-dynamics.md](file:///c:/Users/ashut/OneDrive/Desktop/github/deepDive/.agents/rules/clip-dynamics.md). All code changes and automated tests (`test_curator.js`) must strictly align with the Four-Element Construct Model, content origins, safety latches, and stream duration contracts specified in that document.
 
 ---
 
@@ -55,7 +55,7 @@ Below is the step-by-step operational workflow for processing podcast episodes, 
 
 ### 1. Transcribe
 *   **Command**: `powershell -Command "python ddma.py transcribe --audio <episode>.mp3"`
-*   **Action**: Transcribes the long audio file using OpenAI Whisper (`tiny.en` by default) with native word-level timestamps (`word_timestamps=True`) enabled.
+*   **Action**: Transcribes the long audio file using OpenAI Whisper (`large-v3-turbo` by default) with native word-level timestamps (`word_timestamps=True`) enabled.
 *   **Output**: Creates a `transcription.json` file containing start/end timestamps for every spoken word.
 
 ### 2. Plan
@@ -92,9 +92,9 @@ Below is the step-by-step operational workflow for processing podcast episodes, 
 *   **Output**: Overwrites `clips/<episode>-<num>.mp4` with the final compiled video.
 
 ### 8. Combine Episode
-*   **Command**: `powershell -Command "python scratch/combine_clips_demuxer.py"`
-*   **Action**: Reads `plan.json` to generate 5.0-second text-based question cards (overlaying a fade-out of the preceding music) for transitions, and concatenates all clips and bridge cards in order. Applies re-encoding to force constant 30 fps and uniform 48 kHz stereo audio.
-*   **Output**: Generates a unified `combined_<episode>.mp4` video with perfectly aligned audio and video streams.
+*   **Command**: `powershell -Command "python ddma.py combine-audio --episode <num>"` (working audio-only combine; video combine is pending the workflow-4 renderer decision)
+*   **Action**: Reads `plan.json` and stitches canonical continuous `.m4a` audio segments and bridge transitions.
+*   **Output**: Generates unified continuous audio for the episode. Video combine pending workflow-4 renderer decision.
 
 ---
 

@@ -1,5 +1,10 @@
 import os
 from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+DDMA_DIR = SCRIPT_DIR.parent
+os.chdir(DDMA_DIR)
+
 os.makedirs("clips", exist_ok=True)
 os.makedirs("previews", exist_ok=True)
 
@@ -1003,17 +1008,6 @@ def build_mosaic_prompt_with_context(title, transcript=None, custom_instructions
 
 
 def get_gemini_default_prompt():
-    settings_path = "settings.json"
-    if os.path.exists(settings_path):
-        try:
-            with open(settings_path, "r", encoding="utf-8") as sf:
-                s_data = json.load(sf)
-                prompt = s_data.get("gemini_remix_prompt_template")
-                if prompt:
-                    return prompt
-        except Exception as se:
-            print(f"Warning: Failed to load settings.json for gemini prompt: {se}")
-            
     return (
         "You are the Creative Remix Agent for the DeepDive Media Automator (DDMA).\n"
         "Your task is to recast the segments, title, and bridge transition text of Clip {clip_num} in the plan.\n\n"
@@ -1037,17 +1031,6 @@ def get_gemini_default_prompt():
 
 
 def get_gemini_episode_default_prompt():
-    settings_path = "settings.json"
-    if os.path.exists(settings_path):
-        try:
-            with open(settings_path, "r", encoding="utf-8") as sf:
-                s_data = json.load(sf)
-                prompt = s_data.get("gemini_episode_remix_prompt_template")
-                if prompt:
-                    return prompt
-        except Exception as se:
-            print(f"Warning: Failed to load settings.json for episode gemini prompt: {se}")
-            
     return (
         "You are the Executive Producer & AI Storyboard Curator for the DeepDive Media Automator (DDMA).\n"
         "Your task is to analyze the full raw episode transcript and structure it into a sequence of high-engagement, standalone podcast/social video clips.\n\n"
@@ -3155,6 +3138,26 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 resolution = json_data.get("resolution", "1080x1080")
                 bg_color = json_data.get("bg_color", "black")
                 
+                # Verify clip is locked before exporting
+                plan_path = os.path.join(project_dir, "plan.json")
+                target_clip = None
+                if os.path.exists(plan_path):
+                    with open(plan_path, "r", encoding="utf-8") as f:
+                        plan = json.load(f)
+                    for clip in plan:
+                        if int(clip.get("num", -1)) == int(clip_num):
+                            target_clip = clip
+                            break
+
+                is_clip_locked = target_clip.get("locked") if target_clip else json_data.get("locked", False)
+                if not is_clip_locked:
+                    self.send_response(403)
+                    self.send_header("Content-type", "application/json")
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"success": False, "error": f"Clip {clip_num} is unlocked. Lock clip before exporting."}).encode("utf-8"))
+                    return
+                
                 os.makedirs("clips", exist_ok=True)
                 
                 # Clean title for filename
@@ -5007,16 +5010,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         "resolution": "1080x1080",
                         "bg_color": "black"
                     }
-                def_clip = get_gemini_default_prompt()
-                def_ep = get_gemini_episode_default_prompt()
                 def_mosaic = get_mosaic_default_prompt()
-                settings_data["default_gemini_remix_prompt"] = def_clip
-                settings_data["default_gemini_episode_prompt"] = def_ep
                 settings_data["default_mosaic_prompt"] = def_mosaic
-                if not settings_data.get("gemini_remix_prompt_template"):
-                    settings_data["gemini_remix_prompt_template"] = def_clip
-                if not settings_data.get("gemini_episode_remix_prompt_template"):
-                    settings_data["gemini_episode_remix_prompt_template"] = def_ep
                 if not settings_data.get("mosaic_default_prompt"):
                     settings_data["mosaic_default_prompt"] = def_mosaic
                 self.send_response(200)
@@ -5268,9 +5263,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
 def start_server():
     socketserver.ThreadingTCPServer.allow_reuse_address = True
+    host = os.environ.get("CURATOR_HOST", "127.0.0.1")
     try:
-        with socketserver.ThreadingTCPServer(("", PORT), RangeHTTPRequestHandler) as httpd:
-            print(f"Server started on http://localhost:{PORT}")
+        with socketserver.ThreadingTCPServer((host, PORT), RangeHTTPRequestHandler) as httpd:
+            print(f"Server started on http://{host}:{PORT}")
             httpd.serve_forever()
     except Exception as e:
         print(f"Server error: {e}")
@@ -5288,10 +5284,12 @@ def main():
     
     time.sleep(0.5)
     
-    url = f"http://localhost:{PORT}/curator.html"
+    host = os.environ.get("CURATOR_HOST", "127.0.0.1")
+    url = f"http://{host}:{PORT}/curator.html"
     print(f"Opening browser at: {url}")
     
-    webbrowser.open(url)
+    if not os.environ.get("HEADLESS"):
+        webbrowser.open(url)
     
     try:
         while True:

@@ -33,10 +33,21 @@ TEMP_CHUNKS_DIR = os.path.join(CLIPS_DIR, "temp_chunks")
 os.makedirs(ARCHETYPES_DIR, exist_ok=True)
 os.makedirs(TEMP_CHUNKS_DIR, exist_ok=True)
 
-with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
-    settings = json.load(f)
+settings = {}
+if os.path.exists(SETTINGS_PATH):
+    try:
+        with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
+            settings = json.load(f)
+    except Exception as e:
+        print(f"[WARNING] Failed reading settings.json: {e}", file=sys.stderr)
+else:
+    print(
+        f"[NOTICE] settings.json not found at {SETTINGS_PATH}. "
+        "Required keys (or env vars): gemini_api_key (GEMINI_API_KEY).",
+        file=sys.stderr
+    )
 
-API_KEY = settings.get("gemini_api_key")
+API_KEY = settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY", "")
 
 PRIMARY_MODELS = [
     "models/gemini-3.5-flash-lite",

@@ -7,3 +7,4 @@ google-generativeai
 pyyaml
 faster-whisper==1.2.1
 av==14.2.0
+manim==0.22.0  # Known-good version for local & headless Manim rendering

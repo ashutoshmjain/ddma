@@ -2440,10 +2440,7 @@
                 mosaic_mogr_node_id: localStorage.getItem('ddma-mosaic-mogr-node-id') || '',
                 mosaic_captions_node_id: localStorage.getItem('ddma-mosaic-captions-node-id') || '',
                 gemini_api_key: localStorage.getItem('ddma-gemini-api-key') || '',
-                mosaic_default_prompt: localStorage.getItem('ddma-mosaic-default-prompt') || '',
-                gemini_remix_prompt_template: localStorage.getItem('ddma-gemini-default-prompt') || '',
-                gemini_episode_remix_prompt_template: localStorage.getItem('ddma-gemini-episode-default-prompt') || '',
-                gemini_bridge_prompt_template: localStorage.getItem('ddma-gemini-bridge-default-prompt') || ''
+                mosaic_default_prompt: localStorage.getItem('ddma-mosaic-default-prompt') || ''
             };
             
             fetch('/save-settings', {
@@ -2516,14 +2513,9 @@
                         localStorage.setItem('ddma-mosaic-captions-node-id', data.mosaic_captions_node_id || '');
                         localStorage.setItem('ddma-gemini-api-key', data.gemini_api_key || '');
                         window.serverDefaultPrompts = {
-                            mosaic: data.default_mosaic_prompt || data.mosaic_default_prompt || '',
-                            clip: data.default_gemini_remix_prompt || data.gemini_remix_prompt_template || '',
-                            episode: data.default_gemini_episode_prompt || data.gemini_episode_remix_prompt_template || '',
-                            bridge: data.default_gemini_bridge_prompt || data.gemini_bridge_prompt_template || ''
+                            mosaic: data.default_mosaic_prompt || data.mosaic_default_prompt || ''
                         };
                         localStorage.setItem('ddma-mosaic-default-prompt', data.mosaic_default_prompt || window.serverDefaultPrompts.mosaic || '');
-                        localStorage.setItem('ddma-gemini-episode-default-prompt', data.gemini_episode_remix_prompt_template || window.serverDefaultPrompts.episode || '');
-                        localStorage.setItem('ddma-gemini-bridge-default-prompt', data.gemini_bridge_prompt_template || window.serverDefaultPrompts.bridge || '');
                     })
                     .catch(err => {
                         console.warn("Could not load settings from server, using local fallback:", err);
@@ -5968,51 +5960,6 @@
                     updateStateBar("Ready");
                     alert("Error fetching Gemini prompt: " + err.message);
                 });
-        }
-
-        const epAiAutoPlanBtn = document.getElementById('episodeAiAutoPlanBtn');
-        if (epAiAutoPlanBtn) {
-            epAiAutoPlanBtn.addEventListener('click', function() {
-                if (!activeProjectId) {
-                    alert("Please select or create an episode project first.");
-                    return;
-                }
-                const confirmRes = confirm(`🌌 Run Episode AI Auto-Plan for ${activeProjectId}?\n\nGemini will analyze the full recording transcript to discover 12-18 standalone, high-engagement topic clips for an unstructured episode.\n\nThis will generate a fresh clip plan for this episode.`);
-                if (!confirmRes) return;
-
-                epAiAutoPlanBtn.disabled = true;
-                epAiAutoPlanBtn.innerHTML = '⏳ AI Planning...';
-                updateStateBar("Gemini Episode AI Planning...");
-
-                const customPrompt = localStorage.getItem('ddma-gemini-episode-default-prompt') || '';
-                fetch('/remix-episode', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        id: activeProjectId,
-                        prompt: customPrompt
-                    })
-                })
-                .then(r => r.json())
-                .then(data => {
-                    epAiAutoPlanBtn.disabled = false;
-                    epAiAutoPlanBtn.innerHTML = '🌌 Episode AI Auto-Plan';
-                    updateStateBar("Ready");
-
-                    if (data.success) {
-                        showDebug(`Successfully created ${data.clip_count} AI-curated clips for ${activeProjectId}!`, false);
-                        selectProject(activeProjectId);
-                    } else {
-                        alert("Episode AI Auto-Plan failed: " + (data.error || "Unknown error"));
-                    }
-                })
-                .catch(err => {
-                    epAiAutoPlanBtn.disabled = false;
-                    epAiAutoPlanBtn.innerHTML = '🌌 Episode AI Auto-Plan';
-                    updateStateBar("Ready");
-                    alert("Error executing Episode AI Auto-Plan: " + err.message);
-                });
-            });
         }
 
         function executeRemix(clipNum, promptContent, btnEl) {

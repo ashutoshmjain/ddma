@@ -279,6 +279,24 @@ async function runTest() {
         if (bridgeReviewRemoved.hasBtn || bridgeReviewRemoved.hasOverlay) {
             throw new Error("FAIL: Dead Bridge Review modal or button was not removed!");
         }
+
+        // 🧪 TEST 4b: /export-project-clip Lock Gate Verification
+        console.log("\n🧪 TEST 4b: Verifying /export-project-clip Lock Gate...");
+        const exportGateCheck = await page.evaluate(async () => {
+            const resp = await fetch('/export-project-clip?id=episode_249', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ clip_num: 7, title: 'Unlocked Clip', export_format: 'audio', locked: false })
+            });
+            const data = await resp.json().catch(() => ({}));
+            return { status: resp.status, data };
+        });
+
+        console.log(`- /export-project-clip for unlocked clip status: ${exportGateCheck.status}`);
+        if (exportGateCheck.status !== 403 || !exportGateCheck.data.error || !exportGateCheck.data.error.includes("is unlocked. Lock clip before exporting.")) {
+            throw new Error(`FAIL: /export-project-clip did not refuse unlocked clip with 403! Got: ${JSON.stringify(exportGateCheck)}`);
+        }
+        console.log("✔ PASS: /export-project-clip correctly enforces lock gate (403 refused).");
         /* old test 4 removed */
         if (false) {
         await page.click('#reviewBridgesBtn');

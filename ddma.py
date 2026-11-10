@@ -3066,10 +3066,6 @@ def ingest_episode(
     typer.echo(f"[SUCCESS] Episode {episode} instant ingestion pipeline complete! Project ready in Curator & Preview Player.")
 
 
-if __name__ == "__main__":
-    app()
-
-
 @app.command("cast-tripartite")
 def cast_tripartite_cmd(
     transcription: str = typer.Option("transcription.json", help="Path to Whisper transcription JSON"),
@@ -3092,3 +3088,7 @@ def cast_tripartite_cmd(
     with open(out, "w", encoding="utf-8") as f:
         json.dump(clips, f, indent=2)
     typer.echo(f"Successfully cast {len(clips)} tripartite clips saved to {out}!")
+
+
+if __name__ == "__main__":
+    app()

@@ -24,15 +24,27 @@ DOCS_PLAN_PATH = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "e
 CLIPS_DIR = os.path.join(SCRIPT_DIR, "clips")
 os.makedirs(CLIPS_DIR, exist_ok=True)
 
-with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
-    settings = json.load(f)
+settings = {}
+if os.path.exists(SETTINGS_PATH):
+    try:
+        with open(SETTINGS_PATH, "r", encoding="utf-8") as f:
+            settings = json.load(f)
+    except Exception as e:
+        print(f"[WARNING] Failed reading settings.json: {e}", file=sys.stderr)
+else:
+    print(
+        f"[NOTICE] settings.json not found at {SETTINGS_PATH}. "
+        "Required keys (or env vars): mosaic_api_key (MOSAIC_API_KEY), mosaic_agent_id (MOSAIC_AGENT_ID), "
+        "mosaic_mogr_node_id (MOSAIC_MOGR_NODE_ID), mosaic_captions_node_id (MOSAIC_CAPTIONS_NODE_ID).",
+        file=sys.stderr
+    )
 
-API_KEY = settings.get("mosaic_api_key")
-AGENT_ID = settings.get("mosaic_agent_id")
-MOGR_NODE_ID = settings.get("mosaic_mogr_node_id")
-CAPTIONS_NODE_ID = settings.get("mosaic_captions_node_id")
+API_KEY = settings.get("mosaic_api_key") or os.environ.get("MOSAIC_API_KEY", "")
+AGENT_ID = settings.get("mosaic_agent_id") or os.environ.get("MOSAIC_AGENT_ID", "")
+MOGR_NODE_ID = settings.get("mosaic_mogr_node_id") or os.environ.get("MOSAIC_MOGR_NODE_ID", "")
+CAPTIONS_NODE_ID = settings.get("mosaic_captions_node_id") or os.environ.get("MOSAIC_CAPTIONS_NODE_ID", "")
 
-HEADERS = {"Authorization": f"Bearer {API_KEY}"}
+HEADERS = {"Authorization": f"Bearer {API_KEY}"} if API_KEY else {}
 
 def load_clip(clip_num):
     target_plan = PLAN_PATH if os.path.exists(PLAN_PATH) else DOCS_PLAN_PATH
