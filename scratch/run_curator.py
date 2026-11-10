@@ -325,8 +325,12 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             os.makedirs("clips", exist_ok=True)
             plan_file_path = os.path.join("projects", project_id, "plan.json")
             
-            # Ensure audio path exists with fallback searches
-            if not os.path.exists(audio_path):
+            # Always ensure canonical continuous raw audio source (.m4a) is resolved
+            canonical_audio = get_project_canonical_audio_path(os.path.join("projects", project_id), project_id)
+            if canonical_audio and os.path.exists(canonical_audio):
+                audio_path = canonical_audio
+                print(f"[{project_id}][Clip {clip_num}] Using canonical raw audio source: {audio_path}")
+            elif not os.path.exists(audio_path):
                 possible_candidates = [
                     os.path.join("projects", project_id, f"{ep_num}.m4a"),
                     os.path.join("projects", project_id, f"{ep_num}.mp3"),
@@ -618,6 +622,54 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
             except Exception as pe:
                 print(f"Warning: Failed to clean up mosaic_run_id from plan.json on error: {pe}")
         
+def get_project_canonical_audio_path(project_dir: str, project_id: str = None, info: dict = None) -> str:
+    """
+    Resolves the canonical continuous raw audio source for an episode.
+    Always prioritizes raw continuous .m4a input over .mp3 because .mp3 may be the
+    assembled longform podcast master containing inserted music stings.
+    """
+    if not project_id:
+        project_id = os.path.basename(project_dir)
+    ep_num = project_id.replace("episode_", "")
+
+    if info is None:
+        info_path = os.path.join(project_dir, "project_info.json")
+        if os.path.exists(info_path):
+            try:
+                with open(info_path, "r", encoding="utf-8") as f:
+                    info = json.load(f)
+            except Exception:
+                info = {}
+        else:
+            info = {}
+
+    # 1. First priority: Raw continuous .m4a in project directory matching transcript timeline
+    for cand_name in [f"{ep_num}.m4a", f"episode_{ep_num}.m4a", "audio.m4a", f"{ep_num}.wav", f"episode_{ep_num}.wav"]:
+        cand_path = os.path.join(project_dir, cand_name)
+        if os.path.exists(cand_path):
+            return cand_path
+
+    # 2. Check info audio_filename if it exists
+    f_name = info.get("audio_filename") or info.get("audio_file")
+    if f_name:
+        cand_path = os.path.join(project_dir, f_name)
+        if os.path.exists(cand_path):
+            stem = os.path.splitext(f_name)[0]
+            for ext in [".m4a", ".wav"]:
+                m4a_equiv = os.path.join(project_dir, f"{stem}{ext}")
+                if os.path.exists(m4a_equiv):
+                    return m4a_equiv
+            return cand_path
+
+    # 3. Fallback to any candidate audio file in project dir
+    for ext in [".m4a", ".wav", ".mp3"]:
+        for cand_name in [f"{ep_num}{ext}", f"episode_{ep_num}{ext}", f"audio{ext}"]:
+            cand_path = os.path.join(project_dir, cand_name)
+            if os.path.exists(cand_path):
+                return cand_path
+
+    return None
+
 def compile_segments_helper(segments, output_path, audio_source_path):
     """
     Compiles clip segments preview using exact sample-accurate timeline mixing:
@@ -1010,34 +1062,6 @@ def get_gemini_episode_default_prompt():
 
 
 
-def get_gemini_bridge_default_prompt():
-    settings_path = "settings.json"
-    if os.path.exists(settings_path):
-        try:
-            with open(settings_path, "r", encoding="utf-8") as sf:
-                s_data = json.load(sf)
-                prompt = s_data.get("gemini_bridge_prompt_template")
-                if prompt:
-                    return prompt
-        except Exception:
-            pass
-    return (
-        "You are an expert podcast producer and narrative editor for DeepDive Media Automator (DDMA).\n"
-        "Your task is to review and generate curiosity-provoking bridge question cards for transitions between podcast clips.\n"
-        "A bridge card appears AT THE END of Clip N, right before Clip N+1 begins.\n\n"
-        "### 🎬 BRIDGE CARD RULES:\n"
-        "1. For each Clip N (except the last clip of the episode), evaluate the transition into Clip N+1.\n"
-        "2. Ensure the bridge question for Clip N directly teases the core concept, scientist, or question in Clip N+1.\n"
-        "3. **STRICT LENGTH RULE**: Keep each `bridge_text` ultra-concise — **STRICTLY MAXIMUM 5 WORDS** (e.g. `\"What is 8D Totality !\"`, `\"Why Four Division Algebras ?\"`, `\"How Do Quaternions Work ?\"`).\n"
-        "4. **NEVER** write `\"Coming up in Clip...\"` or long story sentences because the hosts already speak that aloud in the audio!\n"
-        "5. Return a JSON array of objects, one for each clip, in the following exact format:\n"
-        "[\n"
-        "  {\"num\": 0, \"bridge_text\": [\"What is 8D Totality !\"]},\n"
-        "  {\"num\": 1, \"bridge_text\": [\"What Is Sensory Split ?\"]}\n"
-        "]"
-    )
-
-
 def build_gemini_prompt(project_id, clip_num, directive=None):
     project_dir = os.path.join("projects", project_id)
     plan_path = os.path.join(project_dir, "plan.json")
@@ -1387,32 +1411,44 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 # Sync to root plan.json atomically
                 safe_save_json('plan.json', clips_array)
                     
-                # Sync to docs/episodes/EP_NUM/plan.json and docs/episodes.json
+                # Sync to docs/episodes/EP_NUM/plan.json and docs/episodes.json (plus ../src/ddma/docs/ mirror)
                 ep_match = re.search(r'\d+', project_id)
                 ep_str = ep_match.group(0) if ep_match else None
                 if ep_str:
-                    docs_ep_plan = os.path.join("docs", "episodes", ep_str, "plan.json")
-                    if os.path.exists(os.path.dirname(docs_ep_plan)):
-                        try:
-                            shutil.copy2(plan_file_path, docs_ep_plan)
-                        except Exception as e:
-                            print(f"Error syncing docs plan.json: {e}")
+                    for docs_root in ["docs", os.path.join("..", "src", "ddma", "docs")]:
+                        docs_ep_plan = os.path.join(docs_root, "episodes", ep_str, "plan.json")
+                        if os.path.exists(os.path.dirname(docs_ep_plan)):
+                            try:
+                                shutil.copy2(plan_file_path, docs_ep_plan)
+                            except Exception as e:
+                                print(f"Error syncing {docs_ep_plan}: {e}")
                     
+                    # Sync to dd_hub vault (so VM->local carries lock state)
+                    hub_root = os.environ.get("DD_HUB_ROOT", r"G:\My Drive\dd_hub")
+                    if os.path.exists(hub_root):
+                        hub_ep_plan = os.path.join(hub_root, "episodes", ep_str, "plan.json")
+                        try:
+                            os.makedirs(os.path.dirname(hub_ep_plan), exist_ok=True)
+                            shutil.copy2(plan_file_path, hub_ep_plan)
+                        except Exception as e:
+                            print(f"Error syncing to dd_hub {hub_ep_plan}: {e}")
+
                     if json_data and len(json_data) > 0 and json_data[0].get("title"):
                         c1_title = json_data[0]["title"]
-                        ep_mf_path = os.path.join("docs", "episodes.json")
-                        if os.path.exists(ep_mf_path):
-                            try:
-                                with open(ep_mf_path, "r", encoding="utf-8") as mf:
-                                    m_data = json.load(mf)
-                                for item in m_data:
-                                    if str(item.get("id")) == ep_str or str(item.get("number")) == ep_str:
-                                        item["title"] = c1_title
-                                        item["fullTitle"] = f"Episode {ep_str}: {c1_title}"
-                                with open(ep_mf_path, "w", encoding="utf-8") as mf:
-                                    json.dump(m_data, mf, indent=2)
-                            except Exception as e:
-                                print(f"Error updating episodes.json title: {e}")
+                        for docs_root in ["docs", os.path.join("..", "src", "ddma", "docs")]:
+                            ep_mf_path = os.path.join(docs_root, "episodes.json")
+                            if os.path.exists(ep_mf_path):
+                                try:
+                                    with open(ep_mf_path, "r", encoding="utf-8") as mf:
+                                        m_data = json.load(mf)
+                                    for item in m_data:
+                                        if str(item.get("id")) == ep_str or str(item.get("number")) == ep_str:
+                                            item["title"] = c1_title
+                                            item["fullTitle"] = f"Episode {ep_str}: {c1_title}"
+                                    with open(ep_mf_path, "w", encoding="utf-8") as mf:
+                                        json.dump(m_data, mf, indent=2)
+                                except Exception as e:
+                                    print(f"Error updating {ep_mf_path} title: {e}")
                     
                 self.send_response(200)
                 self.send_header('Content-type', 'text/plain')
@@ -1426,6 +1462,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
                 
         elif parsed_url.path == '/remix-clip':
+            # [API-ONLY ENDPOINT] Recasts an individual clip with Gemini based on preceding locked clips
             project_id = params.get('id', [None])[0]
             clip_num = int(params.get('num', [-1])[0])
             
@@ -1465,6 +1502,18 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 plan_path = os.path.join(project_dir, "plan.json")
                 if not os.path.exists(plan_path):
                     raise Exception(f"plan.json not found for project {project_id}.")
+                with open(plan_path, "r", encoding="utf-8") as pf_rmx:
+                    rmx_plan = json.load(pf_rmx)
+                target_clip_rmx = next((c for c in rmx_plan if int(c.get("num", -1)) == clip_num), None)
+                if not target_clip_rmx:
+                    raise Exception(f"Clip {clip_num} not found in plan.")
+                if not target_clip_rmx.get("locked"):
+                    self.send_response(403)
+                    self.send_header("Content-type", "application/json")
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"success": False, "error": f"Clip {clip_num} is unlocked. Lock clip before remixing."}).encode("utf-8"))
+                    return
                 
                 if custom_prompt:
                     prompt = custom_prompt
@@ -1555,7 +1604,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 except Exception as je:
                     raise Exception(f"Failed to parse Gemini response as JSON: {je}\nResponse was:\n{response.text}")
                 
-                recasted_clip["locked"] = False
+                recasted_clip["locked"] = target_clip_rmx.get("locked", True)
                 recasted_clip.pop("mosaic_run_id", None)
 
                 # Derive start, end, duration from segments if missing
@@ -1629,6 +1678,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
         elif parsed_url.path == '/remix-episode':
+            # [API-ONLY ENDPOINT] Re-plans full episode with Gemini while preserving existing locked clip flags
             project_id = params.get('id', [None])[0]
             custom_prompt = ""
             try:
@@ -1704,6 +1754,17 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 # Match quotes to Whisper word timestamps
                 from ddma import snap_quote_to_words
+                existing_locks = {}
+                plan_path_existing = os.path.join(project_dir, "plan.json")
+                if os.path.exists(plan_path_existing):
+                    try:
+                        with open(plan_path_existing, "r", encoding="utf-8") as old_pf:
+                            for oc in json.load(old_pf):
+                                if "num" in oc:
+                                    existing_locks[int(oc["num"])] = bool(oc.get("locked", False))
+                    except Exception:
+                        pass
+
                 new_plan = []
                 for c_idx, raw_c in enumerate(ai_clips_raw):
                     c_num = raw_c.get("num", c_idx) if (ai_clips_raw and ai_clips_raw[0].get("num") == 0) else raw_c.get("num", c_idx + 1)
@@ -1801,7 +1862,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         "title": title,
                         "start": s_time,
                         "end": e_time,
-                        "locked": False,
+                        "locked": existing_locks.get(c_num, False),
                         "music": music_file,
                         "music_volume": 1.0,
                         "bridge_text": raw_c.get("bridge_text", [f"What Is Part {c_num + 1} ?"]),
@@ -1811,6 +1872,26 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 plan_path = os.path.join(project_dir, "plan.json")
                 with open(plan_path, "w", encoding="utf-8") as pf:
                     json.dump(new_plan, pf, indent=2)
+
+                # Sync regenerated plan to dd_hub vault and src/
+                ep_match = re.search(r'\d+', project_id)
+                ep_str = ep_match.group(0) if ep_match else None
+                if ep_str:
+                    hub_root = os.environ.get("DD_HUB_ROOT", r"G:\My Drive\dd_hub")
+                    if os.path.exists(hub_root):
+                        hub_ep_plan = os.path.join(hub_root, "episodes", ep_str, "plan.json")
+                        try:
+                            os.makedirs(os.path.dirname(hub_ep_plan), exist_ok=True)
+                            shutil.copy2(plan_path, hub_ep_plan)
+                        except Exception:
+                            pass
+                    for docs_root in ["docs", os.path.join("..", "src", "ddma", "docs")]:
+                        docs_ep_plan = os.path.join(docs_root, "episodes", ep_str, "plan.json")
+                        try:
+                            os.makedirs(os.path.dirname(docs_ep_plan), exist_ok=True)
+                            shutil.copy2(plan_path, docs_ep_plan)
+                        except Exception:
+                            pass
 
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
@@ -2031,26 +2112,36 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 with open(os.path.join(project_dir, "plan.json"), "w", encoding="utf-8") as f:
                     json.dump([], f, indent=4)
                 
-                # Register new episode in docs/episodes.json manifest
+                # Register new episode in docs/episodes.json manifest (and ../src/ddma/docs/episodes.json mirror)
                 try:
-                    ep_manifest_path = os.path.join("docs", "episodes.json")
-                    if os.path.exists(ep_manifest_path):
-                        with open(ep_manifest_path, "r", encoding="utf-8") as mf:
-                            mdata = json.load(mf)
-                        
-                        title_val = json_data.get("title", project_name)
-                        new_entry = {
-                            "id": str(ep_num),
-                            "title": f"Episode {ep_num}: {title_val}",
-                            "planPath": f"episodes/{ep_num}/plan.json",
-                            "clipsDir": f"episodes/{ep_num}/clips"
-                        }
-                        
-                        mdata = [item for item in mdata if str(item.get("id")) != str(ep_num)]
-                        mdata.append(new_entry)
-                        
-                        with open(ep_manifest_path, "w", encoding="utf-8") as mf:
-                            json.dump(mdata, mf, indent=4)
+                    for docs_root in ["docs", os.path.join("..", "src", "ddma", "docs")]:
+                        ep_manifest_path = os.path.join(docs_root, "episodes.json")
+                        if os.path.exists(ep_manifest_path):
+                            with open(ep_manifest_path, "r", encoding="utf-8") as mf:
+                                mdata = json.load(mf)
+                            
+                            title_val = json_data.get("title", project_name)
+                            new_entry = {
+                                "id": str(ep_num),
+                                "number": int(ep_num) if str(ep_num).isdigit() else ep_num,
+                                "title": title_val,
+                                "fullTitle": f"Episode {ep_num}: {title_val}",
+                                "planPath": f"episodes/{ep_num}/plan.json",
+                                "clipsDir": f"episodes/{ep_num}/clips",
+                                "links": {},
+                                "isDefault": False
+                            }
+                            
+                            mdata = [item for item in mdata if str(item.get("id")) != str(ep_num) and str(item.get("number")) != str(ep_num)]
+                            mdata.append(new_entry)
+                            mdata.sort(key=lambda m: int(m.get("number") or (int(m["id"]) if str(m.get("id", "")).isdigit() else 0)))
+                            for m in mdata:
+                                m["isDefault"] = False
+                            if mdata:
+                                mdata[-1]["isDefault"] = True
+                            
+                            with open(ep_manifest_path, "w", encoding="utf-8") as mf:
+                                json.dump(mdata, mf, indent=2)
                 except Exception as me:
                     print(f"Warning updating episodes.json manifest during create: {me}")
 
@@ -2147,26 +2238,28 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         except Exception as e:
                             print(f"Warning deleting docs episode folder {docs_ep_dir}: {e}")
 
-                    # 7. Update docs/episodes.json manifest
-                    ep_manifest_path = os.path.join("docs", "episodes.json")
-                    if os.path.exists(ep_manifest_path):
-                        try:
-                            with open(ep_manifest_path, "r", encoding="utf-8") as mf:
-                                manifest = json.load(mf)
-                            
-                            # Filter out deleted episode
-                            updated_manifest = [m for m in manifest if str(m.get("id")) != ep_num and str(m.get("number")) != ep_num]
-                            
-                            # Ensure at least one default episode remains if manifest is not empty
-                            if updated_manifest:
-                                has_default = any(m.get("isDefault") for m in updated_manifest)
-                                if not has_default:
-                                    updated_manifest[0]["isDefault"] = True
-                            
-                            with open(ep_manifest_path, "w", encoding="utf-8") as mf:
-                                json.dump(updated_manifest, mf, indent=2)
-                        except Exception as me:
-                            print(f"Warning updating episodes.json manifest during delete: {me}")
+                    # 7. Update docs/episodes.json manifest (and ../src/ddma/docs/episodes.json mirror)
+                    for docs_root in ["docs", os.path.join("..", "src", "ddma", "docs")]:
+                        ep_manifest_path = os.path.join(docs_root, "episodes.json")
+                        if os.path.exists(ep_manifest_path):
+                            try:
+                                with open(ep_manifest_path, "r", encoding="utf-8") as mf:
+                                    manifest = json.load(mf)
+                                
+                                # Filter out deleted episode
+                                updated_manifest = [m for m in manifest if str(m.get("id")) != ep_num and str(m.get("number")) != ep_num]
+                                
+                                # Ensure at least one default episode remains (the latest) if manifest is not empty
+                                if updated_manifest:
+                                    updated_manifest.sort(key=lambda m: int(m.get("number") or (int(m["id"]) if str(m.get("id", "")).isdigit() else 0)))
+                                    has_default = any(m.get("isDefault") for m in updated_manifest)
+                                    if not has_default:
+                                        updated_manifest[-1]["isDefault"] = True
+                                
+                                with open(ep_manifest_path, "w", encoding="utf-8") as mf:
+                                    json.dump(updated_manifest, mf, indent=2)
+                            except Exception as me:
+                                print(f"Warning updating {ep_manifest_path} manifest during delete: {me}")
 
                 print(f"[{project_id}] Isolated project deletion complete.")
                 self.send_response(200)
@@ -2361,19 +2454,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 with open(info_path, "r", encoding="utf-8") as f:
                     info = json.load(f)
                 
-                audio_file_name = info.get("audio_filename") or info.get("audio_file")
-                audio_path = os.path.join(project_dir, audio_file_name) if audio_file_name else None
-                if not audio_path or not os.path.exists(audio_path):
-                    ep_num = project_id.replace("episode_", "")
-                    for ext in [".m4a", ".mp3", ".wav"]:
-                        cand = os.path.join(project_dir, f"{ep_num}{ext}")
-                        if os.path.exists(cand):
-                            audio_path = cand
-                            break
-                        cand2 = os.path.join(project_dir, f"episode_{ep_num}{ext}")
-                        if os.path.exists(cand2):
-                            audio_path = cand2
-                            break
+                audio_path = get_project_canonical_audio_path(project_dir, project_id, info)
                 if not audio_path or not os.path.exists(audio_path):
                     raise Exception(f"Audio file for project {project_id} not found.")
                 
@@ -3436,6 +3517,14 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 if not target_clip:
                     raise Exception(f"Clip number {clip_num} not found in plan.")
+
+                if not target_clip.get("locked"):
+                    self.send_response(403)
+                    self.send_header("Content-type", "application/json")
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"success": False, "error": f"Clip {clip_num} is unlocked. Lock clip before exporting to Mosaic."}).encode("utf-8"))
+                    return
                 
                 # Concatenate segment texts to get complete script
                 raw_segment_texts = []
@@ -3487,7 +3576,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             
                             if status == "completed":
                                 # Resume completed run to download video
-                                audio_path = os.path.join(project_dir, info["audio_filename"])
+                                audio_path = get_project_canonical_audio_path(project_dir, project_id, info)
                                 segments = target_clip.get("segments", [])
                                 t = threading.Thread(
                                     target=run_mosaic_pipeline,
@@ -3504,7 +3593,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                 return
                             elif status in ("running", "starting"):
                                 # Resume active run polling
-                                audio_path = os.path.join(project_dir, info["audio_filename"])
+                                audio_path = get_project_canonical_audio_path(project_dir, project_id, info)
                                 segments = target_clip.get("segments", [])
                                 t = threading.Thread(
                                     target=run_mosaic_pipeline,
@@ -3541,7 +3630,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         print(f"Warning: Failed to clear mosaic_run_id: {clear_ex}")
 
                 # Load segments and audio source path for automatic draft video generation if needed
-                audio_path = os.path.join(project_dir, info["audio_filename"])
+                audio_path = get_project_canonical_audio_path(project_dir, project_id, info)
                 segments = target_clip.get("segments", [])
 
                 # Kick off new thread
@@ -3669,24 +3758,16 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                 ep_num = project_id.replace('episode_', '')
                 info_path = os.path.join("projects", project_id, "project_info.json")
-                audio_file = None
+                p_info = {}
                 ep_title = "Life, Death and the Lysosome"
                 if os.path.exists(info_path):
                     with open(info_path, "r", encoding="utf-8") as f_info:
                         p_info = json.load(f_info)
-                        audio_file = p_info.get("audio_file") or p_info.get("audio_filename")
                         if p_info.get("title"):
                             ep_title = p_info["title"]
                         elif p_info.get("name"):
                             ep_title = p_info["name"]
-                if audio_file and not os.path.exists(audio_file):
-                    audio_file = os.path.join("projects", project_id, audio_file)
-                if not audio_file or not os.path.exists(audio_file):
-                    for candidate_ext in [f"{ep_num}.m4a", f"{ep_num}.mp3", f"episode_{ep_num}.m4a", f"episode_{ep_num}.mp3"]:
-                        candidate_path = os.path.join("projects", project_id, candidate_ext)
-                        if os.path.exists(candidate_path):
-                            audio_file = candidate_path
-                            break
+                audio_file = get_project_canonical_audio_path(os.path.join("projects", project_id), project_id, p_info)
 
                 # Smart signature check to avoid redundant audio slicing or video re-encoding
                 import hashlib, glob
@@ -3696,11 +3777,18 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         p_data_chk = json.load(pf_chk)
                     t_clip = next((c for c in p_data_chk if str(c.get("num")) == str(clip_num)), None)
                     if t_clip:
+                        if not is_draft and not t_clip.get("locked"):
+                            self.send_response(403)
+                            self.send_header("Content-type", "application/json")
+                            self.send_header("Access-Control-Allow-Origin", "*")
+                            self.end_headers()
+                            self.wfile.write(json.dumps({"success": False, "error": f"Clip {clip_num} is unlocked. Lock clip before compiling."}).encode("utf-8"))
+                            return
                         if req_source in ("mosaic", "infographic") and t_clip.get("visual_source") != req_source:
                             t_clip["visual_source"] = req_source
                             with open(plan_path, "w", encoding="utf-8") as pf_w:
                                 json.dump(p_data_chk, pf_w, indent=4)
-                        curr_audio_sig = hashlib.md5(json.dumps(t_clip.get("segments", []), sort_keys=True).encode("utf-8")).hexdigest()
+                        curr_audio_sig = hashlib.md5((json.dumps(t_clip.get("segments", []), sort_keys=True) + str(audio_file)).encode("utf-8")).hexdigest()
                         curr_compile_sig = hashlib.md5(json.dumps({
                             "title": t_clip.get("title", ""),
                             "ep_title": ep_title,
@@ -3946,23 +4034,15 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
 
                 ep_num = project_id.replace('episode_', '')
                 info_path = os.path.join("projects", project_id, "project_info.json")
-                audio_file = None
+                p_info = {}
                 if os.path.exists(info_path):
                     with open(info_path, "r", encoding="utf-8") as f_info:
                         p_info = json.load(f_info)
-                        audio_file = p_info.get("audio_file") or p_info.get("audio_filename")
-                if audio_file and not os.path.exists(audio_file):
-                    audio_file = os.path.join("projects", project_id, audio_file)
-                if not audio_file or not os.path.exists(audio_file):
-                    for candidate_ext in [f"{ep_num}.m4a", f"{ep_num}.mp3", f"episode_{ep_num}.m4a", f"episode_{ep_num}.mp3"]:
-                        candidate_path = os.path.join("projects", project_id, candidate_ext)
-                        if os.path.exists(candidate_path):
-                            audio_file = candidate_path
-                            break
+                audio_file = get_project_canonical_audio_path(os.path.join("projects", project_id), project_id, p_info)
 
                 # 1. Ensure sliced clip MP3 exists & is up to date with segments
                 import hashlib
-                curr_audio_sig = hashlib.md5(json.dumps(t_clip.get("segments", []), sort_keys=True).encode("utf-8")).hexdigest()
+                curr_audio_sig = hashlib.md5((json.dumps(t_clip.get("segments", []), sort_keys=True) + str(audio_file)).encode("utf-8")).hexdigest()
                 
                 # Compute expected duration from segments
                 segs = t_clip.get("segments", [])
@@ -4562,6 +4642,32 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 with open(info_path, "r", encoding="utf-8") as f:
                     info = json.load(f)
                 
+                # Sync from dd_hub vault or src/.../plan.json if projects/ is missing or out-of-date
+                import re
+                ep_match = re.search(r"\d+", project_id)
+                ep_str = ep_match.group(0) if ep_match else None
+                if ep_str:
+                    hub_root = os.environ.get("DD_HUB_ROOT", r"G:\My Drive\dd_hub")
+                    hub_plan = os.path.join(hub_root, "episodes", ep_str, "plan.json") if hub_root else None
+                    src_plan = os.path.join("..", "src", "ddma", "docs", "episodes", ep_str, "plan.json")
+                    docs_plan = os.path.join("docs", "episodes", ep_str, "plan.json")
+                    sync_src = None
+                    if hub_plan and os.path.exists(hub_plan):
+                        if not os.path.exists(plan_path) or os.path.getmtime(hub_plan) > os.path.getmtime(plan_path):
+                            sync_src = hub_plan
+                    elif src_plan and os.path.exists(src_plan):
+                        if not os.path.exists(plan_path) or os.path.getmtime(src_plan) > os.path.getmtime(plan_path):
+                            sync_src = src_plan
+                    elif docs_plan and os.path.exists(docs_plan):
+                        if not os.path.exists(plan_path) or os.path.getmtime(docs_plan) > os.path.getmtime(plan_path):
+                            sync_src = docs_plan
+                    if sync_src:
+                        try:
+                            shutil.copy2(sync_src, plan_path)
+                            print(f"[{project_id}] Synced plan.json from {sync_src} to {plan_path}")
+                        except Exception as se:
+                            print(f"Warning syncing plan: {se}")
+
                 plan_data = []
                 if os.path.exists(plan_path):
                     with open(plan_path, "r", encoding="utf-8-sig") as f:
@@ -4858,18 +4964,14 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     }
                 def_clip = get_gemini_default_prompt()
                 def_ep = get_gemini_episode_default_prompt()
-                def_bridge = get_gemini_bridge_default_prompt()
                 def_mosaic = get_mosaic_default_prompt()
                 settings_data["default_gemini_remix_prompt"] = def_clip
                 settings_data["default_gemini_episode_prompt"] = def_ep
-                settings_data["default_gemini_bridge_prompt"] = def_bridge
                 settings_data["default_mosaic_prompt"] = def_mosaic
                 if not settings_data.get("gemini_remix_prompt_template"):
                     settings_data["gemini_remix_prompt_template"] = def_clip
                 if not settings_data.get("gemini_episode_remix_prompt_template"):
                     settings_data["gemini_episode_remix_prompt_template"] = def_ep
-                if not settings_data.get("gemini_bridge_prompt_template"):
-                    settings_data["gemini_bridge_prompt_template"] = def_bridge
                 if not settings_data.get("mosaic_default_prompt"):
                     settings_data["mosaic_default_prompt"] = def_mosaic
                 self.send_response(200)
@@ -5007,6 +5109,15 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def translate_path(self, path):
         translated = super().translate_path(path)
         clean_path = path.split('?')[0]
+        if not os.path.exists(translated):
+            if clean_path.startswith("/docs/"):
+                src_docs_target = os.path.abspath(os.path.join(os.getcwd(), "..", "src", "ddma", clean_path.lstrip("/")))
+                if os.path.exists(src_docs_target):
+                    return src_docs_target
+            elif clean_path.startswith("/episodes/"):
+                src_docs_target = os.path.abspath(os.path.join(os.getcwd(), "..", "src", "ddma", "docs", clean_path.lstrip("/")))
+                if os.path.exists(src_docs_target):
+                    return src_docs_target
         if not os.path.exists(translated) and clean_path.startswith("/media/"):
             parent_media = os.path.abspath(os.path.join(os.getcwd(), "..", clean_path.lstrip("/")))
             if os.path.exists(parent_media):
@@ -5101,7 +5212,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             chunk = source.read(min(buffer_size, length))
             if not chunk:
                 break
-            outputfile.write(chunk)
+            try:
+                outputfile.write(chunk)
+            except (ConnectionResetError, BrokenPipeError):
+                break
             length -= len(chunk)
 
     def log_message(self, format, *args):

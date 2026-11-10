@@ -2,8 +2,8 @@
   {
     "id": "244",
     "number": 244,
-    "title": "Rethinking Singularity: Matter vs Intelligence",
-    "fullTitle": "Episode 244: Rethinking Singularity: Matter vs Intelligence",
+    "title": "Architecture of Intellectual Demolition",
+    "fullTitle": "Episode 244: Architecture of Intellectual Demolition",
     "planPath": "episodes/244/plan.json",
     "clipsDir": "episodes/244/clips",
     "links": {
@@ -14,26 +14,146 @@
       "instagram": "https://www.instagram.com/deepdivegemini",
       "tiktok": "https://www.tiktok.com/@deepdivegemini"
     },
-    "isDefault": false
+    "isDefault": false,
+    "availableClips": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ]
   },
   {
     "id": "245",
     "number": 245,
-    "title": "What Exactly is Singularity",
-    "fullTitle": "Episode 245: What Exactly is Singularity",
+    "title": "What Exactly Is Singularity?",
+    "fullTitle": "Episode 245: What Exactly Is Singularity?",
     "planPath": "episodes/245/plan.json",
     "clipsDir": "episodes/245/clips",
     "links": {},
-    "isDefault": false
+    "isDefault": false,
+    "availableClips": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ]
   },
   {
     "id": "246",
     "number": 246,
-    "title": "Death !",
-    "fullTitle": "Episode 246: Death !",
+    "title": "Pranayama - the pulmonary boat",
+    "fullTitle": "Episode 246: Pranayama - the pulmonary boat",
     "planPath": "episodes/246/plan.json",
     "clipsDir": "episodes/246/clips",
     "links": {},
-    "isDefault": true
+    "isDefault": false,
+    "availableClips": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  },
+  {
+    "id": "247",
+    "number": 247,
+    "title": "MetaMuse a Tech-tonic shift",
+    "fullTitle": "Episode 247: MetaMuse a Tech-tonic shift",
+    "planPath": "episodes/247/plan.json",
+    "clipsDir": "episodes/247/clips",
+    "links": {},
+    "isDefault": false,
+    "availableClips": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      15,
+      16,
+      17,
+      18,
+      19
+    ]
+  },
+  {
+    "id": "248",
+    "number": 248,
+    "title": "What exactly is AI Autonomy",
+    "fullTitle": "Episode 248: What exactly is AI Autonomy",
+    "planPath": "episodes/248/plan.json",
+    "clipsDir": "episodes/248/clips",
+    "links": {},
+    "isDefault": false,
+    "availableClips": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
+  },
+  {
+    "id": "249",
+    "number": 249,
+    "title": "What Exactly Is Reality?",
+    "fullTitle": "Episode 249: What Exactly Is Reality?",
+    "planPath": "episodes/249/plan.json",
+    "clipsDir": "episodes/249/clips",
+    "links": {},
+    "isDefault": true,
+    "availableClips": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
   }
 ]

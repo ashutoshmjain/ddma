@@ -436,7 +436,7 @@ Return ONLY a JSON array of objects without Markdown formatting."""
         target_clip_dur = total_dur / max(1, num_clips)
         curr_s = 0.0
         for i in range(num_clips):
-            c_num = i + 1
+            c_num = i
             curr_e = min(total_dur, curr_s + target_clip_dur)
             c_obj = build_rough_cut_segments(c_num, curr_s, curr_e, t_data.get("segments", []), num_clips)
             c_obj["visual_source"] = default_visual_source
@@ -449,8 +449,8 @@ Return ONLY a JSON array of objects without Markdown formatting."""
     cursor_time = 0.0
 
     for idx, c in enumerate(parsed_clips):
-        c_num = c.get("num", idx + 1)
-        title = c.get("title", f"Part {c_num}")
+        c_num = c.get("num", idx)
+        title = c.get("title", f"Part {c_num}" if c_num > 0 else "Prologue")
         hook_quote = c.get("hook_quote", "")
         p_start_p = c.get("punchline_start_phrase", "")
         p_end_p = c.get("punchline_end_phrase", "")
@@ -471,7 +471,7 @@ Return ONLY a JSON array of objects without Markdown formatting."""
             raw_h_end = round(min(total_dur, raw_h_start + 18.0), 2)
 
         # 2. Mid Sting (Bluesy Vibes or Howling)
-        mid_music = "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3" if c_num % 2 == 1 else "Howling (Sting) - Gunnar Olsen.mp3"
+        mid_music = "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3" if c_num % 2 == 0 else "Howling (Sting) - Gunnar Olsen.mp3"
 
         # 3. Snap Deliberation + Spoken Outro Teaser (single continuous body audio segment)
         raw_d_start, _ = snap_quote_to_words(d_start_p, words, search_start_sec=raw_h_end)
@@ -633,7 +633,7 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
     if not all_words:
         start_idx = 0
         h_start = round(start_time, 2)
-    elif start_time <= 0.5 or clip_num == 1:
+    elif start_time <= 0.5 or clip_num == 0:
         start_idx = 0
         h_start = round(all_words[0]["start"], 2)
     else:
@@ -678,7 +678,7 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
 
     # 3. Mid Transition Music Sting: Alternating Bluesy Vibes and Howling
     # Rule: NEVER use deepDive-strong in clips!
-    if clip_num % 2 == 1:
+    if clip_num % 2 == 0:
         mid_music = "Bluesy Vibes (Sting) - Doug Maxwell_Media Right Productions.mp3"
     else:
         mid_music = "Howling (Sting) - Gunnar Olsen.mp3"
@@ -713,7 +713,7 @@ def build_rough_cut_segments(clip_num: int, start_time: float, end_time: float, 
         main_text = ""
 
     # Smart Dynamic Title Extraction algorithm
-    clip_title = f"Part {clip_num}"
+    clip_title = f"Part {clip_num}" if clip_num > 0 else "Prologue"
     if all_words:
         window_words = all_words[start_idx : best_end_idx + 1]
         window_text = " ".join([w.get("word", "").strip() for w in window_words])
@@ -891,9 +891,9 @@ def plan(
 
             duration = end_aligned - start_aligned
             if duration > max_duration:
-                typer.echo(f"Warning: Aligned clip {idx + 1} duration ({duration:.2f}s) exceeds max_duration ({max_duration}s).")
+                typer.echo(f"Warning: Aligned clip {idx} duration ({duration:.2f}s) exceeds max_duration ({max_duration}s).")
             
-            c_obj = build_rough_cut_segments(idx + 1, start_aligned, end_aligned, segments, len(range_strs))
+            c_obj = build_rough_cut_segments(idx, start_aligned, end_aligned, segments, len(range_strs))
             clips_plan.append(c_obj)
     else:
         spoken_clips = parse_spoken_cue_tripartite_plan(data, default_visual_source="mosaic", audio_path=audio)
@@ -927,7 +927,7 @@ def plan(
         estimated_clips = max(1, int(round(total_duration / ((min_duration + max_duration) / 2))))
 
         t_curr = 0.0
-        clip_num = 1
+        clip_num = 0
 
         while t_curr < total_duration:
             candidates = [b for b in boundary_candidates if b["time"] > t_curr]
@@ -2949,9 +2949,11 @@ def ingest_episode(
                 
                 s_time = round(words[curr_start]["start"], 3)
                 e_time = round(words[end_idx]["end"], 3)
-                c_num = i + 1
+                c_num = i
 
                 c_obj = build_rough_cut_segments(c_num, s_time, e_time, t_data.get("segments", []), num_clips)
+                if c_num == 0 and title and not title.lower().startswith("episode"):
+                    c_obj["title"] = title
                 clips_list.append(c_obj)
                 curr_start = end_idx + 1
                 if curr_start >= len(words):
@@ -2961,7 +2963,7 @@ def ingest_episode(
             for i in range(len(clips_list) - 1):
                 curr_c = clips_list[i]
                 next_c = clips_list[i + 1]
-                next_title = " ".join(next_c.get("title", f"Part {next_c.get('num', i+2)}").split()[:3])
+                next_title = " ".join(next_c.get("title", f"Part {next_c.get('num', i+1)}").split()[:3])
                 curr_c["bridge_text"] = [f"What Is {next_title} ?"]
 
         with open(plan_path, "w", encoding="utf-8") as pf:
@@ -2976,18 +2978,26 @@ def ingest_episode(
     docs_ep_dir = os.path.join("docs", "episodes", str(episode))
     os.makedirs(docs_ep_dir, exist_ok=True)
     shutil.copy2(plan_path, os.path.join(docs_ep_dir, "plan.json"))
+    src_docs_ep_dir = os.path.join("..", "src", "ddma", "docs", "episodes", str(episode))
+    if os.path.exists(os.path.join("..", "src", "ddma", "docs")):
+        os.makedirs(src_docs_ep_dir, exist_ok=True)
+        shutil.copy2(plan_path, os.path.join(src_docs_ep_dir, "plan.json"))
 
-    # 5. Register in docs/episodes.json
+    # 5. Register in docs/episodes.json (and ../src/ddma/docs/episodes.json mirror)
     update_ingestion_progress(proj_dir, 3, 95, "Syncing episode manifest and preview player assets...", "Updating docs/episodes.json for GitHub Pages routing.")
-    ep_manifest_path = os.path.join("docs", "episodes.json")
-    if os.path.exists(ep_manifest_path):
+    manifest_paths = [os.path.join("docs", "episodes.json")]
+    src_manifest_path = os.path.join("..", "src", "ddma", "docs", "episodes.json")
+    if os.path.exists(os.path.dirname(src_manifest_path)):
+        manifest_paths.append(src_manifest_path)
+
+    for ep_manifest_path in manifest_paths:
         try:
-            with open(ep_manifest_path, "r", encoding="utf-8") as mf:
-                manifest = json.load(mf)
-            
+            manifest = []
+            if os.path.exists(ep_manifest_path):
+                with open(ep_manifest_path, "r", encoding="utf-8") as mf:
+                    manifest = json.load(mf)
+
             manifest = [m for m in manifest if str(m.get("id")) != str(episode) and str(m.get("number")) != str(episode)]
-            for m in manifest:
-                m["isDefault"] = False
 
             ep_title = title
             if clips_list and len(clips_list) > 0 and clips_list[0].get("title"):
@@ -2995,18 +3005,24 @@ def ingest_episode(
 
             manifest.append({
                 "id": str(episode),
-                "number": episode,
+                "number": int(episode) if str(episode).isdigit() else episode,
                 "title": ep_title,
                 "fullTitle": f"Episode {episode}: {ep_title}",
                 "planPath": f"episodes/{episode}/plan.json",
                 "clipsDir": f"episodes/{episode}/clips",
                 "links": {},
-                "isDefault": True
+                "isDefault": False
             })
+            manifest.sort(key=lambda m: int(m.get("number") or (int(m["id"]) if str(m.get("id", "")).isdigit() else 0)))
+            for m in manifest:
+                m["isDefault"] = False
+            if manifest:
+                manifest[-1]["isDefault"] = True
+
             with open(ep_manifest_path, "w", encoding="utf-8") as mf:
                 json.dump(manifest, mf, indent=2)
         except Exception as me:
-            typer.echo(f"Warning updating episodes.json: {me}")
+            typer.echo(f"Warning updating {ep_manifest_path}: {me}")
 
     # Mark ready
     info_data["status"] = "ready"

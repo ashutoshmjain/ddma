@@ -1845,40 +1845,6 @@
                         <input type="password" id="settingsGeminiApiKey" placeholder="Enter Gemini API Key" autocomplete="new-password" data-lpignore="true" style="width: 380px; padding: 0.55rem; font-size: 0.8rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
                     </div>
 
-                    <!-- Single Clip Remix Prompt -->
-                    <div style="background: var(--panel-bg-darker); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.6rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <label style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: block;">DEFAULT CLIP REMIX PROMPT (SINGLE CLIP RECASTING)</label>
-                                <span style="font-size: 0.72rem; color: var(--text-muted);">Used when clicking '🤖 Remix' on an individual clip card. Supports '{clip_num}' macro.</span>
-                            </div>
-                            <button type="button" class="btn btn-secondary btn-mini" id="resetClipPromptBtn" style="font-size: 0.7rem; font-weight: 600;">↺ Reset to Default</button>
-                        </div>
-                        <textarea id="settingsGeminiDefaultPrompt" placeholder="Enter default Clip Remix instructions..." style="width: 100%; height: 160px; padding: 0.8rem; font-size: 0.8rem; font-family: var(--font-mono); line-height: 1.45; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; resize: vertical; box-sizing: border-box;"></textarea>
-                    </div>
-
-                    <!-- Full Episode Auto-Plan Prompt -->
-                    <div style="background: var(--panel-bg-darker); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.6rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <label style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: block;">DEFAULT EPISODE AUTO-PLAN PROMPT (TRIPARTITE CLIP CASTING)</label>
-                                <span style="font-size: 0.72rem; color: var(--text-muted);">Used when casting raw episode transcripts into 0-based clips (&lt;ep&gt;-0, &lt;ep&gt;-1, ...) with max 3-word titles.</span>
-                            </div>
-                            <button type="button" class="btn btn-secondary btn-mini" id="resetEpisodePromptBtn" style="font-size: 0.7rem; font-weight: 600;">↺ Reset to Default</button>
-                        </div>
-                        <textarea id="settingsGeminiEpisodeDefaultPrompt" placeholder="Enter default Episode Auto-Plan instructions..." style="width: 100%; height: 190px; padding: 0.8rem; font-size: 0.8rem; font-family: var(--font-mono); line-height: 1.45; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; resize: vertical; box-sizing: border-box;"></textarea>
-                    </div>
-
-                    <!-- Bridge Curiosity Question Review Prompt -->
-                    <div style="background: var(--panel-bg-darker); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.6rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <label style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); display: block;">DEFAULT BRIDGE CURIOSITY QUESTION PROMPT (MAX 5 WORDS)</label>
-                                <span style="font-size: 0.72rem; color: var(--text-muted);">Used when generating ultra-concise (≤5 words) Outro Bridge curiosity questions between clips.</span>
-                            </div>
-                            <button type="button" class="btn btn-secondary btn-mini" id="resetBridgePromptBtn" style="font-size: 0.7rem; font-weight: 600;">↺ Reset to Default</button>
-                        </div>
-                        <textarea id="settingsGeminiBridgeDefaultPrompt" placeholder="Enter default Bridge Curiosity Question instructions..." style="width: 100%; height: 160px; padding: 0.8rem; font-size: 0.8rem; font-family: var(--font-mono); line-height: 1.45; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none; resize: vertical; box-sizing: border-box;"></textarea>
                     </div>
                 </div>
 
@@ -1949,46 +1915,6 @@
             <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
                 <button class="btn btn-secondary" id="cancelMosaicPromptBtn">Cancel</button>
                 <button class="btn btn-primary" id="submitMosaicPromptBtn" style="background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); border: none;">Start Render</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Gemini Remix Custom Prompt Modal -->
-    <div class="export-modal-overlay" id="geminiPromptModalOverlay">
-        <div class="export-modal" style="max-width: 700px; width: 90%;">
-            <div class="export-modal-header">
-                <h3 style="color: #a855f7; display: flex; align-items: center; gap: 0.5rem;">✨ GEMINI REMIX PROMPT EDITOR</h3>
-                <button class="icon-btn" id="closeGeminiPromptModalBtn" style="font-size: 1.2rem;">✖</button>
-            </div>
-            <div style="margin-top: 1rem;">
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
-                    Review and modify the full prompt being sent to Gemini AI for this clip. You can add specific steering directives, recast rules, or audio constraints:
-                </p>
-                <textarea id="geminiPromptTextarea" style="width: 100%; height: 380px; background: #fcfbf9; color: #1c1917; border: 1px solid var(--border-light); font-family: var(--font-mono); border: 1px solid #374151; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.8rem; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
-                <button class="btn btn-secondary" id="cancelGeminiPromptBtn">Cancel</button>
-                <button class="btn btn-primary" id="submitGeminiPromptBtn" style="background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); border: none;">Run Remix</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Gemini Episode Bridge Review Prompt Modal -->
-    <div class="export-modal-overlay" id="bridgeReviewModalOverlay">
-        <div class="export-modal" style="max-width: 760px; width: 90%;">
-            <div class="export-modal-header">
-                <h3 style="color: #a855f7; display: flex; align-items: center; gap: 0.5rem;">✨ AI EPISODE BRIDGE CARD REVIEWER</h3>
-                <button class="icon-btn" id="closeBridgeReviewModalBtn" style="font-size: 1.2rem;">✖</button>
-            </div>
-            <div style="margin-top: 1rem;">
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4;">
-                    Inspect or customize the prompt sent to Gemini AI to review and align transition curiosity question cards across all clips in the episode:
-                </p>
-                <textarea id="bridgeReviewPromptTextarea" style="width: 100%; height: 420px; background: #fcfbf9; color: #1c1917; border: 1px solid var(--border-light); font-family: var(--font-mono); border: 1px solid #374151; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.8rem; resize: vertical; box-sizing: border-box; outline: none;"></textarea>
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
-                <button class="btn btn-secondary" id="cancelBridgeReviewModalBtn">Cancel</button>
-                <button class="btn btn-primary" id="submitBridgeReviewModalBtn" style="background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%); border: none;">✨ Run AI Review</button>
             </div>
         </div>
     </div>
@@ -2596,7 +2522,6 @@
                             bridge: data.default_gemini_bridge_prompt || data.gemini_bridge_prompt_template || ''
                         };
                         localStorage.setItem('ddma-mosaic-default-prompt', data.mosaic_default_prompt || window.serverDefaultPrompts.mosaic || '');
-                        localStorage.setItem('ddma-gemini-default-prompt', data.gemini_remix_prompt_template || window.serverDefaultPrompts.clip || '');
                         localStorage.setItem('ddma-gemini-episode-default-prompt', data.gemini_episode_remix_prompt_template || window.serverDefaultPrompts.episode || '');
                         localStorage.setItem('ddma-gemini-bridge-default-prompt', data.gemini_bridge_prompt_template || window.serverDefaultPrompts.bridge || '');
                     })
@@ -3259,11 +3184,6 @@
             document.getElementById('settingsMosaicCaptionsNodeId').value = localStorage.getItem('ddma-mosaic-captions-node-id') || '';
             document.getElementById('settingsGeminiApiKey').value = localStorage.getItem('ddma-gemini-api-key') || '';
             document.getElementById('settingsMosaicDefaultPrompt').value = localStorage.getItem('ddma-mosaic-default-prompt') || defaults.mosaic || '';
-            document.getElementById('settingsGeminiDefaultPrompt').value = localStorage.getItem('ddma-gemini-default-prompt') || defaults.clip || '';
-            const epPromptEl = document.getElementById('settingsGeminiEpisodeDefaultPrompt');
-            if (epPromptEl) epPromptEl.value = localStorage.getItem('ddma-gemini-episode-default-prompt') || defaults.episode || '';
-            const bridgePromptEl = document.getElementById('settingsGeminiBridgeDefaultPrompt');
-            if (bridgePromptEl) bridgePromptEl.value = localStorage.getItem('ddma-gemini-bridge-default-prompt') || defaults.bridge || '';
 
             renderSettingsMusicList();
             settingsModalOverlay.classList.add('active');
@@ -3303,51 +3223,6 @@
             });
 
             // Reset prompt preset handlers
-            const resetClipPromptBtn = document.getElementById('resetClipPromptBtn');
-            if (resetClipPromptBtn) {
-                resetClipPromptBtn.addEventListener('click', () => {
-                    fetch('/get-settings')
-                        .then(r => r.json())
-                        .then(d => {
-                            const defVal = d.default_gemini_remix_prompt || (window.serverDefaultPrompts && window.serverDefaultPrompts.clip) || '';
-                            if (defVal) {
-                                document.getElementById('settingsGeminiDefaultPrompt').value = defVal;
-                                showDebug("Reset Clip Remix prompt to default", false);
-                            }
-                        });
-                });
-            }
-
-            const resetEpisodePromptBtn = document.getElementById('resetEpisodePromptBtn');
-            if (resetEpisodePromptBtn) {
-                resetEpisodePromptBtn.addEventListener('click', () => {
-                    fetch('/get-settings')
-                        .then(r => r.json())
-                        .then(d => {
-                            const defVal = d.default_gemini_episode_prompt || (window.serverDefaultPrompts && window.serverDefaultPrompts.episode) || '';
-                            if (defVal) {
-                                document.getElementById('settingsGeminiEpisodeDefaultPrompt').value = defVal;
-                                showDebug("Reset Episode Auto-Plan prompt to default", false);
-                            }
-                        });
-                });
-            }
-
-            const resetBridgePromptBtn = document.getElementById('resetBridgePromptBtn');
-            if (resetBridgePromptBtn) {
-                resetBridgePromptBtn.addEventListener('click', () => {
-                    fetch('/get-settings')
-                        .then(r => r.json())
-                        .then(d => {
-                            const defVal = d.default_gemini_bridge_prompt || (window.serverDefaultPrompts && window.serverDefaultPrompts.bridge) || '';
-                            if (defVal) {
-                                document.getElementById('settingsGeminiBridgeDefaultPrompt').value = defVal;
-                                showDebug("Reset Bridge Curiosity Question prompt to default", false);
-                            }
-                        });
-                });
-            }
-
             const resetMosaicPromptBtn = document.getElementById('resetMosaicPromptBtn');
             if (resetMosaicPromptBtn) {
                 resetMosaicPromptBtn.addEventListener('click', () => {
@@ -3370,8 +3245,6 @@
                 localStorage.setItem('ddma-mosaic-captions-node-id', document.getElementById('settingsMosaicCaptionsNodeId').value.trim());
                 localStorage.setItem('ddma-gemini-api-key', document.getElementById('settingsGeminiApiKey').value.trim());
                 localStorage.setItem('ddma-mosaic-default-prompt', document.getElementById('settingsMosaicDefaultPrompt').value);
-                localStorage.setItem('ddma-gemini-default-prompt', document.getElementById('settingsGeminiDefaultPrompt').value);
-                const saveEpPromptEl = document.getElementById('settingsGeminiEpisodeDefaultPrompt');
                 if (saveEpPromptEl) localStorage.setItem('ddma-gemini-episode-default-prompt', saveEpPromptEl.value);
                 const saveBridgePromptEl = document.getElementById('settingsGeminiBridgeDefaultPrompt');
                 if (saveBridgePromptEl) localStorage.setItem('ddma-gemini-bridge-default-prompt', saveBridgePromptEl.value);
@@ -5932,6 +5805,10 @@
 
         function exportToMosaic(clipIdx, btnEl, force = false) {
             const clip = clips[clipIdx];
+            if (!clip || !clip.locked) {
+                alert("Please lock this clip first before exporting to Mosaic.");
+                return;
+            }
             if (!activeProjectId) return;
             
             const apiKey = localStorage.getItem('ddma-mosaic-api-key') || '';
@@ -7630,96 +7507,6 @@
             });
         }
 
-        const reviewBridgesBtn = document.getElementById('reviewBridgesBtn');
-        const bridgeReviewModalOverlay = document.getElementById('bridgeReviewModalOverlay');
-        const bridgeReviewPromptTextarea = document.getElementById('bridgeReviewPromptTextarea');
-        const closeBridgeReviewModalBtn = document.getElementById('closeBridgeReviewModalBtn');
-        const cancelBridgeReviewModalBtn = document.getElementById('cancelBridgeReviewModalBtn');
-        const submitBridgeReviewModalBtn = document.getElementById('submitBridgeReviewModalBtn');
-
-        if (reviewBridgesBtn) {
-            reviewBridgesBtn.addEventListener('click', async function() {
-                if (!activeProjectId) {
-                    showToast('Please select an active project first.', 'warning');
-                    return;
-                }
-                reviewBridgesBtn.innerHTML = '⏳ Loading Prompt...';
-                reviewBridgesBtn.disabled = true;
-                
-                try {
-                    const resp = await fetch(`/get-bridge-review-prompt?id=${activeProjectId}`);
-                    const data = await resp.json();
-                    if (data.success && data.prompt) {
-                        bridgeReviewPromptTextarea.value = data.prompt;
-                        bridgeReviewModalOverlay.classList.add('active');
-                    } else {
-                        showToast(`Could not load prompt: ${data.error || 'unknown error'}`, 'error');
-                    }
-                } catch (err) {
-                    showToast(`Error fetching prompt: ${err.message}`, 'error');
-                } finally {
-                    reviewBridgesBtn.innerHTML = '✨ AI Review Bridges';
-                    reviewBridgesBtn.disabled = false;
-                }
-            });
-        }
-
-        if (closeBridgeReviewModalBtn) {
-            closeBridgeReviewModalBtn.addEventListener('click', function() {
-                bridgeReviewModalOverlay.classList.remove('active');
-            });
-        }
-        if (cancelBridgeReviewModalBtn) {
-            cancelBridgeReviewModalBtn.addEventListener('click', function() {
-                bridgeReviewModalOverlay.classList.remove('active');
-            });
-        }
-        if (bridgeReviewModalOverlay) {
-            bridgeReviewModalOverlay.addEventListener('click', function(e) {
-                if (e.target === bridgeReviewModalOverlay) {
-                    bridgeReviewModalOverlay.classList.remove('active');
-                }
-            });
-        }
-
-        if (submitBridgeReviewModalBtn) {
-            submitBridgeReviewModalBtn.addEventListener('click', async function() {
-                const customPromptText = bridgeReviewPromptTextarea.value.trim();
-                bridgeReviewModalOverlay.classList.remove('active');
-                
-                if (reviewBridgesBtn) {
-                    reviewBridgesBtn.innerHTML = '⏳ AI Reviewing & Compiling...';
-                    reviewBridgesBtn.disabled = true;
-                }
-                updateStateBar('Gemini AI Reviewing episode bridge cards...');
-                
-                try {
-                    const resp = await fetch(`/review-episode-bridges?id=${activeProjectId}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ custom_prompt: customPromptText })
-                    });
-                    const data = await resp.json();
-                    if (data.success) {
-                        showToast('✨ Gemini successfully reviewed and updated all episode bridge cards!', 'success');
-                        await loadProject(activeProjectId);
-                    } else {
-                        showToast(`Review failed: ${data.error}`, 'error');
-                    }
-                } catch (err) {
-                    showToast(`Error invoking AI bridge reviewer: ${err.message}`, 'error');
-                } finally {
-                    if (reviewBridgesBtn) {
-                        reviewBridgesBtn.innerHTML = '✨ AI Review Bridges';
-                        reviewBridgesBtn.disabled = false;
-                    }
-                    updateStateBar('Ready');
-                }
-            });
-        }
-
-
-
         // Open Export Assets Modal
         if (openExportModalBtn) openExportModalBtn.addEventListener('click', function() {
             if (clips.length === 0) {
@@ -7950,27 +7737,6 @@
                 closeMosaicPromptModal();
             }
         });
-
-        const closeGeminiPromptModalBtn = document.getElementById('closeGeminiPromptModalBtn');
-        const cancelGeminiPromptBtn = document.getElementById('cancelGeminiPromptBtn');
-        const geminiPromptModalOverlay = document.getElementById('geminiPromptModalOverlay');
-        if (closeGeminiPromptModalBtn) {
-            closeGeminiPromptModalBtn.addEventListener('click', function() {
-                geminiPromptModalOverlay.classList.remove('active');
-            });
-        }
-        if (cancelGeminiPromptBtn) {
-            cancelGeminiPromptBtn.addEventListener('click', function() {
-                geminiPromptModalOverlay.classList.remove('active');
-            });
-        }
-        if (geminiPromptModalOverlay) {
-            geminiPromptModalOverlay.addEventListener('click', function(e) {
-                if (e.target === geminiPromptModalOverlay) {
-                    geminiPromptModalOverlay.classList.remove('active');
-                }
-            });
-        }
 
         videoModalOverlay.addEventListener('click', function(e) {
             if (e.target === videoModalOverlay) {

@@ -4717,7 +4717,7 @@
         "_caption_words": [
             {
                 "word": "Okay.",
-                "start": 0.0,
+                "start": 0,
                 "end": 0.5
             },
             {
@@ -4918,11 +4918,11 @@
             {
                 "word": "zooms",
                 "start": 19.76,
-                "end": 20.0
+                "end": 20
             },
             {
                 "word": "way,",
-                "start": 20.0,
+                "start": 20,
                 "end": 20.62
             },
             {
@@ -4963,7 +4963,7 @@
             {
                 "word": "beyond.",
                 "start": 23.66,
-                "end": 24.0
+                "end": 24
             },
             {
                 "word": "It",
@@ -5043,11 +5043,11 @@
             {
                 "word": "sounds",
                 "start": 30.72,
-                "end": 31.0
+                "end": 31
             },
             {
                 "word": "super",
-                "start": 31.0,
+                "start": 31,
                 "end": 31.4
             },
             {
@@ -5088,11 +5088,11 @@
             {
                 "word": "Think",
                 "start": 33.82,
-                "end": 34.0
+                "end": 34
             },
             {
                 "word": "of",
-                "start": 34.0,
+                "start": 34,
                 "end": 34.12
             },
             {
@@ -5193,11 +5193,11 @@
             {
                 "word": "are",
                 "start": 40.84,
-                "end": 41.0
+                "end": 41
             },
             {
                 "word": "zero",
-                "start": 41.0,
+                "start": 41,
                 "end": 41.38
             },
             {
@@ -5227,7 +5227,7 @@
             },
             {
                 "word": "wow.",
-                "start": 43.0,
+                "start": 43,
                 "end": 43.16
             },
             {
@@ -5303,11 +5303,11 @@
             {
                 "word": "undefined",
                 "start": 48.42,
-                "end": 49.0
+                "end": 49
             },
             {
                 "word": "totality.",
-                "start": 49.0,
+                "start": 49,
                 "end": 49.48
             },
             {
@@ -5498,7 +5498,7 @@
             {
                 "word": "it.",
                 "start": 62.8,
-                "end": 63.0
+                "end": 63
             },
             {
                 "word": "You",
@@ -5578,11 +5578,11 @@
             {
                 "word": "And",
                 "start": 68.56,
-                "end": 69.0
+                "end": 69
             },
             {
                 "word": "the",
-                "start": 69.0,
+                "start": 69,
                 "end": 69.1
             },
             {
@@ -5822,7 +5822,7 @@
             },
             {
                 "word": "like",
-                "start": 88.0,
+                "start": 88,
                 "end": 88.1
             },
             {
@@ -6053,11 +6053,11 @@
             {
                 "word": "is",
                 "start": 105.74,
-                "end": 106.0
+                "end": 106
             },
             {
                 "word": "wild.",
-                "start": 106.0,
+                "start": 106,
                 "end": 106.5
             },
             {
@@ -6211,7 +6211,7 @@
                     {
                         "word": "okay.",
                         "start": 1.5,
-                        "end": 2.0
+                        "end": 2
                     },
                     {
                         "word": "so",
@@ -6410,11 +6410,11 @@
                     {
                         "word": "to",
                         "start": 17.54,
-                        "end": 18.0
+                        "end": 18
                     },
                     {
                         "word": "understand",
-                        "start": 18.0,
+                        "start": 18,
                         "end": 18.32
                     },
                     {
@@ -7251,11 +7251,11 @@
                     {
                         "word": "to",
                         "start": 64.92,
-                        "end": 65.0
+                        "end": 65
                     },
                     {
                         "word": "invent",
-                        "start": 65.0,
+                        "start": 65,
                         "end": 65.26
                     },
                     {
@@ -7586,11 +7586,11 @@
                     {
                         "word": "how",
                         "start": 86.36,
-                        "end": 87.0
+                        "end": 87
                     },
                     {
                         "word": "do",
-                        "start": 87.0,
+                        "start": 87,
                         "end": 87.36
                     },
                     {
@@ -7768,7 +7768,7 @@
                     {
                         "word": "taste,",
                         "start": 96.88,
-                        "end": 97.0
+                        "end": 97
                     },
                     {
                         "word": "smell,",
@@ -7950,7 +7950,7 @@
                     {
                         "word": "wild.",
                         "start": 107.5,
-                        "end": 108.0
+                        "end": 108
                     }
                 ]
             },
@@ -7966,7 +7966,7 @@
                     },
                     {
                         "word": "coming",
-                        "start": 109.0,
+                        "start": 109,
                         "end": 109.18
                     },
                     {
@@ -8120,7 +8120,7 @@
                     {
                         "word": "time.",
                         "start": 115.6,
-                        "end": 116.0
+                        "end": 116
                     },
                     {
                         "word": "yeah.",
@@ -8134,7 +8134,7 @@
         "rendered_duration": 126.25,
         "audio_duration": 120.72,
         "intro_offset": 1.5,
-        "outro_duration": 5.0,
+        "outro_duration": 5,
         "source_start": 134.18,
         "source_end": 244.78,
         "_audio_sig": "aaf474f3a10a438c4ff71e70336e5a3c",
@@ -8187,7 +8187,7 @@
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
-        "locked": false,
+        "locked": true,
         "visual_source": "mosaic",
         "coming_up_title": "The Division Algebras"
     },
@@ -8238,7 +8238,7 @@
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
-        "locked": false,
+        "locked": true,
         "visual_source": "mosaic",
         "coming_up_title": "The Scalar Observer"
     },
@@ -8289,7 +8289,7 @@
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
-        "locked": false,
+        "locked": true,
         "visual_source": "mosaic",
         "coming_up_title": "Quaternions"
     },
@@ -8298,7 +8298,7 @@
         "title": "Quaternions",
         "start": 506.46,
         "end": 591.32,
-        "duration": 84.86,
+        "duration": 100.5,
         "bridge_text": [
             "What Is 2D Spasm ?"
         ],
@@ -8340,9 +8340,2777 @@
                 "music_file": "music/deepDive-conclusion.mp3"
             }
         ],
-        "locked": false,
+        "locked": true,
         "visual_source": "mosaic",
-        "coming_up_title": "The 2D Spasm"
+        "coming_up_title": "The 2D Spasm",
+        "_caption_words": [
+            {
+                "word": "Clip",
+                "start": 0,
+                "end": 0.04
+            },
+            {
+                "word": "five,",
+                "start": 0.02,
+                "end": 0.34
+            },
+            {
+                "word": "quaternions.",
+                "start": 0.78,
+                "end": 1.18
+            },
+            {
+                "word": "There",
+                "start": 1.68,
+                "end": 1.72
+            },
+            {
+                "word": "is",
+                "start": 1.68,
+                "end": 1.82
+            },
+            {
+                "word": "nothing",
+                "start": 1.82,
+                "end": 2.18
+            },
+            {
+                "word": "imaginary",
+                "start": 2.18,
+                "end": 2.72
+            },
+            {
+                "word": "about",
+                "start": 2.72,
+                "end": 3.08
+            },
+            {
+                "word": "I,",
+                "start": 3.08,
+                "end": 3.34
+            },
+            {
+                "word": "J,",
+                "start": 3.38,
+                "end": 3.5
+            },
+            {
+                "word": "and",
+                "start": 3.56,
+                "end": 3.68
+            },
+            {
+                "word": "K.",
+                "start": 3.68,
+                "end": 3.86
+            },
+            {
+                "word": "They",
+                "start": 4.14,
+                "end": 4.3
+            },
+            {
+                "word": "are",
+                "start": 4.3,
+                "end": 4.44
+            },
+            {
+                "word": "the",
+                "start": 4.44,
+                "end": 4.6
+            },
+            {
+                "word": "gears",
+                "start": 4.6,
+                "end": 4.88
+            },
+            {
+                "word": "of",
+                "start": 4.88,
+                "end": 5.18
+            },
+            {
+                "word": "reality.",
+                "start": 5.18,
+                "end": 5.64
+            },
+            {
+                "word": "In",
+                "start": 6.38,
+                "end": 6.46
+            },
+            {
+                "word": "a",
+                "start": 6.46,
+                "end": 6.58
+            },
+            {
+                "word": "lot",
+                "start": 6.58,
+                "end": 6.8
+            },
+            {
+                "word": "of",
+                "start": 6.8,
+                "end": 6.96
+            },
+            {
+                "word": "math",
+                "start": 6.96,
+                "end": 7.18
+            },
+            {
+                "word": "classes,",
+                "start": 7.18,
+                "end": 7.66
+            },
+            {
+                "word": "I,",
+                "start": 8.26,
+                "end": 8.32
+            },
+            {
+                "word": "J,",
+                "start": 8.4,
+                "end": 8.58
+            },
+            {
+                "word": "and",
+                "start": 8.6,
+                "end": 8.74
+            },
+            {
+                "word": "K",
+                "start": 8.74,
+                "end": 8.9
+            },
+            {
+                "word": "are",
+                "start": 8.9,
+                "end": 9.08
+            },
+            {
+                "word": "taught",
+                "start": 9.08,
+                "end": 9.34
+            },
+            {
+                "word": "as",
+                "start": 9.34,
+                "end": 9.58
+            },
+            {
+                "word": "imaginary",
+                "start": 9.58,
+                "end": 10.44
+            },
+            {
+                "word": "units.",
+                "start": 10.44,
+                "end": 11
+            },
+            {
+                "word": "Right,",
+                "start": 15.83,
+                "end": 16.15
+            },
+            {
+                "word": "like",
+                "start": 16.33,
+                "end": 16.47
+            },
+            {
+                "word": "abstract",
+                "start": 16.47,
+                "end": 16.85
+            },
+            {
+                "word": "tricks",
+                "start": 16.85,
+                "end": 17.27
+            },
+            {
+                "word": "to",
+                "start": 17.27,
+                "end": 17.69
+            },
+            {
+                "word": "solve",
+                "start": 17.69,
+                "end": 18.15
+            },
+            {
+                "word": "equations.",
+                "start": 18.15,
+                "end": 18.63
+            },
+            {
+                "word": "But",
+                "start": 18.85,
+                "end": 19.01
+            },
+            {
+                "word": "the",
+                "start": 19.01,
+                "end": 19.19
+            },
+            {
+                "word": "paper",
+                "start": 19.19,
+                "end": 19.51
+            },
+            {
+                "word": "clarifies",
+                "start": 19.51,
+                "end": 20.09
+            },
+            {
+                "word": "a",
+                "start": 20.09,
+                "end": 20.37
+            },
+            {
+                "word": "major",
+                "start": 20.37,
+                "end": 20.75
+            },
+            {
+                "word": "point",
+                "start": 20.75,
+                "end": 21.07
+            },
+            {
+                "word": "here.",
+                "start": 21.07,
+                "end": 21.35
+            },
+            {
+                "word": "We",
+                "start": 21.77,
+                "end": 21.95
+            },
+            {
+                "word": "have",
+                "start": 21.95,
+                "end": 22.15
+            },
+            {
+                "word": "to",
+                "start": 22.15,
+                "end": 22.33
+            },
+            {
+                "word": "completely",
+                "start": 22.33,
+                "end": 22.69
+            },
+            {
+                "word": "discard",
+                "start": 22.69,
+                "end": 23.15
+            },
+            {
+                "word": "the",
+                "start": 23.15,
+                "end": 23.39
+            },
+            {
+                "word": "word",
+                "start": 23.39,
+                "end": 23.63
+            },
+            {
+                "word": "imaginary.",
+                "start": 23.63,
+                "end": 24.33
+            },
+            {
+                "word": "Completely.",
+                "start": 25.03,
+                "end": 25.45
+            },
+            {
+                "word": "They",
+                "start": 25.87,
+                "end": 25.99
+            },
+            {
+                "word": "are",
+                "start": 25.99,
+                "end": 26.09
+            },
+            {
+                "word": "concrete,",
+                "start": 26.09,
+                "end": 26.47
+            },
+            {
+                "word": "physical,",
+                "start": 26.77,
+                "end": 27.19
+            },
+            {
+                "word": "90",
+                "start": 27.19,
+                "end": 27.93
+            },
+            {
+                "word": "degree",
+                "start": 27.93,
+                "end": 28.23
+            },
+            {
+                "word": "spatial",
+                "start": 28.23,
+                "end": 28.65
+            },
+            {
+                "word": "rotation",
+                "start": 28.65,
+                "end": 29.15
+            },
+            {
+                "word": "generators.",
+                "start": 29.15,
+                "end": 29.73
+            },
+            {
+                "word": "Okay,",
+                "start": 30.49,
+                "end": 30.55
+            },
+            {
+                "word": "so",
+                "start": 30.69,
+                "end": 31.01
+            },
+            {
+                "word": "I",
+                "start": 31.01,
+                "end": 31.59
+            },
+            {
+                "word": "is",
+                "start": 31.59,
+                "end": 32.25
+            },
+            {
+                "word": "a",
+                "start": 32.25,
+                "end": 32.37
+            },
+            {
+                "word": "90",
+                "start": 32.37,
+                "end": 32.61
+            },
+            {
+                "word": "degree",
+                "start": 32.61,
+                "end": 32.83
+            },
+            {
+                "word": "rotation",
+                "start": 32.83,
+                "end": 33.39
+            },
+            {
+                "word": "around",
+                "start": 33.39,
+                "end": 33.63
+            },
+            {
+                "word": "the",
+                "start": 33.63,
+                "end": 33.77
+            },
+            {
+                "word": "X",
+                "start": 33.77,
+                "end": 34.03
+            },
+            {
+                "word": "axis,",
+                "start": 34.03,
+                "end": 34.43
+            },
+            {
+                "word": "J",
+                "start": 35.29,
+                "end": 35.39
+            },
+            {
+                "word": "is",
+                "start": 35.39,
+                "end": 36.03
+            },
+            {
+                "word": "around",
+                "start": 36.03,
+                "end": 36.21
+            },
+            {
+                "word": "the",
+                "start": 36.21,
+                "end": 36.35
+            },
+            {
+                "word": "Y",
+                "start": 36.35,
+                "end": 36.57
+            },
+            {
+                "word": "axis,",
+                "start": 36.57,
+                "end": 36.97
+            },
+            {
+                "word": "and",
+                "start": 37.45,
+                "end": 37.53
+            },
+            {
+                "word": "K",
+                "start": 37.53,
+                "end": 37.71
+            },
+            {
+                "word": "is",
+                "start": 37.71,
+                "end": 37.89
+            },
+            {
+                "word": "around",
+                "start": 37.89,
+                "end": 38.15
+            },
+            {
+                "word": "the",
+                "start": 38.15,
+                "end": 38.31
+            },
+            {
+                "word": "Z",
+                "start": 38.31,
+                "end": 38.47
+            },
+            {
+                "word": "axis.",
+                "start": 38.47,
+                "end": 38.87
+            },
+            {
+                "word": "Exactly.",
+                "start": 39.69,
+                "end": 39.75
+            },
+            {
+                "word": "To",
+                "start": 40.27,
+                "end": 40.47
+            },
+            {
+                "word": "visualize",
+                "start": 40.47,
+                "end": 40.77
+            },
+            {
+                "word": "this,",
+                "start": 40.77,
+                "end": 41.15
+            },
+            {
+                "word": "the",
+                "start": 41.35,
+                "end": 41.51
+            },
+            {
+                "word": "research",
+                "start": 41.51,
+                "end": 41.77
+            },
+            {
+                "word": "uses",
+                "start": 41.77,
+                "end": 42.11
+            },
+            {
+                "word": "a",
+                "start": 42.11,
+                "end": 42.43
+            },
+            {
+                "word": "3D",
+                "start": 42.43,
+                "end": 42.99
+            },
+            {
+                "word": "dice",
+                "start": 42.99,
+                "end": 43.29
+            },
+            {
+                "word": "model.",
+                "start": 43.29,
+                "end": 43.69
+            },
+            {
+                "word": "Ooh,",
+                "start": 43.99,
+                "end": 44.13
+            },
+            {
+                "word": "I",
+                "start": 44.15,
+                "end": 44.25
+            },
+            {
+                "word": "love",
+                "start": 44.25,
+                "end": 44.35
+            },
+            {
+                "word": "this",
+                "start": 44.35,
+                "end": 44.55
+            },
+            {
+                "word": "analogy.",
+                "start": 44.55,
+                "end": 44.97
+            },
+            {
+                "word": "Imagine",
+                "start": 45.37,
+                "end": 45.67
+            },
+            {
+                "word": "a",
+                "start": 45.67,
+                "end": 46.17
+            },
+            {
+                "word": "large",
+                "start": 46.17,
+                "end": 46.33
+            },
+            {
+                "word": "playing",
+                "start": 46.33,
+                "end": 46.59
+            },
+            {
+                "word": "die",
+                "start": 46.59,
+                "end": 46.85
+            },
+            {
+                "word": "on",
+                "start": 46.85,
+                "end": 47.05
+            },
+            {
+                "word": "your",
+                "start": 47.05,
+                "end": 47.17
+            },
+            {
+                "word": "desk.",
+                "start": 47.17,
+                "end": 47.43
+            },
+            {
+                "word": "Every",
+                "start": 48.01,
+                "end": 48.23
+            },
+            {
+                "word": "90",
+                "start": 48.23,
+                "end": 48.63
+            },
+            {
+                "word": "degree",
+                "start": 48.63,
+                "end": 48.89
+            },
+            {
+                "word": "flip",
+                "start": 48.89,
+                "end": 49.17
+            },
+            {
+                "word": "you",
+                "start": 49.17,
+                "end": 49.33
+            },
+            {
+                "word": "make",
+                "start": 49.33,
+                "end": 49.49
+            },
+            {
+                "word": "with",
+                "start": 49.49,
+                "end": 49.65
+            },
+            {
+                "word": "your",
+                "start": 49.65,
+                "end": 49.79
+            },
+            {
+                "word": "hand",
+                "start": 49.79,
+                "end": 50.15
+            },
+            {
+                "word": "is",
+                "start": 50.15,
+                "end": 50.71
+            },
+            {
+                "word": "one",
+                "start": 50.71,
+                "end": 50.85
+            },
+            {
+                "word": "of",
+                "start": 50.85,
+                "end": 50.97
+            },
+            {
+                "word": "these",
+                "start": 50.97,
+                "end": 51.15
+            },
+            {
+                "word": "operational",
+                "start": 51.15,
+                "end": 51.69
+            },
+            {
+                "word": "generators.",
+                "start": 51.69,
+                "end": 52.19
+            },
+            {
+                "word": "Okay,",
+                "start": 52.99,
+                "end": 53.21
+            },
+            {
+                "word": "so",
+                "start": 53.25,
+                "end": 53.47
+            },
+            {
+                "word": "I",
+                "start": 53.47,
+                "end": 53.57
+            },
+            {
+                "word": "roll",
+                "start": 53.57,
+                "end": 53.73
+            },
+            {
+                "word": "it",
+                "start": 53.73,
+                "end": 53.85
+            },
+            {
+                "word": "forward,",
+                "start": 53.85,
+                "end": 54.25
+            },
+            {
+                "word": "and",
+                "start": 54.79,
+                "end": 54.93
+            },
+            {
+                "word": "that's",
+                "start": 54.93,
+                "end": 55.13
+            },
+            {
+                "word": "I.",
+                "start": 55.13,
+                "end": 55.35
+            },
+            {
+                "word": "Right.",
+                "start": 55.83,
+                "end": 55.95
+            },
+            {
+                "word": "And",
+                "start": 56.45,
+                "end": 56.69
+            },
+            {
+                "word": "because",
+                "start": 56.69,
+                "end": 56.91
+            },
+            {
+                "word": "we're",
+                "start": 56.91,
+                "end": 57.21
+            },
+            {
+                "word": "in",
+                "start": 57.21,
+                "end": 57.41
+            },
+            {
+                "word": "a",
+                "start": 57.41,
+                "end": 57.53
+            },
+            {
+                "word": "3D",
+                "start": 57.53,
+                "end": 57.83
+            },
+            {
+                "word": "world,",
+                "start": 57.83,
+                "end": 58.25
+            },
+            {
+                "word": "these",
+                "start": 58.83,
+                "end": 58.95
+            },
+            {
+                "word": "orthogonal",
+                "start": 58.95,
+                "end": 59.49
+            },
+            {
+                "word": "operations",
+                "start": 59.49,
+                "end": 60.09
+            },
+            {
+                "word": "anti",
+                "start": 60.09,
+                "end": 60.73
+            },
+            {
+                "word": "-commute.",
+                "start": 60.73,
+                "end": 61.17
+            },
+            {
+                "word": "Meaning",
+                "start": 61.69,
+                "end": 61.87
+            },
+            {
+                "word": "the",
+                "start": 61.87,
+                "end": 62.65
+            },
+            {
+                "word": "order",
+                "start": 62.65,
+                "end": 62.89
+            },
+            {
+                "word": "strictly",
+                "start": 62.89,
+                "end": 63.25
+            },
+            {
+                "word": "matters.",
+                "start": 63.25,
+                "end": 63.67
+            },
+            {
+                "word": "Yes.",
+                "start": 64.09,
+                "end": 64.21
+            },
+            {
+                "word": "If",
+                "start": 64.73,
+                "end": 64.81
+            },
+            {
+                "word": "you",
+                "start": 64.81,
+                "end": 64.93
+            },
+            {
+                "word": "roll",
+                "start": 64.93,
+                "end": 65.07
+            },
+            {
+                "word": "it",
+                "start": 65.07,
+                "end": 65.19
+            },
+            {
+                "word": "forward,",
+                "start": 65.19,
+                "end": 65.53
+            },
+            {
+                "word": "then",
+                "start": 65.93,
+                "end": 66.01
+            },
+            {
+                "word": "right.",
+                "start": 66.01,
+                "end": 66.35
+            },
+            {
+                "word": "It",
+                "start": 66.91,
+                "end": 67.11
+            },
+            {
+                "word": "ends",
+                "start": 67.11,
+                "end": 67.27
+            },
+            {
+                "word": "up",
+                "start": 67.27,
+                "end": 67.43
+            },
+            {
+                "word": "facing",
+                "start": 67.43,
+                "end": 67.75
+            },
+            {
+                "word": "a",
+                "start": 67.75,
+                "end": 67.97
+            },
+            {
+                "word": "completely",
+                "start": 67.97,
+                "end": 68.27
+            },
+            {
+                "word": "different",
+                "start": 68.27,
+                "end": 68.55
+            },
+            {
+                "word": "way",
+                "start": 68.55,
+                "end": 68.77
+            },
+            {
+                "word": "than",
+                "start": 68.77,
+                "end": 68.91
+            },
+            {
+                "word": "if",
+                "start": 68.91,
+                "end": 69.03
+            },
+            {
+                "word": "you",
+                "start": 69.03,
+                "end": 69.21
+            },
+            {
+                "word": "rolled",
+                "start": 69.21,
+                "end": 69.57
+            },
+            {
+                "word": "it",
+                "start": 69.57,
+                "end": 69.67
+            },
+            {
+                "word": "right,",
+                "start": 69.67,
+                "end": 69.95
+            },
+            {
+                "word": "then",
+                "start": 69.95,
+                "end": 70.49
+            },
+            {
+                "word": "forward.",
+                "start": 70.49,
+                "end": 70.87
+            },
+            {
+                "word": "The",
+                "start": 71.27,
+                "end": 71.51
+            },
+            {
+                "word": "physical",
+                "start": 71.51,
+                "end": 71.87
+            },
+            {
+                "word": "history",
+                "start": 71.87,
+                "end": 72.21
+            },
+            {
+                "word": "changes",
+                "start": 72.21,
+                "end": 72.57
+            },
+            {
+                "word": "the",
+                "start": 72.57,
+                "end": 72.77
+            },
+            {
+                "word": "outcome.",
+                "start": 72.77,
+                "end": 73.09
+            },
+            {
+                "word": "And",
+                "start": 73.57,
+                "end": 73.63
+            },
+            {
+                "word": "again,",
+                "start": 73.63,
+                "end": 73.79
+            },
+            {
+                "word": "don't",
+                "start": 73.91,
+                "end": 74.07
+            },
+            {
+                "word": "worry",
+                "start": 74.07,
+                "end": 74.23
+            },
+            {
+                "word": "about",
+                "start": 74.23,
+                "end": 74.45
+            },
+            {
+                "word": "visualizing",
+                "start": 74.45,
+                "end": 75.05
+            },
+            {
+                "word": "matrix",
+                "start": 75.05,
+                "end": 75.37
+            },
+            {
+                "word": "math",
+                "start": 75.37,
+                "end": 75.71
+            },
+            {
+                "word": "in",
+                "start": 75.71,
+                "end": 75.93
+            },
+            {
+                "word": "your",
+                "start": 75.93,
+                "end": 76.07
+            },
+            {
+                "word": "head.",
+                "start": 76.07,
+                "end": 76.27
+            },
+            {
+                "word": "You",
+                "start": 76.39,
+                "end": 76.47
+            },
+            {
+                "word": "can",
+                "start": 76.47,
+                "end": 76.63
+            },
+            {
+                "word": "see",
+                "start": 76.63,
+                "end": 76.91
+            },
+            {
+                "word": "the",
+                "start": 76.91,
+                "end": 77.05
+            },
+            {
+                "word": "exact",
+                "start": 77.05,
+                "end": 77.41
+            },
+            {
+                "word": "interactive",
+                "start": 77.41,
+                "end": 77.97
+            },
+            {
+                "word": "dice",
+                "start": 77.97,
+                "end": 78.29
+            },
+            {
+                "word": "simulation",
+                "start": 78.29,
+                "end": 78.79
+            },
+            {
+                "word": "on",
+                "start": 78.79,
+                "end": 79.11
+            },
+            {
+                "word": "our",
+                "start": 79.11,
+                "end": 79.29
+            },
+            {
+                "word": "Deep",
+                "start": 79.29,
+                "end": 79.45
+            },
+            {
+                "word": "Dive",
+                "start": 79.45,
+                "end": 79.59
+            },
+            {
+                "word": "website.",
+                "start": 79.59,
+                "end": 79.97
+            },
+            {
+                "word": "It",
+                "start": 80.39,
+                "end": 80.43
+            },
+            {
+                "word": "makes",
+                "start": 80.39,
+                "end": 80.53
+            },
+            {
+                "word": "it",
+                "start": 80.53,
+                "end": 80.67
+            },
+            {
+                "word": "so",
+                "start": 80.67,
+                "end": 80.91
+            },
+            {
+                "word": "clear.",
+                "start": 80.91,
+                "end": 81.17
+            },
+            {
+                "word": "Coming",
+                "start": 81.71,
+                "end": 81.89
+            },
+            {
+                "word": "up",
+                "start": 81.89,
+                "end": 82.03
+            },
+            {
+                "word": "in",
+                "start": 82.03,
+                "end": 82.13
+            },
+            {
+                "word": "the",
+                "start": 82.13,
+                "end": 82.23
+            },
+            {
+                "word": "next",
+                "start": 82.23,
+                "end": 82.41
+            },
+            {
+                "word": "clip,",
+                "start": 82.41,
+                "end": 82.65
+            },
+            {
+                "word": "we",
+                "start": 82.75,
+                "end": 82.97
+            },
+            {
+                "word": "look",
+                "start": 82.97,
+                "end": 83.21
+            },
+            {
+                "word": "at",
+                "start": 83.21,
+                "end": 83.39
+            },
+            {
+                "word": "what",
+                "start": 83.39,
+                "end": 83.55
+            },
+            {
+                "word": "happens",
+                "start": 83.55,
+                "end": 83.87
+            },
+            {
+                "word": "when",
+                "start": 83.87,
+                "end": 84.13
+            },
+            {
+                "word": "space",
+                "start": 84.13,
+                "end": 84.59
+            },
+            {
+                "word": "takes",
+                "start": 84.59,
+                "end": 84.85
+            },
+            {
+                "word": "a",
+                "start": 84.85,
+                "end": 85.27
+            },
+            {
+                "word": "two",
+                "start": 85.27,
+                "end": 85.47
+            },
+            {
+                "word": "-dimensional",
+                "start": 85.47,
+                "end": 85.73
+            },
+            {
+                "word": "spasm.",
+                "start": 85.73,
+                "end": 86.37
+            },
+            {
+                "word": "Moving",
+                "start": 87.17,
+                "end": 87.21
+            },
+            {
+                "word": "from",
+                "start": 87.17,
+                "end": 87.45
+            },
+            {
+                "word": "the",
+                "start": 87.45,
+                "end": 87.61
+            },
+            {
+                "word": "dice",
+                "start": 87.61,
+                "end": 87.87
+            },
+            {
+                "word": "to",
+                "start": 87.87,
+                "end": 88.43
+            },
+            {
+                "word": "the",
+                "start": 88.43,
+                "end": 88.57
+            },
+            {
+                "word": "waves.",
+                "start": 88.57,
+                "end": 88.95
+            }
+        ],
+        "_caption_words_sig": "7545f98159bdd94ef887e360c9f11393",
+        "caption_chunks": [
+            {
+                "start": 1.5,
+                "end": 3.18,
+                "text": "clip five, quaternions.",
+                "words": [
+                    {
+                        "word": "clip",
+                        "start": 1.5,
+                        "end": 1.54
+                    },
+                    {
+                        "word": "five,",
+                        "start": 1.52,
+                        "end": 1.84
+                    },
+                    {
+                        "word": "quaternions.",
+                        "start": 2.28,
+                        "end": 2.68
+                    }
+                ]
+            },
+            {
+                "start": 3.18,
+                "end": 4.58,
+                "text": "there is nothing imaginary about",
+                "words": [
+                    {
+                        "word": "there",
+                        "start": 3.18,
+                        "end": 3.22
+                    },
+                    {
+                        "word": "is",
+                        "start": 3.18,
+                        "end": 3.32
+                    },
+                    {
+                        "word": "nothing",
+                        "start": 3.32,
+                        "end": 3.68
+                    },
+                    {
+                        "word": "imaginary",
+                        "start": 3.68,
+                        "end": 4.22
+                    },
+                    {
+                        "word": "about",
+                        "start": 4.22,
+                        "end": 4.58
+                    }
+                ]
+            },
+            {
+                "start": 4.58,
+                "end": 5.64,
+                "text": "i, j, and k.",
+                "words": [
+                    {
+                        "word": "i,",
+                        "start": 4.58,
+                        "end": 4.84
+                    },
+                    {
+                        "word": "j,",
+                        "start": 4.88,
+                        "end": 5
+                    },
+                    {
+                        "word": "and",
+                        "start": 5.06,
+                        "end": 5.18
+                    },
+                    {
+                        "word": "k.",
+                        "start": 5.18,
+                        "end": 5.36
+                    }
+                ]
+            },
+            {
+                "start": 5.64,
+                "end": 7.88,
+                "text": "they are the gears of reality.",
+                "words": [
+                    {
+                        "word": "they",
+                        "start": 5.64,
+                        "end": 5.8
+                    },
+                    {
+                        "word": "are",
+                        "start": 5.8,
+                        "end": 5.94
+                    },
+                    {
+                        "word": "the",
+                        "start": 5.94,
+                        "end": 6.1
+                    },
+                    {
+                        "word": "gears",
+                        "start": 6.1,
+                        "end": 6.38
+                    },
+                    {
+                        "word": "of",
+                        "start": 6.38,
+                        "end": 6.68
+                    },
+                    {
+                        "word": "reality.",
+                        "start": 6.68,
+                        "end": 7.14
+                    }
+                ]
+            },
+            {
+                "start": 7.88,
+                "end": 9.76,
+                "text": "in a lot of math classes,",
+                "words": [
+                    {
+                        "word": "in",
+                        "start": 7.88,
+                        "end": 7.96
+                    },
+                    {
+                        "word": "a",
+                        "start": 7.96,
+                        "end": 8.08
+                    },
+                    {
+                        "word": "lot",
+                        "start": 8.08,
+                        "end": 8.3
+                    },
+                    {
+                        "word": "of",
+                        "start": 8.3,
+                        "end": 8.46
+                    },
+                    {
+                        "word": "math",
+                        "start": 8.46,
+                        "end": 8.68
+                    },
+                    {
+                        "word": "classes,",
+                        "start": 8.68,
+                        "end": 9.16
+                    }
+                ]
+            },
+            {
+                "start": 9.76,
+                "end": 10.84,
+                "text": "i, j, and k are taught",
+                "words": [
+                    {
+                        "word": "i,",
+                        "start": 9.76,
+                        "end": 9.82
+                    },
+                    {
+                        "word": "j,",
+                        "start": 9.9,
+                        "end": 10.08
+                    },
+                    {
+                        "word": "and",
+                        "start": 10.1,
+                        "end": 10.24
+                    },
+                    {
+                        "word": "k",
+                        "start": 10.24,
+                        "end": 10.4
+                    },
+                    {
+                        "word": "are",
+                        "start": 10.4,
+                        "end": 10.58
+                    },
+                    {
+                        "word": "taught",
+                        "start": 10.58,
+                        "end": 10.84
+                    }
+                ]
+            },
+            {
+                "start": 10.84,
+                "end": 17.33,
+                "text": "as imaginary units.",
+                "words": [
+                    {
+                        "word": "as",
+                        "start": 10.84,
+                        "end": 11.08
+                    },
+                    {
+                        "word": "imaginary",
+                        "start": 11.08,
+                        "end": 11.94
+                    },
+                    {
+                        "word": "units.",
+                        "start": 11.94,
+                        "end": 12.5
+                    }
+                ]
+            },
+            {
+                "start": 17.33,
+                "end": 19.19,
+                "text": "right, like abstract tricks to",
+                "words": [
+                    {
+                        "word": "right,",
+                        "start": 17.33,
+                        "end": 17.65
+                    },
+                    {
+                        "word": "like",
+                        "start": 17.83,
+                        "end": 17.97
+                    },
+                    {
+                        "word": "abstract",
+                        "start": 17.97,
+                        "end": 18.35
+                    },
+                    {
+                        "word": "tricks",
+                        "start": 18.35,
+                        "end": 18.77
+                    },
+                    {
+                        "word": "to",
+                        "start": 18.77,
+                        "end": 19.19
+                    }
+                ]
+            },
+            {
+                "start": 19.19,
+                "end": 21.01,
+                "text": "solve equations. but the paper",
+                "words": [
+                    {
+                        "word": "solve",
+                        "start": 19.19,
+                        "end": 19.65
+                    },
+                    {
+                        "word": "equations.",
+                        "start": 19.65,
+                        "end": 20.13
+                    },
+                    {
+                        "word": "but",
+                        "start": 20.35,
+                        "end": 20.51
+                    },
+                    {
+                        "word": "the",
+                        "start": 20.51,
+                        "end": 20.69
+                    },
+                    {
+                        "word": "paper",
+                        "start": 20.69,
+                        "end": 21.01
+                    }
+                ]
+            },
+            {
+                "start": 21.01,
+                "end": 23.27,
+                "text": "clarifies a major point here.",
+                "words": [
+                    {
+                        "word": "clarifies",
+                        "start": 21.01,
+                        "end": 21.59
+                    },
+                    {
+                        "word": "a",
+                        "start": 21.59,
+                        "end": 21.87
+                    },
+                    {
+                        "word": "major",
+                        "start": 21.87,
+                        "end": 22.25
+                    },
+                    {
+                        "word": "point",
+                        "start": 22.25,
+                        "end": 22.57
+                    },
+                    {
+                        "word": "here.",
+                        "start": 22.57,
+                        "end": 22.85
+                    }
+                ]
+            },
+            {
+                "start": 23.27,
+                "end": 24.89,
+                "text": "we have to completely discard the",
+                "words": [
+                    {
+                        "word": "we",
+                        "start": 23.27,
+                        "end": 23.45
+                    },
+                    {
+                        "word": "have",
+                        "start": 23.45,
+                        "end": 23.65
+                    },
+                    {
+                        "word": "to",
+                        "start": 23.65,
+                        "end": 23.83
+                    },
+                    {
+                        "word": "completely",
+                        "start": 23.83,
+                        "end": 24.19
+                    },
+                    {
+                        "word": "discard",
+                        "start": 24.19,
+                        "end": 24.65
+                    },
+                    {
+                        "word": "the",
+                        "start": 24.65,
+                        "end": 24.89
+                    }
+                ]
+            },
+            {
+                "start": 24.89,
+                "end": 27.37,
+                "text": "word imaginary. completely.",
+                "words": [
+                    {
+                        "word": "word",
+                        "start": 24.89,
+                        "end": 25.13
+                    },
+                    {
+                        "word": "imaginary.",
+                        "start": 25.13,
+                        "end": 25.83
+                    },
+                    {
+                        "word": "completely.",
+                        "start": 26.53,
+                        "end": 26.95
+                    }
+                ]
+            },
+            {
+                "start": 27.37,
+                "end": 28.27,
+                "text": "they are concrete,",
+                "words": [
+                    {
+                        "word": "they",
+                        "start": 27.37,
+                        "end": 27.49
+                    },
+                    {
+                        "word": "are",
+                        "start": 27.49,
+                        "end": 27.59
+                    },
+                    {
+                        "word": "concrete,",
+                        "start": 27.59,
+                        "end": 27.97
+                    }
+                ]
+            },
+            {
+                "start": 28.27,
+                "end": 30.15,
+                "text": "physical, 90 degree spatial",
+                "words": [
+                    {
+                        "word": "physical,",
+                        "start": 28.27,
+                        "end": 28.69
+                    },
+                    {
+                        "word": "90",
+                        "start": 28.69,
+                        "end": 29.43
+                    },
+                    {
+                        "word": "degree",
+                        "start": 29.43,
+                        "end": 29.73
+                    },
+                    {
+                        "word": "spatial",
+                        "start": 29.73,
+                        "end": 30.15
+                    }
+                ]
+            },
+            {
+                "start": 30.15,
+                "end": 32.19,
+                "text": "rotation generators. okay,",
+                "words": [
+                    {
+                        "word": "rotation",
+                        "start": 30.15,
+                        "end": 30.65
+                    },
+                    {
+                        "word": "generators.",
+                        "start": 30.65,
+                        "end": 31.23
+                    },
+                    {
+                        "word": "okay,",
+                        "start": 31.99,
+                        "end": 32.05
+                    }
+                ]
+            },
+            {
+                "start": 32.19,
+                "end": 34.33,
+                "text": "so i is a 90 degree",
+                "words": [
+                    {
+                        "word": "so",
+                        "start": 32.19,
+                        "end": 32.51
+                    },
+                    {
+                        "word": "i",
+                        "start": 32.51,
+                        "end": 33.09
+                    },
+                    {
+                        "word": "is",
+                        "start": 33.09,
+                        "end": 33.75
+                    },
+                    {
+                        "word": "a",
+                        "start": 33.75,
+                        "end": 33.87
+                    },
+                    {
+                        "word": "90",
+                        "start": 33.87,
+                        "end": 34.11
+                    },
+                    {
+                        "word": "degree",
+                        "start": 34.11,
+                        "end": 34.33
+                    }
+                ]
+            },
+            {
+                "start": 34.33,
+                "end": 36.79,
+                "text": "rotation around the x axis,",
+                "words": [
+                    {
+                        "word": "rotation",
+                        "start": 34.33,
+                        "end": 34.89
+                    },
+                    {
+                        "word": "around",
+                        "start": 34.89,
+                        "end": 35.13
+                    },
+                    {
+                        "word": "the",
+                        "start": 35.13,
+                        "end": 35.27
+                    },
+                    {
+                        "word": "x",
+                        "start": 35.27,
+                        "end": 35.53
+                    },
+                    {
+                        "word": "axis,",
+                        "start": 35.53,
+                        "end": 35.93
+                    }
+                ]
+            },
+            {
+                "start": 36.79,
+                "end": 38.95,
+                "text": "j is around the y axis,",
+                "words": [
+                    {
+                        "word": "j",
+                        "start": 36.79,
+                        "end": 36.89
+                    },
+                    {
+                        "word": "is",
+                        "start": 36.89,
+                        "end": 37.53
+                    },
+                    {
+                        "word": "around",
+                        "start": 37.53,
+                        "end": 37.71
+                    },
+                    {
+                        "word": "the",
+                        "start": 37.71,
+                        "end": 37.85
+                    },
+                    {
+                        "word": "y",
+                        "start": 37.85,
+                        "end": 38.07
+                    },
+                    {
+                        "word": "axis,",
+                        "start": 38.07,
+                        "end": 38.47
+                    }
+                ]
+            },
+            {
+                "start": 38.95,
+                "end": 39.97,
+                "text": "and k is around the z",
+                "words": [
+                    {
+                        "word": "and",
+                        "start": 38.95,
+                        "end": 39.03
+                    },
+                    {
+                        "word": "k",
+                        "start": 39.03,
+                        "end": 39.21
+                    },
+                    {
+                        "word": "is",
+                        "start": 39.21,
+                        "end": 39.39
+                    },
+                    {
+                        "word": "around",
+                        "start": 39.39,
+                        "end": 39.65
+                    },
+                    {
+                        "word": "the",
+                        "start": 39.65,
+                        "end": 39.81
+                    },
+                    {
+                        "word": "z",
+                        "start": 39.81,
+                        "end": 39.97
+                    }
+                ]
+            },
+            {
+                "start": 39.97,
+                "end": 42.85,
+                "text": "axis. exactly. to visualize this,",
+                "words": [
+                    {
+                        "word": "axis.",
+                        "start": 39.97,
+                        "end": 40.37
+                    },
+                    {
+                        "word": "exactly.",
+                        "start": 41.19,
+                        "end": 41.25
+                    },
+                    {
+                        "word": "to",
+                        "start": 41.77,
+                        "end": 41.97
+                    },
+                    {
+                        "word": "visualize",
+                        "start": 41.97,
+                        "end": 42.27
+                    },
+                    {
+                        "word": "this,",
+                        "start": 42.27,
+                        "end": 42.65
+                    }
+                ]
+            },
+            {
+                "start": 42.85,
+                "end": 44.79,
+                "text": "the research uses a 3d dice",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 42.85,
+                        "end": 43.01
+                    },
+                    {
+                        "word": "research",
+                        "start": 43.01,
+                        "end": 43.27
+                    },
+                    {
+                        "word": "uses",
+                        "start": 43.27,
+                        "end": 43.61
+                    },
+                    {
+                        "word": "a",
+                        "start": 43.61,
+                        "end": 43.93
+                    },
+                    {
+                        "word": "3d",
+                        "start": 43.93,
+                        "end": 44.49
+                    },
+                    {
+                        "word": "dice",
+                        "start": 44.49,
+                        "end": 44.79
+                    }
+                ]
+            },
+            {
+                "start": 44.79,
+                "end": 46.87,
+                "text": "model. ooh, i love this analogy.",
+                "words": [
+                    {
+                        "word": "model.",
+                        "start": 44.79,
+                        "end": 45.19
+                    },
+                    {
+                        "word": "ooh,",
+                        "start": 45.49,
+                        "end": 45.63
+                    },
+                    {
+                        "word": "i",
+                        "start": 45.65,
+                        "end": 45.75
+                    },
+                    {
+                        "word": "love",
+                        "start": 45.75,
+                        "end": 45.85
+                    },
+                    {
+                        "word": "this",
+                        "start": 45.85,
+                        "end": 46.05
+                    },
+                    {
+                        "word": "analogy.",
+                        "start": 46.05,
+                        "end": 46.47
+                    }
+                ]
+            },
+            {
+                "start": 46.87,
+                "end": 48.55,
+                "text": "imagine a large playing die on",
+                "words": [
+                    {
+                        "word": "imagine",
+                        "start": 46.87,
+                        "end": 47.17
+                    },
+                    {
+                        "word": "a",
+                        "start": 47.17,
+                        "end": 47.67
+                    },
+                    {
+                        "word": "large",
+                        "start": 47.67,
+                        "end": 47.83
+                    },
+                    {
+                        "word": "playing",
+                        "start": 47.83,
+                        "end": 48.09
+                    },
+                    {
+                        "word": "die",
+                        "start": 48.09,
+                        "end": 48.35
+                    },
+                    {
+                        "word": "on",
+                        "start": 48.35,
+                        "end": 48.55
+                    }
+                ]
+            },
+            {
+                "start": 48.55,
+                "end": 50.67,
+                "text": "your desk. every 90 degree flip",
+                "words": [
+                    {
+                        "word": "your",
+                        "start": 48.55,
+                        "end": 48.67
+                    },
+                    {
+                        "word": "desk.",
+                        "start": 48.67,
+                        "end": 48.93
+                    },
+                    {
+                        "word": "every",
+                        "start": 49.51,
+                        "end": 49.73
+                    },
+                    {
+                        "word": "90",
+                        "start": 49.73,
+                        "end": 50.13
+                    },
+                    {
+                        "word": "degree",
+                        "start": 50.13,
+                        "end": 50.39
+                    },
+                    {
+                        "word": "flip",
+                        "start": 50.39,
+                        "end": 50.67
+                    }
+                ]
+            },
+            {
+                "start": 50.67,
+                "end": 52.21,
+                "text": "you make with your hand is",
+                "words": [
+                    {
+                        "word": "you",
+                        "start": 50.67,
+                        "end": 50.83
+                    },
+                    {
+                        "word": "make",
+                        "start": 50.83,
+                        "end": 50.99
+                    },
+                    {
+                        "word": "with",
+                        "start": 50.99,
+                        "end": 51.15
+                    },
+                    {
+                        "word": "your",
+                        "start": 51.15,
+                        "end": 51.29
+                    },
+                    {
+                        "word": "hand",
+                        "start": 51.29,
+                        "end": 51.65
+                    },
+                    {
+                        "word": "is",
+                        "start": 51.65,
+                        "end": 52.21
+                    }
+                ]
+            },
+            {
+                "start": 52.21,
+                "end": 53.19,
+                "text": "one of these operational",
+                "words": [
+                    {
+                        "word": "one",
+                        "start": 52.21,
+                        "end": 52.35
+                    },
+                    {
+                        "word": "of",
+                        "start": 52.35,
+                        "end": 52.47
+                    },
+                    {
+                        "word": "these",
+                        "start": 52.47,
+                        "end": 52.65
+                    },
+                    {
+                        "word": "operational",
+                        "start": 52.65,
+                        "end": 53.19
+                    }
+                ]
+            },
+            {
+                "start": 53.19,
+                "end": 55.35,
+                "text": "generators. okay, so i roll it",
+                "words": [
+                    {
+                        "word": "generators.",
+                        "start": 53.19,
+                        "end": 53.69
+                    },
+                    {
+                        "word": "okay,",
+                        "start": 54.49,
+                        "end": 54.71
+                    },
+                    {
+                        "word": "so",
+                        "start": 54.75,
+                        "end": 54.97
+                    },
+                    {
+                        "word": "i",
+                        "start": 54.97,
+                        "end": 55.07
+                    },
+                    {
+                        "word": "roll",
+                        "start": 55.07,
+                        "end": 55.23
+                    },
+                    {
+                        "word": "it",
+                        "start": 55.23,
+                        "end": 55.35
+                    }
+                ]
+            },
+            {
+                "start": 55.35,
+                "end": 57.33,
+                "text": "forward, and that's i.",
+                "words": [
+                    {
+                        "word": "forward,",
+                        "start": 55.35,
+                        "end": 55.75
+                    },
+                    {
+                        "word": "and",
+                        "start": 56.29,
+                        "end": 56.43
+                    },
+                    {
+                        "word": "that's",
+                        "start": 56.43,
+                        "end": 56.63
+                    },
+                    {
+                        "word": "i.",
+                        "start": 56.63,
+                        "end": 56.85
+                    }
+                ]
+            },
+            {
+                "start": 57.33,
+                "end": 59.03,
+                "text": "right. and because we're in a",
+                "words": [
+                    {
+                        "word": "right.",
+                        "start": 57.33,
+                        "end": 57.45
+                    },
+                    {
+                        "word": "and",
+                        "start": 57.95,
+                        "end": 58.19
+                    },
+                    {
+                        "word": "because",
+                        "start": 58.19,
+                        "end": 58.41
+                    },
+                    {
+                        "word": "we're",
+                        "start": 58.41,
+                        "end": 58.71
+                    },
+                    {
+                        "word": "in",
+                        "start": 58.71,
+                        "end": 58.91
+                    },
+                    {
+                        "word": "a",
+                        "start": 58.91,
+                        "end": 59.03
+                    }
+                ]
+            },
+            {
+                "start": 59.03,
+                "end": 60.99,
+                "text": "3d world, these orthogonal",
+                "words": [
+                    {
+                        "word": "3d",
+                        "start": 59.03,
+                        "end": 59.33
+                    },
+                    {
+                        "word": "world,",
+                        "start": 59.33,
+                        "end": 59.75
+                    },
+                    {
+                        "word": "these",
+                        "start": 60.33,
+                        "end": 60.45
+                    },
+                    {
+                        "word": "orthogonal",
+                        "start": 60.45,
+                        "end": 60.99
+                    }
+                ]
+            },
+            {
+                "start": 60.99,
+                "end": 63.19,
+                "text": "operations anti -commute.",
+                "words": [
+                    {
+                        "word": "operations",
+                        "start": 60.99,
+                        "end": 61.59
+                    },
+                    {
+                        "word": "anti",
+                        "start": 61.59,
+                        "end": 62.23
+                    },
+                    {
+                        "word": "-commute.",
+                        "start": 62.23,
+                        "end": 62.67
+                    }
+                ]
+            },
+            {
+                "start": 63.19,
+                "end": 64.75,
+                "text": "meaning the order strictly",
+                "words": [
+                    {
+                        "word": "meaning",
+                        "start": 63.19,
+                        "end": 63.37
+                    },
+                    {
+                        "word": "the",
+                        "start": 63.37,
+                        "end": 64.15
+                    },
+                    {
+                        "word": "order",
+                        "start": 64.15,
+                        "end": 64.39
+                    },
+                    {
+                        "word": "strictly",
+                        "start": 64.39,
+                        "end": 64.75
+                    }
+                ]
+            },
+            {
+                "start": 64.75,
+                "end": 66.69,
+                "text": "matters. yes. if you roll it",
+                "words": [
+                    {
+                        "word": "matters.",
+                        "start": 64.75,
+                        "end": 65.17
+                    },
+                    {
+                        "word": "yes.",
+                        "start": 65.59,
+                        "end": 65.71
+                    },
+                    {
+                        "word": "if",
+                        "start": 66.23,
+                        "end": 66.31
+                    },
+                    {
+                        "word": "you",
+                        "start": 66.31,
+                        "end": 66.43
+                    },
+                    {
+                        "word": "roll",
+                        "start": 66.43,
+                        "end": 66.57
+                    },
+                    {
+                        "word": "it",
+                        "start": 66.57,
+                        "end": 66.69
+                    }
+                ]
+            },
+            {
+                "start": 66.69,
+                "end": 68.41,
+                "text": "forward, then right.",
+                "words": [
+                    {
+                        "word": "forward,",
+                        "start": 66.69,
+                        "end": 67.03
+                    },
+                    {
+                        "word": "then",
+                        "start": 67.43,
+                        "end": 67.51
+                    },
+                    {
+                        "word": "right.",
+                        "start": 67.51,
+                        "end": 67.85
+                    }
+                ]
+            },
+            {
+                "start": 68.41,
+                "end": 69.77,
+                "text": "it ends up facing a completely",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 68.41,
+                        "end": 68.61
+                    },
+                    {
+                        "word": "ends",
+                        "start": 68.61,
+                        "end": 68.77
+                    },
+                    {
+                        "word": "up",
+                        "start": 68.77,
+                        "end": 68.93
+                    },
+                    {
+                        "word": "facing",
+                        "start": 68.93,
+                        "end": 69.25
+                    },
+                    {
+                        "word": "a",
+                        "start": 69.25,
+                        "end": 69.47
+                    },
+                    {
+                        "word": "completely",
+                        "start": 69.47,
+                        "end": 69.77
+                    }
+                ]
+            },
+            {
+                "start": 69.77,
+                "end": 71.07,
+                "text": "different way than if you rolled",
+                "words": [
+                    {
+                        "word": "different",
+                        "start": 69.77,
+                        "end": 70.05
+                    },
+                    {
+                        "word": "way",
+                        "start": 70.05,
+                        "end": 70.27
+                    },
+                    {
+                        "word": "than",
+                        "start": 70.27,
+                        "end": 70.41
+                    },
+                    {
+                        "word": "if",
+                        "start": 70.41,
+                        "end": 70.53
+                    },
+                    {
+                        "word": "you",
+                        "start": 70.53,
+                        "end": 70.71
+                    },
+                    {
+                        "word": "rolled",
+                        "start": 70.71,
+                        "end": 71.07
+                    }
+                ]
+            },
+            {
+                "start": 71.07,
+                "end": 72.77,
+                "text": "it right, then forward.",
+                "words": [
+                    {
+                        "word": "it",
+                        "start": 71.07,
+                        "end": 71.17
+                    },
+                    {
+                        "word": "right,",
+                        "start": 71.17,
+                        "end": 71.45
+                    },
+                    {
+                        "word": "then",
+                        "start": 71.45,
+                        "end": 71.99
+                    },
+                    {
+                        "word": "forward.",
+                        "start": 71.99,
+                        "end": 72.37
+                    }
+                ]
+            },
+            {
+                "start": 72.77,
+                "end": 74.27,
+                "text": "the physical history changes the",
+                "words": [
+                    {
+                        "word": "the",
+                        "start": 72.77,
+                        "end": 73.01
+                    },
+                    {
+                        "word": "physical",
+                        "start": 73.01,
+                        "end": 73.37
+                    },
+                    {
+                        "word": "history",
+                        "start": 73.37,
+                        "end": 73.71
+                    },
+                    {
+                        "word": "changes",
+                        "start": 73.71,
+                        "end": 74.07
+                    },
+                    {
+                        "word": "the",
+                        "start": 74.07,
+                        "end": 74.27
+                    }
+                ]
+            },
+            {
+                "start": 74.27,
+                "end": 75.41,
+                "text": "outcome. and again,",
+                "words": [
+                    {
+                        "word": "outcome.",
+                        "start": 74.27,
+                        "end": 74.59
+                    },
+                    {
+                        "word": "and",
+                        "start": 75.07,
+                        "end": 75.13
+                    },
+                    {
+                        "word": "again,",
+                        "start": 75.13,
+                        "end": 75.29
+                    }
+                ]
+            },
+            {
+                "start": 75.41,
+                "end": 76.55,
+                "text": "don't worry about visualizing",
+                "words": [
+                    {
+                        "word": "don't",
+                        "start": 75.41,
+                        "end": 75.57
+                    },
+                    {
+                        "word": "worry",
+                        "start": 75.57,
+                        "end": 75.73
+                    },
+                    {
+                        "word": "about",
+                        "start": 75.73,
+                        "end": 75.95
+                    },
+                    {
+                        "word": "visualizing",
+                        "start": 75.95,
+                        "end": 76.55
+                    }
+                ]
+            },
+            {
+                "start": 76.55,
+                "end": 77.89,
+                "text": "matrix math in your head.",
+                "words": [
+                    {
+                        "word": "matrix",
+                        "start": 76.55,
+                        "end": 76.87
+                    },
+                    {
+                        "word": "math",
+                        "start": 76.87,
+                        "end": 77.21
+                    },
+                    {
+                        "word": "in",
+                        "start": 77.21,
+                        "end": 77.43
+                    },
+                    {
+                        "word": "your",
+                        "start": 77.43,
+                        "end": 77.57
+                    },
+                    {
+                        "word": "head.",
+                        "start": 77.57,
+                        "end": 77.77
+                    }
+                ]
+            },
+            {
+                "start": 77.89,
+                "end": 79.47,
+                "text": "you can see the exact interactive",
+                "words": [
+                    {
+                        "word": "you",
+                        "start": 77.89,
+                        "end": 77.97
+                    },
+                    {
+                        "word": "can",
+                        "start": 77.97,
+                        "end": 78.13
+                    },
+                    {
+                        "word": "see",
+                        "start": 78.13,
+                        "end": 78.41
+                    },
+                    {
+                        "word": "the",
+                        "start": 78.41,
+                        "end": 78.55
+                    },
+                    {
+                        "word": "exact",
+                        "start": 78.55,
+                        "end": 78.91
+                    },
+                    {
+                        "word": "interactive",
+                        "start": 78.91,
+                        "end": 79.47
+                    }
+                ]
+            },
+            {
+                "start": 79.47,
+                "end": 81.09,
+                "text": "dice simulation on our deep dive",
+                "words": [
+                    {
+                        "word": "dice",
+                        "start": 79.47,
+                        "end": 79.79
+                    },
+                    {
+                        "word": "simulation",
+                        "start": 79.79,
+                        "end": 80.29
+                    },
+                    {
+                        "word": "on",
+                        "start": 80.29,
+                        "end": 80.61
+                    },
+                    {
+                        "word": "our",
+                        "start": 80.61,
+                        "end": 80.79
+                    },
+                    {
+                        "word": "deep",
+                        "start": 80.79,
+                        "end": 80.95
+                    },
+                    {
+                        "word": "dive",
+                        "start": 80.95,
+                        "end": 81.09
+                    }
+                ]
+            },
+            {
+                "start": 81.09,
+                "end": 83.21,
+                "text": "website. it makes it so clear.",
+                "words": [
+                    {
+                        "word": "website.",
+                        "start": 81.09,
+                        "end": 81.47
+                    },
+                    {
+                        "word": "it",
+                        "start": 81.89,
+                        "end": 81.93
+                    },
+                    {
+                        "word": "makes",
+                        "start": 81.89,
+                        "end": 82.03
+                    },
+                    {
+                        "word": "it",
+                        "start": 82.03,
+                        "end": 82.17
+                    },
+                    {
+                        "word": "so",
+                        "start": 82.17,
+                        "end": 82.41
+                    },
+                    {
+                        "word": "clear.",
+                        "start": 82.41,
+                        "end": 82.67
+                    }
+                ]
+            },
+            {
+                "start": 83.21,
+                "end": 84.25,
+                "text": "coming up in the next clip,",
+                "words": [
+                    {
+                        "word": "coming",
+                        "start": 83.21,
+                        "end": 83.39
+                    },
+                    {
+                        "word": "up",
+                        "start": 83.39,
+                        "end": 83.53
+                    },
+                    {
+                        "word": "in",
+                        "start": 83.53,
+                        "end": 83.63
+                    },
+                    {
+                        "word": "the",
+                        "start": 83.63,
+                        "end": 83.73
+                    },
+                    {
+                        "word": "next",
+                        "start": 83.73,
+                        "end": 83.91
+                    },
+                    {
+                        "word": "clip,",
+                        "start": 83.91,
+                        "end": 84.15
+                    }
+                ]
+            },
+            {
+                "start": 84.25,
+                "end": 85.63,
+                "text": "we look at what happens when",
+                "words": [
+                    {
+                        "word": "we",
+                        "start": 84.25,
+                        "end": 84.47
+                    },
+                    {
+                        "word": "look",
+                        "start": 84.47,
+                        "end": 84.71
+                    },
+                    {
+                        "word": "at",
+                        "start": 84.71,
+                        "end": 84.89
+                    },
+                    {
+                        "word": "what",
+                        "start": 84.89,
+                        "end": 85.05
+                    },
+                    {
+                        "word": "happens",
+                        "start": 85.05,
+                        "end": 85.37
+                    },
+                    {
+                        "word": "when",
+                        "start": 85.37,
+                        "end": 85.63
+                    }
+                ]
+            },
+            {
+                "start": 85.63,
+                "end": 87.23,
+                "text": "space takes a two -dimensional",
+                "words": [
+                    {
+                        "word": "space",
+                        "start": 85.63,
+                        "end": 86.09
+                    },
+                    {
+                        "word": "takes",
+                        "start": 86.09,
+                        "end": 86.35
+                    },
+                    {
+                        "word": "a",
+                        "start": 86.35,
+                        "end": 86.77
+                    },
+                    {
+                        "word": "two",
+                        "start": 86.77,
+                        "end": 86.97
+                    },
+                    {
+                        "word": "-dimensional",
+                        "start": 86.97,
+                        "end": 87.23
+                    }
+                ]
+            },
+            {
+                "start": 87.23,
+                "end": 89.37,
+                "text": "spasm. moving from the dice",
+                "words": [
+                    {
+                        "word": "spasm.",
+                        "start": 87.23,
+                        "end": 87.87
+                    },
+                    {
+                        "word": "moving",
+                        "start": 88.67,
+                        "end": 88.71
+                    },
+                    {
+                        "word": "from",
+                        "start": 88.67,
+                        "end": 88.95
+                    },
+                    {
+                        "word": "the",
+                        "start": 88.95,
+                        "end": 89.11
+                    },
+                    {
+                        "word": "dice",
+                        "start": 89.11,
+                        "end": 89.37
+                    }
+                ]
+            },
+            {
+                "start": 89.37,
+                "end": 90.6,
+                "text": "to the waves.",
+                "words": [
+                    {
+                        "word": "to",
+                        "start": 89.37,
+                        "end": 89.93
+                    },
+                    {
+                        "word": "the",
+                        "start": 89.93,
+                        "end": 90.07
+                    },
+                    {
+                        "word": "waves.",
+                        "start": 90.07,
+                        "end": 90.45
+                    }
+                ]
+            }
+        ],
+        "_caption_sig": "702b6ad0318fc184669600c285c47aa6",
+        "rendered_duration": 100.5,
+        "audio_duration": 94.97,
+        "intro_offset": 1.5,
+        "outro_duration": 5.0,
+        "source_start": 506.46,
+        "source_end": 591.32,
+        "_audio_sig": "7545f98159bdd94ef887e360c9f11393",
+        "_compiled_sig": "56b648884e0e4336ade718e353e708b7",
+        "mosaic_run_id": "6b9b4156-6840-4897-b34c-f6bb346870f5"
     },
     {
         "num": 6,

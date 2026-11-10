@@ -111,8 +111,8 @@ async function loadEpisodesManifest() {
         const found = episodesManifest.find(e => e.id === paramEp || String(e.number) === paramEp);
         currentEpisodeId = found.id;
     } else {
-        const def = episodesManifest.find(e => e.isDefault) || episodesManifest[0];
-        currentEpisodeId = def ? def.id : "244";
+        const def = episodesManifest.find(e => e.isDefault) || episodesManifest[episodesManifest.length - 1];
+        currentEpisodeId = def ? def.id : "249";
     }
 
     // Populate dropdown
@@ -173,10 +173,39 @@ async function initEpisodeData() {
         return;
     }
 
+    await filterAvailableClips();
     buildTimeline();
     renderSidebar();
     seekTo(0);
-    loadVideoDurations().then(() => { updateTotalDuration(); renderSidebar(); }).catch(e => console.warn(e));
+    await loadVideoDurations().catch(e => console.warn(e));
+    updateTotalDuration();
+    renderSidebar();
+}
+
+async function filterAvailableClips() {
+    const activeEp = episodesManifest.find(e => e.id === currentEpisodeId);
+    const clipsDir = activeEp ? activeEp.clipsDir : 'assets/clips';
+
+    // Fast path: if manifest lists availableClips, use it directly (zero 404 probes!)
+    if (activeEp && Array.isArray(activeEp.availableClips) && activeEp.availableClips.length > 0) {
+        plan.forEach(clip => {
+            clip.isAvailable = activeEp.availableClips.includes(clip.num);
+        });
+        return;
+    }
+
+    await Promise.all(plan.map(async (clip) => {
+        const isAudioOnly = clip.audio_only === true;
+        const clipSrc = isAudioOnly 
+            ? `/previews/preview_episode_${currentEpisodeId}_${clip.num}.mp3?v=3`
+            : `${clipsDir}/${currentEpisodeId}-${clip.num}.mp4?v=3`;
+        try {
+            const resp = await fetch(clipSrc, { method: 'HEAD' });
+            clip.isAvailable = resp.ok;
+        } catch (e) {
+            clip.isAvailable = false;
+        }
+    }));
 }
 
 // Build timeline structure: Video Clip -> Bridge Slide -> Video Clip
@@ -184,9 +213,9 @@ function buildTimeline() {
     timeline = [];
     let runningTime = 0;
 
-    // Filter plan based on active mode (strictly locked and unhidden clips)
+    // Filter plan based on active mode (strictly available and unhidden clips)
     const filteredPlan = plan.filter(clip => {
-        if (!clip.locked || clip.hidden) {
+        if (clip.isAvailable === false || clip.hidden) {
             return false;
         }
         // Video Mode excludes audio-only clips
@@ -267,26 +296,8 @@ async function loadVideoDurations() {
                 runningTime += item.duration;
                 validatedTimeline.push(item);
             } catch (err) {
-                console.warn(`Could not probe duration for ${item.src}, using fallback:`, err);
-                const clipInfo = plan.find(c => c.num === item.clipNum);
-                const isAudioOnly = clipInfo && clipInfo.audio_only === true;
-                const defaultTrim = (i === 0 || isAudioOnly || (clipInfo && clipInfo.num === 1)) ? 0.0 : 2.0;
-                const introTrim = clipInfo && clipInfo.intro_trim !== undefined ? parseFloat(clipInfo.intro_trim) : (clipInfo && clipInfo.intro_offset !== undefined ? parseFloat(clipInfo.intro_offset) : defaultTrim);
-                
-                const baseDur = calculateClipDuration(clipInfo);
-                item.rawDuration = baseDur + (currentMode === 'audio' ? 0.0 : 2.0);
-                if (currentMode === 'video' && !isAudioOnly) {
-                    item.playOffset = introTrim;
-                    item.duration = Math.max(0.1, baseDur + 2.0 - introTrim);
-                } else {
-                    item.playOffset = 0.0;
-                    item.duration = Math.max(0.1, baseDur + (currentMode === 'audio' ? 0.0 : 2.0));
-                }
-                
-                item.startGlobal = runningTime;
-                item.endGlobal = runningTime + item.duration;
-                runningTime += item.duration;
-                validatedTimeline.push(item);
+                console.warn(`Could not probe duration for ${item.src}, hiding unavailable clip:`, err);
+                continue;
             }
         } else if (item.type === 'bridge') {
             item.startGlobal = runningTime;
