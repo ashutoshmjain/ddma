@@ -3237,9 +3237,6 @@
                 localStorage.setItem('ddma-mosaic-captions-node-id', document.getElementById('settingsMosaicCaptionsNodeId').value.trim());
                 localStorage.setItem('ddma-gemini-api-key', document.getElementById('settingsGeminiApiKey').value.trim());
                 localStorage.setItem('ddma-mosaic-default-prompt', document.getElementById('settingsMosaicDefaultPrompt').value);
-                if (saveEpPromptEl) localStorage.setItem('ddma-gemini-episode-default-prompt', saveEpPromptEl.value);
-                const saveBridgePromptEl = document.getElementById('settingsGeminiBridgeDefaultPrompt');
-                if (saveBridgePromptEl) localStorage.setItem('ddma-gemini-bridge-default-prompt', saveBridgePromptEl.value);
                 
                 saveSettingsToServer();
 

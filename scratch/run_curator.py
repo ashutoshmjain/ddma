@@ -112,7 +112,12 @@ def safe_load_json(file_path, retries=10, delay=0.05):
 
 def load_settings():
     s = safe_load_json("settings.json")
-    return s if isinstance(s, dict) else {}
+    settings = s if isinstance(s, dict) else {}
+    if os.environ.get("GEMINI_API_KEY"):
+        settings["gemini_api_key"] = os.environ.get("GEMINI_API_KEY")
+    if os.environ.get("MOSAIC_API_KEY"):
+        settings["mosaic_api_key"] = os.environ.get("MOSAIC_API_KEY")
+    return settings
 
 PORT = 8000
 
@@ -1298,16 +1303,15 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not HAS_GENAI:
                     reply = "Help Error: The 'google-generativeai' library is not installed in the python environment. Run 'pip install google-generativeai' to enable the help panel."
                 else:
-                    settings_api_key = None
-                    if os.path.exists("settings.json"):
+                    api_key = os.environ.get("GEMINI_API_KEY")
+                    if not api_key and os.path.exists("settings.json"):
                         try:
                             with open("settings.json", "r", encoding="utf-8") as sf:
                                 s_data = json.load(sf)
-                                settings_api_key = s_data.get("gemini_api_key")
+                                api_key = s_data.get("gemini_api_key")
                         except Exception as se:
                             print(f"Warning: Failed to load settings.json: {se}")
                     
-                    api_key = settings_api_key or os.environ.get("GEMINI_API_KEY")
                     if not configure_gemini(api_key):
                         reply = "Help Error: Neither 'gemini-creds.json' credentials nor 'GEMINI_API_KEY' in settings are configured. Please set them up in DDMA first!"
                     else:
@@ -1500,17 +1504,16 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if clip_num < 0:
                     raise Exception("Invalid clip number.")
                 
-                # Check for Gemini API key
-                settings_api_key = None
-                if os.path.exists("settings.json"):
+                # Check for Gemini API key (Env first, then settings.json)
+                api_key = os.environ.get("GEMINI_API_KEY")
+                if not api_key and os.path.exists("settings.json"):
                     try:
                         with open("settings.json", "r", encoding="utf-8") as sf:
                             s_data = json.load(sf)
-                            settings_api_key = s_data.get("gemini_api_key")
+                            api_key = s_data.get("gemini_api_key")
                     except Exception as se:
                         print(f"Warning: Failed to load settings.json: {se}")
                 
-                api_key = settings_api_key or os.environ.get("GEMINI_API_KEY")
                 if not api_key and not os.path.exists("gemini-creds.json"):
                     raise Exception("GEMINI_API_KEY settings config is not set, and gemini-creds.json was not found.")
                 
@@ -1731,15 +1734,14 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 transcript_summary = "\n".join([f"[{s.get('start', 0):.1f}s - {s.get('end', 0):.1f}s] {s.get('text', '').strip()}" for s in t_data.get("segments", [])])
                 full_prompt = f"{prompt_template}\n\nFULL EPISODE TRANSCRIPT:\n{transcript_summary}"
 
-                # Gemini API setup
-                settings_api_key = None
-                if os.path.exists("settings.json"):
+                # Gemini API setup (Env first, then settings.json)
+                api_key = os.environ.get("GEMINI_API_KEY")
+                if not api_key and os.path.exists("settings.json"):
                     try:
                         with open("settings.json", "r", encoding="utf-8") as sf:
                             s_data = json.load(sf)
-                            settings_api_key = s_data.get("gemini_api_key")
+                            api_key = s_data.get("gemini_api_key")
                     except Exception: pass
-                api_key = settings_api_key or os.environ.get("GEMINI_API_KEY")
                 if not api_key and not os.path.exists("gemini-creds.json"):
                     raise Exception("Gemini API key is not configured.")
 
@@ -3308,13 +3310,13 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
             
             polished_text = None
-            settings_path = "settings.json"
-            settings = {}
-            if os.path.exists(settings_path):
-                with open(settings_path, "r", encoding="utf-8") as f:
-                    settings = json.load(f)
-            
-            api_key = settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY")
+            api_key = os.environ.get("GEMINI_API_KEY")
+            if not api_key:
+                settings_path = "settings.json"
+                if os.path.exists(settings_path):
+                    with open(settings_path, "r", encoding="utf-8") as f:
+                        settings = json.load(f)
+                        api_key = settings.get("gemini_api_key")
             if configure_gemini(api_key):
                 try:
                     prompt = (
@@ -3625,7 +3627,12 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                 self.send_header('Content-type', 'application/json')
                                 self.send_header('Access-Control-Allow-Origin', '*')
                                 self.end_headers()
-                                self.wfile.write(json.dumps({"success": True, "message": "Resuming completed run to download video."}).encode('utf-8'))
+                                self.wfile.write(json.dumps({
+                                    "success": True,
+                                    "job_id": f"{project_id}_{clip_num}",
+                                    "status_url": f"/get-mosaic-status?id={project_id}&num={clip_num}",
+                                    "message": "Resuming completed run to download video."
+                                }).encode('utf-8'))
                                 return
                             elif status in ("running", "starting"):
                                 # Resume active run polling
@@ -3642,7 +3649,12 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                 self.send_header('Content-type', 'application/json')
                                 self.send_header('Access-Control-Allow-Origin', '*')
                                 self.end_headers()
-                                self.wfile.write(json.dumps({"success": True, "message": "Resuming active run polling."}).encode('utf-8'))
+                                self.wfile.write(json.dumps({
+                                    "success": True,
+                                    "job_id": f"{project_id}_{clip_num}",
+                                    "status_url": f"/get-mosaic-status?id={project_id}&num={clip_num}",
+                                    "message": "Resuming active run polling."
+                                }).encode('utf-8'))
                                 return
                             else:
                                 print(f"[{project_id}][Clip {clip_num}] Existing run {existing_run_id} has failed or cancelled. Clearing to start fresh.")
@@ -3681,7 +3693,12 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
-                self.wfile.write(json.dumps({"success": True, "message": "Mosaic run started."}).encode('utf-8'))
+                self.wfile.write(json.dumps({
+                    "success": True,
+                    "job_id": f"{project_id}_{clip_num}",
+                    "status_url": f"/get-mosaic-status?id={project_id}&num={clip_num}",
+                    "message": "Mosaic run started."
+                }).encode('utf-8'))
                 return
             except Exception as e:
                 self.send_response(500)
@@ -3721,8 +3738,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     try:
                         with open(docs_plan, "w", encoding="utf-8") as f:
                             json.dump(plan_data, f, indent=4)
-                    except Exception:
-                        pass
+                    except Exception as ex_sync:
+                        print(f"Warning: Failed to sync updated plan to docs_plan {docs_plan}: {ex_sync}")
 
                 # Resolve variant source file
                 variant_candidates = [

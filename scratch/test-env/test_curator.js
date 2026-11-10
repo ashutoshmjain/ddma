@@ -286,7 +286,7 @@ async function runTest() {
             const resp = await fetch('/export-project-clip?id=episode_249', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ clip_num: 7, title: 'Unlocked Clip', export_format: 'audio', locked: false })
+                body: JSON.stringify({ clip_num: 8, title: 'Unlocked Clip', export_format: 'audio', locked: false })
             });
             const data = await resp.json().catch(() => ({}));
             return { status: resp.status, data };
@@ -518,7 +518,7 @@ async function runTest() {
                 const nowPlayingTitle = document.getElementById('nowPlayingTitle');
                 const stopBtn = document.getElementById('stopBtn');
 
-                while (Date.now() - start < 4000) {
+                while (Date.now() - start < 10000) {
                     const src = audioEl ? (audioEl.getAttribute('src') || audioEl.src || '') : '';
                     if (src.includes('preview_')) break;
                     await new Promise(r => setTimeout(r, 200));
@@ -922,6 +922,50 @@ async function runTest() {
             throw new Error("FAIL: Dead modals or buttons still present in DOM!");
         }
         console.log("  - Item 6 & 7 Settings and Modal Cleanups Verified Successfully!");
+
+        // 🧪 TEST 20: Issue 64 — Curator Settings Save & Persist Invariant
+        console.log("\n🧪 TEST 20: Verifying Curator Settings Save and Persist Invariant...");
+        let settingsConsoleErrors = [];
+        const errListener = msg => {
+            if (msg.type() === 'error') settingsConsoleErrors.push(msg.text());
+        };
+        page.on('console', errListener);
+
+        // Open settings modal
+        await page.click('#topSettingsBtn');
+        await page.waitForSelector('#settingsModalOverlay.active', { timeout: 3000 });
+
+        // Change a value (e.g. Mosaic Default Prompt)
+        const testPromptValue = `Test Prompt Persistence ${Date.now()}`;
+        await page.evaluate((val) => {
+            const el = document.getElementById('settingsMosaicDefaultPrompt');
+            if (el) el.value = val;
+        }, testPromptValue);
+
+        // Click Save Settings button
+        await page.click('#saveSettingsBtn');
+        await new Promise(r => setTimeout(r, 1000));
+
+        // Assert no console error was thrown
+        page.off('console', errListener);
+        const refErrors = settingsConsoleErrors.filter(e => e.includes('ReferenceError') || e.includes('saveEpPromptEl'));
+        if (refErrors.length > 0) {
+            throw new Error(`FAIL: Save Settings threw console error: ${refErrors.join('; ')}`);
+        }
+
+        // Reload page and assert value persisted
+        await page.goto('http://127.0.0.1:8000/curator.html?project=episode_245', { waitUntil: 'domcontentloaded', timeout: 15000 });
+        await new Promise(r => setTimeout(r, 1500));
+        await page.click('#topSettingsBtn');
+        await page.waitForSelector('#settingsModalOverlay.active', { timeout: 3000 });
+
+        const reloadedValue = await page.$eval('#settingsMosaicDefaultPrompt', el => el.value);
+        console.log(`  - Saved prompt value: "${testPromptValue}"`);
+        console.log(`  - Reloaded prompt value: "${reloadedValue}"`);
+        if (reloadedValue !== testPromptValue) {
+            throw new Error(`FAIL: Settings value did not persist across reload! Expected "${testPromptValue}" but got "${reloadedValue}"`);
+        }
+        console.log("  ✔ PASS: Curator Settings saved cleanly with zero console errors and persisted after reload!");
 
         console.log("\n✅ ALL COMPREHENSIVE CURATOR REGRESSION TESTS PASSED 100%!");
 

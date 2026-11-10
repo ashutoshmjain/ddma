@@ -43,6 +43,59 @@ def resolve_deepdive_publication_clips_dir(episode: Union[str, int]) -> Path:
         f"Could not resolve deepDive publication directory from {script_path}. Attempted candidates: {attempted}"
     )
 
+
+def get_project_canonical_audio_path(project_dir: str, project_id: str = None, info: dict = None) -> Optional[str]:
+    """
+    Resolves the canonical continuous raw audio source for an episode.
+    Always prioritizes raw continuous .m4a input over .mp3 because .mp3 may be the
+    assembled longform podcast master containing inserted music stings.
+    Refuses mastered podcast files (e.g. podcast_<ep>.mp3).
+    """
+    if not project_id:
+        project_id = os.path.basename(project_dir)
+    ep_num = project_id.replace("episode_", "")
+
+    if info is None:
+        info_path = os.path.join(project_dir, "project_info.json")
+        if os.path.exists(info_path):
+            try:
+                with open(info_path, "r", encoding="utf-8") as f:
+                    info = json.load(f)
+            except Exception:
+                info = {}
+        else:
+            info = {}
+
+    # 1. First priority: Raw continuous .m4a / .wav in project directory matching transcript timeline
+    for cand_name in [f"{ep_num}.m4a", f"episode_{ep_num}.m4a", "audio.m4a", f"{ep_num}.wav", f"episode_{ep_num}.wav"]:
+        cand_path = os.path.join(project_dir, cand_name)
+        if os.path.exists(cand_path):
+            return cand_path
+
+    # 2. Check info audio_filename if it exists
+    f_name = info.get("audio_filename") or info.get("audio_file")
+    if f_name:
+        cand_path = os.path.join(project_dir, f_name)
+        if os.path.exists(cand_path):
+            stem = os.path.splitext(f_name)[0]
+            for ext in [".m4a", ".wav"]:
+                m4a_equiv = os.path.join(project_dir, f"{stem}{ext}")
+                if os.path.exists(m4a_equiv):
+                    return m4a_equiv
+            if not f_name.startswith("podcast_"):
+                return cand_path
+
+    # 3. Fallback to candidate audio in project dir (excluding mastered podcast_*.mp3)
+    for ext in [".m4a", ".wav", ".mp3"]:
+        for cand_name in [f"{ep_num}{ext}", f"episode_{ep_num}{ext}", f"audio{ext}"]:
+            cand_path = os.path.join(project_dir, cand_name)
+            if os.path.exists(cand_path):
+                if ext == ".mp3" and os.path.basename(cand_path).startswith("podcast_"):
+                    continue
+                return cand_path
+
+    return None
+
 app = typer.Typer(help="DeepDive Media Automator (DDMA) CLI Tool")
 
 
@@ -385,8 +438,10 @@ def cast_tripartite_plan_with_gemini(t_data: dict, num_clips: Optional[int] = No
     if not num_clips:
         num_clips = max(1, int(round(total_dur / 150.0)))
 
-    # Resolve Gemini API Key
-    if not api_key:
+    # Resolve Gemini API Key (Env -> settings.json)
+    if os.environ.get("GEMINI_API_KEY"):
+        api_key = os.environ.get("GEMINI_API_KEY")
+    elif not api_key:
         api_key = get_gemini_api_key() if "get_gemini_api_key" in globals() else None
     if not api_key:
         sett_file = os.path.join(os.path.dirname(__file__), "settings.json")
@@ -394,10 +449,8 @@ def cast_tripartite_plan_with_gemini(t_data: dict, num_clips: Optional[int] = No
             try:
                 with open(sett_file, "r", encoding="utf-8") as sf:
                     api_key = json.load(sf).get("gemini_api_key")
-            except Exception:
-                pass
-    if not api_key:
-        api_key = os.environ.get("GEMINI_API_KEY", "")
+            except Exception as ex_sett:
+                print(f"Warning: Failed to load gemini_api_key from {sett_file}: {ex_sett}")
 
     # Build timed sample of transcript for Gemini
     sample_lines = []
@@ -610,8 +663,8 @@ def transcribe(
     try:
         import whisper.audio
         audio_input = whisper.audio.load_audio(audio)
-    except Exception:
-        pass
+    except Exception as ex_load:
+        print(f"Notice: Falling back to direct path '{audio}' for transcribe: {ex_load}")
     segments_gen, info = model.transcribe(audio_input, word_timestamps=word_timestamps)
     result = format_faster_whisper_result(segments_gen, info)
     typer.echo(f"Transcription finished in {time.time() - transcribe_start:.2f} seconds.")
