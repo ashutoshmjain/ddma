@@ -1,9 +1,25 @@
 import os
 import re
+import shutil
 import subprocess
 import sys
 import json
+import tempfile
 from PIL import Image, ImageDraw, ImageFont
+
+
+def _resolve_bold_font():
+    """Return a bold TTF available on this machine, or '' for the PIL default."""
+    candidates = [
+        "C:/Windows/Fonts/arialbd.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+    ]
+    for candidate in candidates:
+        if os.path.exists(candidate):
+            return candidate
+    return ""
+
 
 def wrap_text(text, font, max_width):
     lines = []
@@ -152,7 +168,7 @@ def main():
     # Normalizes all clips to exact 740x740, 30 fps, setsar=1, and 48kHz stereo AAC
     # Clip 1 retains full start (t=0.0s). Clips 2+ are trimmed at exactly t=2.0s with frame-accurate PTS.
     out_path = args.out_file if args.out_file else f"combined_{episode}.mp4"
-    print(f"Concatenating {len(clip_files)} clips into {out_path} with frame-accurate 30 fps and 48 kHz stereo AAC audio...")
+    print(f"Concatenating {len(clip_files)} clips + {len(clip_files) - 1} bridge cards into {out_path} with frame-accurate 30 fps and 48 kHz stereo AAC audio...")
     
     cmd = ["ffmpeg", "-y"]
     filter_parts = []
@@ -179,7 +195,37 @@ def main():
         filter_parts.append(a_filter)
         concat_inputs.append(f"[v{i}][a{i}]")
         
-    concat_filter = f"{''.join(concat_inputs)}concat=n={len(clip_files)}:v=1:a=1[v_out][a_out]"
+    # Bridge cards: 5s curiosity-question cards between consecutive locked clips.
+    # Each bridge renders clip i's outro bridge_text (which teases clip i+1).
+    bridge_dir = tempfile.mkdtemp(prefix="combine_bridges_")
+    bridge_count = 0
+    try:
+        for k in range(len(clip_files) - 1):
+            num_k = clip_files[k][0]
+            bridge_text = clip_map.get(num_k, {}).get("bridge_text", "")
+            bridge_png = os.path.join(bridge_dir, f"bridge_{k:02d}.png")
+            render_bridge_image(bridge_text, v_width, v_height, _resolve_bold_font(), bridge_png)
+            cmd.extend(["-loop", "1", "-framerate", "30", "-t", "5", "-i", bridge_png])
+            b_in = len(clip_files) + bridge_count
+            vbf = (f"[{b_in}:v]scale={v_width}:{v_height}:force_original_aspect_ratio=decrease,"
+                   f"pad={v_width}:{v_height}:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[vb{bridge_count}]")
+            abf = f"anullsrc=sample_rate=48000:channel_layout=stereo:d=5[ab{bridge_count}]"
+            filter_parts.append(vbf)
+            filter_parts.append(abf)
+            bridge_count += 1
+    except Exception as e:
+        print(f"Error rendering bridge cards: {e}", file=sys.stderr)
+        shutil.rmtree(bridge_dir, ignore_errors=True)
+        sys.exit(1)
+
+    ordered_inputs = []
+    for k in range(len(clip_files)):
+        ordered_inputs.append(f"[v{k}][a{k}]")
+        if k < bridge_count:
+            ordered_inputs.append(f"[vb{k}][ab{k}]")
+
+    total_segments = len(clip_files) + bridge_count
+    concat_filter = f"{''.join(ordered_inputs)}concat=n={total_segments}:v=1:a=1[v_out][a_out]"
     filter_complex = ";".join(filter_parts) + ";" + concat_filter
     
     cmd.extend([
@@ -199,6 +245,7 @@ def main():
     ])
     
     res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    shutil.rmtree(bridge_dir, ignore_errors=True)
     if res.returncode == 0:
         print(f"\nSuccessfully generated combined video: {out_path}")
         

@@ -820,26 +820,72 @@ async function runTest() {
             console.log(`  - 5-Second Curiosity Question Outro Card successfully verified in 3-part Master Clip compilation!`);
         }
 
-        // 🧪 TEST 17: Verifying Full Episode Video Export Concatenation & 0-Drift A/V Sync
-        console.log("\n🧪 TEST 17: Verifying Full Episode Video Export Concatenation & 0-Drift A/V Sync...");
-        const combinedVideoPath = path.resolve(__dirname, '../../previews/combined_episode_245.mp4');
-        if (fs.existsSync(combinedVideoPath)) {
-            const probeJsonStr = execSync(`ffprobe -v error -show_streams -of json "${combinedVideoPath}"`).toString();
-            const probeData = JSON.parse(probeJsonStr);
-            const vStream = probeData.streams.find(s => s.codec_type === 'video');
-            const aStream = probeData.streams.find(s => s.codec_type === 'audio');
-            
-            const vDur = parseFloat(vStream.duration);
-            const aDur = parseFloat(aStream.duration);
-            const diff = Math.abs(vDur - aDur);
-            
-            console.log(`  - Combined Video Duration: ${vDur.toFixed(3)}s | Audio Duration: ${aDur.toFixed(3)}s | Difference: ${(diff * 1000).toFixed(1)}ms`);
-            
-            if (diff > 0.1) {
-                throw new Error(`FAIL: Combined episode has audio/video stream drift of ${(diff * 1000).toFixed(1)}ms > 100ms!`);
-            }
-            console.log(`  - Frame-Accurate Combined Video Export & 0-Drift A/V Sync Verified!`);
+        // 🧪 TEST 17: /combine-project-video Lock Gating + Bridge-Card Concatenation
+        console.log("\n🧪 TEST 17: Verifying /combine-project-video Lock Gating & Bridge Concatenation...");
+        const fixDir = path.resolve(__dirname, '../../projects/episode_998');
+        const fixClipA = path.resolve(__dirname, '../../clips/998-0.mp4');
+        const fixClipB = path.resolve(__dirname, '../../clips/998-1.mp4');
+        const fixCombined = path.resolve(__dirname, '../../previews/combined_episode_998.mp4');
+        const writeFixPlan = (locked) => fs.writeFileSync(path.join(fixDir, 'plan.json'), JSON.stringify([
+            { num: 0, locked: locked, hidden: false, bridge_text: ['What is test bridge ?'], title: 'T0' },
+            { num: 1, locked: locked, hidden: false, bridge_text: ['Second q ?'], title: 'T1' }
+        ]));
+        fs.mkdirSync(fixDir, { recursive: true });
+        writeFixPlan(false);
+        execSync(`ffmpeg -y -v error -f lavfi -i testsrc=size=740x740:rate=30:duration=2 -f lavfi -i anullsrc=r=48000:cl=stereo:d=2 -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "${fixClipA}"`);
+        execSync(`ffmpeg -y -v error -f lavfi -i testsrc2=size=740x740:rate=30:duration=2 -f lavfi -i anullsrc=r=48000:cl=stereo:d=2 -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "${fixClipB}"`);
+
+        const combinePost = (pid) => page.evaluate(async (id) => {
+            try {
+                const resp = await fetch('/combine-project-video?id=' + id, { method: 'POST' });
+                const txt = await resp.text().catch(() => '');
+                let data = null;
+                try { data = JSON.parse(txt); } catch (e) { /* non-JSON refusal body */ }
+                return { status: resp.status, body: txt.slice(0, 160), data };
+            } catch (e) { return { status: 'fetch-error', body: String(e).slice(0, 160), data: null }; }
+        }, pid);
+
+        const aliveCtl = await page.evaluate(async () => {
+            const r = await fetch(window.location.pathname + window.location.search);
+            return r.status;
+        });
+        console.log(`  - Server-alive control status: ${aliveCtl}`);
+        if (aliveCtl !== 200) {
+            throw new Error(`FAIL: Curator server not reachable (control status ${aliveCtl})!`);
         }
+
+        const refusedCtl = await combinePost('episode_998');
+        console.log(`  - Zero-locked POST status: ${refusedCtl.status} (${refusedCtl.body})`);
+        if (refusedCtl.status !== 500 && refusedCtl.status !== 'fetch-error') {
+            throw new Error(`FAIL: /combine-project-video accepted zero locked clips! Got: ${JSON.stringify(refusedCtl)}`);
+        }
+        console.log("  - Lock gate refused zero-locked project as required.");
+
+        writeFixPlan(true);
+        const okCtl = await combinePost('episode_998');
+        console.log(`  - Locked POST status: ${okCtl.status} (${JSON.stringify(okCtl.data)})`);
+        if (okCtl.status !== 200 || !okCtl.data || !okCtl.data.success) {
+            throw new Error(`FAIL: /combine-project-video did not return a combined mp4 for locked clips! Got: ${okCtl.status} ${okCtl.body}`);
+        }
+
+        const fixProbe = JSON.parse(execSync(`ffprobe -v error -show_streams -of json "${fixCombined}"`).toString());
+        const fixV = fixProbe.streams.find(s => s.codec_type === 'video');
+        const fixA = fixProbe.streams.find(s => s.codec_type === 'audio');
+        const fixVDur = parseFloat(fixV.duration);
+        const fixADur = parseFloat(fixA.duration);
+        const fixDiff = Math.abs(fixVDur - fixADur);
+        console.log(`  - Combined fixture duration: video ${fixVDur.toFixed(3)}s | audio ${fixADur.toFixed(3)}s | drift ${(fixDiff * 1000).toFixed(1)}ms`);
+        if (fixVDur < 8.5 || fixVDur > 9.5) {
+            throw new Error(`FAIL: bridge card missing — combined duration ${fixVDur.toFixed(3)}s, expected ~9s (2s clip + 5s bridge + 2s clip)!`);
+        }
+        if (fixDiff > 0.1) {
+            throw new Error(`FAIL: Combined fixture has audio/video drift ${(fixDiff * 1000).toFixed(1)}ms > 100ms!`);
+        }
+        console.log(`  - 5s bridge card verified by duration plus 0-drift A/V sync!`);
+
+        fs.rmSync(fixDir, { recursive: true, force: true });
+        [fixClipA, fixClipB, fixCombined].forEach(p => { if (fs.existsSync(p)) fs.unlinkSync(p); });
+        console.log(`  - Fixture project, clips and combined file cleaned up.`);
 
         // 🧪 TEST 18: Verifying Editor's Preview In-Page Export Button & Dynamic Transition Trim Controls
         console.log("\n🧪 TEST 18: Verifying Editor's Preview In-Page Export Button & Dynamic Transition Trim Controls...");
