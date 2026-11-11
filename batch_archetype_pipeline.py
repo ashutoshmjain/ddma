@@ -18,13 +18,13 @@ def get_ep_num():
 
 EP_NUM = get_ep_num()
 
-PLAN_PATH = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", EP_NUM, "plan.json")
+PLAN_PATH = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", EP_NUM, "plan.json")
 if not os.path.exists(PLAN_PATH):
     PLAN_PATH = os.path.join(GITHUB_ROOT, "ddma", "projects", f"episode_{EP_NUM}", "plan.json")
 
-TRANS_PATH = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", EP_NUM, "transcription.json")
-EDIT_PATH = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", EP_NUM, "podcast_edit.json")
-AUDIO_PATH = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", EP_NUM, f"podcast_{EP_NUM}.mp3")
+TRANS_PATH = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", EP_NUM, "transcription.json")
+EDIT_PATH = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", EP_NUM, "podcast_edit.json")
+AUDIO_PATH = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", EP_NUM, f"podcast_{EP_NUM}.mp3")
 SETTINGS_PATH = os.path.join(GITHUB_ROOT, "ddma", "settings.json")
 ARCHETYPES_DIR = os.path.join(GITHUB_ROOT, "ddma", "archetypes")
 CLIPS_DIR = os.path.join(GITHUB_ROOT, "ddma", "clips")

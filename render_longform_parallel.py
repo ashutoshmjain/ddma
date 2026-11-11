@@ -19,9 +19,9 @@ if SCRIPT_DIR not in sys.path:
 from longform_video_engine import map_timeline_with_stings_and_cuts
 
 EP_NUM = "248"
-AUDIO_PATH = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", EP_NUM, f"podcast_{EP_NUM}.mp3")
-TRANS_PATH = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", EP_NUM, "transcription.json")
-EDIT_PATH = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", EP_NUM, "podcast_edit.json")
+AUDIO_PATH = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", EP_NUM, f"podcast_{EP_NUM}.mp3")
+TRANS_PATH = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", EP_NUM, "transcription.json")
+EDIT_PATH = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", EP_NUM, "podcast_edit.json")
 PLAN_PATH = os.path.join(GITHUB_ROOT, "ddma", "projects", f"episode_{EP_NUM}", "plan.json")
 ARCHETYPES_DIR = os.path.join(GITHUB_ROOT, "ddma", "archetypes")
 MEDIA_VIDEOS_DIR = os.path.join(GITHUB_ROOT, "media", "videos")
@@ -312,7 +312,7 @@ def patch_longform_chapter(clip_num, ep_num=EP_NUM, log=print):
     if SCRIPT_DIR not in sys.path:
         sys.path.insert(0, SCRIPT_DIR)
     import archetype_studio
-    canonical = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", ep_num, f"podcast_{ep_num}.mp4")
+    canonical = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", ep_num, f"podcast_{ep_num}.mp4")
     master = canonical if os.path.exists(canonical) else FINAL_MASTER_MP4
     if not os.path.exists(master):
         return {"success": False, "error": "No Longform Master MP4 found - run a full render first."}

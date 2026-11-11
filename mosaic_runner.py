@@ -20,7 +20,7 @@ def get_ep_num():
 EP_NUM = get_ep_num()
 PROJECT_DIR = os.path.join(SCRIPT_DIR, "projects", f"episode_{EP_NUM}")
 PLAN_PATH = os.path.join(PROJECT_DIR, "plan.json")
-DOCS_PLAN_PATH = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", EP_NUM, "plan.json")
+DOCS_PLAN_PATH = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", EP_NUM, "plan.json")
 CLIPS_DIR = os.path.join(SCRIPT_DIR, "clips")
 os.makedirs(CLIPS_DIR, exist_ok=True)
 
@@ -244,7 +244,7 @@ def download_and_compile(clip_num):
         return
 
     final_clip = os.path.join(CLIPS_DIR, f"{EP_NUM}-{clip_num}.mp4")
-    target_docs_clip = os.path.join(GITHUB_ROOT, "deepDive", "src", "ddma", "docs", "episodes", EP_NUM, "clips", f"{EP_NUM}-{clip_num}.mp4")
+    target_docs_clip = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", EP_NUM, "clips", f"{EP_NUM}-{clip_num}.mp4")
     if os.path.exists(final_clip):
         os.makedirs(os.path.dirname(target_docs_clip), exist_ok=True)
         import shutil
