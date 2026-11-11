@@ -50,6 +50,8 @@ def get_project_canonical_audio_path(project_dir: str, project_id: str = None, i
     Always prioritizes raw continuous .m4a input over .mp3 because .mp3 may be the
     assembled longform podcast master containing inserted music stings.
     Refuses mastered podcast files (e.g. podcast_<ep>.mp3).
+    NOTE: intentional duplicate of the canonical copy in scratch/run_curator.py;
+    keep the two resolvers in sync.
     """
     if not project_id:
         project_id = os.path.basename(project_dir)
@@ -2163,12 +2165,26 @@ def compile_clip(
             backup_path = f"clips/{episode}-{num}.mp4"
             has_motion_source = False
 
-    # Check for freshly cut audio clip (e.g. clips/245-1-*.mp3) and remux audio track
-    audio_pattern1 = os.path.join(master_dir, f"{episode}-{num}-*.mp3")
-    audio_pattern2 = os.path.join(master_dir, f"{episode}-{num}.mp3")
-    audio_matches = glob.glob(audio_pattern1) + glob.glob(audio_pattern2)
-    if not audio_matches:
-        audio_matches = glob.glob(os.path.join(master_dir, f"*-{num}-*.mp3")) + glob.glob(os.path.join(master_dir, f"*-{num}.mp3"))
+    # Canonical audio provenance: always cut from the continuous episode audio
+    # (.m4a preferred, then .wav). Refuses mastered podcast_<ep>.mp3 cuts and
+    # raises instead of silently keeping the Mosaic audio when nothing resolves.
+    plan_dir = os.path.dirname(os.path.abspath(plan_file))
+    plan_base = os.path.basename(plan_dir)
+    if plan_base.startswith("episode_"):
+        canonical_project_id = plan_base
+        canonical_project_dir = plan_dir
+    elif ep_prefix:
+        canonical_project_id = f"episode_{ep_prefix}"
+        cand_dir = os.path.join(plan_dir, "projects", canonical_project_id)
+        canonical_project_dir = cand_dir if os.path.isdir(cand_dir) else os.path.join(os.getcwd(), "projects", canonical_project_id)
+    else:
+        canonical_project_id = plan_base
+        canonical_project_dir = plan_dir
+    canonical_audio_path = get_project_canonical_audio_path(canonical_project_dir, canonical_project_id)
+    if not canonical_audio_path or not os.path.exists(canonical_audio_path):
+        typer.echo(f"Error: No canonical continuous audio (.m4a/.wav) found for clip {num} (project {canonical_project_id}) -- refusing to cut from a mastered podcast .mp3 or keep silent Mosaic audio.", err=True)
+        raise typer.Exit(code=1)
+    audio_matches = [canonical_audio_path]
     
     temp_remux_path = f"temp_remux_{num}.mp4"
     temp_body_path = f"temp_body_{num}.mp4"
@@ -2181,9 +2197,8 @@ def compile_clip(
     fps_str = "30"
 
     if audio_matches:
-        audio_matches.sort(key=os.path.getmtime, reverse=True)
         fresh_audio_path = audio_matches[0]
-        typer.echo(f"Updating master body audio from fresh audio clip: {fresh_audio_path}...")
+        typer.echo(f"Updating master body audio from canonical audio: {fresh_audio_path}...")
         try:
             p_a = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", fresh_audio_path], capture_output=True, text=True)
             if p_a.returncode == 0:

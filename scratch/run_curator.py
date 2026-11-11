@@ -3071,7 +3071,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
             except Exception as e:
                 import traceback
                 traceback.print_exc()
-                self.send_error(500, f"Combine video error: {e}")
+                err_msg = " ".join(str(e).split())
+                self.send_error(500, f"Combine video error: {err_msg}")
                 return
 
         elif parsed_url.path == '/review-episode-bridges':
