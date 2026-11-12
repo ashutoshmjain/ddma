@@ -2043,6 +2043,7 @@ def compile_clip(
     if hasattr(force_draft, 'default'): force_draft = bool(force_draft.default)
     if hasattr(source, 'default'): source = source.default
 
+    temp_scoped_audio_path = f"temp_scoped_audio_{num}.m4a"
     temp_img_path = f"temp_title_{num}.png"
     intro_video_path = f"temp_intro_{num}.mp4"
     concat_txt_path = f"temp_concat_{num}.txt"
@@ -2184,7 +2185,39 @@ def compile_clip(
     if not canonical_audio_path or not os.path.exists(canonical_audio_path):
         typer.echo(f"Error: No canonical continuous audio (.m4a/.wav) found for clip {num} (project {canonical_project_id}) -- refusing to cut from a mastered podcast .mp3 or keep silent Mosaic audio.", err=True)
         raise typer.Exit(code=1)
-    audio_matches = [canonical_audio_path]
+    # Clip-scoped audio: the body must cover only this clip's [start, end],
+    # never the full episode timeline. Prefer the slice `cut --num N` already
+    # produced in master_dir (the handler runs cut first); otherwise slice the
+    # canonical audio to the clip range. Mastered podcast_<ep>.mp3 files are
+    # never accepted as a cut source.
+    try:
+        _scope_s = float(clip.get("source_start", clip.get("start")))
+        _scope_e = float(clip.get("source_end", clip.get("end")))
+        true_clip_dur = round(_scope_e - _scope_s, 2) if _scope_e > _scope_s else None
+    except (TypeError, ValueError):
+        _scope_s = _scope_e = None
+        true_clip_dur = None
+    ep_tag = ep_prefix if ep_prefix else episode
+    slice_cands = glob.glob(os.path.join(master_dir, f"{ep_tag}-{num}-*.mp3")) + glob.glob(os.path.join(master_dir, f"{ep_tag}-{num}.mp3"))
+    if not slice_cands:
+        slice_cands = glob.glob(os.path.join(master_dir, f"*-{num}-*.mp3")) + glob.glob(os.path.join(master_dir, f"*-{num}.mp3"))
+    slice_cands = [p for p in slice_cands if not os.path.basename(p).startswith("podcast_") and os.path.exists(p) and os.path.getsize(p) > 0]
+    if slice_cands:
+        slice_cands.sort(key=os.path.getmtime, reverse=True)
+        scoped_audio_path = slice_cands[0]
+        typer.echo(f"Using clip-scoped cut audio for clip {num}: {scoped_audio_path}...")
+    else:
+        if true_clip_dur is None:
+            typer.echo(f"Error: clip {num} has no usable [start, end] and no cut slice exists in {master_dir} -- refusing full-episode audio.", err=True)
+            raise typer.Exit(code=1)
+        cut_cmd = ["ffmpeg", "-y", "-ss", f"{_scope_s:.3f}", "-t", f"{true_clip_dur:.3f}", "-i", canonical_audio_path, "-c:a", "aac", "-b:a", "192k", temp_scoped_audio_path]
+        res_slice = subprocess.run(cut_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if res_slice.returncode != 0 or not os.path.exists(temp_scoped_audio_path):
+            typer.echo(f"Error slicing canonical audio to clip range: {res_slice.stderr}", err=True)
+            raise typer.Exit(code=1)
+        scoped_audio_path = temp_scoped_audio_path
+        typer.echo(f"Sliced canonical audio to clip {num} range [{_scope_s:.2f}s, {_scope_e:.2f}s]...")
+    audio_matches = [scoped_audio_path]
     
     temp_remux_path = f"temp_remux_{num}.mp4"
     temp_body_path = f"temp_body_{num}.mp4"
@@ -2198,7 +2231,7 @@ def compile_clip(
 
     if audio_matches:
         fresh_audio_path = audio_matches[0]
-        typer.echo(f"Updating master body audio from canonical audio: {fresh_audio_path}...")
+        typer.echo(f"Updating master body audio from clip-scoped audio: {fresh_audio_path}...")
         try:
             p_a = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", fresh_audio_path], capture_output=True, text=True)
             if p_a.returncode == 0:
@@ -2816,7 +2849,8 @@ def compile_clip(
                     if target_clip is not None:
                         import hashlib
                         target_clip["rendered_duration"] = final_dur
-                        target_clip["duration"] = final_dur
+                        if true_clip_dur is not None and true_clip_dur > 0:
+                            target_clip["duration"] = true_clip_dur
                         target_clip["audio_duration"] = round(float(body_duration), 2)
                         target_clip["intro_offset"] = intro_duration
                         target_clip["outro_duration"] = 5.0 if not is_last_clip else 0.0
@@ -2871,7 +2905,7 @@ def compile_clip(
         temp_files_to_remove = [
             temp_img_path, intro_video_path, concat_txt_path, temp_body_path, 
             temp_extracted_frame, temp_img_outro_path, temp_outro_video_path,
-            temp_remux_path, temp_ass_path
+            temp_remux_path, temp_ass_path, temp_scoped_audio_path
         ]
         for temp_f in temp_files_to_remove:
             if os.path.exists(temp_f):

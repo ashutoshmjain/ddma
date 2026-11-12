@@ -199,7 +199,7 @@ def heal_mosaic_project_state(project_id, plan_data=None):
     """
     Scans project state for interrupted or stalled Mosaic runs across server restarts
     or prompt settings changes. Self-heals zombie states:
-    1. If mosaic file not downloaded yet: auto-resumes polling thread.
+    1. If mosaic file not downloaded yet: leaves state untouched (the manual Mosaic button is the only trigger).
     2. If mosaic file downloaded but master compilation incomplete/broken: auto-resumes compile-clip.
     3. If master compilation is already valid on disk: ensures mosaic_jobs.json reflects 100% completed.
     """
@@ -242,16 +242,11 @@ def heal_mosaic_project_state(project_id, plan_data=None):
                 pass
 
         if not has_mosaic_source:
-            # Case 1: Mosaic run active in cloud, not yet downloaded locally
-            if job_key not in mosaic_runs or mosaic_runs[job_key].get("status") == "failed":
-                print(f"[{project_id}][Clip {c_num}] Auto-resuming Mosaic polling thread for run_id {run_id}...")
-                st_data = load_settings()
-                t = threading.Thread(
-                    target=run_mosaic_pipeline,
-                    args=(project_id, c_num, st_data, "", clip.get("segments", []), os.path.join("audio", f"{ep_num}.mp3"), run_id),
-                    daemon=True
-                )
-                t.start()
+            # Case 1: Mosaic source file missing locally. Never auto-start:
+            # a Mosaic run begins ONLY on the user's explicit trigger (the
+            # manual Mosaic button / /export-to-mosaic). Leave the job state
+            # untouched; the clip stays resumable through that button.
+            pass
         elif has_mosaic_source and not master_is_valid:
             # Case 2: Mosaic video downloaded, but master clip compilation was interrupted mid-flight (e.g. at 95%)
             if job_key not in mosaic_runs or mosaic_runs[job_key].get("status") not in ("compiling", "completed"):
@@ -5071,48 +5066,19 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             print(f"Warning: Failed to parse plan.json for run recovery: {pe}")
                     
                     if mosaic_run_id:
-                        print(f"[{project_id}][Clip {clip_num}] Found persisted mosaic_run_id {mosaic_run_id}. Restoring pipeline run...")
-                        
-                        # Load settings
-                        settings_path = "settings.json"
-                        settings = {}
-                        if os.path.exists(settings_path):
-                            with open(settings_path, "r", encoding="utf-8") as f:
-                                settings = json.load(f)
-                        
-                        # Load project info for audio
-                        info_path = os.path.join(project_dir, "project_info.json")
-                        info = {}
-                        if os.path.exists(info_path):
-                            with open(info_path, "r", encoding="utf-8") as f:
-                                info = json.load(f)
-                        
-                        audio_path = os.path.join(project_dir, info.get("audio_filename", ""))
-                        segments = target_clip.get("segments", [])
-                        
-                        # Construct prompt
-                        title = target_clip.get("title", f"Clip {clip_num}")
-                        speech_texts = []
-                        for seg in segments:
-                            if seg.get("type") == "audio" and seg.get("text"):
-                                speech_texts.append(seg.get("text").strip())
-                        transcript = " ".join(speech_texts)
-                        
-                        prompt_content = build_mosaic_prompt_with_context(
-                            title=title,
-                            transcript=transcript
-                        )
-                        
-                        # Spawn background thread to resume polling/download
-                        t = threading.Thread(
-                            target=run_mosaic_pipeline,
-                            args=(project_id, int(clip_num), settings, prompt_content, segments, audio_path, mosaic_run_id),
-                            daemon=True
-                        )
-                        t.start()
-                        
-                        job = {"status": "running", "progress": 70, "error": None, "run_id": mosaic_run_id}
-                        mosaic_runs[job_key] = job
+                        # Pure read: report stored state, never start a pipeline.
+                        # A Mosaic run starts ONLY via the manual Mosaic button
+                        # (/export-to-mosaic). Resumability is preserved: the
+                        # stored run_id is returned so the UI can offer resume.
+                        stored = None
+                        try:
+                            stored = (load_mosaic_jobs(project_id) or {}).get(int(clip_num))
+                        except Exception:
+                            stored = None
+                        if stored:
+                            job = {"status": stored.get("status", "idle"), "progress": stored.get("progress", 0), "error": stored.get("error"), "run_id": mosaic_run_id}
+                        else:
+                            job = {"status": "idle", "progress": 0, "error": None, "run_id": mosaic_run_id}
                     else:
                         job = {"status": "idle", "progress": 0, "error": None}
                 
