@@ -125,6 +125,125 @@ def vault_settings_path():
     return os.path.join(resolve_dd_hub_root(), "vault", "settings.json")
 
 
+# ---- Phase 2: dd_hub as the PRIMARY plan store (local disk is a CACHE only) ----
+PLAN_META_FILENAME = "plan.meta.json"
+
+# episode -> hub plan_rev seen by the last load_plan_file() in this process.
+_plan_rev_cache = {}
+
+def _episode_from_plan_path(plan_file):
+    import re as _re
+    m = _re.search(r"episode_(\d+)", str(plan_file))
+    if m:
+        return m.group(1)
+    m = _re.search(r"episodes[\\/](\d+)", str(plan_file))
+    if m:
+        return m.group(1)
+    return None
+
+def _hub_plan_paths_for_ep(ep):
+    """(hub plan path, hub meta path), or (None, None) when dd_hub is unreachable."""
+    if not ep:
+        return (None, None)
+    hub_root = resolve_dd_hub_root()
+    try:
+        if not os.path.exists(hub_root):
+            return (None, None)
+    except Exception:
+        return (None, None)
+    hub_plan = os.path.join(hub_root, "episodes", str(ep), "plan.json")
+    hub_meta = os.path.join(hub_root, "episodes", str(ep), PLAN_META_FILENAME)
+    return (hub_plan, hub_meta)
+
+def _read_plan_meta(meta_path):
+    try:
+        if meta_path and os.path.exists(meta_path):
+            with open(meta_path, "r", encoding="utf-8") as f:
+                d = json.load(f)
+                if isinstance(d, dict):
+                    return d
+    except Exception:
+        pass
+    return {}
+
+def _read_plan_list(path):
+    try:
+        if path and os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                d = json.load(f)
+                if isinstance(d, list):
+                    return d
+    except Exception:
+        pass
+    return None
+
+def load_plan_file(plan_file, writer="ddma"):
+    """Read the plan from dd_hub FIRST; the given local file is a CACHE only."""
+    ep = _episode_from_plan_path(plan_file)
+    hub_plan, hub_meta = _hub_plan_paths_for_ep(ep)
+    if hub_plan and os.path.exists(hub_plan):
+        data = _read_plan_list(hub_plan)
+        if data is not None:
+            meta = _read_plan_meta(hub_meta)
+            try:
+                _plan_rev_cache[str(ep)] = int(meta.get("plan_rev", 0))
+            except Exception:
+                _plan_rev_cache[str(ep)] = 0
+            if os.path.basename(str(plan_file)) == "plan.json":
+                try:
+                    if os.path.abspath(plan_file) != os.path.abspath(hub_plan):
+                        with open(plan_file, "w", encoding="utf-8") as f:
+                            json.dump(data, f, indent=4)
+                except Exception as ce:
+                    print(f"WARNING: could not refresh local plan cache {plan_file}: {ce}")
+            return data
+        print(f"WARNING: hub plan at {hub_plan} is unreadable -- falling back to local file (may be stale).")
+    else:
+        print(f"WARNING: dd_hub plan not reachable for episode {ep} ({hub_plan}) -- reading LOCAL file {plan_file} (may be stale).")
+    data = _read_plan_list(plan_file)
+    if data is not None:
+        meta = _read_plan_meta(os.path.join(os.path.dirname(os.path.abspath(plan_file)), PLAN_META_FILENAME))
+        try:
+            _plan_rev_cache[str(ep)] = int(meta.get("plan_rev", 0))
+        except Exception:
+            _plan_rev_cache[str(ep)] = 0
+        return data
+    return []
+
+def save_plan_file(plan_file, plan_data, writer="ddma", expected_rev=None):
+    """Write the plan to dd_hub FIRST, then the local file (fail loudly otherwise)."""
+    import datetime as _dt
+    ep = _episode_from_plan_path(plan_file)
+    hub_plan, hub_meta = _hub_plan_paths_for_ep(ep)
+    if not hub_plan:
+        raise RuntimeError(
+            f"dd_hub UNREACHABLE -- refusing to save plan file {plan_file} locally only. "
+            "Set DD_HUB_ROOT or mount dd_hub and retry.")
+    if expected_rev is None:
+        expected_rev = _plan_rev_cache.get(str(ep))
+    current_meta = _read_plan_meta(hub_meta)
+    try:
+        current_rev = int(current_meta.get("plan_rev", 0))
+    except Exception:
+        current_rev = 0
+    if expected_rev is not None and int(expected_rev) != current_rev:
+        raise RuntimeError(
+            f"STALE plan write REFUSED for {plan_file}: hub plan_rev is {current_rev}, "
+            f"you loaded {expected_rev}. Reload the hub plan, re-apply your change, and save again. "
+            "No silent last-writer-wins.")
+    new_rev = current_rev + 1
+    stamp = _dt.datetime.now().astimezone().isoformat()
+    os.makedirs(os.path.dirname(hub_plan), exist_ok=True)
+    with open(hub_plan, "w", encoding="utf-8") as f:
+        json.dump(plan_data, f, indent=4)
+    with open(hub_meta, "w", encoding="utf-8") as f:
+        json.dump({"plan_rev": new_rev, "last_writer": writer, "updated_at": stamp}, f, indent=4)
+    _plan_rev_cache[str(ep)] = new_rev
+    with open(plan_file, "w", encoding="utf-8") as f:
+        json.dump(plan_data, f, indent=4)
+    return new_rev
+
+
 app = typer.Typer(help="DeepDive Media Automator (DDMA) CLI Tool")
 
 
@@ -1129,14 +1248,12 @@ def cut(
         typer.echo(f"Error: Audio file {audio} not found.", err=True)
         raise typer.Exit(code=1)
 
-    if not os.path.exists(plan_file):
-        typer.echo(f"Error: Plan file {plan_file} not found. Run plan first.", err=True)
+    plan_data = load_plan_file(plan_file)
+    if not plan_data:
+        typer.echo(f"Error: Plan file {plan_file} not found (and no hub copy). Run plan first.", err=True)
         raise typer.Exit(code=1)
 
     os.makedirs(out_dir, exist_ok=True)
-
-    with open(plan_file, "r", encoding="utf-8") as f:
-        plan_data = json.load(f)
 
     base_name = os.path.splitext(os.path.basename(audio))[0]
     if num is not None:
@@ -1357,12 +1474,10 @@ def mux_clip(
     """
     Mux a specific clip automatically into a solid black square draft video for Mosaic.
     """
-    if not os.path.exists(plan_file):
-        typer.echo(f"Error: Plan file {plan_file} not found.", err=True)
+    plan_data = load_plan_file(plan_file)
+    if not plan_data:
+        typer.echo(f"Error: Plan file {plan_file} not found (and no hub copy).", err=True)
         raise typer.Exit(code=1)
-
-    with open(plan_file, "r", encoding="utf-8") as f:
-        plan_data = json.load(f)
 
     clip = None
     for c in plan_data:
@@ -2084,12 +2199,10 @@ def compile_clip(
     temp_img_outro_path = f"temp_outro_{num}.png"
     temp_outro_video_path = f"temp_outro_{num}.mp4"
 
-    if not os.path.exists(plan_file):
-        typer.echo(f"Error: Plan file {plan_file} not found.", err=True)
+    plan_data = load_plan_file(plan_file)
+    if not plan_data:
+        typer.echo(f"Error: Plan file {plan_file} not found (and no hub copy).", err=True)
         raise typer.Exit(code=1)
-
-    with open(plan_file, "r", encoding="utf-8") as f:
-        plan_data = json.load(f)
 
     clip = None
     for c in plan_data:
@@ -2908,10 +3021,14 @@ def compile_clip(
                         target_clip["_audio_sig"] = audio_sig
                         target_clip["_compiled_sig"] = compile_sig
 
-                        # Save updated plan.json to plan_file atomically
+                        # Save hub FIRST, then the local file (fail loudly on hub outage / stale rev)
                         try:
-                            with open(plan_file, "w", encoding="utf-8") as pf:
-                                json.dump(plan_data, pf, indent=4)
+                            save_plan_file(plan_file, plan_data)
+                        except RuntimeError as ex_hub:
+                            typer.echo(f"Error: hub plan save FAILED LOUDLY (no local-only write): {ex_hub}", err=True)
+                        except Exception as ex_save:
+                            typer.echo(f"Warning: Failed to save reconciled plan metadata: {ex_save}")
+                        else:
                             if os.path.abspath(plan_file) != os.path.abspath("plan.json"):
                                 with open("plan.json", "w", encoding="utf-8") as rpf:
                                     json.dump(plan_data, rpf, indent=4)
@@ -2924,8 +3041,6 @@ def compile_clip(
                                 if os.path.exists(os.path.dirname(docs_ep_plan)):
                                     with open(docs_ep_plan, "w", encoding="utf-8") as dpf:
                                         json.dump(plan_data, dpf, indent=4)
-                        except Exception as ex_save:
-                            typer.echo(f"Warning: Failed to save reconciled plan metadata: {ex_save}")
             except Exception as ex_ver:
                 typer.echo(f"Warning during post-compile verification: {ex_ver}")
         else:
@@ -3133,8 +3248,11 @@ def ingest_episode(
                 next_title = " ".join(next_c.get("title", f"Part {next_c.get('num', i+1)}").split()[:3])
                 curr_c["bridge_text"] = [f"What Is {next_title} ?"]
 
-        with open(plan_path, "w", encoding="utf-8") as pf:
-            json.dump(clips_list, pf, indent=2)
+        try:
+            save_plan_file(plan_path, clips_list)
+        except RuntimeError as ex_hub:
+            typer.echo(f"Error: hub plan save FAILED LOUDLY (no local-only write): {ex_hub}", err=True)
+            raise typer.Exit(code=1)
 
     update_ingestion_progress(proj_dir, 3, 85, f"Generated plan.json with {len(clips_list)} clips. Syncing workspace...", f"Created storyboard plan with {len(clips_list)} clips.")
 

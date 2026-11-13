@@ -100,7 +100,20 @@ def main():
     clips_dir = "clips"
     episode = args.episode
     plan_file = args.plan_file
-    
+
+    if plan_file == "plan.json":
+        # Default to the hub PRIMARY copy (via DD_HUB_ROOT) when no explicit path is given.
+        hub_root = os.environ.get("DD_HUB_ROOT")
+        if not hub_root or not os.path.exists(hub_root):
+            for cand in [r"G:\My Drive\dd_hub", "/mnt/gdrive/dd_hub", "/workspace/dd_hub"]:
+                if os.path.exists(cand):
+                    hub_root = cand
+                    break
+        hub_plan = os.path.join(hub_root, "episodes", str(episode), "plan.json") if hub_root else None
+        if hub_plan and os.path.exists(hub_plan):
+            plan_file = hub_plan
+    print(f"Using plan file: {plan_file}")
+
     if not os.path.exists(plan_file):
         print(f"Error: Plan file {plan_file} not found.")
         sys.exit(1)
@@ -121,13 +134,20 @@ def main():
                 if num in locked_nums:
                     clip_files.append((num, os.path.abspath(os.path.join(clips_dir, f))))
                 
+    # Fail LOUDLY when a locked clip has no compiled master (never silently skip it).
+    found_nums = {num for num, _ in clip_files}
+    missing_masters = sorted(locked_nums - found_nums)
+    if missing_masters:
+        print(f"Error: {len(missing_masters)} LOCKED clip(s) have no compiled master in '{clips_dir}/' and would be silently dropped: {missing_masters}. Compile them first.", file=sys.stderr)
+        sys.exit(1)
+    
     if not clip_files:
         print(f"Error: No locked, compiled video clips found for Episode {episode} in '{clips_dir}' directory.")
         sys.exit(1)
         
     # Sort clips numerically
     clip_files.sort(key=lambda x: x[0])
-    
+
     print("Found and sorted clips for combination:")
     for num, path in clip_files:
         print(f"  Clip {num}: {os.path.basename(path)}")

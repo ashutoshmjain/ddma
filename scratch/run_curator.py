@@ -169,6 +169,129 @@ def safe_save_json(file_path, data):
             json.dump(data, f, indent=4)
         os.replace(temp_path, file_path)
 
+# ---- Phase 2: dd_hub as the PRIMARY plan store (local disk is a CACHE only) ----
+PLAN_META_FILENAME = "plan.meta.json"
+
+# episode -> hub plan_rev seen by the last load_plan() in this process.
+# save_plan() refuses the write when the hub sidecar moved past this revision.
+_plan_rev_cache = {}
+
+def _episode_from_project_id(project_id):
+    m = re.search(r"\d+", str(project_id))
+    return m.group(0) if m else None
+
+def _hub_plan_paths(ep):
+    """(hub plan path, hub meta path), or (None, None) when dd_hub is unreachable."""
+    if not ep:
+        return (None, None)
+    hub_root = resolve_dd_hub_root()
+    try:
+        if not os.path.exists(hub_root):
+            return (None, None)
+    except Exception:
+        return (None, None)
+    hub_plan = os.path.join(hub_root, "episodes", str(ep), "plan.json")
+    hub_meta = os.path.join(hub_root, "episodes", str(ep), PLAN_META_FILENAME)
+    return (hub_plan, hub_meta)
+
+def _read_plan_meta(meta_path):
+    try:
+        if meta_path and os.path.exists(meta_path):
+            with open(meta_path, "r", encoding="utf-8") as f:
+                d = json.load(f)
+                if isinstance(d, dict):
+                    return d
+    except Exception:
+        pass
+    return {}
+
+def load_plan(project_id, writer="curator"):
+    """Read the plan from dd_hub FIRST; the local copy is a CACHE only.
+
+    Returns the clip list (possibly []). When dd_hub is unreachable the local
+    cache is read with a VISIBLE warning -- never silently treated as current.
+    """
+    ep = _episode_from_project_id(project_id)
+    local_plan = os.path.join("projects", project_id, "plan.json")
+    hub_plan, hub_meta = _hub_plan_paths(ep)
+    if hub_plan and os.path.exists(hub_plan):
+        data = safe_load_json(hub_plan)
+        if isinstance(data, list):
+            meta = _read_plan_meta(hub_meta)
+            try:
+                _plan_rev_cache[str(ep)] = int(meta.get("plan_rev", 0))
+            except Exception:
+                _plan_rev_cache[str(ep)] = 0
+            try:
+                safe_save_json(local_plan, data)
+            except Exception as ce:
+                print(f"WARNING: could not refresh local plan cache {local_plan}: {ce}")
+            return data
+        print(f"WARNING: hub plan at {hub_plan} is unreadable -- falling back to local cache (may be stale).")
+    else:
+        print(f"WARNING: dd_hub plan not reachable for episode {ep} ({hub_plan}) -- reading LOCAL CACHE {local_plan} (may be stale).")
+    data = safe_load_json(local_plan)
+    if isinstance(data, list):
+        meta = _read_plan_meta(os.path.join("projects", project_id, PLAN_META_FILENAME))
+        try:
+            _plan_rev_cache[str(ep)] = int(meta.get("plan_rev", 0))
+        except Exception:
+            _plan_rev_cache[str(ep)] = 0
+        return data
+    return []
+
+def save_plan(project_id, plan_data, writer="curator", expected_rev=None):
+    """Write the plan to dd_hub FIRST, then the local cache, then Active Master paths.
+
+    A save that cannot reach dd_hub raises RuntimeError (fail loudly -- never
+    silently writes locally only). A save whose hub sidecar revision moved past
+    the loaded revision also raises (no silent last-writer-wins; reconcile by
+    hand). Returns the new plan_rev.
+
+    NOTE (accepted, Phase 2 decision): check-then-write over a network mount is
+    NOT atomic. Fine at our concurrency (one user + agents); degrades to
+    "usually refuses" under a true simultaneous save. No lock file by design.
+    """
+    import datetime as _dt
+    ep = _episode_from_project_id(project_id)
+    hub_plan, hub_meta = _hub_plan_paths(ep)
+    if not hub_plan:
+        raise RuntimeError(
+            f"dd_hub UNREACHABLE -- refusing to save plan for {project_id} locally only. "
+            "Set DD_HUB_ROOT or mount dd_hub and retry.")
+    if expected_rev is None:
+        expected_rev = _plan_rev_cache.get(str(ep))
+    current_meta = _read_plan_meta(hub_meta)
+    try:
+        current_rev = int(current_meta.get("plan_rev", 0))
+    except Exception:
+        current_rev = 0
+    if expected_rev is not None and int(expected_rev) != current_rev:
+        raise RuntimeError(
+            f"STALE plan write REFUSED for {project_id}: hub plan_rev is {current_rev}, "
+            f"you loaded {expected_rev}. Reload the hub plan, re-apply your change, and save again. "
+            "No silent last-writer-wins.")
+    new_rev = current_rev + 1
+    stamp = _dt.datetime.now().astimezone().isoformat()
+    os.makedirs(os.path.dirname(hub_plan), exist_ok=True)
+    safe_save_json(hub_plan, plan_data)
+    safe_save_json(hub_meta, {"plan_rev": new_rev, "last_writer": writer, "updated_at": stamp})
+    _plan_rev_cache[str(ep)] = new_rev
+    local_plan = os.path.join("projects", project_id, "plan.json")
+    safe_save_json(local_plan, plan_data)
+    safe_save_json(os.path.join("projects", project_id, PLAN_META_FILENAME),
+                    {"plan_rev": new_rev, "last_writer": writer, "updated_at": stamp})
+    safe_save_json("plan.json", plan_data)
+    if ep:
+        for docs_root in ["docs", os.path.join("..", "src", "ddma", "docs")]:
+            docs_ep_plan = os.path.join(docs_root, "episodes", ep, "plan.json")
+            if os.path.exists(os.path.dirname(docs_ep_plan)):
+                try:
+                    shutil.copy2(local_plan, docs_ep_plan)
+                except Exception as e:
+                    print(f"Error syncing {docs_ep_plan}: {e}")
+    return new_rev
+
 def get_mosaic_jobs_file(project_id):
     proj_dir = os.path.join("projects", project_id)
     os.makedirs(proj_dir, exist_ok=True)
@@ -245,10 +368,10 @@ def heal_mosaic_project_state(project_id, plan_data=None):
     ep_num = ep_num_match.group(0)
 
     if plan_data is None:
-        plan_path = os.path.join("projects", project_id, "plan.json")
-        if os.path.exists(plan_path):
-            plan_data = safe_load_json(plan_path) or []
-        else:
+        try:
+            plan_data = load_plan(project_id) or []
+        except Exception as le:
+            print(f"WARNING: hub plan load failed in heal ({le}) -- healing with empty plan.")
             plan_data = []
 
     for clip in plan_data:
@@ -498,19 +621,17 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
 
             update_mosaic_job_state(project_id, clip_num, "triggering run", 60, run_id=run_id)
 
-            # Persist mosaic_run_id to plan.json immediately so interrupt/resumes are 100% recoverable
+            # Persist mosaic_run_id to the hub plan immediately so interrupt/resumes are 100% recoverable
             try:
-                plan_path = os.path.join("projects", project_id, "plan.json")
-                if os.path.exists(plan_path):
-                    with open(plan_path, "r", encoding="utf-8") as f:
-                        plan = json.load(f)
-                    for c in plan:
-                        if int(c.get("num", -1)) == int(clip_num):
-                            c["mosaic_run_id"] = run_id
-                            break
-                    with open(plan_path, "w", encoding="utf-8") as f:
-                        json.dump(plan, f, indent=4)
-                    print(f"[{project_id}][Clip {clip_num}] Immediately saved mosaic_run_id {run_id} to plan.json for interrupt/resume protection!")
+                persist_plan = load_plan(project_id)
+                for c in persist_plan:
+                    if int(c.get("num", -1)) == int(clip_num):
+                        c["mosaic_run_id"] = run_id
+                        break
+                save_plan(project_id, persist_plan)
+                print(f"[{project_id}][Clip {clip_num}] Immediately saved mosaic_run_id {run_id} to hub plan.json for interrupt/resume protection!")
+            except RuntimeError as pe:
+                print(f"[{project_id}][Clip {clip_num}] ERROR: hub plan save FAILED LOUDLY (no local-only write): {pe}")
             except Exception as pe:
                 print(f"[{project_id}][Clip {clip_num}] Warning: Failed to save initial mosaic_run_id to plan.json: {pe}")
 
@@ -608,19 +729,17 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         if not download_success:
             raise Exception(f"Failed to download rendered video after 5 attempts: {last_dl_err}")
 
-        # Persist mosaic_run_id into plan.json AFTER successful download!
+        # Persist mosaic_run_id into the hub plan AFTER successful download!
         try:
-            plan_path = os.path.join("projects", project_id, "plan.json")
-            if os.path.exists(plan_path):
-                with open(plan_path, "r", encoding="utf-8") as f:
-                    plan = json.load(f)
-                for c in plan:
-                    if int(c.get("num", -1)) == int(clip_num):
-                        c["mosaic_run_id"] = run_id
-                        break
-                with open(plan_path, "w", encoding="utf-8") as f:
-                    json.dump(plan, f, indent=4)
-                print(f"[{project_id}][Clip {clip_num}] Persisted mosaic_run_id {run_id} to plan.json after successful download!")
+            dl_plan = load_plan(project_id)
+            for c in dl_plan:
+                if int(c.get("num", -1)) == int(clip_num):
+                    c["mosaic_run_id"] = run_id
+                    break
+            save_plan(project_id, dl_plan)
+            print(f"[{project_id}][Clip {clip_num}] Persisted mosaic_run_id {run_id} to hub plan.json after successful download!")
+        except RuntimeError as pe:
+            print(f"[{project_id}][Clip {clip_num}] ERROR: hub plan save FAILED LOUDLY (no local-only write): {pe}")
         except Exception as pe:
             print(f"[{project_id}][Clip {clip_num}] Warning: Failed to save mosaic_run_id to plan.json: {pe}")
 
@@ -651,17 +770,15 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         is_cloud_terminal_failure = run_id and any(term in str(ex).lower() for term in ["ended with status 'failed'", "ended with status 'cancelled'", "not found", "404"])
         if is_cloud_terminal_failure:
             try:
-                plan_path = os.path.join("projects", project_id, "plan.json")
-                if os.path.exists(plan_path):
-                    with open(plan_path, "r", encoding="utf-8") as f:
-                        plan = json.load(f)
-                    for c in plan:
-                        if int(c.get("num", -1)) == int(clip_num) and "mosaic_run_id" in c:
-                            del c["mosaic_run_id"]
-                            break
-                    with open(plan_path, "w", encoding="utf-8") as f:
-                        json.dump(plan, f, indent=4)
-                    print(f"[{project_id}][Clip {clip_num}] Cleaned up terminal failed mosaic_run_id from plan.json")
+                cleanup_plan = load_plan(project_id)
+                for c in cleanup_plan:
+                    if int(c.get("num", -1)) == int(clip_num) and "mosaic_run_id" in c:
+                        del c["mosaic_run_id"]
+                        break
+                save_plan(project_id, cleanup_plan)
+                print(f"[{project_id}][Clip {clip_num}] Cleaned up terminal failed mosaic_run_id from hub plan.json")
+            except RuntimeError as pe:
+                print(f"[{project_id}][Clip {clip_num}] ERROR: hub plan save FAILED LOUDLY (no local-only write): {pe}")
             except Exception as pe:
                 print(f"Warning: Failed to clean up mosaic_run_id from plan.json on error: {pe}")
         
@@ -1115,13 +1232,9 @@ def get_gemini_episode_default_prompt():
 
 
 def build_gemini_prompt(project_id, clip_num, directive=None):
-    project_dir = os.path.join("projects", project_id)
-    plan_path = os.path.join(project_dir, "plan.json")
-    if not os.path.exists(plan_path):
+    plan_data = load_plan(project_id)
+    if not plan_data:
         raise Exception(f"plan.json not found for project {project_id}.")
-    
-    with open(plan_path, "r", encoding="utf-8") as f:
-        plan_data = json.load(f)
     
     target_clip = None
     preceding_locked_clips = []
@@ -1248,10 +1361,10 @@ def generate_or_load_storyboard_data(project_id: str, clip_num, force_regen: boo
             pass
 
     plan_path = os.path.join("projects", project_id, "plan.json")
-    if not os.path.exists(plan_path):
-        plan_path = "plan.json"
-    with open(plan_path, "r", encoding="utf-8") as pf:
-        plan_data = json.load(pf)
+    plan_data = load_plan(project_id)
+    if not plan_data and os.path.exists("plan.json"):
+        print(f"WARNING: hub + cache plans empty for {project_id} -- reading root plan.json fallback (may be stale).")
+        plan_data = safe_load_json("plan.json") or []
     t_clip = next((c for c in plan_data if str(c.get("num")) == str(clip_num)), None)
     if not t_clip:
         raise Exception(f"Clip {clip_num} not found in plan {plan_path}")
@@ -1272,8 +1385,7 @@ def generate_or_load_storyboard_data(project_id: str, clip_num, force_regen: boo
             force_regenerate=force_regen
         )
         t_clip["infographic_scenes"] = scenes
-        with open(plan_path, "w", encoding="utf-8") as pf_w:
-            json.dump(plan_data, pf_w, indent=4)
+        save_plan(project_id, plan_data)
 
     storyboard_obj = {
         "_rule_engine": {
@@ -1441,12 +1553,15 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 # Load the old plan to compare metadata changes
                 old_plan = []
                 plan_file_path = os.path.join(project_dir, 'plan.json')
-                if os.path.exists(plan_file_path):
-                    try:
-                        with open(plan_file_path, "r", encoding="utf-8") as f:
-                            old_plan = json.load(f)
-                    except Exception as e:
-                        print(f"Warning: Failed to load old plan for comparison: {e}")
+                # Capture the revision this server last saw BEFORE reloading: save_plan()
+                # must compare against it, not the just-reloaded copy (which would make the
+                # stale-write guard vacuous). Empty (e.g. after a restart) = no usable base,
+                # so the guard is skipped for this save (fail-open, documented).
+                save_expected_rev = _plan_rev_cache.get(str(_episode_from_project_id(project_id)))
+                try:
+                    old_plan = load_plan(project_id) or []
+                except Exception as e:
+                    print(f"Warning: Failed to load old plan for comparison: {e}")
                 
                 json_data = json.loads(post_data.decode('utf-8'))
                 if isinstance(json_data, dict) and "clips" in json_data:
@@ -1456,11 +1571,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     clips_array = json_data
                 
-                # Save to project's plan.json atomically
-                safe_save_json(plan_file_path, clips_array)
-                
-                # Sync to root plan.json atomically
-                safe_save_json('plan.json', clips_array)
+                # Save hub FIRST, then local cache, then Active Master paths (fail loudly on hub outage)
+                save_plan(project_id, clips_array, expected_rev=save_expected_rev)
                     
                 # Sync to docs/episodes/EP_NUM/plan.json and docs/episodes.json (plus ../src/ddma/docs/ mirror)
                 ep_match = re.search(r'\d+', project_id)
@@ -1474,15 +1586,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             except Exception as e:
                                 print(f"Error syncing {docs_ep_plan}: {e}")
                     
-                    # Sync to dd_hub vault (so VM->local carries lock state)
-                    hub_root = resolve_dd_hub_root()
-                    if os.path.exists(hub_root):
-                        hub_ep_plan = os.path.join(hub_root, "episodes", ep_str, "plan.json")
-                        try:
-                            os.makedirs(os.path.dirname(hub_ep_plan), exist_ok=True)
-                            shutil.copy2(plan_file_path, hub_ep_plan)
-                        except Exception as e:
-                            print(f"Error syncing to dd_hub {hub_ep_plan}: {e}")
+                    # (hub sync now happens hub-first inside save_plan(); see above)
 
                     if json_data and len(json_data) > 0 and json_data[0].get("title"):
                         c1_title = json_data[0]["title"]
@@ -1550,10 +1654,9 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 
                 project_dir = os.path.join("projects", project_id)
                 plan_path = os.path.join(project_dir, "plan.json")
-                if not os.path.exists(plan_path):
+                rmx_plan = load_plan(project_id)
+                if not rmx_plan:
                     raise Exception(f"plan.json not found for project {project_id}.")
-                with open(plan_path, "r", encoding="utf-8") as pf_rmx:
-                    rmx_plan = json.load(pf_rmx)
                 target_clip_rmx = next((c for c in rmx_plan if int(c.get("num", -1)) == clip_num), None)
                 if not target_clip_rmx:
                     raise Exception(f"Clip {clip_num} not found in plan.")
@@ -1681,21 +1784,16 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         pass
                 
                 # Update plan_data
-                with open(plan_path, 'r', encoding='utf-8') as f:
-                    plan_data = json.load(f)
+                remix_expected_rev = _plan_rev_cache.get(str(_episode_from_project_id(project_id)))
+                plan_data = load_plan(project_id)
                     
                 for idx, c in enumerate(plan_data):
                     if int(c.get("num", -1)) == clip_num:
                         plan_data[idx] = recasted_clip
                         break
                 
-                # Save to project's plan.json
-                with open(plan_path, 'w', encoding='utf-8') as f:
-                    json.dump(plan_data, f, indent=4)
-                
-                # Sync to root plan.json
-                with open('plan.json', 'w', encoding='utf-8') as f:
-                    json.dump(plan_data, f, indent=4)
+                # Save hub FIRST, then local cache, then Active Master paths (fail loudly on hub outage)
+                save_plan(project_id, plan_data, expected_rev=remix_expected_rev)
                     
                 # Sync to docs/plan.json if it exists
                 if os.path.exists("docs"):
