@@ -111,13 +111,49 @@ def safe_load_json(file_path, retries=10, delay=0.05):
     return None
 
 def load_settings():
-    s = safe_load_json("settings.json")
-    settings = s if isinstance(s, dict) else {}
+    # Vault first; the local file is only a fallback when the vault is unreachable.
+    # Env vars still win over everything (see below).
+    vault_path = vault_settings_path()
+    if os.path.exists(vault_path):
+        s = safe_load_json(vault_path)
+        settings = s if isinstance(s, dict) else {}
+    else:
+        print(f"WARNING: vault settings.json not found at {vault_path} (dd_hub unreachable?) -- falling back to local settings.json.")
+        s = safe_load_json("settings.json")
+        settings = s if isinstance(s, dict) else {}
     if os.environ.get("GEMINI_API_KEY"):
         settings["gemini_api_key"] = os.environ.get("GEMINI_API_KEY")
     if os.environ.get("MOSAIC_API_KEY"):
         settings["mosaic_api_key"] = os.environ.get("MOSAIC_API_KEY")
     return settings
+
+
+def resolve_dd_hub_root():
+    """Single shared resolution: env -> local settings.json dd_hub_root -> candidates -> default with a LOUD warning.
+    (Intentional duplicate of the resolver in ddma.py and ingest/server.py; keep the three in sync.)"""
+    e = os.environ.get("DD_HUB_ROOT")
+    if e and os.path.exists(e):
+        return e
+    try:
+        s = safe_load_json("settings.json")
+        if isinstance(s, dict):
+            cfg = s.get("dd_hub_root")
+            if cfg and os.path.exists(cfg):
+                return cfg
+    except Exception:
+        pass
+    for cand in [r"G:\My Drive\dd_hub", "/mnt/gdrive/dd_hub", "/workspace/dd_hub"]:
+        try:
+            if os.path.exists(cand):
+                return cand
+        except Exception:
+            pass
+    print("WARNING: DD_HUB_ROOT is unset and no dd_hub directory exists at any known location -- using default G:\\My Drive\\dd_hub which DOES NOT EXIST. Vault/plan reads will fail and hub syncs will be skipped.")
+    return r"G:\My Drive\dd_hub"
+
+
+def vault_settings_path():
+    return os.path.join(resolve_dd_hub_root(), "vault", "settings.json")
 
 PORT = 8000
 
@@ -1439,7 +1475,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                 print(f"Error syncing {docs_ep_plan}: {e}")
                     
                     # Sync to dd_hub vault (so VM->local carries lock state)
-                    hub_root = os.environ.get("DD_HUB_ROOT", r"G:\My Drive\dd_hub")
+                    hub_root = resolve_dd_hub_root()
                     if os.path.exists(hub_root):
                         hub_ep_plan = os.path.join(hub_root, "episodes", ep_str, "plan.json")
                         try:
@@ -1890,7 +1926,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 ep_match = re.search(r'\d+', project_id)
                 ep_str = ep_match.group(0) if ep_match else None
                 if ep_str:
-                    hub_root = os.environ.get("DD_HUB_ROOT", r"G:\My Drive\dd_hub")
+                    hub_root = resolve_dd_hub_root()
                     if os.path.exists(hub_root):
                         hub_ep_plan = os.path.join(hub_root, "episodes", ep_str, "plan.json")
                         try:
@@ -4509,7 +4545,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     # Automatic fallback to Google Drive dd_hub/inputs/<ep_num> (and legacy agy_inputs/<ep_num>)
                     if not audio_path or not os.path.exists(audio_path):
                         for gdrive_base in [
-                            os.path.join(os.environ.get("DD_HUB_ROOT", r"G:\My Drive\dd_hub"), "inputs"),
+                            os.path.join(resolve_dd_hub_root(), "inputs"),
                             r"G:\My Drive\agy_inputs",
                         ]:
                             gdrive_dir = os.path.join(gdrive_base, str(ep_num))
@@ -4708,7 +4744,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 ep_match = re.search(r"\d+", project_id)
                 ep_str = ep_match.group(0) if ep_match else None
                 if ep_str:
-                    hub_root = os.environ.get("DD_HUB_ROOT", r"G:\My Drive\dd_hub")
+                    hub_root = resolve_dd_hub_root()
                     hub_plan = os.path.join(hub_root, "episodes", ep_str, "plan.json") if hub_root else None
                     src_plan = os.path.join("..", "src", "ddma", "docs", "episodes", ep_str, "plan.json")
                     docs_plan = os.path.join("docs", "episodes", ep_str, "plan.json")

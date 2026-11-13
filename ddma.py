@@ -98,6 +98,33 @@ def get_project_canonical_audio_path(project_dir: str, project_id: str = None, i
 
     return None
 
+def resolve_dd_hub_root():
+    """Single shared resolution: env -> local settings.json dd_hub_root -> candidates -> default with a LOUD warning.
+    (Intentional duplicate of the resolver in scratch/run_curator.py and ingest/server.py; keep the three in sync.)"""
+    e = os.environ.get("DD_HUB_ROOT")
+    if e and os.path.exists(e):
+        return e
+    try:
+        with open(os.path.join(os.path.dirname(__file__), "settings.json"), "r", encoding="utf-8") as sf:
+            cfg = json.load(sf).get("dd_hub_root")
+            if cfg and os.path.exists(cfg):
+                return cfg
+    except Exception:
+        pass
+    for cand in [r"G:\My Drive\dd_hub", "/mnt/gdrive/dd_hub", "/workspace/dd_hub"]:
+        try:
+            if os.path.exists(cand):
+                return cand
+        except Exception:
+            pass
+    print("WARNING: DD_HUB_ROOT is unset and no dd_hub directory exists at any known location -- using default G:\\My Drive\\dd_hub which DOES NOT EXIST. Vault/plan reads will fail and hub syncs will be skipped.")
+    return r"G:\My Drive\dd_hub"
+
+
+def vault_settings_path():
+    return os.path.join(resolve_dd_hub_root(), "vault", "settings.json")
+
+
 app = typer.Typer(help="DeepDive Media Automator (DDMA) CLI Tool")
 
 
@@ -446,7 +473,12 @@ def cast_tripartite_plan_with_gemini(t_data: dict, num_clips: Optional[int] = No
     elif not api_key:
         api_key = get_gemini_api_key() if "get_gemini_api_key" in globals() else None
     if not api_key:
-        sett_file = os.path.join(os.path.dirname(__file__), "settings.json")
+        local_sett = os.path.join(os.path.dirname(__file__), "settings.json")
+        vault_file = vault_settings_path()
+        sett_file = vault_file if os.path.exists(vault_file) else None
+        if sett_file is None:
+            print(f"WARNING: vault settings.json not found at {vault_file} (dd_hub unreachable?) -- falling back to local settings.json.")
+            sett_file = local_sett
         if os.path.exists(sett_file):
             try:
                 with open(sett_file, "r", encoding="utf-8") as sf:
@@ -2785,7 +2817,7 @@ def compile_clip(
             
             # Sync compiled reel to Google Drive dd_hub/{mosaics,manims}/<episode>-<num>.mp4 for mobile review & manual uploads
             try:
-                hub_root = os.environ.get("DD_HUB_ROOT", r"G:\My Drive\dd_hub")
+                hub_root = resolve_dd_hub_root()
                 if os.path.exists(hub_root) and episode:
                     hub_reel_folder = "manims" if compile_source == "manim" else "mosaics"
                     hub_dest_dir = os.path.join(hub_root, hub_reel_folder)
