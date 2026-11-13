@@ -244,6 +244,41 @@ def save_plan_file(plan_file, plan_data, writer="ddma", expected_rev=None):
     return new_rev
 
 
+# ---- Phase 3: working assets read from dd_hub, local out_dir is a CACHE ----
+def hub_working_asset_path(ep, filename):
+    """PRIMARY location of a working asset on dd_hub, or None when unreachable."""
+    hub_root = resolve_dd_hub_root()
+    try:
+        if not hub_root or not os.path.exists(hub_root):
+            return None
+    except Exception:
+        return None
+    return os.path.join(hub_root, "episodes", str(ep), filename)
+
+def resolve_working_asset_output(plan_file, out_dir, out_filename):
+    """Hub-first output resolution for cut/mux: (primary_path, cache_path_or_None).
+
+    Raises RuntimeError when the episode resolves but dd_hub is unreachable (fail
+    loudly -- no local-only working-asset writes). Warns and stays local-only
+    when no episode can be resolved from the plan path (existing standalone-CLI
+    behaviour, no hub copy).
+    """
+    local_path = os.path.join(out_dir, out_filename)
+    ep = _episode_from_plan_path(plan_file)
+    if not ep:
+        print(f"WARNING: no episode in plan path {plan_file} -- writing {out_filename} locally only (no hub copy).")
+        return (local_path, None)
+    hub_path = hub_working_asset_path(ep, out_filename)
+    if not hub_path:
+        raise RuntimeError(
+            f"dd_hub UNREACHABLE -- refusing to write working asset {out_filename} locally only. "
+            "Set DD_HUB_ROOT or mount dd_hub and retry.")
+    os.makedirs(os.path.dirname(hub_path), exist_ok=True)
+    if os.path.abspath(hub_path) == os.path.abspath(local_path):
+        return (hub_path, None)
+    return (hub_path, local_path)
+
+
 app = typer.Typer(help="DeepDive Media Automator (DDMA) CLI Tool")
 
 
@@ -1271,7 +1306,11 @@ def cut(
             out_filename = f"{base_name}-{c['num']}-{clean_title}.mp3"
         else:
             out_filename = f"{base_name}-{c['num']}.mp3"
-        out_path = os.path.join(out_dir, out_filename)
+        try:
+            out_path, cache_out_path = resolve_working_asset_output(plan_file, out_dir, out_filename)
+        except RuntimeError as ex_hub:
+            typer.echo(f"Error: hub working-asset write FAILED LOUDLY (no local-only write): {ex_hub}", err=True)
+            raise typer.Exit(code=1)
 
         # Convert float seconds to HH:MM:SS.xxx format for ffmpeg
         def to_time_str(secs: float) -> str:
@@ -1396,6 +1435,8 @@ def cut(
             ]
             res_mix = subprocess.run(cmd_mix, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if res_mix.returncode == 0:
+                if cache_out_path and os.path.exists(out_path):
+                    shutil.copy2(out_path, cache_out_path)
                 typer.echo(f"Created {out_filename} with sample-accurate sting transitions (-16 LUFS)")
             else:
                 typer.echo(f"Error mixing clip {c['num']}: {res_mix.stderr}", err=True)
@@ -1415,6 +1456,8 @@ def cut(
             result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
             if result.returncode == 0:
+                if cache_out_path and os.path.exists(out_path):
+                    shutil.copy2(out_path, cache_out_path)
                 typer.echo(f"Created {out_filename}")
             else:
                 typer.echo(f"Error cutting clip {c['num']}: {result.stderr}", err=True)
@@ -1530,7 +1573,11 @@ def mux_clip(
 
     os.makedirs(out_dir, exist_ok=True)
     out_filename = f"{episode}-{num}.mp4"
-    out_path = os.path.join(out_dir, out_filename)
+    try:
+        out_path, cache_out_path = resolve_working_asset_output(plan_file, out_dir, out_filename)
+    except RuntimeError as ex_hub:
+        typer.echo(f"Error: hub working-asset write FAILED LOUDLY (no local-only write): {ex_hub}", err=True)
+        raise typer.Exit(code=1)
 
     typer.echo(f"Found audio: {audio_path}")
     typer.echo(f"Muxing into black square draft: {out_path}...")
@@ -1582,6 +1629,8 @@ def mux_clip(
     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     if result.returncode == 0:
+        if cache_out_path and os.path.exists(out_path):
+            shutil.copy2(out_path, cache_out_path)
         typer.echo(f"Successfully created draft video: {out_path}")
     else:
         typer.echo(f"Error creating video: {result.stderr}", err=True)

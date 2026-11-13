@@ -292,6 +292,57 @@ def save_plan(project_id, plan_data, writer="curator", expected_rev=None):
                     print(f"Error syncing {docs_ep_plan}: {e}")
     return new_rev
 
+# ---- Phase 3: working assets read from dd_hub, local clips/ is a CACHE ----
+def working_asset_hub_path(ep, filename):
+    """PRIMARY location of a working asset on dd_hub, or None when unreachable."""
+    hub_root = resolve_dd_hub_root()
+    try:
+        if not hub_root or not os.path.exists(hub_root):
+            return None
+    except Exception:
+        return None
+    return os.path.join(hub_root, "episodes", str(ep), filename)
+
+def working_asset_local_path(filename):
+    """Local CACHE location of a working asset (same filename, local clips/ dir)."""
+    return os.path.join("clips", filename)
+
+def read_working_asset(ep, filename, quiet=False):
+    """Resolve the path to read: the hub PRIMARY copy when present, else the local cache.
+
+    Prints a VISIBLE warning on every cache fallback unless quiet=True (existence
+    probes on hot paths pass quiet=True to avoid log spam; content reads stay loud).
+    """
+    hub_p = working_asset_hub_path(ep, filename)
+    if hub_p and os.path.exists(hub_p):
+        return hub_p
+    local_p = working_asset_local_path(filename)
+    if not quiet:
+        if hub_p is None:
+            print(f"WARNING: dd_hub unreachable -- reading working asset from LOCAL CACHE clips/{filename} (may be stale).")
+        else:
+            print(f"WARNING: working asset {filename} not on hub -- reading LOCAL CACHE (may be stale).")
+    return local_p
+
+def ensure_local_cache(ep, filename):
+    """Copy the hub PRIMARY copy down to the local cache when the cache is cold.
+
+    Local-only consumers (ddma CLI subprocesses, ffmpeg) need the file in clips/;
+    call this before invoking them. No-op when the cache is warm or hub is missing.
+    """
+    local_p = working_asset_local_path(filename)
+    if os.path.exists(local_p):
+        return local_p
+    hub_p = working_asset_hub_path(ep, filename)
+    if hub_p and os.path.exists(hub_p):
+        try:
+            os.makedirs(os.path.dirname(local_p) or ".", exist_ok=True)
+            shutil.copy2(hub_p, local_p)
+            print(f"[{ep}] Warmed local cache from hub: {filename}")
+        except Exception as ce:
+            print(f"WARNING: could not warm local cache for {filename}: {ce}")
+    return local_p
+
 def get_mosaic_jobs_file(project_id):
     proj_dir = os.path.join("projects", project_id)
     os.makedirs(proj_dir, exist_ok=True)
@@ -381,8 +432,10 @@ def heal_mosaic_project_state(project_id, plan_data=None):
         if c_num is None:
             continue
         run_id = clip["mosaic_run_id"]
-        versioned_mosaic_file = os.path.join("clips", f"{ep_num}-{c_num}-mosaic-{run_id}.mp4")
-        orig_file = os.path.join("clips", f"{ep_num}-{c_num}-original.mp4")
+        versioned_mosaic_file = read_working_asset(ep_num, f"{ep_num}-{c_num}-mosaic-{run_id}.mp4", quiet=True)
+        orig_file = read_working_asset(ep_num, f"{ep_num}-{c_num}-original.mp4", quiet=True)
+        ensure_local_cache(ep_num, f"{ep_num}-{c_num}-mosaic-{run_id}.mp4")
+        ensure_local_cache(ep_num, f"{ep_num}-{c_num}-original.mp4")
         master_clip_path = os.path.join("clips", f"{ep_num}-{c_num}.mp4")
         job_key = (project_id, int(c_num))
 
@@ -688,7 +741,11 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         update_mosaic_job_state(project_id, clip_num, "downloading output", 95, run_id=run_id)
         print(f"[{project_id}][Clip {clip_num}] Downloading rendered video from Mosaic S3...")
         
-        mosaic_version_path = os.path.join("clips", f"{ep_num}-{clip_num}-mosaic-{run_id}.mp4")
+        mosaic_filename = f"{ep_num}-{clip_num}-mosaic-{run_id}.mp4"
+        mosaic_hub_path = working_asset_hub_path(ep_num, mosaic_filename)
+        if not mosaic_hub_path:
+            raise Exception(f"dd_hub UNREACHABLE -- refusing Mosaic download for Clip {clip_num} (working assets never write locally-only). Set DD_HUB_ROOT or mount dd_hub and retry.")
+        mosaic_version_path = working_asset_local_path(mosaic_filename)
         
         # Purge older Mosaic render files for this clip (e.g. clips/245-13-mosaic-*.mp4)
         import glob
@@ -699,6 +756,13 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                     print(f"[{project_id}][Clip {clip_num}] Purged older Mosaic render: {f_cand}")
                 except Exception as p_err:
                     print(f"Warning: Could not purge older Mosaic render {f_cand}: {p_err}")
+        for f_cand in glob.glob(os.path.join(os.path.dirname(mosaic_hub_path), f"{ep_num}-{clip_num}-mosaic-*.mp4")):
+            if os.path.abspath(f_cand) != os.path.abspath(mosaic_hub_path):
+                try:
+                    os.remove(f_cand)
+                    print(f"[{project_id}][Clip {clip_num}] Purged older hub Mosaic render: {f_cand}")
+                except Exception as p_err:
+                    print(f"Warning: Could not purge older hub Mosaic render {f_cand}: {p_err}")
         
         # Step 5: Download rendered video with robust multi-attempt retry (protects against socket blips/IncompleteRead)
         download_success = False
@@ -710,13 +774,18 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                 if res_download.status_code != 200:
                     raise Exception(f"Failed to download rendered video from Mosaic: HTTP {res_download.status_code}")
                     
-                os.makedirs(os.path.dirname(mosaic_version_path) or "clips", exist_ok=True)
-                with open(mosaic_version_path, "wb") as f_out:
+                os.makedirs(os.path.dirname(mosaic_hub_path), exist_ok=True)
+                mosaic_part_path = mosaic_hub_path + ".part"
+                with open(mosaic_part_path, "wb") as f_out:
                     for chunk in res_download.iter_content(chunk_size=65536):
                         if chunk:
                             f_out.write(chunk)
-                
-                if os.path.exists(mosaic_version_path) and os.path.getsize(mosaic_version_path) > 1024:
+
+                if os.path.exists(mosaic_part_path) and os.path.getsize(mosaic_part_path) > 1024:
+                    # Hub FIRST (atomic rename, no partials on the primary store), then the local cache.
+                    os.replace(mosaic_part_path, mosaic_hub_path)
+                    os.makedirs(os.path.dirname(mosaic_version_path) or "clips", exist_ok=True)
+                    shutil.copy2(mosaic_hub_path, mosaic_version_path)
                     download_success = True
                     break
                 else:
@@ -3880,8 +3949,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 elif source == "mosaic":
                     m_run_id = t_clip.get("mosaic_run_id")
                     if m_run_id:
-                        variant_candidates.append(os.path.join("clips", f"{ep_num}-{clip_num}-mosaic-{m_run_id}.mp4"))
-                    variant_candidates.append(os.path.join("clips", f"{ep_num}-{clip_num}-original.mp4"))
+                        ensure_local_cache(ep_num, f"{ep_num}-{clip_num}-mosaic-{m_run_id}.mp4")
+                        variant_candidates.append(read_working_asset(ep_num, f"{ep_num}-{clip_num}-mosaic-{m_run_id}.mp4"))
+                    ensure_local_cache(ep_num, f"{ep_num}-{clip_num}-original.mp4")
+                    variant_candidates.append(read_working_asset(ep_num, f"{ep_num}-{clip_num}-original.mp4"))
 
                 chosen_variant = None
                 for cand in variant_candidates:
@@ -4952,9 +5023,11 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                             c_num = c.get("num")
                             if c_num is not None and c.get("mosaic_run_id"):
                                 m_run_id = c.get("mosaic_run_id")
-                                v_file = os.path.join(clips_dir, f"{ep_num}-{c_num}-mosaic-{m_run_id}.mp4")
-                                orig_file = os.path.join(clips_dir, f"{ep_num}-{c_num}-original.mp4")
+                                v_file = read_working_asset(ep_num, f"{ep_num}-{c_num}-mosaic-{m_run_id}.mp4", quiet=True)
+                                orig_file = read_working_asset(ep_num, f"{ep_num}-{c_num}-original.mp4", quiet=True)
+                                hub_dir = os.path.dirname(working_asset_hub_path(ep_num, "x") or "")
                                 any_mosaics = [f for f in (os.listdir(clips_dir) if os.path.exists(clips_dir) else []) if f.startswith(f"{ep_num}-{c_num}-mosaic-") and f.endswith(".mp4")]
+                                any_mosaics += [f for f in (os.listdir(hub_dir) if hub_dir and os.path.exists(hub_dir) else []) if f.startswith(f"{ep_num}-{c_num}-mosaic-") and f.endswith(".mp4") and f not in any_mosaics]
                                 if os.path.exists(v_file) or os.path.exists(orig_file) or len(any_mosaics) > 0:
                                     if c_num not in clip_statuses:
                                         clip_statuses[c_num] = {"has_audio": False, "video_state": "compiled", "has_mosaic_file": True}
