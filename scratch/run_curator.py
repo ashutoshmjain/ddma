@@ -3738,13 +3738,11 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 with open(info_path, "r", encoding="utf-8") as f:
                     info = json.load(f)
                     
-                plan_path = os.path.join(project_dir, "plan.json")
-                if not os.path.exists(plan_path):
-                    raise Exception(f"plan.json for project {project_id} not found.")
-                
-                with open(plan_path, "r", encoding="utf-8") as f:
-                    plan = json.load(f)
-                
+                # Hub-first plan read (fail loudly when unreachable -- never export from a stale cache).
+                plan = load_plan(project_id, writer="curator")
+                if not isinstance(plan, list) or len(plan) == 0:
+                    raise Exception(f"plan for project {project_id} is empty or unreadable from dd_hub.")
+
                 # Find matching clip
                 target_clip = None
                 for clip in plan:
@@ -4251,7 +4249,17 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
-                self.wfile.write(json.dumps({"success": True, "url": clip_url, "clip": master_name, "already_published": already}).encode('utf-8'))
+                # (f2) Persist the published state on the clip (fresh + already-published
+
+                # paths alike) so the card render survives a refresh. Hub-first via save_plan.
+
+                target_clip["published"] = True
+
+                target_clip["published_url"] = clip_url
+
+                save_plan(project_id, plan_data, writer="curator")
+
+                self.wfile.write(json.dumps({"success": True, "url": clip_url, "clip": master_name, "already_published": already, "persisted": True}).encode('utf-8'))
                 return
             except Exception as e:
                 print(f"[publish-clip] {project_id} clip {clip_num}: {e}")
@@ -4888,16 +4896,28 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 return
 
         elif parsed_url.path == '/list-workspace-audio':
-            files = []
-            for f in sorted(os.listdir(".")):
-                if f.lower().endswith((".mp3", ".wav", ".m4a")):
-                    files.append(f)
-            
+            # Named hub target: deepdive-workspace. Lists input audio under
+            # the hub (dd_hub/inputs/**) -- never the app root, never Downloads.
+            try:
+                hub_root = resolve_dd_hub_root()
+                inputs_dir = os.path.join(str(hub_root), "inputs")
+                files = []
+                if os.path.isdir(inputs_dir):
+                    for dirpath, _d, fns in os.walk(inputs_dir):
+                        for fn in sorted(fns):
+                            if fn.lower().endswith((".mp3", ".wav", ".m4a", ".aac", ".flac")):
+                                files.append(os.path.join(dirpath, fn))
+                files.sort()
+                payload = {"target": "deepdive-workspace",
+                           "root": str(hub_root), "files": files}
+            except Exception as e:
+                self.send_error(500, f"deepdive-workspace unreachable: {e}")
+                return
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
-            self.wfile.write(json.dumps(files).encode('utf-8'))
+            self.wfile.write(json.dumps(payload).encode('utf-8'))
             return
             
         elif parsed_url.path == '/get-mosaic-prompt':

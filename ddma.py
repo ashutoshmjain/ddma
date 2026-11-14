@@ -413,7 +413,7 @@ def resolve_segment_boundary(raw_w1_end: float, raw_w2_start: float, audio_path:
         return mid, mid
 
 
-def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = "mosaic", audio_path: Optional[str] = None) -> list:
+def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = "mosaic", audio_path: Optional[str] = None, episode_title: Optional[str] = None) -> list:
     """
     Deterministically detects spoken NotebookLM clip cues ('Clip 1', 'Clip one', etc.)
     and snaps tripartite boundaries:
@@ -497,7 +497,7 @@ def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = 
         c0_body_text = get_text_between(delib_start, raw_c0_end)
         clips.append({
             "num": 0,
-            "title": "What Exactly Is Reality?",
+            "title": episode_title if episode_title else "Episode Prologue",
             "start": 0.0,
             "end": c0_end,
             "duration": c0_end,
@@ -596,7 +596,7 @@ def parse_spoken_cue_tripartite_plan(t_data: dict, default_visual_source: str = 
     return clips
 
 
-def cast_tripartite_plan_with_gemini(t_data: dict, num_clips: Optional[int] = None, api_key: Optional[str] = None, default_visual_source: str = "mosaic", audio_path: Optional[str] = None) -> list:
+def cast_tripartite_plan_with_gemini(t_data: dict, num_clips: Optional[int] = None, api_key: Optional[str] = None, default_visual_source: str = "mosaic", audio_path: Optional[str] = None, episode_title: Optional[str] = None) -> list:
     """
     Parses a NotebookLM tripartite podcast transcript where each clip consists of:
     1. Punchline Hook (10-20s): Spoken thesis statement, announcing clip number and/or title.
@@ -606,7 +606,7 @@ def cast_tripartite_plan_with_gemini(t_data: dict, num_clips: Optional[int] = No
     First checks for deterministic spoken clip cues ('Clip 1', 'Clip one', etc.) with microsecond snapping.
     Otherwise prompts Gemini to identify every clip boundary.
     """
-    spoken_clips = parse_spoken_cue_tripartite_plan(t_data, default_visual_source=default_visual_source, audio_path=audio_path)
+    spoken_clips = parse_spoken_cue_tripartite_plan(t_data, default_visual_source=default_visual_source, audio_path=audio_path, episode_title=episode_title)
     if spoken_clips:
         typer.echo(f"[Spoken Cue Caster] Detected {len(spoken_clips)} spoken tripartite clip cues with exact boundary snapping!")
         return spoken_clips
@@ -666,7 +666,7 @@ Analyze the transcript and identify all tripartite clips (target approximately {
 For each clip, return a JSON object with:
 - "num": integer (0, 1, 2, 3...)
 - "title":
-  * For Clip 0 (`num == 0`): The overarching Episode Title (3-5 words, e.g. "What Exactly Is Reality?").
+  * For Clip 0 (`num == 0`): The overarching Episode Title (3-5 words, e.g. the episode\u2019s own title).
   * For Clip 1+ (`num >= 1`): STRICTLY MAXIMUM 3 WORDS designed to capture attention — typically the scientific concept, scientist name, or core idea (e.g. "8D Totality", "Sensory Split", "Division Algebras", "Quaternions"). Drop leading articles like "The" if needed to stay ≤ 3 words.
 - "hook_quote": Exact spoken opening thesis statement (1-2 sentences, 10-20s)
 - "punchline_start_phrase": First 3-5 words spoken in the punchline hook
@@ -1081,7 +1081,8 @@ def plan(
     max_duration: float = typer.Option(165.0, help="Max clip duration in seconds (default 2m45s)"),
     min_duration: float = typer.Option(90.0, help="Min clip duration in seconds"),
     ranges: Optional[str] = typer.Option(None, help="Comma-separated rough start-end ranges (seconds or MM:SS, e.g. '0-1:42.5, 3:56-6:39.5')"),
-    out: str = typer.Option("plan.json", help="Path to save the generated plan JSON")
+    out: str = typer.Option("plan.json", help="Path to save the generated plan JSON"),
+    episode_title: Optional[str] = typer.Option(None, help="Episode title used for clip 0 (defaults to project_info.json next to the transcription)")
 ):
     """
     Plan clip boundaries (either fully automated forward with integrity scoring or targeting specific ranges).
@@ -1169,7 +1170,13 @@ def plan(
             c_obj = build_rough_cut_segments(idx, start_aligned, end_aligned, segments, len(range_strs))
             clips_plan.append(c_obj)
     else:
-        spoken_clips = parse_spoken_cue_tripartite_plan(data, default_visual_source="mosaic", audio_path=audio)
+        if not episode_title:
+            try:
+                with open(os.path.join(os.path.dirname(os.path.abspath(transcription)), "project_info.json"), "r", encoding="utf-8") as inf:
+                    episode_title = json.load(inf).get("title") or None
+            except Exception:
+                pass
+        spoken_clips = parse_spoken_cue_tripartite_plan(data, default_visual_source="mosaic", audio_path=audio, episode_title=episode_title)
         if spoken_clips:
             typer.echo(f"[Spoken Cue Caster] Detected {len(spoken_clips)} spoken tripartite clip cues! Writing plan to {out}...")
             with open(out, "w", encoding="utf-8") as f:
@@ -3244,7 +3251,7 @@ def ingest_episode(
             t_data = json.load(tf)
         if mode == "tripartite":
             typer.echo(f"Casting NotebookLM tripartite audio with Gemini and snapping Whisper word timestamps...")
-            clips_list = cast_tripartite_plan_with_gemini(t_data, num_clips=num_clips, default_visual_source="mosaic", audio_path=audio_dest_path)
+            clips_list = cast_tripartite_plan_with_gemini(t_data, num_clips=num_clips, default_visual_source="mosaic", audio_path=audio_dest_path, episode_title=title)
             if clips_list and clips_list[0].get("num") == 0 and title and not title.lower().startswith("episode"):
                 clips_list[0]["title"] = title
         if not clips_list:

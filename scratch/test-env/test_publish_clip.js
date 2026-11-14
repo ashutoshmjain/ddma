@@ -5,7 +5,7 @@ The Publish button is locked-gated like the Mosaic button: unlocked clips get
 a greyed disabled button and POST /publish-clip returns 403 without touching
 git. Locked clips get an enabled button that POSTs to /publish-clip.
 
-Covers (4 TEST blocks, no git push spent anywhere):
+Covers (6 TEST blocks, no git push spent anywhere):
  1. POST /publish-clip for an UNLOCKED fixture clip -> HTTP 403, and HEAD
     is unchanged (no commit happened).
  2. Fixture project page renders the Publish button greyed/disabled.
@@ -13,6 +13,10 @@ Covers (4 TEST blocks, no git push spent anywhere):
     fires POST /publish-clip (request intercepted + aborted, so no push).
  4. Idempotent re-publish of the already-live 249-10 succeeds with
     already_published=true and no new commit.
+ 5. Re-publish of already-live 249-11 returns persisted=true and lands
+    published=true + published_url on the hub plan clip (ITEM 11).
+ 6. Fresh page load renders 249-11 as green "Published", a locked
+    unpublished clip as enabled "Publish", unlocked clips greyed (ITEM 11).
 
 Requires: curator on :8000. Run: node test_publish_clip.js (from this dir)
 */
@@ -139,6 +143,60 @@ async function runTest() {
         const headAfterRepub = execSync('git rev-parse HEAD', { cwd: DEEPDIVE }).toString().trim();
         ok(4, repub.status === 200 && repub.j.success === true && repub.j.already_published === true && headAfterRepub === headBefore,
             `re-publish -> HTTP ${repub.status} already_published=${repub.j.already_published} HEAD unchanged=${headAfterRepub === headBefore}`);
+
+        // TEST 5 (ITEM 11): already-published re-publish persists the flag + persisted:true.
+        const repub11 = await page.evaluate(async () => {
+            const r = await fetch('/publish-clip?id=episode_249&num=11', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            });
+            return { status: r.status, j: await r.json() };
+        });
+        const hubPlan = JSON.parse(fs.readFileSync(
+            'G:/My Drive/dd_hub/episodes/249/plan.json', 'utf8'));
+        const hub11 = hubPlan.find(c => Number(c.num) === 11) || {};
+        ok(5, repub11.status === 200 && repub11.j.success === true
+            && repub11.j.already_published === true && repub11.j.persisted === true
+            && hub11.published === true
+            && hub11.published_url === repub11.j.url,
+            `re-publish 249-11 -> already_published=${repub11.j.already_published} persisted=${repub11.j.persisted} hub flag=${hub11.published}`);
+
+        // TEST 6 (ITEM 11): card render reads the persisted flag after a fresh load.
+        await page.goto('http://127.0.0.1:8000/curator.html?project=episode_249',
+            { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await page.waitForFunction(
+            () => [...document.querySelectorAll('[id^="publishCardBtn_"]')].length > 0,
+            { timeout: 120000 });
+        await new Promise(r => setTimeout(r, 2000));
+        const render = await page.evaluate(() => {
+            const byNum = {};
+            document.querySelectorAll('[id^="publishCardBtn_"]').forEach(b => {
+                const card = b.closest('.clip-card');
+                const badge = card ? card.querySelector('.clip-num-badge') : null;
+                const num = badge ? badge.textContent.trim() : b.id;
+                byNum[num] = { text: (b.textContent || '').trim(), cls: b.className, disabled: !!b.disabled };
+            });
+            const greyed = [...document.querySelectorAll('button[disabled]')]
+                .filter(b => (b.title || '').includes('Lock clip first to enable Publish')).length;
+            return { byNum, greyed };
+        });
+        const pubBtn = render.byNum['249-11'] || {};
+        const lockedUnpub = Object.entries(render.byNum)
+            .find(([num, b]) => {
+                const hc = hubPlan.find(c => `249-${c.num}` === num) || {};
+                return hc.locked && !hc.published;
+            });
+        const unlocked = Object.entries(render.byNum)
+            .find(([num, b]) => {
+                const hc = hubPlan.find(c => `249-${c.num}` === num) || {};
+                return !hc.locked;
+            });
+        ok(6, pubBtn.text === '✅ Published' && pubBtn.cls.includes('btn-status-success') && !pubBtn.disabled,
+            `249-11 renders '${pubBtn.text}' green after reload`);
+        ok(6.1, !!lockedUnpub && lockedUnpub[1].text === '🚀 Publish' && !lockedUnpub[1].disabled,
+            `locked unpublished ${lockedUnpub ? lockedUnpub[0] : '?'} renders enabled Publish`);
+        ok(6.2, render.greyed > 0,
+            `unlocked clips still greyed (greyed publish buttons=${render.greyed})`);
     } catch (e) {
         if (e.message !== 'stop') throw e;
     } finally {
@@ -154,7 +212,7 @@ async function runTest() {
         console.error('FAIL: ' + failures.join(' | '));
         process.exit(1);
     }
-    console.log('PASS: Publish gating 4/4.');
+    console.log('PASS: Publish gating 6/6.');
 }
 
 runTest().catch(e => { console.error('FAIL:', e.message); process.exit(1); });

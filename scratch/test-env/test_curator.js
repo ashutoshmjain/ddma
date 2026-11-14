@@ -286,7 +286,7 @@ async function runTest() {
             const resp = await fetch('/export-project-clip?id=episode_249', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ clip_num: 8, title: 'Unlocked Clip', export_format: 'audio', locked: false })
+                body: JSON.stringify({ clip_num: 999, title: 'Unlocked Clip', export_format: 'audio', locked: false })
             });
             const data = await resp.json().catch(() => ({}));
             return { status: resp.status, data };
@@ -715,29 +715,24 @@ async function runTest() {
             }
         }
 
-        // Restore Master Mosaic video for Clip 1 so test suite never leaves Clip 1 in a draft baseline state
+        // Restore Master Mosaic video for Clip 1 so test suite never leaves Clip 1 in a draft baseline state.
+        // NOTE: no lock/save here -- the suite must not mutate lock state in the hub primary store.
         await page.evaluate(async () => {
-            if (clips && clips[0]) {
-                clips[0].locked = true;
-                await fetch('/save-project-plan?id=episode_245', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(clips)
-                });
-            }
             await fetch('/compile-clip?id=episode_245&num=1', { method: 'POST' });
         });
 
-        // Scenario C: Export Project Clip (/export-project-clip)
+        // Scenario C: Export Project Clip (/export-project-clip).
+        // NOTE: exports the already-locked clip 2 (hub truth) -- never lock a clip from the suite.
         console.log("\n  -> Scenario C: Export Project Clip (/export-project-clip)...");
         const exportCompResult = await page.evaluate(async () => {
+            const c2 = (clips || []).find(c => c.num === 2) || clips[1];
             const res = await fetch('/export-project-clip?id=episode_245', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    clip_num: 1,
-                    title: clips[0].title,
-                    segments: clips[0].segments,
+                    clip_num: c2.num,
+                    title: c2.title,
+                    segments: c2.segments,
                     export_format: "audio"
                 })
             });
@@ -981,16 +976,60 @@ async function runTest() {
         await page.click('#topSettingsBtn');
         await page.waitForSelector('#settingsModalOverlay.active', { timeout: 3000 });
 
-        // Change a value (e.g. Mosaic Default Prompt)
+        // TEST 20b (Issue 66): Cancel must not save -- zero /save-settings POSTs.
+        let savePosts = 0;
+        await page.setRequestInterception(true);
+        const saveCounter = req => {
+            if (req.url().includes('/save-settings') && req.method() === 'POST') savePosts++;
+            req.continue();
+        };
+        page.on('request', saveCounter);
+        await page.evaluate(() => {
+            document.getElementById('settingsGeminiApiKey').value = 'JUNK-CANCEL-66';
+        });
+        await page.evaluate(() => {
+            document.querySelector('#settingsModalOverlay .export-actions .btn-secondary').click();
+        });
+        await new Promise(r => setTimeout(r, 1000));
+        if (savePosts !== 0) {
+            throw new Error(`FAIL: Cancel fired ${savePosts} /save-settings POSTs, expected 0!`);
+        }
+        console.log(`  - Cancel fired ${savePosts} /save-settings POSTs (expected 0).`);
+
+        // Reload page and assert the cancelled junk did NOT persist
+        await page.goto('http://127.0.0.1:8000/curator.html?project=episode_245', { waitUntil: 'domcontentloaded', timeout: 15000 });
+        await new Promise(r => setTimeout(r, 1500));
+        await page.click('#topSettingsBtn');
+        await page.waitForSelector('#settingsModalOverlay.active', { timeout: 3000 });
+        const cancelledValue = await page.$eval('#settingsGeminiApiKey', el => el.value);
+        if (cancelledValue === 'JUNK-CANCEL-66') {
+            throw new Error(`FAIL: Cancelled edit persisted across reload!`);
+        }
+        console.log(`  - Cancelled edit correctly absent after reload.`);
+        await page.evaluate(() => {
+            document.querySelector('#settingsModalOverlay .export-actions .btn-secondary').click();
+        });
+        await new Promise(r => setTimeout(r, 500));
+
+        // Reopen and change a value (e.g. Mosaic Default Prompt)
+        await page.click('#topSettingsBtn');
+        await page.waitForSelector('#settingsModalOverlay.active', { timeout: 3000 });
         const testPromptValue = `Test Prompt Persistence ${Date.now()}`;
         await page.evaluate((val) => {
             const el = document.getElementById('settingsMosaicDefaultPrompt');
             if (el) el.value = val;
         }, testPromptValue);
 
-        // Click Save Settings button
+        // Click Save Settings button -- exactly one POST expected (Issue 66)
+        savePosts = 0;
         await page.click('#saveSettingsBtn');
         await new Promise(r => setTimeout(r, 1000));
+        if (savePosts !== 1) {
+            throw new Error(`FAIL: Save fired ${savePosts} /save-settings POSTs, expected exactly 1!`);
+        }
+        console.log(`  - Save fired ${savePosts} /save-settings POST (expected 1).`);
+        page.off('request', saveCounter);
+        await page.setRequestInterception(false);
 
         // Assert no console error was thrown
         page.off('console', errListener);
@@ -1013,7 +1052,79 @@ async function runTest() {
         }
         console.log("  ✔ PASS: Curator Settings saved cleanly with zero console errors and persisted after reload!");
 
+        
+
+        // TEST 21 (ITEM 10): music dropdown basename match — prefixed plan
+
+        // music_file ('music/<name>') must select the '<name>' option, not Digital Silence.
+
+        console.log("\nTEST 21: Verifying music dropdown selects the clip sting by basename...");
+
+        await page.goto('http://127.0.0.1:8000/curator.html?project=episode_249', { waitUntil: 'domcontentloaded', timeout: 15000 });
+
+        await page.waitForSelector('select.music-select', { timeout: 10000 });
+
+        await new Promise(r => setTimeout(r, 1500));
+
+        const musicState = await page.evaluate(() => {
+
+            const base = v => String(v || '').split('/').pop().split('\\').pop();
+
+            const sels = [...document.querySelectorAll('select.music-select')].map(sel => ({
+
+                clip: sel.dataset.clip, seg: sel.dataset.seg,
+
+                value: sel.value,
+
+                text: sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].textContent : null,
+
+                firstText: sel.options[0] ? sel.options[0].textContent : null,
+
+                expected: (() => { try {
+                    const c = (typeof clips === 'undefined') ? null : clips[Number(sel.dataset.clip)];
+                    const sg = (c && c.segments) ? c.segments[Number(sel.dataset.seg)] : null;
+                    return base(sg ? sg.music_file : '');
+                } catch (e) { return ''; } })()
+
+            }));
+
+            return { sels, files: ((typeof availableMusicFiles === 'undefined') ? [] : availableMusicFiles.slice()),
+
+                     playFn: typeof playMusicSegment };
+
+        });
+
+        if (!musicState.sels.length) throw new Error('FAIL: no music selects rendered for episode_249');
+
+        console.log(`  - ${musicState.sels.length} music selects rendered; library: ${musicState.files.length} files.`);
+
+        for (const s of musicState.sels) {
+
+            if (s.firstText !== 'Digital Silence') throw new Error(`FAIL: first option is not Digital Silence (clip ${s.clip} seg ${s.seg}): ${s.firstText}`);
+
+            if (s.expected && s.expected !== 'none' && s.value !== s.expected) {
+
+                throw new Error(`FAIL: clip ${s.clip} seg ${s.seg} shows '${s.text}' instead of sting '${s.expected}'`);
+
+            }
+
+        }
+
+        const picked = new Set(musicState.sels.map(s => s.value).filter(v => v && v !== 'none'));
+
+        if (picked.size < 2) throw new Error(`FAIL: expected >=2 distinct stings selected, got ${[...picked]}`);
+
+        console.log(`  - Distinct stings selected: ${[...picked].slice(0, 4).join(' | ')} (none shows Digital Silence).`);
+
+        if (musicState.files.includes('none')) throw new Error('FAIL: library contains a file named none');
+
+        if (musicState.playFn !== 'function') throw new Error('FAIL: playMusicSegment missing — playback path changed');
+
+        console.log('  PASS: music dropdown selects the clip sting by basename; playback path intact.');
         console.log("\n✅ ALL COMPREHENSIVE CURATOR REGRESSION TESTS PASSED 100%!");
+
+        
+
 
     } catch (err) {
         console.error("\n❌ TEST FAILURE DETECTED:");

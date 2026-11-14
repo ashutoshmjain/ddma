@@ -1764,7 +1764,7 @@
                     <div style="display: flex; gap: 0.3rem; margin-bottom: 0.5rem;">
                         <button id="tabUploadBtn" type="button" class="btn btn-secondary btn-mini active" style="flex: 1; font-weight: 600; font-size: 0.7rem;">📥 Upload / Downloads</button>
                         <button id="tabSystemPathBtn" type="button" class="btn btn-secondary btn-mini" style="flex: 1; font-weight: 600; font-size: 0.7rem;">💻 System Path</button>
-                        <button id="tabWorkspaceBtn" type="button" class="btn btn-secondary btn-mini" style="flex: 1; font-weight: 600; font-size: 0.7rem;">📂 Workspace Root</button>
+                        <button id="tabWorkspaceBtn" type="button" class="btn btn-secondary btn-mini" style="flex: 1; font-weight: 600; font-size: 0.7rem;">📂 deepdive-workspace</button>
                     </div>
 
                     <!-- Mode 1: File Browser (Pick from Computer/Downloads) -->
@@ -1781,8 +1781,9 @@
                         <input type="text" id="newProjectSystemPathInput" placeholder="e.g. C:\Users\ashut\Downloads\245.m4a" style="width: 100%; padding: 0.5rem; font-size: 0.85rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
                     </div>
 
-                    <!-- Mode 3: Workspace Root Select Dropdown -->
+                    <!-- Mode 3: deepdive-workspace (named hub target) -->
                     <div id="modeWorkspaceBox" style="display: none;">
+                        <div id="workspaceTargetLabel" style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.35rem; font-family: var(--font-mono);">deepdive-workspace</div>
                         <select id="newProjectAudioSelect" style="width: 100%; padding: 0.5rem; font-size: 0.85rem; border-radius: 6px; background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-main); outline: none;">
                             <!-- Scanned audio options -->
                         </select>
@@ -4201,15 +4202,19 @@
             updateStateBar("Loading audio files...");
             fetch('/list-workspace-audio')
                 .then(r => r.json())
-                .then(files => {
+                .then(data => {
+                    const files = (data && data.files) || [];
+                    const label = document.getElementById('workspaceTargetLabel');
+                    if (label) label.textContent = `${(data && data.target) || 'deepdive-workspace'} → ${((data && data.root) || '')}`;
                     newProjectAudioSelect.innerHTML = '';
                     if (files.length === 0) {
-                        newProjectAudioSelect.innerHTML = `<option value="">No audio files found in root (.mp3, .m4a, .wav)</option>`;
+                        newProjectAudioSelect.innerHTML = `<option value="">No audio files found in deepdive-workspace (hub inputs/...)</option>`;
                     } else {
                         files.forEach(f => {
                             const opt = document.createElement('option');
                             opt.value = f;
-                            opt.textContent = f;
+                            const parts = String(f).split(/[/\\]/);
+                            opt.textContent = parts.length > 1 ? parts.slice(-2).join('/') : f;
                             newProjectAudioSelect.appendChild(opt);
                         });
                     }
@@ -6530,8 +6535,18 @@
                             `;
                         } else if (seg.type === "music") {
                             let musicOptionsHtml = `<option value="none">Digital Silence</option>`;
+                            // Match by basename: the plan may store 'music/<name>' while
+
+                            // /list-music returns bare filenames. 'none'/empty matches nothing,
+
+                            // leaving the first option (Digital Silence) selected.
+
+                            const segMusicBase = String(seg.music_file || '').split('/').pop().split('\\').pop();
+
                             availableMusicFiles.forEach(f => {
-                                const isSelected = seg.music_file === f ? 'selected' : '';
+
+                                const isSelected = segMusicBase === f ? 'selected' : '';
+
                                 musicOptionsHtml += `<option value="${f}" ${isSelected}>${f}</option>`;
                             });
 
@@ -6716,7 +6731,12 @@
                 // Issue 80: per-clip Publish -- same lock gating as the Mosaic button.
                 let publishBtnHtml = "";
                 if (isLocked) {
+                // Persisted published state (ITEM 11): survives refresh via the plan flag.
+                if (clip.published) {
+                    publishBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-success" id="publishCardBtn_${index}" style="font-weight: 600;" title="Published to GitHub (click to re-publish)">✅ Published</button>`;
+                } else {
                     publishBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-purple" id="publishCardBtn_${index}" style="font-weight: 600;" title="Publish this finished clip to GitHub (scoped: clip + episode index only)">🚀 Publish</button>`;
+                }
                 } else {
                     publishBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-gray" style="font-weight: 600; opacity: 0.4; cursor: not-allowed;" disabled title="Lock clip first to enable Publish">🚀 Publish</button>`;
                 }
