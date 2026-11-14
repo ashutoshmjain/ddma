@@ -4119,6 +4119,149 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
                 return
 
+        elif parsed_url.path == '/publish-clip':
+            # Issue 80: per-clip Publish. Locked-gated, scoped git add/commit/push.
+            # The lock is the human's sign-off -- never auto-lock here.
+            project_id = params.get('id', [None])[0]
+            clip_num = params.get('num', [None])[0]
+            try:
+                if not project_id or clip_num is None or str(clip_num).strip() == "":
+                    raise Exception("Missing project id or clip number.")
+
+                # (a) Verify the clip is locked -- hub plan is primary (load_plan is hub-first).
+                plan_data = load_plan(project_id, writer="curator")
+                target_clip = None
+                for c in plan_data:
+                    if int(c.get("num", -1)) == int(clip_num):
+                        target_clip = c
+                        break
+                if target_clip is None:
+                    raise Exception(f"Clip {clip_num} not found in plan for {project_id}.")
+                if not target_clip.get("locked"):
+                    self.send_response(403)
+                    self.send_header('Content-type', 'application/json')
+                    self.send_header('Access-Control-Allow-Origin', '*')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"success": False, "error": f"Clip {clip_num} is unlocked. Lock clip before publishing."}).encode("utf-8"))
+                    return
+
+                ep_num = str(project_id.replace('episode_', '')).replace('.md', '').lstrip('_')
+                master_name = f"{ep_num}-{clip_num}.mp4"
+
+                # (b) Ensure the finished canonical master exists: local cache, else hub primary, else compile.
+                os.makedirs("clips", exist_ok=True)
+                local_master = os.path.join("clips", master_name)
+                if not (os.path.exists(local_master) and os.path.getsize(local_master) > 10000):
+                    hub_master = working_asset_hub_path(ep_num, master_name)
+                    if hub_master and os.path.exists(hub_master) and os.path.getsize(hub_master) > 10000:
+                        print(f"[{project_id}][Clip {clip_num}] Recovering finished master from hub primary store.")
+                        shutil.copy2(hub_master, local_master)
+                    else:
+                        print(f"[{project_id}][Clip {clip_num}] No finished master -- compiling via ddma.py cut + compile-clip.")
+                        local_plan_path = os.path.join("projects", project_id, "plan.json")
+                        info_path = os.path.join("projects", project_id, "project_info.json")
+                        p_info = {}
+                        if os.path.exists(info_path):
+                            with open(info_path, "r", encoding="utf-8") as f_info:
+                                p_info = json.load(f_info)
+                        audio_file = get_project_canonical_audio_path(os.path.join("projects", project_id), project_id, p_info)
+                        if audio_file and os.path.exists(audio_file):
+                            cut_cmd = [sys.executable, "ddma.py", "cut", "--audio", audio_file, "--plan-file", local_plan_path, "--out-dir", "clips", "--num", str(clip_num)]
+                            subprocess.run(cut_cmd, capture_output=True, text=True, cwd=".")
+                        cmd = [sys.executable, "ddma.py", "compile-clip", "--num", str(clip_num), "--plan-file", local_plan_path]
+                        src = (target_clip.get("visual_source") or "mosaic").lower()
+                        cmd.extend(["--source", "manim" if src in ("infographic", "manim") else "mosaic"])
+                        proc = subprocess.run(cmd, capture_output=True, text=True, cwd=".")
+                        if proc.returncode != 0:
+                            raise Exception(f"Compile-clip failed with return code {proc.returncode}: {proc.stderr[-500:] if proc.stderr else ''}")
+                if not (os.path.exists(local_master) and os.path.getsize(local_master) > 10000):
+                    raise Exception(f"Finished master {master_name} is not available (local, hub, and compile all missed).")
+
+                # (c) Copy the finished clip into the repo publication path (repo root = parent of ddma/).
+                repo_root = str(DDMA_DIR.parent)
+                dest_dir = os.path.join(repo_root, "src", "ddma", "docs", "episodes", ep_num, "clips")
+                os.makedirs(dest_dir, exist_ok=True)
+                dest_clip = os.path.join(dest_dir, master_name)
+                shutil.copy2(local_master, dest_clip)
+
+                # (d) Regenerate the episodes manifest (both copies) so availableClips includes the new clip.
+                try:
+                    ingest_dir = os.path.join(repo_root, "ingest")
+                    if ingest_dir not in sys.path:
+                        sys.path.insert(0, ingest_dir)
+                    import server as _ingest_server
+                    _ingest_server.regenerate_episodes_manifest()
+                except Exception as me:
+                    print(f"[{project_id}][Clip {clip_num}] Manifest regen via ingest failed ({me}) -- surgical fallback.")
+                    for mpath in [os.path.join(repo_root, "ddma", "docs", "episodes.json"),
+                                  os.path.join(repo_root, "src", "ddma", "docs", "episodes.json")]:
+                        try:
+                            mdata = []
+                            if os.path.exists(mpath):
+                                with open(mpath, "r", encoding="utf-8") as mf:
+                                    mdata = json.load(mf)
+                            if not isinstance(mdata, list):
+                                mdata = []
+                            entry = next((e for e in mdata if isinstance(e, dict) and str(e.get("id") or e.get("number")) == str(ep_num)), None)
+                            if entry is None:
+                                entry = {"id": str(ep_num), "number": int(ep_num) if str(ep_num).isdigit() else ep_num,
+                                         "title": f"Episode {ep_num}", "planPath": f"episodes/{ep_num}/plan.json",
+                                         "clipsDir": f"episodes/{ep_num}/clips", "isDefault": False}
+                                mdata.append(entry)
+                            avail = entry.get("availableClips") or []
+                            if int(clip_num) not in [int(x) for x in avail]:
+                                avail.append(int(clip_num))
+                            entry["availableClips"] = sorted(avail)
+                            os.makedirs(os.path.dirname(mpath), exist_ok=True)
+                            with open(mpath, "w", encoding="utf-8") as mf:
+                                json.dump(mdata, mf, indent=2)
+                        except Exception as fe:
+                            print(f"[{project_id}][Clip {clip_num}] Manifest fallback failed for {mpath}: {fe}")
+
+                # (e) Scoped git add + commit + push (cwd = repo root). ONLY the clip + both manifests.
+                # NOTE: forward slashes -- a backslash pathspec can silently match nothing on Git for Windows.
+                # Idempotent: if everything already matches HEAD (re-publish), report success without committing.
+                rel_clip = "src/ddma/docs/episodes/%s/clips/%s" % (ep_num, master_name)
+                rel_manifests = ["ddma/docs/episodes.json",
+                                 "src/ddma/docs/episodes.json"]
+                already = False
+                try:
+                    subprocess.run(["git", "add", rel_clip] + rel_manifests, cwd=repo_root, check=True,
+                                   capture_output=True, text=True)
+                    staged = subprocess.run(["git", "diff", "--cached", "--name-only"], cwd=repo_root,
+                                            capture_output=True, text=True)
+                    if not staged.stdout.strip():
+                        clean = subprocess.run(["git", "diff", "--quiet", "HEAD", "--", rel_clip] + rel_manifests,
+                                               cwd=repo_root, capture_output=True)
+                        if clean.returncode == 0:
+                            already = True
+                        else:
+                            raise Exception("git add staged nothing though working files differ from HEAD -- refusing to call it published.")
+                    if not already:
+                        subprocess.run(["git", "commit", "-m", f"publish: clip {ep_num}-{clip_num} via ddma curator"],
+                                       cwd=repo_root, check=True, capture_output=True, text=True)
+                        subprocess.run(["git", "push"], cwd=repo_root, check=True, capture_output=True, text=True)
+                except subprocess.CalledProcessError as ge:
+                    raise Exception(f"Git publish failed: {(ge.stderr or ge.stdout or ge)[:500]}")
+
+                # (f) Success with the GitHub URL of the published clip.
+                clip_url = (f"https://github.com/ashutoshmjain/deepDive/blob/master/src/ddma/docs/episodes/"
+                            f"{ep_num}/clips/{master_name}")
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "url": clip_url, "clip": master_name, "already_published": already}).encode('utf-8'))
+                return
+            except Exception as e:
+                print(f"[publish-clip] {project_id} clip {clip_num}: {e}")
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
+                return
+
         elif parsed_url.path == '/open-storyboard-in-editor':
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]

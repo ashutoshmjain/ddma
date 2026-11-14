@@ -5744,6 +5744,40 @@
         }
 
         // Export Individual Clip File
+        function publishClip(clipIdx, btnEl) {
+            const clip = clips[clipIdx];
+            if (!clip || !clip.locked) {
+                alert("Please lock this clip first before publishing.");
+                return;
+            }
+            if (!activeProjectId) return;
+            btnEl.disabled = true;
+            btnEl.innerHTML = '⏳ Publishing...';
+            updateStateBar(`Publishing clip "${clip.title}" to GitHub...`);
+            fetch(`/publish-clip?id=${activeProjectId}&num=${clip.num}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            })
+            .then(async res => {
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok || data.success === false) throw new Error(data.error || `HTTP ${res.status}`);
+                return data;
+            })
+            .then(data => {
+                btnEl.disabled = false;
+                btnEl.innerHTML = '✅ Published';
+                updateStateBar(data.already_published ? `Already on GitHub` : `Published to GitHub`);
+                showDebug(`${data.already_published ? 'Already published' : 'Published'}: ${data.clip} -> ${data.url}`, false);
+            })
+            .catch(err => {
+                btnEl.disabled = false;
+                btnEl.innerHTML = '🚀 Publish';
+                showDebug("Publish failed: " + err.message, true);
+                updateStateBar("Ready (publish failed)");
+            });
+        }
+
         function exportClipAudio(clipIdx, btnEl, event) {
             event.stopPropagation();
             const clip = clips[clipIdx];
@@ -6678,6 +6712,14 @@
                 } else {
                     mosaicBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-gray" style="font-weight: 600; opacity: 0.4; cursor: not-allowed;" disabled title="Lock clip first to enable Mosaic">🌌 Mosaic</button>`;
                 }
+
+                // Issue 80: per-clip Publish -- same lock gating as the Mosaic button.
+                let publishBtnHtml = "";
+                if (isLocked) {
+                    publishBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-purple" id="publishCardBtn_${index}" style="font-weight: 600;" title="Publish this finished clip to GitHub (scoped: clip + episode index only)">🚀 Publish</button>`;
+                } else {
+                    publishBtnHtml = `<button class="btn btn-mini btn-card-mosaic btn-status-gray" style="font-weight: 600; opacity: 0.4; cursor: not-allowed;" disabled title="Lock clip first to enable Publish">🚀 Publish</button>`;
+                }
                 
                 card.innerHTML = `
                     <div class="clip-card-header">
@@ -6708,6 +6750,7 @@
                                 <button class="btn btn-secondary btn-mini btn-card-text" id="textCardBtn_${index}" data-index="${index}" style="font-weight:600;" title="View, edit, and align 1080×1920 burned ASS captions & spoken transcript">💬 Captions</button>
                                 ${infographicBtnHtml}
                                 ${mosaicBtnHtml}
+                                ${publishBtnHtml}
                             </div>
                         </div>
                     </div>
@@ -7042,6 +7085,18 @@
                     }
                 }
                 
+                const publishBtnEl = card.querySelector(`#publishCardBtn_${index}`);
+                if (publishBtnEl) {
+                    publishBtnEl.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        if (!isLocked) {
+                            alert("Please lock this clip first before publishing.");
+                            return;
+                        }
+                        publishClip(index, this);
+                    });
+                }
+
                 const remixBtnEl = card.querySelector(`#remixCardBtn_${index}`);
                 if (remixBtnEl) {
                     remixBtnEl.addEventListener('click', function(e) {

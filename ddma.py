@@ -1548,10 +1548,9 @@ def mux_clip(
     else:
         audio_files = []
 
-    if not audio_files:
-        search_pattern1 = os.path.join(audio_dir, f"*-{num}.mp3")
-        search_pattern2 = os.path.join(audio_dir, f"*-{num}-*.mp3")
-        audio_files = glob.glob(search_pattern1) + glob.glob(search_pattern2)
+    # Exact-match only: never take another episode's audio (cross-episode
+    # fallback removed). Without an ep_prefix there is no exact pattern to
+    # match, so the loud refusal below covers that too.
 
     if not audio_files:
         typer.echo(f"Error: No audio file found in {audio_dir} for clip {num}.", err=True)
@@ -2285,13 +2284,8 @@ def compile_clip(
         if ep_prefix:
             search_pattern = os.path.join(master_dir, f"{ep_prefix}-{num}.mp4")
             master_files = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
-        if not master_files:
-            search_pattern = os.path.join(master_dir, f"*-{num}.mp4")
-            candidates = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4") and not os.path.basename(f).startswith("audio-")]
-            if not candidates:
-                candidates = [f for f in glob.glob(search_pattern) if not f.endswith("-original.mp4")]
-            candidates.sort(key=lambda x: (not os.path.basename(x).split("-")[0].isdigit(), x))
-            master_files = candidates
+        # Exact-match only: never take another episode's master (cross-episode
+        # fallback removed). The loud refusal below covers a missing master.
 
     if not master_files:
         typer.echo(f"Error: Could not generate or locate video file in {master_dir} for clip {num}.", err=True)
@@ -2392,9 +2386,10 @@ def compile_clip(
         _scope_s = _scope_e = None
         true_clip_dur = None
     ep_tag = ep_prefix if ep_prefix else episode
+    # Exact-match only: never take another episode's slice (cross-episode
+    # fallback removed -- a missing exact slice falls through to the
+    # canonical-audio cut below, else the loud refusal).
     slice_cands = glob.glob(os.path.join(master_dir, f"{ep_tag}-{num}-*.mp3")) + glob.glob(os.path.join(master_dir, f"{ep_tag}-{num}.mp3"))
-    if not slice_cands:
-        slice_cands = glob.glob(os.path.join(master_dir, f"*-{num}-*.mp3")) + glob.glob(os.path.join(master_dir, f"*-{num}.mp3"))
     slice_cands = [p for p in slice_cands if not os.path.basename(p).startswith("podcast_") and os.path.exists(p) and os.path.getsize(p) > 0]
     if slice_cands:
         slice_cands.sort(key=os.path.getmtime, reverse=True)

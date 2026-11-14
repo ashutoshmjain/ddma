@@ -7,8 +7,10 @@ video, and must leave the plan's source `duration` for that clip unchanged.
 """
 import json
 import os
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import unittest
 from pathlib import Path
@@ -109,6 +111,80 @@ class TestCompileScope(unittest.TestCase):
         self.assertEqual(clip_after.get("duration"), exp_dur,
                          f"plan duration must stay {exp_dur}, "
                          f"got {clip_after.get('duration')}")
+
+
+class TestExactMatchOnly(unittest.TestCase):
+    """Cross-episode glob fallbacks removed: exact-match only, refuse loudly.
+
+    Fixture episode_997 lives in /tmp (out of the repo): clip 10 is locked
+    with no usable [start, end], the tmp master dir holds an exact dummy
+    master plus ANOTHER episode's real slice as the decoy, and the real
+    ddma/clips dir (full of other episodes' slices) is the audio dir.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tmp = Path(tempfile.mkdtemp(prefix="ddma_exact_997_"))
+        cls.proj = cls.tmp / "episode_997"
+        cls.proj.mkdir()
+        plan = [{"num": 10, "title": "T10", "locked": True,
+                 "segments": []}]
+        (cls.proj / "plan.json").write_text(json.dumps(plan),
+                                            encoding="utf-8")
+        # Canonical continuous audio, so the slice lookup (not the
+        # canonical-audio check) is what refuses below.
+        subprocess.run(
+            ["ffmpeg", "-y", "-f", "lavfi", "-i",
+             "anullsrc=r=48000:cl=stereo", "-t", "1",
+             str(cls.proj / "997.m4a")],
+            capture_output=True, check=True)
+        # Exact dummy master for the fixture clip ...
+        subprocess.run(
+            ["ffmpeg", "-y", "-f", "lavfi", "-i",
+             "color=black:s=1080x1920:d=1", "-pix_fmt", "yuv420p",
+             str(cls.tmp / "997-10.mp4")],
+            capture_output=True, check=True)
+        # ... plus another episode's real slice as the decoy the old
+        # cross-episode fallback would silently have taken.
+        shutil.copy(DDMA_DIR / "clips" / "245-10-DNA to folded proteins.mp3",
+                    cls.tmp / "245-10-DNA to folded proteins.mp3")
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmp, ignore_errors=True)
+
+    def test_02_mux_refuses_other_episode_audio(self):
+        cmd = [sys.executable, "ddma.py", "mux-clip",
+               "--num", "10",
+               "--plan-file", str(self.proj / "plan.json"),
+               "--audio-dir", str(DDMA_DIR / "clips"),
+               "--out-dir", str(self.tmp)]
+        res = subprocess.run(cmd, capture_output=True, text=True,
+                             cwd=str(DDMA_DIR), timeout=120)
+        combined = res.stdout + res.stderr
+        print(f"\n[Exact] mux-clip returncode: {res.returncode}")
+        self.assertNotEqual(res.returncode, 0,
+                            "mux-clip must refuse without an exact-match slice")
+        self.assertIn("No audio file found", combined,
+                      "mux-clip must fail loudly naming the missing audio, "
+                      f"not take 245's slice. Output: {combined[-800:]}")
+
+    def test_03_compile_refuses_other_episode_slice(self):
+        cmd = [sys.executable, "ddma.py", "compile-clip",
+               "--num", "10",
+               "--plan-file", str(self.proj / "plan.json"),
+               "--master-dir", str(self.tmp),
+               "--out-dir", str(self.tmp),
+               "--source", "mosaic"]
+        res = subprocess.run(cmd, capture_output=True, text=True,
+                             cwd=str(DDMA_DIR), timeout=180)
+        combined = res.stdout + res.stderr
+        print(f"\n[Exact] compile-clip returncode: {res.returncode}")
+        self.assertNotEqual(res.returncode, 0,
+                            "compile-clip must refuse without an exact-match slice")
+        self.assertIn("refusing full-episode audio", combined,
+                      "compile-clip must hit the loud slice refusal, "
+                      f"not take 245's slice. Output: {combined[-800:]}")
 
 
 if __name__ == "__main__":
