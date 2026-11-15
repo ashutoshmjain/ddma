@@ -343,6 +343,27 @@ def ensure_local_cache(ep, filename):
             print(f"WARNING: could not warm local cache for {filename}: {ce}")
     return local_p
 
+def ensure_audio_slice_cache(ep, c_num):
+    """Warm the clip's audio slice ({ep}-{num}-*.mp3) from the hub episode folder.
+
+    There is exactly one audio slice per clip; when the hub has no match, do
+    nothing here (the compile fails loudly as it does today -- never invent
+    a filename). Same hub-primary/local-cache direction as ensure_local_cache.
+    """
+    hub_probe = working_asset_hub_path(ep, "x")
+    hub_dir = os.path.dirname(hub_probe) if hub_probe else ""
+    if not hub_dir or not os.path.isdir(hub_dir):
+        return
+    prefix = f"{ep}-{c_num}-"
+    try:
+        names = sorted(os.listdir(hub_dir))
+    except Exception:
+        return
+    for name in names:
+        if name.startswith(prefix) and name.lower().endswith(".mp3"):
+            ensure_local_cache(ep, name)
+            return
+
 def get_mosaic_jobs_file(project_id):
     proj_dir = os.path.join("projects", project_id)
     os.makedirs(proj_dir, exist_ok=True)
@@ -436,6 +457,7 @@ def heal_mosaic_project_state(project_id, plan_data=None):
         orig_file = read_working_asset(ep_num, f"{ep_num}-{c_num}-original.mp4", quiet=True)
         ensure_local_cache(ep_num, f"{ep_num}-{c_num}-mosaic-{run_id}.mp4")
         ensure_local_cache(ep_num, f"{ep_num}-{c_num}-original.mp4")
+        ensure_audio_slice_cache(ep_num, c_num)
         master_clip_path = os.path.join("clips", f"{ep_num}-{c_num}.mp4")
         job_key = (project_id, int(c_num))
 
@@ -3950,6 +3972,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         ensure_local_cache(ep_num, f"{ep_num}-{clip_num}-mosaic-{m_run_id}.mp4")
                         variant_candidates.append(read_working_asset(ep_num, f"{ep_num}-{clip_num}-mosaic-{m_run_id}.mp4"))
                     ensure_local_cache(ep_num, f"{ep_num}-{clip_num}-original.mp4")
+                    ensure_audio_slice_cache(ep_num, clip_num)
                     variant_candidates.append(read_working_asset(ep_num, f"{ep_num}-{clip_num}-original.mp4"))
 
                 chosen_variant = None
@@ -4175,8 +4198,19 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not (os.path.exists(local_master) and os.path.getsize(local_master) > 10000):
                     raise Exception(f"Finished master {master_name} is not available (local, hub, and compile all missed).")
 
-                # (c) Copy the finished clip into the repo publication path (repo root = parent of ddma/).
-                repo_root = str(DDMA_DIR.parent)
+                # (c) Resolve the deepDive repo root from git itself (not directory layout):
+                # the published master lives in deepDive's src/, and the git commands
+                # below must run inside the deepDive git repo.
+                try:
+                    _rp = subprocess.run(["git", "rev-parse", "--show-toplevel"],
+                                         capture_output=True, text=True, cwd=str(DDMA_DIR))
+                    repo_root = _rp.stdout.strip() if _rp.returncode == 0 else ""
+                except Exception:
+                    repo_root = ""
+                if not repo_root or not os.path.isdir(os.path.join(repo_root, "src", "ddma", "docs", "episodes")):
+                    raise Exception(
+                        f"Curator must run from inside the deepDive git repo to publish "
+                        f"(resolved repo root from {DDMA_DIR}: {repo_root or 'not a git repo'}).")
                 dest_dir = os.path.join(repo_root, "src", "ddma", "docs", "episodes", ep_num, "clips")
                 os.makedirs(dest_dir, exist_ok=True)
                 dest_clip = os.path.join(dest_dir, master_name)
