@@ -1231,6 +1231,43 @@ def get_mosaic_default_prompt():
     )
 
 
+def get_factory_mosaic_prompt():
+    """Shipped factory fallback for the Mosaic default prompt.
+
+    Reads the tracked canonical copy (ddma/scratch/mosaic_factory_defaults.json,
+    linked from GEMINI.md). Returns the stored settings value NEVER -- Reset
+    uses this so it can recover even a poisoned stored prompt. If the backup
+    file is missing, falls back to the hardcoded gold literal below (same text
+    the backup file carries).
+    """
+    try:
+        factory_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                     "mosaic_factory_defaults.json")
+        with open(factory_path, "r", encoding="utf-8") as ff:
+            return json.load(ff)["mosaic_default_prompt"]
+    except Exception:
+        pass
+    return (
+        "MOTION DESIGN INSTRUCTIONS (YOUTUBE SHORTS - around 150 to 180 seconds long)\n"
+        "\n"
+        "- Cover the entire timeline of the video with Dan Koe-style motion graphics. Visual coverage must be active and persistent from 0:00 to the very last second with ZERO blank frames.\n"
+        "\n"
+        "- Maintain uniform graphic density across all segments.\n"
+        "\n"
+        "- Plan 10 to 12 continuous segments of roughly ~ 15 seconds each, perfectly mapped to the clip length. Each segment renders a dynamic diagrammatic graphic with changing visual steps and text reveals.\n"
+        "\n"
+        "- Assume background video is a blank black glossy screen (#000000). Keep persistent visuals (animations, conceptual geometry, or text) throughout. Segments must hand off to each other seamlessly like a relay race.\n"
+        "\n"
+        "--------------------------------------------------\n"
+        "PACING & ANIMATION RULES\n"
+        "--------------------------------------------------\n"
+        "- No static holds beyond 6 seconds. Introduce visual changes or step reveals every 2-4 seconds.\n"
+        "- Use only basic transforms: opacity, position, scale. Keep animations single-property per element.\n"
+        "- Prefer step-based reveals over continuous complex motion. Avoid preset/template animations.\n"
+        "- No gaps in infographic coverage. Zero external asset dependencies."
+    )
+
+
 def build_mosaic_prompt_with_context(title, transcript=None, custom_instructions=None):
     mogr_base_rules = get_mosaic_default_prompt()
     prompt_content = (
@@ -5429,6 +5466,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     }
                 def_mosaic = get_mosaic_default_prompt()
                 settings_data["default_mosaic_prompt"] = def_mosaic
+                # Shipped factory fallback -- Reset uses this, never the stored value.
+                settings_data["factory_mosaic_prompt"] = get_factory_mosaic_prompt()
                 if not settings_data.get("mosaic_default_prompt"):
                     settings_data["mosaic_default_prompt"] = def_mosaic
                 self.send_response(200)

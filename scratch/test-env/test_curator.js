@@ -966,6 +966,15 @@ async function runTest() {
 
         // 🧪 TEST 20: Issue 64 — Curator Settings Save & Persist Invariant
         console.log("\n🧪 TEST 20: Verifying Curator Settings Save and Persist Invariant...");
+        // ITEM 1 of 5 rework: capture the live prompt + field state BEFORE overwriting,
+        // so the suite can never poison the live Mosaic prompt.
+        const path20 = require('path');
+        const settingsPath20 = path20.join(__dirname, '..', '..', 'settings.json');
+        const origSettingsRaw20 = fs.readFileSync(settingsPath20, 'utf8');
+        const origLocal20 = await page.evaluate(() => ({
+            prompt: localStorage.getItem('ddma-mosaic-default-prompt')
+        }));
+        try {
         let settingsConsoleErrors = [];
         const errListener = msg => {
             if (msg.type() === 'error') settingsConsoleErrors.push(msg.text());
@@ -976,40 +985,71 @@ async function runTest() {
         await page.click('#topSettingsBtn');
         await page.waitForSelector('#settingsModalOverlay.active', { timeout: 3000 });
 
-        // TEST 20b (Issue 66): Cancel must not save -- zero /save-settings POSTs.
+        // TEST 20b (ITEM 2 of 5): dirty Cancel/X must PROMPT (Save/Discard/Cancel).
+        // Dismiss keeps the modal open; Discard closes with 0 POSTs.
         let savePosts = 0;
+        let failNextSave = false;
         await page.setRequestInterception(true);
         const saveCounter = req => {
-            if (req.url().includes('/save-settings') && req.method() === 'POST') savePosts++;
+            if (req.url().includes('/save-settings') && req.method() === 'POST') {
+                savePosts++;
+                if (failNextSave) { req.respond({ status: 500, contentType: 'application/json', body: '{"success": false}' }); return; }
+            }
             req.continue();
         };
         page.on('request', saveCounter);
+        const seenDialogs = [];
+        let dialogMode = 'dismiss-all';
+        const dialogHandler = async d => {
+            seenDialogs.push(d.message());
+            if (dialogMode === 'discard' && /Discard unsaved/.test(d.message())) { await d.accept(); }
+            else { await d.dismiss(); }
+        };
+        page.on('dialog', dialogHandler);
+        const waitDialogs = async (n, what) => {
+            const t0 = Date.now();
+            while (seenDialogs.length < n) {
+                if (Date.now() - t0 > 8000) throw new Error(`FAIL: ${what} dialog never appeared`);
+                await new Promise(r => setTimeout(r, 100));
+            }
+        };
+        const modalOpen = () => page.$eval('#settingsModalOverlay', el => el.classList.contains('active'));
         await page.evaluate(() => {
             document.getElementById('settingsGeminiApiKey').value = 'JUNK-CANCEL-66';
         });
-        await page.evaluate(() => {
-            document.querySelector('#settingsModalOverlay .export-actions .btn-secondary').click();
-        });
-        await new Promise(r => setTimeout(r, 1000));
-        if (savePosts !== 0) {
-            throw new Error(`FAIL: Cancel fired ${savePosts} /save-settings POSTs, expected 0!`);
-        }
-        console.log(`  - Cancel fired ${savePosts} /save-settings POSTs (expected 0).`);
-
-        // Reload page and assert the cancelled junk did NOT persist
+        // Cancel with dirty state -> prompt (dialog 1); dismiss -> stays open, 0 POSTs.
+        await page.evaluate(() => { document.getElementById('cancelSettingsBtn').click(); });
+        await waitDialogs(1, 'Cancel dirty prompt');
+        if (!/Save settings before closing/.test(seenDialogs[0])) throw new Error(`FAIL: Cancel prompt wrong: "${seenDialogs[0]}"`);
+        await new Promise(r => setTimeout(r, 600));
+        if (savePosts !== 0) throw new Error(`FAIL: dismissed Cancel fired ${savePosts} POSTs, expected 0`);
+        if (!(await modalOpen())) throw new Error('FAIL: modal closed after dismissed Cancel prompt');
+        console.log(`  - Dirty Cancel prompted; dismiss kept modal open, 0 POSTs.`);
+        // X with dirty state -> same prompt; dismiss keeps open.
+        await page.evaluate(() => { document.getElementById('closeSettingsModalBtn').click(); });
+        await waitDialogs(2, 'X dirty prompt');
+        await new Promise(r => setTimeout(r, 600));
+        if (!(await modalOpen())) throw new Error('FAIL: modal closed after dismissed X prompt');
+        console.log(`  - Dirty X prompted; dismiss kept modal open.`);
+        // Cancel -> dismiss dialog 1 (Save?) -> dialog 2 (Discard?) -> accept -> closes, 0 POSTs.
+        dialogMode = 'discard';
+        await page.evaluate(() => { document.getElementById('cancelSettingsBtn').click(); });
+        await waitDialogs(4, 'Discard prompt');
+        if (!/Discard unsaved/.test(seenDialogs[3])) throw new Error(`FAIL: Discard prompt wrong: "${seenDialogs[3]}"`);
+        await page.waitForFunction(() => !document.getElementById('settingsModalOverlay').classList.contains('active'), { timeout: 5000 });
+        if (savePosts !== 0) throw new Error(`FAIL: Discard fired ${savePosts} POSTs, expected 0`);
+        console.log(`  - Discard closed the modal with 0 POSTs.`);
+        page.off('dialog', dialogHandler);
+        // Reload page and assert the discarded junk did NOT persist
         await page.goto('http://127.0.0.1:8000/curator.html?project=episode_245', { waitUntil: 'domcontentloaded', timeout: 15000 });
         await new Promise(r => setTimeout(r, 1500));
         await page.click('#topSettingsBtn');
         await page.waitForSelector('#settingsModalOverlay.active', { timeout: 3000 });
         const cancelledValue = await page.$eval('#settingsGeminiApiKey', el => el.value);
         if (cancelledValue === 'JUNK-CANCEL-66') {
-            throw new Error(`FAIL: Cancelled edit persisted across reload!`);
+            throw new Error(`FAIL: Discarded edit persisted across reload!`);
         }
-        console.log(`  - Cancelled edit correctly absent after reload.`);
-        await page.evaluate(() => {
-            document.querySelector('#settingsModalOverlay .export-actions .btn-secondary').click();
-        });
-        await new Promise(r => setTimeout(r, 500));
+        console.log(`  - Discarded edit correctly absent after reload.`);
 
         // Reopen and change a value (e.g. Mosaic Default Prompt)
         await page.click('#topSettingsBtn');
@@ -1020,6 +1060,17 @@ async function runTest() {
             if (el) el.value = val;
         }, testPromptValue);
 
+        // ITEM 2 of 5: a failed round-trip must NOT show success and must keep the modal open.
+        failNextSave = true;
+        savePosts = 0;
+        await page.click('#saveSettingsBtn');
+        await new Promise(r => setTimeout(r, 1500));
+        if (savePosts !== 1) throw new Error(`FAIL: failed-save attempt fired ${savePosts} POSTs, expected 1`);
+        const debugAfterFail = await page.$eval('#debugStatusText', el => el.textContent);
+        if (/saved successfully/i.test(debugAfterFail)) throw new Error('FAIL: success shown for a failed save');
+        if (!(await modalOpen())) throw new Error('FAIL: modal closed after a failed save');
+        console.log(`  - Failed save showed no success and kept the modal open.`);
+        failNextSave = false;
         // Click Save Settings button -- exactly one POST expected (Issue 66)
         savePosts = 0;
         await page.click('#saveSettingsBtn');
@@ -1028,6 +1079,9 @@ async function runTest() {
             throw new Error(`FAIL: Save fired ${savePosts} /save-settings POSTs, expected exactly 1!`);
         }
         console.log(`  - Save fired ${savePosts} /save-settings POST (expected 1).`);
+        const debugAfterSave = await page.$eval('#debugStatusText', el => el.textContent);
+        if (!/saved successfully/i.test(debugAfterSave)) throw new Error('FAIL: success not shown after verified save');
+        if (await modalOpen()) throw new Error('FAIL: modal stayed open after verified save');
         page.off('request', saveCounter);
         await page.setRequestInterception(false);
 
@@ -1051,6 +1105,15 @@ async function runTest() {
             throw new Error(`FAIL: Settings value did not persist across reload! Expected "${testPromptValue}" but got "${reloadedValue}"`);
         }
         console.log("  ✔ PASS: Curator Settings saved cleanly with zero console errors and persisted after reload!");
+        } finally {
+            // Restore the live prompt byte-exact (server file) + the modal field source (localStorage).
+            fs.writeFileSync(settingsPath20, origSettingsRaw20);
+            await page.evaluate((v) => {
+                if (v === null || v === undefined) { localStorage.removeItem('ddma-mosaic-default-prompt'); }
+                else { localStorage.setItem('ddma-mosaic-default-prompt', v); }
+            }, origLocal20.prompt);
+            console.log("  - TEST 20 restored the live Mosaic prompt (server file + localStorage).");
+        }
 
         
 

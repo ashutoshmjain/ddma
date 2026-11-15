@@ -128,6 +128,12 @@ def vault_settings_path():
 # ---- Phase 2: dd_hub as the PRIMARY plan store (local disk is a CACHE only) ----
 PLAN_META_FILENAME = "plan.meta.json"
 
+# Intro->body splice beat (Stage 3 of .agents/rules/clip-stitching-acoustics.md):
+# the title card holds 0.2s (the established sting beat) while the audio stays
+# silent before the body hook starts. Applied in build_concat_cmd; the caption
+# offset (intro_offset) accounts for it.
+INTRO_BODY_GAP_S = 0.2
+
 # episode -> hub plan_rev seen by the last load_plan_file() in this process.
 _plan_rev_cache = {}
 
@@ -2887,7 +2893,7 @@ def compile_clip(
             target_clip if target_clip is not None else clip,
             plan_file=plan_file,
             audio_path=fresh_audio_for_caps,
-            intro_offset=intro_duration,
+            intro_offset=intro_duration + INTRO_BODY_GAP_S,
             body_duration=body_duration,
             has_outro=(not is_last_clip)
         )
@@ -2896,7 +2902,7 @@ def compile_clip(
             caption_chunks,
             temp_ass_path,
             body_duration=body_duration,
-            intro_offset=intro_duration,
+            intro_offset=intro_duration + INTRO_BODY_GAP_S,
             visual_source=compile_source
         )
         os.makedirs("captions", exist_ok=True)
@@ -2904,7 +2910,7 @@ def compile_clip(
             caption_chunks,
             os.path.join("captions", f"{base_name}.ass"),
             body_duration=body_duration,
-            intro_offset=intro_duration,
+            intro_offset=intro_duration + INTRO_BODY_GAP_S,
             visual_source=compile_source
         )
         typer.echo(f"Prepared {len(caption_chunks)} ASS caption events (1080x1920 vertical spec) -> {temp_ass_path}")
@@ -2921,14 +2927,15 @@ def compile_clip(
                     "-i", body_video_path,
                     "-i", temp_outro_video_path,
                     "-filter_complex",
-                    f"[0:v]{scale_filter},settb=1/90000[v0];"
+                    f"[0:v]{scale_filter},settb=1/90000,tpad=stop_mode=clone:stop_duration={INTRO_BODY_GAP_S}[v0];"
                     f"[1:v]{body_v_filter}[v1];"
                     f"[2:v]{scale_filter},settb=1/90000[v2];"
                     "[v0][v1]concat=n=2:v=1:a=0[v01];"
                     "[v01]fps=25,settb=1/90000[v01tb];"
-                    f"[v01tb][v2]xfade=transition=fade:duration=1.0:offset={intro_duration + body_duration - 1.0:.3f}[v740];"
+                    f"[v01tb][v2]xfade=transition=fade:duration=1.0:offset={intro_duration + INTRO_BODY_GAP_S + body_duration - 1.0:.3f}[v740];"
                     f"[v740]{vertical_burn_filter}[v];"
-                    "[0:a][1:a]concat=n=2:v=0:a=1[a0];"
+                    f"[0:a]apad=whole_dur={intro_duration + INTRO_BODY_GAP_S:.3f}[a0pre];"
+                    "[a0pre][1:a]concat=n=2:v=0:a=1[a0];"
                     "[a0][2:a]acrossfade=d=1.0:c1=tri:c2=tri[a]",
                     "-map", "[v]",
                     "-map", "[a]",
@@ -2947,11 +2954,12 @@ def compile_clip(
                     "-i", intro_video_path,
                     "-i", body_video_path,
                     "-filter_complex",
-                    f"[0:v]{scale_filter},settb=1/90000[v0];"
+                    f"[0:v]{scale_filter},settb=1/90000,tpad=stop_mode=clone:stop_duration={INTRO_BODY_GAP_S}[v0];"
                     f"[1:v]{body_v_filter}[v1];"
                     "[v0][v1]concat=n=2:v=1:a=0[v740];"
                     f"[v740]{vertical_burn_filter}[v];"
-                    "[0:a][1:a]concat=n=2:v=0:a=1[a]",
+                    f"[0:a]apad=whole_dur={intro_duration + INTRO_BODY_GAP_S:.3f}[a0pre];"
+                    "[a0pre][1:a]concat=n=2:v=0:a=1[a]",
                     "-map", "[v]",
                     "-map", "[a]",
                     "-c:v", "libx264",
@@ -3048,7 +3056,7 @@ def compile_clip(
                         if true_clip_dur is not None and true_clip_dur > 0:
                             target_clip["duration"] = true_clip_dur
                         target_clip["audio_duration"] = round(float(body_duration), 2)
-                        target_clip["intro_offset"] = intro_duration
+                        target_clip["intro_offset"] = round(intro_duration + INTRO_BODY_GAP_S, 2)
                         target_clip["outro_duration"] = 5.0 if not is_last_clip else 0.0
                         if "source_start" not in target_clip and "start" in target_clip:
                             target_clip["source_start"] = target_clip["start"]
@@ -3083,7 +3091,7 @@ def compile_clip(
                             if os.path.abspath(plan_file) != os.path.abspath("plan.json"):
                                 with open("plan.json", "w", encoding="utf-8") as rpf:
                                     json.dump(plan_data, rpf, indent=4)
-                            typer.echo(f"Reconciled plan metadata for Clip {num}: rendered_duration={final_dur}s, audio_duration={round(float(body_duration), 2)}s, intro_offset={intro_duration}s")
+                            typer.echo(f"Reconciled plan metadata for Clip {num}: rendered_duration={final_dur}s, audio_duration={round(float(body_duration), 2)}s, intro_offset={round(intro_duration + INTRO_BODY_GAP_S, 2)}s")
                             
                             # Sync to docs/episodes/<ep>/plan.json if exists
                             ep_val = ep_prefix if ep_prefix else episode

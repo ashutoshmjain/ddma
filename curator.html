@@ -1540,6 +1540,10 @@
             <button class="btn btn-secondary btn-mini" id="topSettingsBtn" style="padding: 0.25rem 0.65rem; font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 0.3rem;" title="Open Studio System Settings">
                 ⚙️ Settings
             </button>
+
+            <a href="http://127.0.0.1:8088/" target="deepdive-workspace" id="topWorkspaceBtn" class="btn btn-secondary btn-mini" style="font-weight: 600; padding: 0.25rem 0.65rem; display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; text-decoration: none;" title="Open the Workspace home page (landing page)">
+                <span>🏠</span> Workspace
+            </a>
         </div>
     </header>
 
@@ -1891,7 +1895,7 @@
             </div>
             
             <div class="export-actions" style="margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem; display: flex; justify-content: flex-end; gap: 0.8rem;">
-                <button class="btn btn-secondary" onclick="document.getElementById('settingsModalOverlay').classList.remove('active')" style="font-weight: 600; padding: 0.6rem 1.2rem;">Cancel</button>
+                <button class="btn btn-secondary" id="cancelSettingsBtn" style="font-weight: 600; padding: 0.6rem 1.2rem;">Cancel</button>
                 <button class="btn btn-primary" id="saveSettingsBtn" style="font-weight: 600; padding: 0.6rem 1.5rem; background-image: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);">Save Settings</button>
             </div>
         </div>
@@ -2424,8 +2428,9 @@
         }
 
         // Save settings to settings.json on server
+        // Returns a promise resolving true only when the server round-trip confirms the save.
         function saveSettingsToServer() {
-            if (!window.location.protocol.startsWith('http')) return;
+            if (!window.location.protocol.startsWith('http')) return Promise.resolve(false);
             const theme = localStorage.getItem('ddma-theme') || 'midnight';
             const format = localStorage.getItem('ddma-export-format') || 'audio';
             const res = localStorage.getItem('ddma-video-res') || '740x740';
@@ -2444,16 +2449,21 @@
                 mosaic_default_prompt: localStorage.getItem('ddma-mosaic-default-prompt') || ''
             };
             
-            fetch('/save-settings', {
+            return fetch('/save-settings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(settings)
             })
             .then(res => {
-                if (!res.ok) console.error("Saving settings to server failed");
+                if (!res.ok) {
+                    console.error("Saving settings to server failed");
+                    return false;
+                }
+                return res.json().then(data => !!(data && data.success)).catch(() => false);
             })
             .catch(err => {
                 console.warn("Saving settings to server failed: ", err.message);
+                return false;
             });
         }
 
@@ -3169,6 +3179,37 @@
             }
         });
 
+        function snapshotSettingsFields() {
+            const v = id => ((document.getElementById(id) || {}).value ?? '');
+            return {
+                apiKey: v('settingsMosaicApiKey').trim(),
+                agentId: v('settingsMosaicAgentId').trim(),
+                mogrNodeId: v('settingsMosaicMogrNodeId').trim(),
+                captionsNodeId: v('settingsMosaicCaptionsNodeId').trim(),
+                geminiKey: v('settingsGeminiApiKey').trim(),
+                prompt: v('settingsMosaicDefaultPrompt')
+            };
+        }
+        function isSettingsDirty() {
+            const s = window._settingsSnapshot;
+            if (!s) return false;
+            const cur = snapshotSettingsFields();
+            return Object.keys(s).some(k => s[k] !== cur[k]);
+        }
+        // Unsaved-changes gate shared by the ✖ and Cancel buttons: Save / Discard / Cancel.
+        function closeSettingsModalWithCheck() {
+            if (!isSettingsDirty()) {
+                settingsModalOverlay.classList.remove('active');
+                return;
+            }
+            if (confirm("Save settings before closing?\n\nOK = Save & close\nCancel = Discard / Keep editing")) {
+                document.getElementById('saveSettingsBtn').click();
+                return;
+            }
+            if (confirm("Discard unsaved settings?\n\nOK = Discard & close\nCancel = Keep editing")) {
+                settingsModalOverlay.classList.remove('active');
+            }
+        }
         function openSettingsModal() {
             const defaults = window.serverDefaultPrompts || {};
             document.getElementById('settingsMosaicApiKey').value = localStorage.getItem('ddma-mosaic-api-key') || '';
@@ -3177,6 +3218,7 @@
             document.getElementById('settingsMosaicCaptionsNodeId').value = localStorage.getItem('ddma-mosaic-captions-node-id') || '';
             document.getElementById('settingsGeminiApiKey').value = localStorage.getItem('ddma-gemini-api-key') || '';
             document.getElementById('settingsMosaicDefaultPrompt').value = localStorage.getItem('ddma-mosaic-default-prompt') || defaults.mosaic || '';
+            window._settingsSnapshot = snapshotSettingsFields();
 
             renderSettingsMusicList();
             settingsModalOverlay.classList.add('active');
@@ -3190,8 +3232,14 @@
             if (topSettingsBtn) topSettingsBtn.addEventListener('click', openSettingsModal);
 
             closeSettingsModalBtn.addEventListener('click', () => {
-                settingsModalOverlay.classList.remove('active');
+                closeSettingsModalWithCheck();
             });
+            const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
+            if (cancelSettingsBtn) {
+                cancelSettingsBtn.addEventListener('click', () => {
+                    closeSettingsModalWithCheck();
+                });
+            }
 
 
 
@@ -3222,7 +3270,7 @@
                     fetch('/get-settings')
                         .then(r => r.json())
                         .then(d => {
-                            const defVal = d.default_mosaic_prompt || (window.serverDefaultPrompts && window.serverDefaultPrompts.mosaic) || '';
+                            const defVal = d.factory_mosaic_prompt || d.default_mosaic_prompt || (window.serverDefaultPrompts && window.serverDefaultPrompts.mosaic) || '';
                             if (defVal) {
                                 document.getElementById('settingsMosaicDefaultPrompt').value = defVal;
                                 showDebug("Reset Mosaic Motion Design prompt to default", false);
@@ -3239,10 +3287,14 @@
                 localStorage.setItem('ddma-gemini-api-key', document.getElementById('settingsGeminiApiKey').value.trim());
                 localStorage.setItem('ddma-mosaic-default-prompt', document.getElementById('settingsMosaicDefaultPrompt').value);
                 
-                saveSettingsToServer();
-
-                settingsModalOverlay.classList.remove('active');
-                showDebug(`Settings saved successfully!`, false);
+                saveSettingsToServer().then(ok => {
+                    if (ok) {
+                        settingsModalOverlay.classList.remove('active');
+                        showDebug(`Settings saved successfully!`, false);
+                    } else {
+                        showDebug(`Saving settings failed: server did not confirm. Modal kept open -- retry Save or Cancel.`, true);
+                    }
+                });
             });
 
             // Topbar event listeners
