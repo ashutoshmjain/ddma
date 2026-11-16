@@ -2,6 +2,8 @@
 
 DeepDive Media Automator (DDMA) is a progressive media automation engine powered by **Google Antigravity**.
 
+> **DDMA is an extension to [mdIngest](https://github.com/ashutoshmjain/mdIngest).** mdIngest is the base application — it is the entry point, runs transcription (the podcast stage), and hosts the Publishing Cockpit and the workspace landing page. **Install mdIngest first and follow its install instructions (including dd_hub setup) in the [mdIngest README](https://github.com/ashutoshmjain/mdIngest/blob/main/README.md).** DDMA adds two things on top of mdIngest: **Clip Studio** (the Curator — Clips management) and **Beats Studio** (longform video).
+
 ---
 
 ## 💡 The DDMA Philosophy: A Ground-Up Inversion of Media Production
@@ -30,26 +32,19 @@ Rather than slicing down a monolithic master recording, DDMA builds media **bott
 
 ---
 
-## 🧩 Architecture: The 3 Schematic Modules
+## 🧩 What DDMA brings: Clip Studio + Beats Studio
 
-DDMA is architected around three primary schematic modules:
+DDMA extends mdIngest with two studios. Transcription runs in mdIngest (the podcast stage) — DDMA works from the transcription and the plan, and does not transcribe.
 
 ```mermaid
 graph LR
-    A["🎙️ Transcription Protocol<br/>(Whisper Word-Level Alignment & Topic Discovery)"] --> B["⚡ Clip Dynamics<br/>(2-min Standalone Social Shorts, Title Cards & Ducking)"]
-    B --> C["🎧 Long-Form Emergence<br/>(Spotify Podcast MP3 & YouTube Infographic MP4)"]
+    A["mdIngest<br/>(Transcription & Podcast)"] --> B["🎬 Clip Studio<br/>(Curator: Clips Management)"]
+    B --> C["🎬 Beats Studio<br/>(Longform Video)"]
 ```
 
-1. **🎙️ Transcription Protocol**:
-   Processes raw unedited audio using local Whisper speech-to-text models for word-level timestamped transcription, aligning transcript words and discovering natural high-engagement topic boundaries.
+1. **🎬 Clip Studio (the Curator)** — Clips management. The Curator web app (`http://localhost:8000/curator.html`) manages episodes and clips: it cuts clip-scoped audio from the continuous episode audio, muxes the 740×740 draft, sends it to Mosaic for AI motion graphics, compiles the final 1080×1920 vertical reels (intro card + Mosaic body + outro, with captions), and publishes finished clips to GitHub with the per-clip Publish button (scoped: the clip + the episodes manifest only).
 
-2. **⚡ Clip Dynamics**:
-   Focuses on crafting perfected, standalone ~2-minute short clips. Includes dynamic intro title card image generation (Pillow), background music sting ducking and quarter-sine crossfading, and AI motion-graphic rendering (Mosaic).
-
-3. **🎧 Long-Form Emergence**:
-   Synthesizes the individual micro-clips chronologically into master, publication-ready outcomes:
-   * **Master Audio Podcast (`.mp3`)**: Seamlessly crossfaded audio episodes for Spotify, Apple Podcasts, and YouTube Music (e.g. [Episode 244 on Spotify](https://open.spotify.com/episode/1KKvm3TbYgxgsffHMj5MwJ?si=NeKNaPJ9QQG11-zcNB92Nw)).
-   * **Master Infographic Video (`.mp4`)**: Cohesive YouTube video episodes joined with 5-second curiosity question slide transitions (e.g. [Episode 244 on YouTube](https://youtu.be/9vuNg8t42m8?si=GcVZrzUJ2pN3YZBo)).
+2. **🎬 Beats Studio (longform video)** — A separate server process (port 8001) living in `ddma/`, launched from the mdIngest landing page. It turns finished clips into longform video: it divides each clip into ~7.5s beats for the Manim process, stitches Mosaic renders into a horizontal 1920×1080 video, and can retrigger a Mosaic run from the longform if an asset didn't fit (explicit user trigger only).
 
 ---
 
@@ -69,187 +64,25 @@ graph LR
 
 dd_hub is the workspace — a Google Drive folder that holds the plan, settings, inputs, working assets, and audio/video outputs. DDMA reads from and writes to dd_hub. GitHub is only the intermediary for the *published* Active Master clips; dd_hub is the live workspace.
 
+**Set up dd_hub by following the install instructions in the [mdIngest README](https://github.com/ashutoshmjain/mdIngest/blob/main/README.md).** mdIngest is the base application — its README covers the full setup (Windows easy path via the Antigravity app, Linux manual path with rclone, the vault, and verification). DDMA uses the same dd_hub workspace; there is nothing DDMA-specific to set up beyond that.
+
 > [!IMPORTANT]
 > **The core rule**: The code only does **local file I/O against a local path**. It **never** calls the Google Drive web API for file access. So dd_hub must be mounted as a local filesystem path on every machine that runs DDMA. The code reads the mount path from the `DD_HUB_ROOT` environment variable.
-
-### What you need
-
-* A Google Drive folder to be your dd_hub. Create a new folder, or use an existing one. Note its folder ID from the Drive URL: `https://drive.google.com/drive/folders/<FOLDER_ID>`.
-* The folder should contain (create any that are missing): `episodes/`, `vault/`, `inputs/`, `audio/`, `video/`, `mosaics/`, `manims/`, `rules/`.
-
-### Windows (the reference environment)
-
-* Install Google Drive for Desktop. It mounts your Drive as a local drive (typically `G:\My Drive\`).
-* Your dd_hub folder is then at `G:\My Drive\dd_hub` (if your folder is named dd_hub).
-* Set `DD_HUB_ROOT` to that path. The code's first candidate is `G:\My Drive\dd_hub`, so this works out of the box.
-* All reads/writes are plain local file I/O through the mount. No Drive web API calls are made.
-
-### Linux / VM / Docker
-
-* Install rclone. Configure a Google Drive remote (for example, named `gdrive`).
-* Mount the dd_hub folder by its ID to a local path (for example `/mnt/gdrive/dd_hub`):
-  ```bash
-  rclone mount gdrive: /mnt/gdrive/dd_hub --drive-root-folder-id <FOLDER_ID> --vfs-cache-mode full --daemon
-  ```
-* Use `--vfs-cache-mode full` — the pipeline does many small reads/writes, and the cache makes it fast. A generous `--vfs-cache-max-size` helps.
-* Set `DD_HUB_ROOT` to the mount path (for example `/mnt/gdrive/dd_hub`) and persist it (shell profile, systemd unit, or Docker entrypoint) so it survives new shells.
-* In Docker, the entrypoint mounts the Drive folder by ID via rclone to a local path, sets `DD_HUB_ROOT`, then starts the server.
-
-### Settings (the vault)
-
-* The canonical settings file is `dd_hub/vault/settings.json`. It holds the app settings **and** the API keys (Mosaic, Gemini, etc.).
-* Create it from `settings.template.json` (in the repo root) and fill in your keys.
-* `settings.json` is **never** committed to git. The repo holds only `settings.template.json`. The vault lives in dd_hub, not in the repo.
-* Any environment with workspace access gets the full settings.json, including keys.
-
-### Verify the setup
-
-* `echo $DD_HUB_ROOT` shows the mount path.
-* The mount contains `episodes/`, `vault/`, `inputs/`, `audio/`, `video/`, `mosaics/`, `manims/`, `rules/`.
-* `episodes/<N>/plan.json` is readable (for an existing episode).
-* If the mount is unreachable, the apps fall back to the local cache with a loud warning (read-only); writes fail closed — they refuse rather than writing to a stale local copy.
-
-### What NOT to do
-
-* Do **not** use the Google Drive web API or a Drive plugin as the file store. API-level access is too slow and is not a local file path — the pipeline will not work with it. (Fine for one-off reads only.)
-* Do **not** fake a local dd_hub folder (an empty local directory named dd_hub). The apps will write to it and the work will never reach the real workspace.
-* Do **not** commit `settings.json` (or any file with API keys) to git.
-* Do **not** set `DD_HUB_ROOT` to a path that isn't the mounted dd_hub folder.
 
 ---
 
 ## ⚡ Setup & Quickstart Guide
 
-Choose the path that fits your workflow:
-* **🚀 Track A: The Easy Way (Google Antigravity on Windows)** — 100% automated setup with natural language. No manual terminal steps or virtual environment creation needed!
-* **🐧 Track B: The Manual Way (Isolated Native WSL Linux on Windows)** — Complete step-by-step instructions for native Linux isolation. Written for absolute beginners.
+**Install mdIngest first and follow its install instructions (including dd_hub setup) in the [mdIngest README](https://github.com/ashutoshmjain/mdIngest/blob/main/README.md).** DDMA is an extension to mdIngest — it uses the same toolchain, the same dd_hub workspace, and the same settings vault. There is no separate DDMA install.
 
----
+Once mdIngest is set up, launch the two DDMA studios:
 
-### 🚀 Track A: The Easy Way (Google Antigravity on Windows)
-
-Let **Google Antigravity** handle environment provisioning, dependency installation, FFmpeg verification, transcription, and server launch automatically!
-
-#### 1. Install Google Antigravity
-Install the Antigravity CLI globally (or open the Antigravity IDE / Desktop Assistant):
-```bash
-npm install -g @google/antigravity-cli
-```
-
-#### 2. Prompt Antigravity
-Open Antigravity in your terminal or IDE and give it this natural language instruction:
-> **"Clone `https://github.com/ashutoshmjain/ddma.git`, install all Python dependencies from `requirements.txt`, verify FFmpeg is installed, start the local curator server (`python scratch/run_curator.py`), and transcribe my audio file."**
-
-#### 🧠 How Antigravity Handles Setup Automatically:
-* **Repository & Dependencies**: Clones `ddma.git` and inspects `requirements.txt` to install `openai-whisper`, `torch`, `requests`, `typer`, `pillow`, and `pyyaml`.
-* **System Tools**: Automatically verifies or installs system binaries (`ffmpeg`) via `winget`, `brew`, or `apt`.
-* **Server Execution**: Launches the Curator web server automatically and provides the local web URL (`http://localhost:8000/curator.html?project=episode_245`).
-
----
-
-### 🐧 Track B: The Manual Way (Isolated Native WSL Linux on Windows)
-
-If you prefer to run inside **WSL (Windows Subsystem for Linux)** with native Linux execution and total environment isolation from Windows, follow this beginner-friendly step-by-step guide.
-
-> 💡 **What is WSL?** WSL allows you to run a native Linux terminal inside Windows.
-> 💡 **What is `localhost`?** `localhost` means your own computer. When Curator runs on `http://localhost:8000`, it means your computer is serving the web interface locally on port `8000`.
-> 💡 **What is a `.venv` (Virtual Environment)?** A virtual environment is an isolated "folder box" for Python packages so they don't interfere with your system or other projects.
-
----
-
-#### 📌 Step 1: Open Your WSL Linux Terminal
-If you haven't installed WSL yet, open Windows PowerShell as Administrator and run:
-```powershell
-wsl --install
-```
-Once installed, open **WSL** (or Ubuntu) from your Windows Start Menu.
-
----
-
-#### 📌 Step 2: Clone the DDMA Repository inside WSL
-In your WSL terminal, clone the repository into your native Linux home directory:
-```bash
-cd ~
-git clone https://github.com/ashutoshmjain/ddma.git
-cd ~/ddma
-```
-
-> 🔬 **Advanced / Local Testing Alternative (Working directly inside your existing Windows folder)**:
-> If you already have DDMA on your Windows machine and want to test directly inside your existing Windows directory without cloning, you can navigate directly to your Windows drive (mounted inside WSL under `/mnt/c/`):
-> ```bash
-> cd /mnt/c/Users/ashut/OneDrive/Desktop/github/deepDive/ddma
-> ```
-
----
-
-#### 📌 Step 3: Install Linux System Dependencies (Run Once)
-Install system packages (`python3-full`, `python3-venv`, `python3-pip`, and `ffmpeg`) inside Linux:
-```bash
-sudo apt update && sudo apt install -y python3-full python3-venv python3.14-venv python3-pip ffmpeg
-```
-* **`sudo`**: Runs the installer with administrative privileges inside Linux.
-* **`apt`**: The standard Linux package manager.
-* **`ffmpeg`**: The multimedia processing library used for video stream remuxing and title card concatenation.
-* **`python3-full` / `python3-venv`**: Provides Python's virtual environment creation tools.
-
----
-
-#### 📌 Step 4: Create and Activate Your Isolated Virtual Environment (`.venv`)
-Inside your DDMA directory, create a clean virtual environment folder named `.venv`:
-
-```bash
-# 1. Remove any broken draft environments (if retrying)
-rm -rf .venv
-
-# 2. Create a clean Linux virtual environment
-python3 -m venv .venv
-
-# 3. Activate the environment
-source .venv/bin/activate
-```
-*(When active, your terminal prompt will show `(.venv)` at the beginning of the line!)*
-
----
-
-#### 📌 Step 5: Install Python Dependencies
-With `(.venv)` active, install all required Python libraries from `requirements.txt`:
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-This installs:
-* **`openai-whisper`** (AI speech-to-text transcription engine)
-* **`requests`** (Mosaic API status polling & video downloader)
-* **`typer`** (CLI automation framework)
-* **`pillow`** (Dynamic Intro Title Card & Outro Curiosity Card PNG image renderer)
-* **`google-generativeai`** (Gemini AI Clip Remixing engine)
-
----
-
-#### 📌 Step 6: Launch the Curator Server
-Start the local Curator web server:
-```bash
-python scratch/run_curator.py
-```
-
-You will see the server startup log:
-```text
-Serving on http://localhost:8000
-```
-
-Open your web browser (Chrome, Edge, Firefox) and navigate to:
-👉 **[http://localhost:8000/curator.html?project=episode_245](http://localhost:8000/curator.html?project=episode_245)**
-
----
-
-#### 🔄 How to Resume Curator Next Time (Future Daily Usage)
-Whenever you open your WSL terminal in the future, you only need to run these 3 quick commands:
-
-```bash
-cd ~/ddma
-source .venv/bin/activate
-python scratch/run_curator.py
-```
+* **Clip Studio (the Curator)** — start the Curator server:
+  ```bash
+  python scratch/run_curator.py
+  ```
+  Open 👉 **[http://localhost:8000/curator.html?project=episode_245](http://localhost:8000/curator.html?project=episode_245)** (replace `episode_245` with your episode). The Curator is where you manage clips, cut audio, run Mosaic, compile the vertical reels, and Publish finished clips to GitHub.
+* **Beats Studio (longform video)** — launch it from the mdIngest landing page (`http://localhost:8088/`, the "Launch Beats Studio" button). It runs on port 8001. Beats Studio turns finished clips into longform video.
 
 ---
 
