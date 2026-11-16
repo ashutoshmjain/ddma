@@ -1309,9 +1309,19 @@ def cut(
     else:
         typer.echo(f"Splitting {audio} into {len(plan_data)} clips...")
 
-    for c in plan_data:
+    for c_idx, c in enumerate(plan_data):
         if num is not None and int(c.get("num", -1)) != num:
             continue
+        # Clip-start back-off anchor (Issue 87): the previous clip's end, so the
+        # acoustic back-off is clamped to the silence gap and never eats into
+        # the previous clip's speech. None for the first clip (helper then
+        # backs off without a clamp).
+        prev_clip_end = None
+        if c_idx > 0:
+            try:
+                prev_clip_end = float(plan_data[c_idx - 1].get("end"))
+            except (TypeError, ValueError):
+                prev_clip_end = None
         # Naming: e.g. 242-1.mp3 or 242-1-title.mp3
         title = c.get("title", "")
         if title:
@@ -1380,6 +1390,11 @@ def cut(
                 seg = segments[s_idx]
                 s_start = float(seg.get("start", start_val))
                 s_end = float(seg.get("end", end_val))
+                if a_pos == 0:
+                    # Clip-start back-off (Issue 87): back the first cut into the
+                    # preceding silence to capture the true word onset. The plan's
+                    # stored start/source_start is untouched -- only the CUT moves.
+                    s_start = resolve_acoustic_word_start(s_start, prev_word_end=prev_clip_end, audio_path=audio)
                 if a_pos + 1 < len(audio_indices):
                     next_s_idx = audio_indices[a_pos + 1]
                     next_s_start = float(segments[next_s_idx].get("start", s_end))
@@ -1454,6 +1469,9 @@ def cut(
             else:
                 typer.echo(f"Error mixing clip {c['num']}: {res_mix.stderr}", err=True)
         else:
+            # Clip-start back-off (Issue 87), same as the music path's first segment.
+            start_val = resolve_acoustic_word_start(start_val, prev_word_end=prev_clip_end, audio_path=audio)
+            start_str = to_time_str(start_val)
             cmd = [
                 "ffmpeg", "-y",
                 "-ss", start_str,
