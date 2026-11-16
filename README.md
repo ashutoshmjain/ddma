@@ -280,3 +280,10 @@ For complete step-by-step guides, advanced CLI reference (`ddma.py`), fast demux
 * **🎬 Editor's Preview Player & E2E Testing**:
   * **Consolidated Single-Player Engine**: Plays all selected clips sequentially with WebAudio/HTML5 volume synchronization.
   * **Automated E2E Test Suite**: Headless Puppeteer test scripts (`scratch/test-env/test_curator.js` & `scratch/test-env/test_player.js`) ensure 100% regression-free updates.
+
+---
+
+## 🐛 Bug tracking
+
+We do **not** manage issues on GitHub. Bugs and fixes for DDMA, the deepDive pipeline, mdIngest, and the portfolio app are tracked in the [Bug Tracker Space](https://muse.ai/s/bug-tracker-ixe6daxhoezyxy/g1O341vEl5aXYIzWFP1db5l-xunGJAxBRSwSJccC110) — a read-only list of all bugs with their status.
+
