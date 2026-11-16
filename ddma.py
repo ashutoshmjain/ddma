@@ -3000,13 +3000,19 @@ def compile_clip(
             except Exception as hub_e:
                 typer.echo(f"Warning syncing to dd_hub: {hub_e}")
 
-            # Safeguard: If active master, update master out_path and sync to deepDive
+            # Safeguard: If active master, update master hub-first (the hub copy
+            # of {ep}-{num}.mp4 IS the finished master, not the mux draft) and
+            # sync to deepDive. The local clips/ copy stays as the cache.
             is_active_master = (compile_source == active_master_src)
             if is_active_master:
                 try:
-                    shutil.copy2(variant_path, out_path)
-                except Exception:
-                    pass
+                    hub_master_path, cache_master_path = resolve_working_asset_output(plan_file, out_dir, out_filename)
+                except RuntimeError as ex_hub:
+                    typer.echo(f"Error: hub working-asset write FAILED LOUDLY (no local-only write): {ex_hub}", err=True)
+                    raise typer.Exit(code=1)
+                shutil.copy2(variant_path, hub_master_path)
+                if cache_master_path and os.path.exists(hub_master_path):
+                    shutil.copy2(hub_master_path, cache_master_path)
                 if episode:
                     try:
                         deepdive_clips_dir = resolve_deepdive_publication_clips_dir(episode)
