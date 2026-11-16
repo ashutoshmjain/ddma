@@ -390,22 +390,100 @@ def save_mosaic_jobs(project_id, jobs_dict):
         print(f"Warning saving mosaic_jobs for {project_id}: {e}")
 
 def update_mosaic_job_state(project_id, clip_num, status, progress, error=None, run_id=None):
+    # Serialize the read-modify-write: concurrent heal/pipeline threads must not
+    # clobber each other's entries (Issue 86 found clip 13's completed entry lost
+    # to two simultaneous saves). save_mosaic_jobs takes no lock itself, so no
+    # re-entrancy hazard with plan_file_lock here.
     job_key = (project_id, int(clip_num))
-    existing = mosaic_runs.get(job_key, {})
-    new_job = {
-        "status": status,
-        "progress": progress,
-        "error": error,
-        "run_id": run_id or existing.get("run_id"),
-        "start_time": existing.get("start_time", time.time()),
-        "last_update": time.time()
-    }
-    mosaic_runs[job_key] = new_job
-    
-    # Save to disk for persistence across server restarts
-    proj_jobs = load_mosaic_jobs(project_id)
-    proj_jobs[int(clip_num)] = new_job
-    save_mosaic_jobs(project_id, proj_jobs)
+    with plan_file_lock:
+        existing = mosaic_runs.get(job_key, {})
+        new_job = {
+            "status": status,
+            "progress": progress,
+            "error": error,
+            "run_id": run_id or existing.get("run_id"),
+            "start_time": existing.get("start_time", time.time()),
+            "last_update": time.time()
+        }
+        mosaic_runs[job_key] = new_job
+
+        # Save to disk for persistence across server restarts
+        proj_jobs = load_mosaic_jobs(project_id)
+        proj_jobs[int(clip_num)] = new_job
+        save_mosaic_jobs(project_id, proj_jobs)
+
+def download_mosaic_render(project_id, ep_num, clip_num, run_id, video_url):
+    """Download an already-completed Mosaic render hub-first.
+
+    Shared by run_mosaic_pipeline Step 5 and the heal re-download (Issue 86).
+    Raises on failure. Never starts a run -- the caller must already hold a
+    completed run's video_url (free, 0 API cost for a new run)."""
+    mosaic_filename = f"{ep_num}-{clip_num}-mosaic-{run_id}.mp4"
+    mosaic_hub_path = working_asset_hub_path(ep_num, mosaic_filename)
+    if not mosaic_hub_path:
+        raise Exception(f"dd_hub UNREACHABLE -- refusing Mosaic download for Clip {clip_num} (working assets never write locally-only). Set DD_HUB_ROOT or mount dd_hub and retry.")
+    mosaic_version_path = working_asset_local_path(mosaic_filename)
+
+    # Download rendered video with robust multi-attempt retry (protects against socket blips/IncompleteRead)
+    download_success = False
+    last_dl_err = None
+    for attempt in range(1, 6):
+        try:
+            print(f"[{project_id}][Clip {clip_num}] Downloading rendered video from Mosaic S3 (attempt {attempt}/5)...")
+            res_download = requests.get(video_url, stream=True, timeout=60)
+            if res_download.status_code != 200:
+                raise Exception(f"Failed to download rendered video from Mosaic: HTTP {res_download.status_code}")
+
+            os.makedirs(os.path.dirname(mosaic_hub_path), exist_ok=True)
+            mosaic_part_path = mosaic_hub_path + ".part"
+            with open(mosaic_part_path, "wb") as f_out:
+                for chunk in res_download.iter_content(chunk_size=65536):
+                    if chunk:
+                        f_out.write(chunk)
+
+            if os.path.exists(mosaic_part_path) and os.path.getsize(mosaic_part_path) > 1024:
+                # Hub FIRST (atomic rename, no partials on the primary store), then the local cache.
+                os.replace(mosaic_part_path, mosaic_hub_path)
+                os.makedirs(os.path.dirname(mosaic_version_path) or "clips", exist_ok=True)
+                shutil.copy2(mosaic_hub_path, mosaic_version_path)
+                download_success = True
+                break
+            else:
+                raise Exception("Downloaded file is empty or corrupted.")
+        except Exception as dl_ex:
+            last_dl_err = dl_ex
+            print(f"[{project_id}][Clip {clip_num}] Download attempt {attempt} failed: {dl_ex}. Retrying in 5s...")
+            time.sleep(5)
+
+    if not download_success:
+        raise Exception(f"Failed to download rendered video after 5 attempts: {last_dl_err}")
+    return mosaic_hub_path
+
+def _clip_master_is_valid(master_clip_path):
+    """A master is valid when the file exists, is non-trivial, and ffprobes
+    to a real duration. Shared by the heal scan and its workers."""
+    if not (os.path.exists(master_clip_path) and os.path.getsize(master_clip_path) > 1024):
+        return False
+    try:
+        chk = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1", master_clip_path],
+            capture_output=True, text=True, timeout=5
+        )
+        return chk.returncode == 0
+    except Exception:
+        return False
+
+def _heal_compile_and_mark(pid, cn, rid):
+    """Compile one clip's master and mark the Mosaic job completed/failed.
+    Shared by heal Case 1 (after a re-download) and Case 2 workers."""
+    try:
+        plan_file = os.path.join("projects", pid, "plan.json")
+        subprocess.run([sys.executable, "ddma.py", "compile-clip", "--num", str(cn), "--plan-file", plan_file], check=True)
+        update_mosaic_job_state(pid, cn, "completed", 100, run_id=rid)
+        print(f"[{pid}][Clip {cn}] Auto-healing compilation complete!")
+    except Exception as h_err:
+        print(f"[{pid}][Clip {cn}] Auto-healing compilation failed: {h_err}")
+        update_mosaic_job_state(pid, cn, "failed", 0, error=str(h_err), run_id=rid)
 
 def auto_recompile_clip(project_id, clip_num):
     try:
@@ -430,7 +508,11 @@ def heal_mosaic_project_state(project_id, plan_data=None):
     """
     Scans project state for interrupted or stalled Mosaic runs across server restarts
     or prompt settings changes. Self-heals zombie states:
-    1. If mosaic file not downloaded yet: leaves state untouched (the manual Mosaic button is the only trigger).
+    1. If the mosaic file is missing but the plan has a run_id: re-download the
+       completed render from Mosaic's cloud using the run_id (free, 0 API cost;
+       never starts a new run); if the master is missing/invalid, fall through
+       to the Case 2 compile, else mark completed. Other run states
+       (running/failed/etc.) are left untouched.
     2. If mosaic file downloaded but master compilation incomplete/broken: auto-resumes compile-clip.
     3. If master compilation is already valid on disk: ensures mosaic_jobs.json reflects 100% completed.
     """
@@ -463,38 +545,67 @@ def heal_mosaic_project_state(project_id, plan_data=None):
 
         has_mosaic_source = os.path.exists(versioned_mosaic_file) or os.path.exists(orig_file)
 
-        master_is_valid = False
-        if os.path.exists(master_clip_path) and os.path.getsize(master_clip_path) > 1024:
-            try:
-                chk = subprocess.run(
-                    ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1", master_clip_path],
-                    capture_output=True, text=True, timeout=5
-                )
-                if chk.returncode == 0:
-                    master_is_valid = True
-            except Exception:
-                pass
+        master_is_valid = _clip_master_is_valid(master_clip_path)
 
         if not has_mosaic_source:
-            # Case 1: Mosaic source file missing locally. Never auto-start:
+            # Case 1: Mosaic source file missing locally. Never START a new run:
             # a Mosaic run begins ONLY on the user's explicit trigger (the
-            # manual Mosaic button / /export-to-mosaic). Leave the job state
-            # untouched; the clip stays resumable through that button.
-            pass
+            # manual Mosaic button / /export-to-mosaic). But when the plan already
+            # holds a mosaic_run_id, the completed render can be fetched again
+            # from Mosaic's cloud -- a download, free, 0 API cost for a new run.
+            # Runs still in flight (running/starting) wait; failed runs and API
+            # errors are left for the user to retry via the button.
+            if run_id:
+                def _heal_redownload(pid=project_id, cn=c_num, rid=run_id, epn=ep_num):
+                    if mosaic_runs.get((pid, int(cn)), {}).get("status") == "auto-downloading":
+                        print(f"[{pid}][Clip {cn}] Heal re-download already in progress -- skipping duplicate.")
+                        return
+                    try:
+                        settings = load_settings()
+                        api_key = settings.get("mosaic_api_key")
+                        if not api_key:
+                            print(f"[{pid}][Clip {cn}] Heal re-download skipped: no mosaic_api_key configured (run_id {rid}).")
+                            return
+                        res_status = requests.get(f"https://api.mosaic.so/agent_run/{rid}",
+                                                  headers={"Authorization": f"Bearer {api_key}"},
+                                                  timeout=20)
+                        if res_status.status_code != 200:
+                            print(f"[{pid}][Clip {cn}] Heal re-download skipped: Mosaic API returned HTTP {res_status.status_code} for run_id {rid}. Leaving clip for manual retry.")
+                            return
+                        run_info = res_status.json() or {}
+                        status = run_info.get("status")
+                        if status == "completed":
+                            outputs = run_info.get("outputs") or []
+                            video_url = outputs[0].get("video_url") if outputs else None
+                            if not video_url:
+                                print(f"[{pid}][Clip {cn}] Heal re-download skipped: run {rid} is completed but has no video_url. Leaving clip for manual retry.")
+                                return
+                            print(f"[{pid}][Clip {cn}] Heal re-downloading completed render for run_id {rid}...")
+                            update_mosaic_job_state(pid, cn, "auto-downloading", 90, run_id=rid)
+                            download_mosaic_render(pid, epn, cn, rid, video_url)
+                            print(f"[{pid}][Clip {cn}] Heal re-download complete.")
+                            if _clip_master_is_valid(os.path.join("clips", f"{epn}-{cn}.mp4")):
+                                update_mosaic_job_state(pid, cn, "completed", 100, run_id=rid)
+                                print(f"[{pid}][Clip {cn}] Master already valid -- skipping recompile.")
+                            else:
+                                print(f"[{pid}][Clip {cn}] Master missing/invalid -- compiling master.")
+                                _heal_compile_and_mark(pid, cn, rid)
+                        elif status in ("running", "starting", "queued", "pending"):
+                            print(f"[{pid}][Clip {cn}] Heal: run {rid} is '{status}' on Mosaic -- waiting, no download, no compile.")
+                        else:
+                            print(f"[{pid}][Clip {cn}] Heal re-download skipped: run {rid} status is '{status}'. Leaving clip for manual retry.")
+                    except Exception as he:
+                        print(f"[{pid}][Clip {cn}] Heal re-download failed for run {rid}: {he}. Leaving clip for manual retry.")
+                t = threading.Thread(target=_heal_redownload, daemon=True)
+                t.start()
+            # No run_id: nothing to fetch -- leave the job state untouched.
         elif has_mosaic_source and not master_is_valid:
             # Case 2: Mosaic video downloaded, but master clip compilation was interrupted mid-flight (e.g. at 95%)
             if job_key not in mosaic_runs or mosaic_runs[job_key].get("status") not in ("compiling", "completed"):
                 print(f"[{project_id}][Clip {c_num}] Auto-healing interrupted compilation for run_id {run_id}...")
                 update_mosaic_job_state(project_id, c_num, "auto-compiling", 95, run_id=run_id)
                 def _heal_worker(pid=project_id, cn=c_num, rid=run_id):
-                    try:
-                        plan_file = os.path.join("projects", pid, "plan.json")
-                        subprocess.run([sys.executable, "ddma.py", "compile-clip", "--num", str(cn), "--plan-file", plan_file], check=True)
-                        update_mosaic_job_state(pid, cn, "completed", 100, run_id=rid)
-                        print(f"[{pid}][Clip {cn}] Auto-healing compilation complete!")
-                    except Exception as h_err:
-                        print(f"[{pid}][Clip {cn}] Auto-healing compilation failed: {h_err}")
-                        update_mosaic_job_state(pid, cn, "failed", 0, error=str(h_err), run_id=rid)
+                    _heal_compile_and_mark(pid, cn, rid)
                 t = threading.Thread(target=_heal_worker, daemon=True)
                 t.start()
         elif has_mosaic_source and master_is_valid:
@@ -759,16 +870,16 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         if not final_video_url:
             raise Exception("Mosaic run timed out after 4 hours.")
             
-        # Step 5: Download finished video
+        # Step 5: Download finished video (hub-first via the shared helper)
         update_mosaic_job_state(project_id, clip_num, "downloading output", 95, run_id=run_id)
         print(f"[{project_id}][Clip {clip_num}] Downloading rendered video from Mosaic S3...")
-        
+
         mosaic_filename = f"{ep_num}-{clip_num}-mosaic-{run_id}.mp4"
         mosaic_hub_path = working_asset_hub_path(ep_num, mosaic_filename)
         if not mosaic_hub_path:
             raise Exception(f"dd_hub UNREACHABLE -- refusing Mosaic download for Clip {clip_num} (working assets never write locally-only). Set DD_HUB_ROOT or mount dd_hub and retry.")
         mosaic_version_path = working_asset_local_path(mosaic_filename)
-        
+
         # Purge older Mosaic render files for this clip (e.g. clips/245-13-mosaic-*.mp4)
         import glob
         for f_cand in glob.glob(os.path.join("clips", f"{ep_num}-{clip_num}-mosaic-*.mp4")):
@@ -785,40 +896,8 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
                     print(f"[{project_id}][Clip {clip_num}] Purged older hub Mosaic render: {f_cand}")
                 except Exception as p_err:
                     print(f"Warning: Could not purge older hub Mosaic render {f_cand}: {p_err}")
-        
-        # Step 5: Download rendered video with robust multi-attempt retry (protects against socket blips/IncompleteRead)
-        download_success = False
-        last_dl_err = None
-        for attempt in range(1, 6):
-            try:
-                print(f"[{project_id}][Clip {clip_num}] Downloading rendered video from Mosaic S3 (attempt {attempt}/5)...")
-                res_download = requests.get(final_video_url, stream=True, timeout=60)
-                if res_download.status_code != 200:
-                    raise Exception(f"Failed to download rendered video from Mosaic: HTTP {res_download.status_code}")
-                    
-                os.makedirs(os.path.dirname(mosaic_hub_path), exist_ok=True)
-                mosaic_part_path = mosaic_hub_path + ".part"
-                with open(mosaic_part_path, "wb") as f_out:
-                    for chunk in res_download.iter_content(chunk_size=65536):
-                        if chunk:
-                            f_out.write(chunk)
 
-                if os.path.exists(mosaic_part_path) and os.path.getsize(mosaic_part_path) > 1024:
-                    # Hub FIRST (atomic rename, no partials on the primary store), then the local cache.
-                    os.replace(mosaic_part_path, mosaic_hub_path)
-                    os.makedirs(os.path.dirname(mosaic_version_path) or "clips", exist_ok=True)
-                    shutil.copy2(mosaic_hub_path, mosaic_version_path)
-                    download_success = True
-                    break
-                else:
-                    raise Exception("Downloaded file is empty or corrupted.")
-            except Exception as dl_ex:
-                last_dl_err = dl_ex
-                print(f"[{project_id}][Clip {clip_num}] Download attempt {attempt} failed: {dl_ex}. Retrying in 5s...")
-                time.sleep(5)
-                
-        if not download_success:
-            raise Exception(f"Failed to download rendered video after 5 attempts: {last_dl_err}")
+        download_mosaic_render(project_id, ep_num, clip_num, run_id, final_video_url)
 
         # Persist mosaic_run_id into the hub plan AFTER successful download!
         try:
