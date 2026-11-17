@@ -381,12 +381,12 @@ def synthesize_figurative_manim_class(
     faucet dripping, forklift, server rack + clock, balance scale, battery/plug, etc.)
     centered cleanly in the middle of the viewport.
     """
-    combined = f"{user_directive} {spoken_text}".lower()
+    match_text = f"{user_directive} {spoken_text}".lower()
     d_clean = user_directive.strip().replace('"', "'") if user_directive.strip() else "Figurative concept animation"
     dur = max(4.0, float(duration))
 
     # 1. Commercial Airplane Flying (with empty cabin windows & passing clouds)
-    if any(k in combined for k in ["airplane", "plane", "flight", "flying", "jet", "airline", "aircraft", "empty seat"]):
+    if any(k in match_text for k in ["airplane", "plane", "flight", "flying", "jet", "airline", "aircraft", "empty seat"]):
         t_build = round(min(1.6, dur * 0.16), 2)
         t_fly = round(max(2.0, dur - t_build - 0.8), 2)
         t_out = round(max(0.5, dur - t_build - t_fly), 2)
@@ -437,7 +437,7 @@ def synthesize_figurative_manim_class(
         self.wait({t_out})'''
 
         # 2. 100 Meter Sprint / Race Against Time (Sprinter on track racing a giant stopwatch to finish line)
-    if any(k in combined for k in ["100 meter", "race", "sprint", "runner", "running", "track", "marathon", "finish line"]):
+    if any(k in match_text for k in ["100 meter", "race", "sprint", "runner", "running", "track", "marathon", "finish line"]):
         t_build = round(min(1.6, dur * 0.16), 2)
         t_run = round(max(2.0, dur - t_build - 0.8), 2)
         t_out = round(max(0.5, dur - t_build - t_run), 2)
@@ -518,7 +518,7 @@ def synthesize_figurative_manim_class(
             }
             chosen_key = None
             for kw, ak in keyword_map.items():
-                if kw in combined and ak in arch_cache:
+                if kw in match_text and ak in arch_cache:
                     chosen_key = ak
                     break
             if chosen_key:

@@ -75,13 +75,13 @@ class TestCanonicalAudioCompile(unittest.TestCase):
             "--out-dir", str(out_dir),
         ]
         res = subprocess.run(cmd, capture_output=True, text=True, cwd=str(DDMA_DIR))
-        combined = (res.stdout + res.stderr).lower()
+        run_output = (res.stdout + res.stderr).lower()
         self.assertNotEqual(
             res.returncode, 0,
             f"compile_clip must refuse a mastered-only episode: {res.stdout} {res.stderr}",
         )
         self.assertIn(
-            "canonical", combined,
+            "canonical", run_output,
             f"refusal must name the canonical-audio cause: {res.stdout} {res.stderr}",
         )
         self.assertEqual(

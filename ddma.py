@@ -837,7 +837,7 @@ Return ONLY a JSON array of objects without Markdown formatting."""
 @app.command()
 def transcribe(
     audio: str = typer.Option(..., help="Path to input audio file"),
-    model_name: str = typer.Option("large-v3-turbo", help="Whisper model name to use (e.g. large-v3-turbo, small.en)"),
+    model_name: str = typer.Option("large-v3-turbo", help="Whisper model name to use (default large-v3-turbo)"),
     out: str = typer.Option("transcription.json", help="Path to save transcription JSON"),
     word_timestamps: bool = typer.Option(True, help="Enable word-level timestamps")
 ):
@@ -1882,7 +1882,7 @@ def extract_clip_words(clip: dict, plan_file: str, audio_path: Optional[str] = N
             except Exception as e:
                 typer.echo(f"Warning mapping words from transcription.json: {e}")
 
-    # Final fallback to faster-whisper small.en if words still empty and audio_path exists
+    # Final fallback to faster-whisper large-v3-turbo if words still empty and audio_path exists
     if not words and audio_path and os.path.exists(audio_path):
         try:
             audio_arr = whisper.audio.load_audio(audio_path) if (whisper and hasattr(whisper, 'audio')) else audio_path
@@ -3279,8 +3279,9 @@ def ingest_episode(
         transcribe(audio=audio_dest_path, model_name="large-v3-turbo", out=trans_path, word_timestamps=True)
         if os.path.exists("transcription.json") and not os.path.exists(trans_path):
             shutil.copy2("transcription.json", trans_path)
-
-    update_ingestion_progress(proj_dir, 2, 50, "Whisper transcription ready. Analyzing structural timestamps...", "Transcription complete with word-level timestamps.")
+        update_ingestion_progress(proj_dir, 2, 50, "Whisper transcription ready. Analyzing structural timestamps...", "Transcription complete with word-level timestamps.")
+    else:
+        update_ingestion_progress(proj_dir, 2, 50, "Whisper transcription ready (cached).", "Reused cached transcription.")
 
     # 3. Generate Plan
     plan_path = os.path.join(proj_dir, "plan.json")

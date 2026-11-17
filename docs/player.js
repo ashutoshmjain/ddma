@@ -517,40 +517,6 @@ function initUI() {
     skipBackBtn.addEventListener('click', skipBackward);
     skipForwardBtn.addEventListener('click', skipForward);
     
-    // Master Full Episode Export Button Handler
-    const exportBtn = document.getElementById('exportFullEpisodeBtn');
-    if (exportBtn) {
-        exportBtn.addEventListener('click', async () => {
-            const epKey = currentEpisodeId ? `episode_${currentEpisodeId}` : 'episode_245';
-            exportBtn.disabled = true;
-            exportBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Compiling...';
-            
-            try {
-                const res = await fetch(`/combine-project-video?id=${epKey}`, { method: 'POST' });
-                if (!res.ok) {
-                    const errData = await res.json().catch(() => ({}));
-                    throw new Error(errData.error || `Export failed with status ${res.status}`);
-                }
-                const data = await res.json();
-                exportBtn.innerHTML = '<i class="fa-solid fa-check"></i> Export Complete!';
-                exportBtn.style.background = 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)';
-                
-                const downloadUrl = data.combined_url || `/previews/combined_${epKey}.mp4`;
-                const promptDownload = confirm(`Master Episode Video Export Complete!\n\nDuration: ${totalTimeLabel.textContent}\n\n• Click [OK] to open/download the full master video file.\n• Click [Cancel] to continue reviewing.`);
-                if (promptDownload) {
-                    window.open(downloadUrl, '_blank');
-                }
-            } catch (err) {
-                alert(`Episode Export Error: ${err.message}`);
-            } finally {
-                setTimeout(() => {
-                    exportBtn.disabled = false;
-                    exportBtn.innerHTML = '<i class="fa-solid fa-film"></i> Export';
-                    exportBtn.style.background = '';
-                }, 3000);
-            }
-        });
-    }
     
     volumeSlider.addEventListener('input', (e) => {
         setVolume(parseFloat(e.target.value));

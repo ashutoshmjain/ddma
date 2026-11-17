@@ -7,20 +7,33 @@
 :root { --font-mono: ui-monospace, Consolas, monospace; }
 body { background: #020617; color: #e2e8f0; font-family: var(--font-mono); margin: 0; padding: 12px; }
 a { color: #7dd3fc; }
-.beats-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
-.beats-bar input { background: #0f172a; color: #e2e8f0; border: 1px solid #334155; border-radius: 5px; padding: 5px 9px; font-family: var(--font-mono); }
-.beats-bar button { background: #0c2340; color: #7dd3fc; border: 1px solid #0284c7; border-radius: 5px; padding: 5px 12px; font-weight: 700; cursor: pointer; font-family: var(--font-mono); }
+.app-topbar { height: 48px; display: flex; justify-content: space-between; align-items: center; background: #0f172a; border-bottom: 1px solid #334155; padding: 0.4rem 1.25rem; margin: -12px -12px 10px -12px; flex-shrink: 0; }
+.brand-wordmark { font-size: 1.15rem; font-weight: 800; letter-spacing: 0.3em; color: #f8fafc; text-transform: uppercase; }
+.ep-pill { display: flex; align-items: center; gap: 0.4rem; background: #020617; padding: 0.2rem 0.6rem; border-radius: 6px; border: 1px solid #334155; }
+.ep-pill label { font-size: 0.72rem; font-weight: 700; color: #fbbf24; font-family: var(--font-mono); }
+.ep-pill input { background: transparent; border: none; color: #f8fafc; font-size: 0.78rem; font-weight: 700; outline: none; font-family: var(--font-mono); width: 4em; }
+.btn-mini { background: #0c2340; color: #7dd3fc; border: 1px solid #0284c7; border-radius: 5px; padding: 0.25rem 0.65rem; font-size: 0.72rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem; cursor: pointer; text-decoration: none; font-family: var(--font-mono); }
 #beats-toast { min-height: 1.2em; font-size: 0.75rem; color: #a5f3fc; }
 </style>
 </head>
 <body>
-<div class="beats-bar">
-  <strong>Beats Studio</strong>
-  <span>ep</span><input id="beats-ep" size="6" value="248">
-  <button type="button" onclick="beatsLoad()">Load</button>
-  <a href="http://127.0.0.1:8088/" target="deepdive-workspace" title="Open the Workspace home page (landing page)">🏠 Workspace</a><a href="http://127.0.0.1:8088/cockpit.html">cockpit</a><a href="http://127.0.0.1:8000/curator.html">ddma</a>
-  <span id="beats-toast"></span>
-</div>
+<header class="app-topbar">
+  <div style="display: flex; align-items: center; gap: 1.25rem;">
+    <span class="brand-wordmark">SHUTRI&nbsp;BEATS</span>
+    <div class="ep-pill">
+      <label for="beats-ep">EPISODE:</label>
+      <input id="beats-ep" size="6" value="248">
+      <button type="button" class="btn-mini" onclick="beatsLoad()">Load</button>
+    </div>
+  </div>
+  <div style="display: flex; align-items: center; gap: 0.5rem;">
+    <a class="btn-mini" href="/docs/documentation.html" target="_blank" title="Open documentation">📖 Docs</a>
+    <a class="btn-mini" href="http://127.0.0.1:8088/" target="deepdive-workspace" title="Open the Workspace home page (landing page)">🏠 Workspace</a>
+    <a class="btn-mini" href="http://127.0.0.1:8088/cockpit.html">cockpit</a>
+    <a class="btn-mini" href="http://127.0.0.1:8000/curator.html">ddma</a>
+    <span id="beats-toast"></span>
+  </div>
+</header>
                 <div id="submode-view-longform" style="display: block; width: 100%; max-width: 1120px;">
                     <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 12px; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); overflow: hidden; display: flex; flex-direction: column;">
 

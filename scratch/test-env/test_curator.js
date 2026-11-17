@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const { execSync } = require('child_process');
+const os = require('os');
 const fs = require('fs');
 const path = require('path');
 
@@ -781,19 +782,20 @@ async function runTest() {
             selectProject('episode_245');
             await new Promise(r => setTimeout(r, 1500));
             const selectEl = document.getElementById('topEpisodeSelect');
-            const editorLink = document.getElementById('combineVideoBtn') ? document.getElementById('combineVideoBtn').closest('a') : null;
+            const exportModalGone = !document.getElementById('exportModalOverlay');
             const clipCount = document.querySelectorAll('.clip-card').length;
             return {
                 activeProjectId: activeProjectId,
                 topSelectValue: selectEl ? selectEl.value : null,
-                editorHref: editorLink ? editorLink.getAttribute('href') : null,
+                exportModalGone: exportModalGone,
                 clipCount: clipCount
             };
         });
 
         console.log(`  - Switched to episode_245 -> Active Project ID: ${epSwitchState.activeProjectId}`);
         console.log(`  - Top Episode Select Value: ${epSwitchState.topSelectValue}`);
-        console.log(`  - Editor Preview Link Href: ${epSwitchState.editorHref}`);
+        console.log(`  - Export modal absent (feature removed): ${epSwitchState.exportModalGone}`);
+        if (!epSwitchState.exportModalGone) throw new Error('FAIL: export modal still present');
         console.log(`  - Episode 245 Clip Cards Rendered: ${epSwitchState.clipCount}`);
 
         // 🧪 TEST 16: Verifying Outro Card Stream Generation & Full 3-Part Video Duration Assembly (Clip 15)
@@ -814,81 +816,13 @@ async function runTest() {
 
             console.log(`  - 5-Second Curiosity Question Outro Card successfully verified in 3-part Master Clip compilation!`);
         }
-
-        // 🧪 TEST 17: /combine-project-video Lock Gating + Bridge-Card Concatenation
-        console.log("\n🧪 TEST 17: Verifying /combine-project-video Lock Gating & Bridge Concatenation...");
-        const fixDir = path.resolve(__dirname, '../../projects/episode_998');
-        const fixClipA = path.resolve(__dirname, '../../clips/998-0.mp4');
-        const fixClipB = path.resolve(__dirname, '../../clips/998-1.mp4');
-        const fixCombined = path.resolve(__dirname, '../../previews/combined_episode_998.mp4');
-        const writeFixPlan = (locked) => fs.writeFileSync(path.join(fixDir, 'plan.json'), JSON.stringify([
-            { num: 0, locked: locked, hidden: false, bridge_text: ['What is test bridge ?'], title: 'T0' },
-            { num: 1, locked: locked, hidden: false, bridge_text: ['Second q ?'], title: 'T1' }
-        ]));
-        fs.mkdirSync(fixDir, { recursive: true });
-        writeFixPlan(false);
-        execSync(`ffmpeg -y -v error -f lavfi -i testsrc=size=740x740:rate=30:duration=2 -f lavfi -i anullsrc=r=48000:cl=stereo:d=2 -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "${fixClipA}"`);
-        execSync(`ffmpeg -y -v error -f lavfi -i testsrc2=size=740x740:rate=30:duration=2 -f lavfi -i anullsrc=r=48000:cl=stereo:d=2 -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "${fixClipB}"`);
-
-        const combinePost = (pid) => page.evaluate(async (id) => {
-            try {
-                const resp = await fetch('/combine-project-video?id=' + id, { method: 'POST' });
-                const txt = await resp.text().catch(() => '');
-                let data = null;
-                try { data = JSON.parse(txt); } catch (e) { /* non-JSON refusal body */ }
-                return { status: resp.status, body: txt.slice(0, 160), data };
-            } catch (e) { return { status: 'fetch-error', body: String(e).slice(0, 160), data: null }; }
-        }, pid);
-
-        const aliveCtl = await page.evaluate(async () => {
-            const r = await fetch(window.location.pathname + window.location.search);
-            return r.status;
-        });
-        console.log(`  - Server-alive control status: ${aliveCtl}`);
-        if (aliveCtl !== 200) {
-            throw new Error(`FAIL: Curator server not reachable (control status ${aliveCtl})!`);
-        }
-
-        const refusedCtl = await combinePost('episode_998');
-        console.log(`  - Zero-locked POST status: ${refusedCtl.status} (${refusedCtl.body})`);
-        if (refusedCtl.status !== 500 && refusedCtl.status !== 'fetch-error') {
-            throw new Error(`FAIL: /combine-project-video accepted zero locked clips! Got: ${JSON.stringify(refusedCtl)}`);
-        }
-        console.log("  - Lock gate refused zero-locked project as required.");
-
-        writeFixPlan(true);
-        const okCtl = await combinePost('episode_998');
-        console.log(`  - Locked POST status: ${okCtl.status} (${JSON.stringify(okCtl.data)})`);
-        if (okCtl.status !== 200 || !okCtl.data || !okCtl.data.success) {
-            throw new Error(`FAIL: /combine-project-video did not return a combined mp4 for locked clips! Got: ${okCtl.status} ${okCtl.body}`);
-        }
-
-        const fixProbe = JSON.parse(execSync(`ffprobe -v error -show_streams -of json "${fixCombined}"`).toString());
-        const fixV = fixProbe.streams.find(s => s.codec_type === 'video');
-        const fixA = fixProbe.streams.find(s => s.codec_type === 'audio');
-        const fixVDur = parseFloat(fixV.duration);
-        const fixADur = parseFloat(fixA.duration);
-        const fixDiff = Math.abs(fixVDur - fixADur);
-        console.log(`  - Combined fixture duration: video ${fixVDur.toFixed(3)}s | audio ${fixADur.toFixed(3)}s | drift ${(fixDiff * 1000).toFixed(1)}ms`);
-        if (fixVDur < 8.5 || fixVDur > 9.5) {
-            throw new Error(`FAIL: bridge card missing — combined duration ${fixVDur.toFixed(3)}s, expected ~9s (2s clip + 5s bridge + 2s clip)!`);
-        }
-        if (fixDiff > 0.1) {
-            throw new Error(`FAIL: Combined fixture has audio/video drift ${(fixDiff * 1000).toFixed(1)}ms > 100ms!`);
-        }
-        console.log(`  - 5s bridge card verified by duration plus 0-drift A/V sync!`);
-
-        fs.rmSync(fixDir, { recursive: true, force: true });
-        [fixClipA, fixClipB, fixCombined].forEach(p => { if (fs.existsSync(p)) fs.unlinkSync(p); });
-        console.log(`  - Fixture project, clips and combined file cleaned up.`);
-
         // 🧪 TEST 18: Verifying Editor's Preview In-Page Export Button & Dynamic Transition Trim Controls
         console.log("\n🧪 TEST 18: Verifying Editor's Preview In-Page Export Button & Dynamic Transition Trim Controls...");
         await page.goto('http://127.0.0.1:8000/docs/index.html?ep=245', { waitUntil: 'networkidle0', timeout: 15000 });
         await new Promise(r => setTimeout(r, 1000));
 
         const previewControlsState = await page.evaluate(() => {
-            const exportBtn = document.getElementById('exportFullEpisodeBtn');
+            const noExportBtn = !document.getElementById('exportFullEpisodeBtn');
             const transitionStrips = document.querySelectorAll('.clip-transition-strip');
             const clip2Card = document.getElementById('sidebar-clip-2');
             const clip2TrimInput = clip2Card ? clip2Card.querySelector('.trim-input') : null;
@@ -905,23 +839,22 @@ async function runTest() {
             const updatedTrimVal = updatedInput ? updatedInput.value : null;
             
             return {
-                hasExportBtn: !!exportBtn,
-                exportBtnText: exportBtn ? exportBtn.textContent.trim() : null,
+                noExportBtn: noExportBtn,
                 stripCount: transitionStrips.length,
                 initialTrimVal: initialTrimVal,
                 updatedTrimVal: updatedTrimVal
             };
         });
 
-        console.log(`  - Export Full Episode Button Present: ${previewControlsState.hasExportBtn} ("${previewControlsState.exportBtnText}")`);
+        console.log(`  - Export button absent (feature removed): ${previewControlsState.noExportBtn}`);
         console.log(`  - Clip Transition Strips Rendered: ${previewControlsState.stripCount}`);
         console.log(`  - Clip 2 Trim Stepper Response: ${previewControlsState.initialTrimVal} -> ${previewControlsState.updatedTrimVal}`);
 
         const isIncremented = parseFloat(previewControlsState.updatedTrimVal) === parseFloat((parseFloat(previewControlsState.initialTrimVal) + 0.1).toFixed(1));
-        if (!previewControlsState.hasExportBtn || previewControlsState.stripCount === 0 || !isIncremented) {
-            throw new Error(`FAIL: Editor Preview Export button or transition controls failed verification! ExportBtn: ${previewControlsState.hasExportBtn}, Strips: ${previewControlsState.stripCount}, Initial: ${previewControlsState.initialTrimVal}, Updated: ${previewControlsState.updatedTrimVal}`);
+        if (!previewControlsState.noExportBtn || previewControlsState.stripCount === 0 || !isIncremented) {
+            throw new Error(`FAIL: Editor Preview transition controls failed verification! Strips: ${previewControlsState.stripCount}, Initial: ${previewControlsState.initialTrimVal}, Updated: ${previewControlsState.updatedTrimVal}`);
         }
-        console.log(`  - Editor Preview In-Page Export Button & Transition Controls Verified!`);
+        console.log(`  - Editor Preview Transition Controls Verified (export button removed with the feature)!`);
 
         // 🧪 TEST 19: Assert Cleaned Settings Prompts and Removed Modals/Handlers (Item 6 & 7)
         console.log("\n🧪 TEST 19: Asserting Cleaned Settings Prompts & Removed Modals/Handlers...");
@@ -1184,6 +1117,52 @@ async function runTest() {
         if (musicState.playFn !== 'function') throw new Error('FAIL: playMusicSegment missing — playback path changed');
 
         console.log('  PASS: music dropdown selects the clip sting by basename; playback path intact.');
+                // TEST 22 (Round-2 Item 33): Mosaic/batch scripts must not crash at import without settings.json.
+        // Copies both scripts to an empty dir (no settings.json) and imports them: must exit 0
+        // with a NOTICE naming the required keys/env vars, never a Traceback.
+        console.log("\nTEST 22: Verifying Mosaic/batch scripts import cleanly without settings.json...");
+        {
+            const tmp33 = fs.mkdtempSync(path.join(os.tmpdir(), 'item33-'));
+            fs.copyFileSync(path.resolve(__dirname, '..', '..', 'mosaic_runner.py'), path.join(tmp33, 'mosaic_runner.py'));
+            fs.copyFileSync(path.resolve(__dirname, '..', '..', 'batch_archetype_pipeline.py'), path.join(tmp33, 'batch_archetype_pipeline.py'));
+            const probe33 = 'import sys; sys.path.insert(0, r"""' + tmp33 + '"""); import mosaic_runner; import batch_archetype_pipeline';
+            let out33 = '';
+            try {
+                out33 = execSync('python -c "' + probe33 + '" 2>&1', { cwd: tmp33, timeout: 120000, encoding: 'utf8' });
+            } catch (e) {
+                out33 = (e.stdout || e.message || '').toString();
+                throw new Error(`FAIL: import without settings.json crashed: ${out33.slice(0, 500)}`);
+            }
+            if (/Traceback/.test(out33)) throw new Error(`FAIL: Traceback importing without settings.json: ${out33.slice(0, 500)}`);
+            if (!/NOTICE/.test(out33) || !/Required keys/.test(out33)) throw new Error(`FAIL: no NOTICE naming required keys: ${out33.slice(0, 500)}`);
+            fs.rmSync(tmp33, { recursive: true, force: true });
+            console.log('  PASS: both scripts import with exit 0 + NOTICE (no Traceback) and no settings.json.');
+        }
+
+        // TEST 23 (Round-2 Item 35): Curator is CWD-independent and binds loopback by default.
+        console.log("\nTEST 23: Verifying Curator CWD-independence + loopback-default bind...");
+        {
+            const src35 = fs.readFileSync(path.resolve(__dirname, '..', 'run_curator.py'), 'utf-8');
+            if (!src35.includes('os.environ.get("CURATOR_HOST", "127.0.0.1")')) throw new Error('FAIL: CURATOR_HOST default 127.0.0.1 bind missing');
+            if (/\(\s*""\s*,\s*PORT\s*\)/.test(src35)) throw new Error('FAIL: bare ("", PORT) bind still present');
+            if (!src35.includes('DDMA_DIR = SCRIPT_DIR.parent')) throw new Error('FAIL: SCRIPT_DIR-based DDMA_DIR missing');
+            console.log('  PASS: loopback-default bind + SCRIPT_DIR paths; every TEST above navigated via 127.0.0.1 live.');
+        }
+
+        // TEST 24 (Round-2 Item 32): cast-tripartite CLI is registered (before app() runs).
+        console.log("\nTEST 24: Verifying cast-tripartite CLI registration...");
+        {
+            const ddmaDir = path.resolve(__dirname, '..', '..');
+            let helpOut = '';
+            try {
+                helpOut = execSync('python ddma.py cast-tripartite --help 2>&1', { cwd: ddmaDir, timeout: 120000, encoding: 'utf8' });
+            } catch (e) {
+                throw new Error(`FAIL: cast-tripartite --help exited nonzero: ${(e.stdout || e.message || '').toString().slice(0, 400)}`);
+            }
+            if (!helpOut.includes('cast-tripartite')) throw new Error('FAIL: --help output does not list cast-tripartite');
+            console.log('  PASS: ddma cast-tripartite --help lists the command (registered before app() runs).');
+        }
+
         console.log("\n✅ ALL COMPREHENSIVE CURATOR REGRESSION TESTS PASSED 100%!");
 
         

@@ -106,8 +106,10 @@ def safe_load_json(file_path, retries=10, delay=0.05):
             if os.path.exists(file_path):
                 with open(file_path, "r", encoding="utf-8") as f:
                     return json.load(f)
-    except Exception:
-        return None
+            return None
+    except Exception as e:
+        print(f"ERROR: safe_load_json: {file_path} unreadable after {retries} retries ({e}) -- raising.")
+        raise RuntimeError(f"Unreadable JSON {file_path}: {e}") from e
     return None
 
 def load_settings():
@@ -115,11 +117,19 @@ def load_settings():
     # Env vars still win over everything (see below).
     vault_path = vault_settings_path()
     if os.path.exists(vault_path):
-        s = safe_load_json(vault_path)
+        try:
+            s = safe_load_json(vault_path)
+        except Exception as e:
+            print(f"ERROR: vault settings.json at {vault_path} is corrupt ({e}) -- using empty settings (env vars still apply).")
+            s = None
         settings = s if isinstance(s, dict) else {}
     else:
         print(f"WARNING: vault settings.json not found at {vault_path} (dd_hub unreachable?) -- falling back to local settings.json.")
-        s = safe_load_json("settings.json")
+        try:
+            s = safe_load_json("settings.json")
+        except Exception as e:
+            print(f"ERROR: local settings.json is corrupt ({e}) -- using empty settings (env vars still apply).")
+            s = None
         settings = s if isinstance(s, dict) else {}
     if os.environ.get("GEMINI_API_KEY"):
         settings["gemini_api_key"] = os.environ.get("GEMINI_API_KEY")
@@ -169,6 +179,31 @@ def safe_save_json(file_path, data):
             json.dump(data, f, indent=4)
         os.replace(temp_path, file_path)
 
+def notify_failure(workflow, step, error):
+    """Failure notification for the pipeline workflows (TRIGGER_CONTRACT.md section 4).
+
+    Prints a timestamped NOTIFY line naming workflow/step/error to the server log
+    AND appends it to dd_hub/logs/notifications.log (local logs/ fallback when the
+    hub is unreachable). This is alongside -- never instead of -- the telemetry log.
+    """
+    import datetime as _dt2
+    line = f"{_dt2.datetime.now().isoformat(timespec='seconds')} NOTIFY {workflow} step={step} error={error}"
+    print(line, flush=True)
+    try:
+        hub = resolve_dd_hub_root()
+        logdir = os.path.join(hub, "logs")
+        os.makedirs(logdir, exist_ok=True)
+        with open(os.path.join(logdir, "notifications.log"), "a", encoding="utf-8") as f:
+            f.write(line + "\n")
+    except Exception as e:
+        try:
+            os.makedirs("logs", exist_ok=True)
+            with open(os.path.join("logs", "notifications.log"), "a", encoding="utf-8") as f:
+                f.write(line + "\n")
+        except Exception as e2:
+            print(f"WARNING: notify_failure could not persist notification: {e2}")
+    return line
+
 # ---- Phase 2: dd_hub as the PRIMARY plan store (local disk is a CACHE only) ----
 PLAN_META_FILENAME = "plan.meta.json"
 
@@ -215,7 +250,11 @@ def load_plan(project_id, writer="curator"):
     local_plan = os.path.join("projects", project_id, "plan.json")
     hub_plan, hub_meta = _hub_plan_paths(ep)
     if hub_plan and os.path.exists(hub_plan):
-        data = safe_load_json(hub_plan)
+        try:
+            data = safe_load_json(hub_plan)
+        except Exception as e:
+            print(f"WARNING: hub plan at {hub_plan} raised {e} -- falling back to local cache (may be stale).")
+            data = None
         if isinstance(data, list):
             meta = _read_plan_meta(hub_meta)
             try:
@@ -230,7 +269,11 @@ def load_plan(project_id, writer="curator"):
         print(f"WARNING: hub plan at {hub_plan} is unreadable -- falling back to local cache (may be stale).")
     else:
         print(f"WARNING: dd_hub plan not reachable for episode {ep} ({hub_plan}) -- reading LOCAL CACHE {local_plan} (may be stale).")
-    data = safe_load_json(local_plan)
+    try:
+        data = safe_load_json(local_plan)
+    except Exception as e:
+        print(f"WARNING: local plan cache at {local_plan} unreadable ({e}) -- returning empty plan.")
+        return []
     if isinstance(data, list):
         meta = _read_plan_meta(os.path.join("projects", project_id, PLAN_META_FILENAME))
         try:
@@ -934,6 +977,7 @@ def run_mosaic_pipeline(project_id, clip_num, settings, prompt_content, segments
         tb_str = traceback.format_exc()
         print(f"Error in run_mosaic_pipeline for clip {clip_num}: {ex}\n{tb_str}")
         update_mosaic_job_state(project_id, clip_num, "failed", 0, error=str(ex), run_id=run_id)
+        notify_failure("W3", "mosaic-run", f"{project_id} clip {clip_num}: {ex}")
         
         # CRITICAL SEV-1 GUARD: Only delete mosaic_run_id from plan.json if the cloud API explicitly
         # reported the run as permanently cancelled or failed. NEVER delete run_id on local network or disk blips!
@@ -1204,8 +1248,8 @@ def run_transcribe(project_id, audio_path, out_json_path, info_path):
                 info["error_message"] = str(e)
                 with open(info_path, "w", encoding="utf-8") as f:
                     json.dump(info, f, indent=4)
-        except:
-            pass
+        except Exception as e:
+            print(f"ERROR: failed writing error status to {info_path}: {e}")
 
 
 # Migration Helper for Legacy Root files
@@ -1218,10 +1262,10 @@ def migrate_legacy_files():
                     trash_path = os.path.join("projects", folder)
                     try:
                         shutil.rmtree(trash_path)
-                    except:
-                        pass
-    except:
-        pass
+                    except OSError as e:
+                        print(f"WARNING: could not remove trash folder {trash_path}: {e}")
+    except OSError as e:
+        print(f"WARNING: migrate_legacy_files scan failed: {e}")
 
     # If legacy files exist in root and we don't have episode_244 project, migrate them automatically
     os.makedirs("projects", exist_ok=True)
@@ -1571,7 +1615,11 @@ def generate_or_load_storyboard_data(project_id: str, clip_num, force_regen: boo
     plan_data = load_plan(project_id)
     if not plan_data and os.path.exists("plan.json"):
         print(f"WARNING: hub + cache plans empty for {project_id} -- reading root plan.json fallback (may be stale).")
-        plan_data = safe_load_json("plan.json") or []
+        try:
+            plan_data = safe_load_json("plan.json") or []
+        except Exception as e:
+            print(f"WARNING: root plan.json fallback unreadable ({e}) -- using empty plan.")
+            plan_data = []
     t_clip = next((c for c in plan_data if str(c.get("num")) == str(clip_num)), None)
     if not t_clip:
         raise Exception(f"Clip {clip_num} not found in plan {plan_path}")
@@ -2566,14 +2614,6 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                                 except Exception as e:
                                     print(f"Warning deleting clip {fname}: {e}")
 
-                    # 4. Clean combined long-form videos
-                    for comb_name in [f"combined_{ep_num}.mp4", f"combined_episode_{ep_num}.mp4", f"combined_{project_id}.mp4"]:
-                        if os.path.exists(comb_name):
-                            try:
-                                os.remove(comb_name)
-                            except Exception as e:
-                                print(f"Warning deleting combined video {comb_name}: {e}")
-
                     # 5. Clean previews matching preview_project_id_* or preview_episode_ep_num_*
                     previews_dir = "previews"
                     if os.path.exists(previews_dir):
@@ -2838,134 +2878,6 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_error(500, f"Compilation error: {e}")
                 return
 
-        elif parsed_url.path == '/combine-project-audio':
-            project_id = params.get('id', [None])[0]
-            temp_clip_files = []
-            try:
-                if not project_id:
-                    raise Exception("Missing project id.")
-                
-                project_dir = os.path.join("projects", project_id)
-                info_path = os.path.join(project_dir, "project_info.json")
-                with open(info_path, "r", encoding="utf-8") as f:
-                    info = json.load(f)
-                
-                audio_file_name = info.get("audio_filename") or info.get("audio_file") or "245.m4a"
-                audio_path = os.path.join(project_dir, audio_file_name)
-                
-                plan_path = os.path.join(project_dir, "plan.json")
-                if not os.path.exists(plan_path):
-                    raise Exception("plan.json not found.")
-                    
-                with open(plan_path, "r", encoding="utf-8") as f:
-                    clips_list = json.load(f)
-                
-                # Filter to only pick up locked clips
-                locked_clips = [c for c in clips_list if c.get("locked", False)]
-                if not locked_clips:
-                    raise Exception("No locked clips in plan to combine. Please lock at least one clip first.")
-                
-                os.makedirs("previews", exist_ok=True)
-                
-                for c_idx, c in enumerate(locked_clips):
-                    c_segments = c.get("segments", [])
-                    if not c_segments:
-                        continue
-                    temp_clip_out = f"temp_combine_clip_{project_id}_{c_idx}.wav"
-                    temp_clip_files.append(temp_clip_out)
-                    
-                    # Compile the segments to a temporary WAV file
-                    self.compile_segments(c_segments, temp_clip_out, audio_path)
-                    
-                    # Scale the volume of the compiled wav if clip volume is customized
-                    clip_volume = c.get("volume", 1.0)
-                    if clip_volume != 1.0:
-                        temp_volume_out = f"temp_combine_clip_vol_{project_id}_{c_idx}.wav"
-                        cmd_vol = [
-                            "ffmpeg", "-y",
-                            "-i", temp_clip_out,
-                            "-af", f"volume={clip_volume}",
-                            temp_volume_out
-                        ]
-                        subprocess.run(cmd_vol, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                        if os.path.exists(temp_volume_out):
-                            os.remove(temp_clip_out)
-                            os.rename(temp_volume_out, temp_clip_out)
-                
-                if not temp_clip_files:
-                    raise Exception("No valid segments in locked clips to combine.")
-                
-                output_path = f"previews/combined_{project_id}.mp3"
-                cmd = ["ffmpeg", "-y"]
-                for tf in temp_clip_files:
-                    cmd += ["-i", tf]
-                
-                # Check for clip-level crossfades
-                has_clip_crossfade = False
-                clip_crossfades = []
-                for idx, c in enumerate(locked_clips[:-1]):
-                    cf = float(c.get("crossfade", 0.0))
-                    clip_crossfades.append(cf)
-                    if cf > 0:
-                        has_clip_crossfade = True
-                
-                if not has_clip_crossfade:
-                    filter_complex = "".join(f"[{i}:a]" for i in range(len(temp_clip_files)))
-                    filter_complex += f"concat=n={len(temp_clip_files)}:v=0:a=1,loudnorm=I=-16:TP=-1.5:LRA=11[out]"
-                else:
-                    # Construct chained acrossfade filters
-                    filter_parts = []
-                    current_src = "[0:a]"
-                    for i in range(len(temp_clip_files) - 1):
-                        cf_dur = clip_crossfades[i]
-                        if cf_dur > 0:
-                            fade_opts = f"d={cf_dur}"
-                        else:
-                            fade_opts = "ns=1"
-                        
-                        next_dest = f"[a{i+1}]" if i < len(temp_clip_files) - 2 else "[out_raw]"
-                        filter_parts.append(f"{current_src}[{i+1}:a]acrossfade={fade_opts}:c1=tri:c2=tri{next_dest}")
-                        current_src = f"[a{i+1}]"
-                    
-                    filter_parts.append("[out_raw]loudnorm=I=-16:TP=-1.5:LRA=11[out]")
-                    filter_complex = ";".join(filter_parts)
-                
-                cmd += [
-                    "-filter_complex", filter_complex,
-                    "-map", "[out]",
-                    "-c:a", "libmp3lame",
-                    "-b:a", "192k",
-                    output_path
-                ]
-                
-                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                if res.returncode != 0:
-                    raise Exception(f"FFmpeg combine error: {res.stderr.decode('utf-8')}")
-                
-                response_data = {
-                    "success": True,
-                    "combined_url": f"previews/combined_{project_id}.mp3?t={int(time.time() * 1000)}"
-                }
-                
-                self.send_response(200)
-                self.send_header('Content-type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(json.dumps(response_data).encode('utf-8'))
-                return
-            except Exception as e:
-                import traceback
-                traceback.print_exc()
-                self.send_error(500, f"Combine error: {e}")
-                return
-            finally:
-                for tf in temp_clip_files:
-                    if os.path.exists(tf):
-                        try:
-                            os.remove(tf)
-                        except:
-                            pass
-
         elif parsed_url.path == '/get-clip-intro':
             project_id = params.get('id', [None])[0]
             clip_num = params.get('num', [None])[0]
@@ -3124,8 +3036,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if os.path.exists(temp_png):
                     try:
                         os.remove(temp_png)
-                    except:
-                        pass
+                    except OSError as e:
+                        print(f"WARNING: could not remove temp file {temp_png}: {e}")
                         
                 if res_ffmpeg.returncode != 0:
                     raise Exception(f"FFmpeg render failed: {res_ffmpeg.stderr.decode('utf-8')}")
@@ -3239,8 +3151,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     dur_res = subprocess.run(dur_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
                     if dur_res.returncode == 0:
                         duration = float(dur_res.stdout.strip())
-                except:
-                    pass
+                except Exception as e:
+                    print(f"WARNING: ffprobe duration probe failed ({e}) -- using default duration {duration}.")
                 
                 start_time = max(0.0, duration - 5.0)
                 
@@ -3326,15 +3238,15 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if os.path.exists(temp_png_outro):
                     try:
                         os.remove(temp_png_outro)
-                    except:
-                        pass
+                    except OSError as e:
+                        print(f"WARNING: could not remove temp file {temp_png_outro}: {e}")
                 
                 temp_audio_gen = f"previews/temp_compiled_audio_{project_id}_{clip_num}.mp3"
                 if os.path.exists(temp_audio_gen):
                     try:
                         os.remove(temp_audio_gen)
-                    except:
-                        pass
+                    except OSError as e:
+                        print(f"WARNING: could not remove temp file {temp_audio_gen}: {e}")
                 
                 if res_ffmpeg.returncode != 0:
                     raise Exception(f"FFmpeg render failed: {res_ffmpeg.stderr.decode('utf-8')}")
@@ -3357,58 +3269,6 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 self.wfile.write(json.dumps({"success": False, "error": str(e)}).encode('utf-8'))
-                return
-
-        elif parsed_url.path == '/combine-project-video':
-            project_id = params.get('id', [None])[0]
-            try:
-                if not project_id:
-                    raise Exception("Missing project id.")
-                
-                project_dir = os.path.join("projects", project_id)
-                plan_path = os.path.join(project_dir, "plan.json")
-                if not os.path.exists(plan_path):
-                    raise Exception("plan.json not found.")
-                
-                # Extract number from project_id (e.g. "episode_244" -> "244")
-                import re
-                ep_num_match = re.search(r'\d+', project_id)
-                if not ep_num_match:
-                    raise Exception("Could not resolve episode number from project ID.")
-                ep_num = ep_num_match.group(0)
-                
-                os.makedirs("previews", exist_ok=True)
-                out_file = f"previews/combined_{project_id}.mp4"
-                
-                # Run the combine_clips_demuxer.py script
-                cmd = [
-                    sys.executable,
-                    "scratch/combine_clips_demuxer.py",
-                    "--episode", ep_num,
-                    "--plan-file", plan_path,
-                    "--out-file", out_file
-                ]
-                
-                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-                if res.returncode != 0:
-                    raise Exception(f"Combine clips script failed: {res.stderr or res.stdout}")
-                
-                response_data = {
-                    "success": True,
-                    "combined_url": f"/previews/combined_{project_id}.mp4?t={int(time.time() * 1000)}"
-                }
-                
-                self.send_response(200)
-                self.send_header('Content-type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(json.dumps(response_data).encode('utf-8'))
-                return
-            except Exception as e:
-                import traceback
-                traceback.print_exc()
-                err_msg = " ".join(str(e).split())
-                self.send_error(500, f"Combine video error: {err_msg}")
                 return
 
         elif parsed_url.path == '/review-episode-bridges':
@@ -3539,8 +3399,8 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         if os.path.exists(temp_audio):
                             try:
                                 os.remove(temp_audio)
-                            except:
-                                pass
+                            except OSError as e:
+                                print(f"WARNING: could not remove temp file {temp_audio}: {e}")
                 else:
                     # Compile segments directly to the production clips folder as mp3
                     self.compile_segments(segments, output_path, audio_path)
@@ -4040,6 +3900,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
+                notify_failure("W3", "export-to-mosaic", f"{project_id} clip {clip_num}: {e}")
                 self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
                 return
 
@@ -4253,6 +4114,7 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
+                notify_failure("W3", "compile-clip", f"{project_id} clip {clip_num}: {e}")
                 self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
                 return
 
@@ -5082,7 +4944,10 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                 if not os.path.exists(plan_path):
                     raise Exception(f"plan.json for project {project_id} not found.")
                 
-                plan = safe_load_json(plan_path)
+                try:
+                    plan = safe_load_json(plan_path)
+                except Exception as e:
+                    raise Exception(f"plan.json for project {project_id} unreadable: {e}")
                 
                 target_clip = None
                 for clip in plan:

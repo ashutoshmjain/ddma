@@ -18,20 +18,15 @@ def get_ep_num():
 
 EP_NUM = get_ep_num()
 
-PLAN_PATH = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", EP_NUM, "plan.json")
-if not os.path.exists(PLAN_PATH):
-    PLAN_PATH = os.path.join(GITHUB_ROOT, "ddma", "projects", f"episode_{EP_NUM}", "plan.json")
+def _repo_ddma_dir():
+    """Clone-agnostic ddma dir: a deepDive checkout keeps code in <root>/ddma,
+    a standalone ddma checkout IS the ddma dir (no <root>/ddma inside)."""
+    d = os.path.join(GITHUB_ROOT, "ddma")
+    return d if os.path.isdir(d) else GITHUB_ROOT
 
-TRANS_PATH = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", EP_NUM, "transcription.json")
-EDIT_PATH = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", EP_NUM, "podcast_edit.json")
-AUDIO_PATH = os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes", EP_NUM, f"podcast_{EP_NUM}.mp3")
-SETTINGS_PATH = os.path.join(GITHUB_ROOT, "ddma", "settings.json")
-ARCHETYPES_DIR = os.path.join(GITHUB_ROOT, "ddma", "archetypes")
-CLIPS_DIR = os.path.join(GITHUB_ROOT, "ddma", "clips")
-TEMP_CHUNKS_DIR = os.path.join(CLIPS_DIR, "temp_chunks")
+DDMA_DIR = _repo_ddma_dir()
 
-os.makedirs(ARCHETYPES_DIR, exist_ok=True)
-os.makedirs(TEMP_CHUNKS_DIR, exist_ok=True)
+SETTINGS_PATH = os.path.join(DDMA_DIR, "settings.json")
 
 settings = {}
 if os.path.exists(SETTINGS_PATH):
@@ -46,6 +41,40 @@ else:
         "Required keys (or env vars): gemini_api_key (GEMINI_API_KEY).",
         file=sys.stderr
     )
+
+def _find_episodes_dir():
+    """Clone-agnostic episodes dir. Probe order: hub plan first, then the
+    deepDive layout (<repo>/src/ddma/docs/episodes/), then the standalone
+    ddma layout (<repo>/docs/episodes/)."""
+    hub_roots = []
+    if os.environ.get("DD_HUB_ROOT"):
+        hub_roots.append(os.environ["DD_HUB_ROOT"])
+    if settings.get("dd_hub_root"):
+        hub_roots.append(settings["dd_hub_root"])
+    hub_roots += [r"G:\My Drive\dd_hub", "/mnt/gdrive/dd_hub", "/workspace/dd_hub"]
+    cands = [os.path.join(h, "episodes") for h in hub_roots]
+    cands.append(os.path.join(GITHUB_ROOT, "src", "ddma", "docs", "episodes"))
+    cands.append(os.path.join(GITHUB_ROOT, "docs", "episodes"))
+    for c in cands:
+        if os.path.isdir(c):
+            return c
+    return cands[-1]
+
+EPISODES_DIR = _find_episodes_dir()
+
+PLAN_PATH = os.path.join(EPISODES_DIR, EP_NUM, "plan.json")
+if not os.path.exists(PLAN_PATH):
+    PLAN_PATH = os.path.join(DDMA_DIR, "projects", f"episode_{EP_NUM}", "plan.json")
+
+TRANS_PATH = os.path.join(EPISODES_DIR, EP_NUM, "transcription.json")
+EDIT_PATH = os.path.join(EPISODES_DIR, EP_NUM, "podcast_edit.json")
+AUDIO_PATH = os.path.join(EPISODES_DIR, EP_NUM, f"podcast_{EP_NUM}.mp3")
+ARCHETYPES_DIR = os.path.join(DDMA_DIR, "archetypes")
+CLIPS_DIR = os.path.join(DDMA_DIR, "clips")
+TEMP_CHUNKS_DIR = os.path.join(CLIPS_DIR, "temp_chunks")
+
+os.makedirs(ARCHETYPES_DIR, exist_ok=True)
+os.makedirs(TEMP_CHUNKS_DIR, exist_ok=True)
 
 API_KEY = settings.get("gemini_api_key") or os.environ.get("GEMINI_API_KEY", "")
 

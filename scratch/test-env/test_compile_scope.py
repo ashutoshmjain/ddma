@@ -66,16 +66,16 @@ class TestCompileScope(unittest.TestCase):
         res = subprocess.run(cmd, capture_output=True, text=True,
                              cwd=str(DDMA_DIR))
         wall = time.time() - t0
-        combined = res.stdout + res.stderr
+        run_output = res.stdout + res.stderr
         print(f"\n[Scope] compile-clip wall time: {wall:.1f}s")
         self.assertEqual(res.returncode, 0,
                          f"compile-clip failed: {res.stderr[-2000:]}")
 
-        mux_lines = [l for l in combined.splitlines()
+        mux_lines = [l for l in run_output.splitlines()
                      if "Preserving Mosaic motion graphics video track from" in l]
         print("[Scope] mux line: " + (mux_lines[-1] if mux_lines else "NONE (black-canvas draft)"))
         self.assertNotIn(
-            "exceeds the 180s", combined,
+            "exceeds the 180s", run_output,
             "180s ceiling warning must not appear for a single clip compile")
 
         # The scope contract is against cut's slice (speech span + the clip's
@@ -161,13 +161,13 @@ class TestExactMatchOnly(unittest.TestCase):
                "--out-dir", str(self.tmp)]
         res = subprocess.run(cmd, capture_output=True, text=True,
                              cwd=str(DDMA_DIR), timeout=120)
-        combined = res.stdout + res.stderr
+        run_output = res.stdout + res.stderr
         print(f"\n[Exact] mux-clip returncode: {res.returncode}")
         self.assertNotEqual(res.returncode, 0,
                             "mux-clip must refuse without an exact-match slice")
-        self.assertIn("No audio file found", combined,
+        self.assertIn("No audio file found", run_output,
                       "mux-clip must fail loudly naming the missing audio, "
-                      f"not take 245's slice. Output: {combined[-800:]}")
+                      f"not take 245's slice. Output: {run_output[-800:]}")
 
     def test_03_compile_refuses_other_episode_slice(self):
         cmd = [sys.executable, "ddma.py", "compile-clip",
@@ -178,13 +178,13 @@ class TestExactMatchOnly(unittest.TestCase):
                "--source", "mosaic"]
         res = subprocess.run(cmd, capture_output=True, text=True,
                              cwd=str(DDMA_DIR), timeout=180)
-        combined = res.stdout + res.stderr
+        run_output = res.stdout + res.stderr
         print(f"\n[Exact] compile-clip returncode: {res.returncode}")
         self.assertNotEqual(res.returncode, 0,
                             "compile-clip must refuse without an exact-match slice")
-        self.assertIn("refusing full-episode audio", combined,
+        self.assertIn("refusing full-episode audio", run_output,
                       "compile-clip must hit the loud slice refusal, "
-                      f"not take 245's slice. Output: {combined[-800:]}")
+                      f"not take 245's slice. Output: {run_output[-800:]}")
 
 
 if __name__ == "__main__":
