@@ -4244,7 +4244,24 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         clean = subprocess.run(["git", "diff", "--quiet", "HEAD", "--", rel_clip] + rel_manifests,
                                                cwd=repo_root, capture_output=True)
                         if clean.returncode == 0:
-                            already = True
+                            # Remote-aware idempotency (Issue 91): files matching
+                            # the LOCAL head is not enough -- the publish commit
+                            # may sit unpushed after a failed push. Only report
+                            # "already published" when the remote already has HEAD.
+                            subprocess.run(["git", "fetch", "origin", "master", "--quiet"],
+                                           cwd=repo_root, check=True,
+                                           capture_output=True, text=True)
+                            ahead = subprocess.run(["git", "rev-list", "--count", "origin/master..HEAD"],
+                                                   cwd=repo_root, check=True,
+                                                   capture_output=True, text=True)
+                            if ahead.stdout.strip() == "0":
+                                already = True
+                            else:
+                                # Unpushed publish commit(s): push now, succeed
+                                # only if the push succeeds (same loud failure
+                                # as the fresh path via CalledProcessError).
+                                subprocess.run(["git", "push"], cwd=repo_root, check=True,
+                                               capture_output=True, text=True)
                         else:
                             raise Exception("git add staged nothing though working files differ from HEAD -- refusing to call it published.")
                     if not already:
