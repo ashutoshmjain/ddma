@@ -351,6 +351,11 @@ def resolve_acoustic_word_start(raw_start: float, prev_word_end: Optional[float]
         onset_sample = start_sample
         frame_len = 160  # 10ms frame at 16kHz
 
+        # Tolerance for brief intra-word silences (e.g. stop closures):
+        # keep walking through up to 8 consecutive silent frames (80ms)
+        # instead of breaking at the first one. Resets on speech. Clamps
+        # below (win_start/raw_start) still bound the result.
+        silent_frames = 0
         cur = start_sample
         while cur >= frame_len:
             frame = arr[cur - frame_len : cur]
@@ -358,8 +363,12 @@ def resolve_acoustic_word_start(raw_start: float, prev_word_end: Optional[float]
             if rms > 0.0020:
                 cur -= frame_len
                 onset_sample = cur
+                silent_frames = 0
             else:
-                break
+                silent_frames += 1
+                if silent_frames > 8:
+                    break
+                cur -= frame_len
 
         cushion_samples = int(0.030 * 16000)  # 30ms pre-attack cushion into breath pause
         resolved_sample = max(0, onset_sample - cushion_samples)
