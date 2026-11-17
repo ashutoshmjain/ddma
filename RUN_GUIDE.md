@@ -8,7 +8,7 @@ This guide explains how to start, use, and shut down the **DeepDive Media Automa
 
 To run the application, you do not need to type any code. Follow these simple steps:
 
-1. **Open the Project Folder:** Open the `Longs` folder in Windows File Explorer.
+1. **Open the Project Folder:** Open the DDMA project folder (`deepDive/ddma`) in Windows File Explorer.
 2. **Double-Click the Launcher:** Double-click the file named **`start_curator.bat`** (the file we just created for you).
 3. **Keep the Console Open:** A black command prompt window will open showing:
    `Server started on http://localhost:8000`
@@ -32,7 +32,7 @@ When the Antigravity IDE suggested creating a **virtual environment (`venv` / `.
 ## 💾 How Saving Works
 
 * The web interface automatically sends your edits (duration inputs, titles, crossfades) back to the running local server.
-* The server then writes those updates to the [plan.json](file:///c:/Users/ashut/OneDrive/Documents/Longs/plan.json) file on your computer.
+* The server then writes those updates to the project `plan.json` file on your computer (under `deepDive/ddma/projects/<project>/`, synced to the `dd_hub` workspace).
 * **CRITICAL:** If the black console window is closed (or the server is stopped), the webpage won't be able to communicate with the disk, and your changes **will not save**. Always make sure the console is running before editing!
 
 ---

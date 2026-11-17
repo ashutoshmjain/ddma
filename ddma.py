@@ -654,6 +654,8 @@ def cast_tripartite_plan_with_gemini(t_data: dict, num_clips: Optional[int] = No
                     api_key = json.load(sf).get("gemini_api_key")
             except Exception as ex_sett:
                 print(f"Warning: Failed to load gemini_api_key from {sett_file}: {ex_sett}")
+    if not api_key:
+        print("WARNING: no Gemini API key found (checked GEMINI_API_KEY env var, vault settings.json, and local settings.json) -- using the deterministic sentence-snapping fallback instead of the Gemini caster.")
 
     # Build timed sample of transcript for Gemini
     sample_lines = []
@@ -3195,7 +3197,6 @@ def update_ingestion_progress(proj_dir, stage_index, percent, action_text, log_l
         pass
 
 
-@app.command()
 def snap_quote_to_words(quote, words, search_start_sec=0.0):
     """
     Search Whisper word list for matching quote text and return exact (start_sec, end_sec).
@@ -3420,8 +3421,8 @@ def cast_tripartite_cmd(
 ):
     """
     Automated zero-trim plan generator for NotebookLM tripartite audio:
-    Discovers Punchline Hook, Deliberation, and Outro Teaser boundaries via Gemini,
-    casts Intro/Outro Cards, and snaps word timestamps via Whisper.
+    Discovers Punchline Hook, Deliberation, and Outro Teaser boundaries via spoken cues or Gemini,
+    casts Intro/Outro Cards, and resolves cut points acoustically (gap/silence detection).
     """
     if not os.path.exists(transcription):
         typer.echo(f"Error: Transcription {transcription} not found.", err=True)
