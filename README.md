@@ -2,7 +2,7 @@
 
 DeepDive Media Automator (DDMA) is a progressive media automation engine powered by **Google Antigravity**.
 
-> **DDMA is an extension to [mdIngest](https://github.com/ashutoshmjain/mdIngest).** mdIngest is the base application — it is the entry point, runs transcription (the podcast stage), and hosts the Publishing Cockpit and the workspace landing page. **Install mdIngest first and follow its install instructions (including dd_hub setup) in the [mdIngest README](https://github.com/ashutoshmjain/mdIngest/blob/main/README.md).** DDMA adds two things on top of mdIngest: **Clip Studio** (the Curator — Clips management) and **Beats Studio** (longform video).
+> **DDMA is an extension to [mdIngest](https://github.com/ashutoshmjain/mdIngest).** mdIngest is the base application — it is the entry point, runs transcription (the podcast stage), and hosts the Publishing Cockpit and the workspace landing page. **Install mdIngest first and run its 1-Prompt Setup (including the workspace folder setup) in the [mdIngest README](https://github.com/ashutoshmjain/mdIngest/blob/main/README.md).** DDMA adds two things on top of mdIngest: **Clip Studio** (the Curator — Clips management) and **Beats Studio** (longform video).
 
 ---
 
@@ -60,20 +60,15 @@ graph LR
 ---
 
 
-## 🗄️ Setting up dd_hub (the workspace)
+## Setting up the workspace folder
 
-dd_hub is the workspace — a Google Drive folder that holds the plan, settings, inputs, working assets, and audio/video outputs. DDMA reads from and writes to dd_hub. GitHub is only the intermediary for the *published* Active Master clips; dd_hub is the live workspace.
-
-**Set up dd_hub by following the install instructions in the [mdIngest README](https://github.com/ashutoshmjain/mdIngest/blob/main/README.md).** mdIngest is the base application — its README covers the full setup (Windows easy path via the Antigravity app, Linux manual path with rclone, the vault, and verification). DDMA uses the same dd_hub workspace; there is nothing DDMA-specific to set up beyond that.
-
-> [!IMPORTANT]
-> **The core rule**: The code only does **local file I/O against a local path**. It **never** calls the Google Drive web API for file access. So dd_hub must be mounted as a local filesystem path on every machine that runs DDMA. The code reads the mount path from the `DD_HUB_ROOT` environment variable.
+Create an empty workspace folder on Google Drive. Then run the 1-Prompt Setup in the [mdIngest README](https://github.com/ashutoshmjain/mdIngest/blob/main/README.md) and let it do the rest — mounting the folder, creating the subfolders, installing the toolchain, and setting up settings. DDMA uses the same workspace folder as mdIngest; there is nothing DDMA-specific to set up beyond that.
 
 ---
 
 ## ⚡ Setup & Quickstart Guide
 
-**Install mdIngest first and follow its install instructions (including dd_hub setup) in the [mdIngest README](https://github.com/ashutoshmjain/mdIngest/blob/main/README.md).** DDMA is an extension to mdIngest — it uses the same toolchain, the same dd_hub workspace, and the same settings vault. There is no separate DDMA install.
+**Install mdIngest first and run its 1-Prompt Setup (including the workspace folder) in the [mdIngest README](https://github.com/ashutoshmjain/mdIngest/blob/main/README.md).** DDMA is an extension to mdIngest — it uses the same toolchain, the same workspace folder, and the same settings vault. There is no separate DDMA install.
 
 Once mdIngest is set up, launch the two DDMA studios:
 
