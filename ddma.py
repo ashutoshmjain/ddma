@@ -2249,7 +2249,7 @@ def compile_clip(
     out_dir: str = typer.Option("clips", help="Output directory for the compiled video"),
     font_path: Optional[str] = typer.Option(None, help="Optional path to custom TrueType font"),
     backup: bool = typer.Option(True, help="Create a backup of the original master clip"),
-    episode_title: str = typer.Option("Life, Death and the Lysosome", help="Title of the episode"),
+    episode_title: Optional[str] = typer.Option(None, help="Title of the episode"),
     force_draft: bool = typer.Option(False, help="Force black canvas draft body compilation even if Mosaic video exists"),
     source: Optional[str] = typer.Option(None, "--source", "-s", help="Visual source engine: 'mosaic' or 'manim'")
 ):
@@ -2276,7 +2276,7 @@ def compile_clip(
     if hasattr(out_dir, 'default'): out_dir = str(out_dir.default)
     if hasattr(font_path, 'default'): font_path = font_path.default
     if hasattr(backup, 'default'): backup = bool(backup.default)
-    if hasattr(episode_title, 'default'): episode_title = str(episode_title.default)
+    if hasattr(episode_title, 'default'): episode_title = episode_title.default
     if hasattr(force_draft, 'default'): force_draft = bool(force_draft.default)
     if hasattr(source, 'default'): source = source.default
 
@@ -2346,7 +2346,7 @@ def compile_clip(
         try:
             with open(info_p, "r", encoding="utf-8") as ipf:
                 info_d = json.load(ipf)
-                if info_d.get("title"):
+                if info_d.get("title") and not episode_title:
                     episode_title = info_d["title"]
         except Exception:
             pass
@@ -2594,14 +2594,19 @@ def compile_clip(
             try:
                 with open(proj_info_path, "r", encoding="utf-8") as pif:
                     pinfo = json.load(pif)
-                    if pinfo.get("title"):
+                    if pinfo.get("title") and not ep_title:
                         ep_title = pinfo.get("title")
-                    elif pinfo.get("name") and episode_title == "Life, Death and the Lysosome":
-                        ep_title = pinfo.get("name")
             except Exception:
                 pass
 
         sub_text = f"EPISODE {episode}" if num == 0 else f"EPISODE {episode} • PART {num}"
+        if not ep_title:
+            # Last resort: the episode number. Never a hardcoded episode title.
+            clip0 = next((c for c in plan_data if isinstance(c, dict) and c.get("num") == 0), None)
+            if clip0 and clip0.get("title"):
+                ep_title = clip0.get("title")
+        if not ep_title:
+            ep_title = f"EPISODE {episode}"
         title_text = title if title else (ep_title if num == 0 else f"Part {num}")
 
         # Pure Glossy Black (#000000) canvas per Monochrome Noir standard — zero gray banner box

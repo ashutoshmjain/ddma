@@ -120,16 +120,16 @@ def load_settings():
         try:
             s = safe_load_json(vault_path)
         except Exception as e:
-            print(f"ERROR: vault settings.json at {vault_path} is corrupt ({e}) -- using empty settings (env vars still apply).")
-            s = None
+            print(f"ERROR: vault settings.json at {vault_path} is corrupt ({e}) -- refusing to run on empty settings.")
+            raise
         settings = s if isinstance(s, dict) else {}
     else:
         print(f"WARNING: vault settings.json not found at {vault_path} (dd_hub unreachable?) -- falling back to local settings.json.")
         try:
             s = safe_load_json("settings.json")
         except Exception as e:
-            print(f"ERROR: local settings.json is corrupt ({e}) -- using empty settings (env vars still apply).")
-            s = None
+            print(f"ERROR: local settings.json is corrupt ({e}) -- refusing to run on empty settings.")
+            raise
         settings = s if isinstance(s, dict) else {}
     if os.environ.get("GEMINI_API_KEY"):
         settings["gemini_api_key"] = os.environ.get("GEMINI_API_KEY")

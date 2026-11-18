@@ -121,8 +121,9 @@ async function runTest() {
             throw new Error("FAIL: Ingestion Dashboard is not correctly placed in the main central window (#clipListContainer)!");
         }
 
-        // Reset workspace to ready project state (e.g., episode_244)
-        await page.evaluate(() => selectProject('episode_244'));
+        // Reset workspace to ready project state (episode_245; episode_244's
+        // local project dir was removed by Batch-4 D1, published plan intact).
+        await page.evaluate(() => selectProject('episode_245'));
         await page.waitForFunction(() => document.querySelector('.clip-card') !== null, { timeout: 15000 });
 
         // 🧪 TEST 1: Title Card Input Editing (No premature auto-compile gray-out)
@@ -1161,6 +1162,40 @@ async function runTest() {
             }
             if (!helpOut.includes('cast-tripartite')) throw new Error('FAIL: --help output does not list cast-tripartite');
             console.log('  PASS: ddma cast-tripartite --help lists the command (registered before app() runs).');
+        }
+
+        // The auto-sync moved to POST /api/episode/sync_clips and POST /api/git/push;
+        // do_GET must not call sync_episode_clips_and_markdown. Snapshot the sync's
+        // write targets, issue GETs, and assert mtime + content are unchanged.
+        console.log("\nTEST 25: Verifying GET endpoints cause no sync/write...");
+        {
+            const repoRoot = path.resolve(__dirname, '..', '..', '..');
+            const snapFiles = [
+                'src/ddma/docs/episodes/249/plan.json',
+                'ddma/projects/episode_249/plan.json',
+                'src/249.md',
+            ];
+            const snap = snapFiles.map(rel => {
+                const abs = path.join(repoRoot, rel);
+                const st = fs.statSync(abs);
+                return { rel, mtimeMs: st.mtimeMs, content: fs.readFileSync(abs, 'utf8') };
+            });
+            const get = url => execSync('curl.exe -s --max-time 20 "' + url + '"', { encoding: 'utf8' });
+            get('http://127.0.0.1:8088/api/episode?filename=249.md');
+            get('http://127.0.0.1:8088/api/status');
+            for (const before of snap) {
+                const abs = path.join(repoRoot, before.rel);
+                const st = fs.statSync(abs);
+                if (st.mtimeMs !== before.mtimeMs) throw new Error(`FAIL: GET touched mtime of ${before.rel}`);
+                if (fs.readFileSync(abs, 'utf8') !== before.content) throw new Error(`FAIL: GET changed content of ${before.rel}`);
+            }
+            const srvSrc = fs.readFileSync(path.join(repoRoot, 'ingest', 'server.py'), 'utf8');
+            const doGetStart = srvSrc.indexOf('def do_GET');
+            const doGetEnd = srvSrc.indexOf('\n    def ', doGetStart + 10);
+            const doGet = srvSrc.slice(doGetStart, doGetEnd);
+            if (doGet.includes('sync_episode_clips_and_markdown')) throw new Error('FAIL: do_GET still calls the sync');
+            if (!srvSrc.includes('"/api/episode/sync_clips"') || !srvSrc.includes('"/api/git/push"')) throw new Error('FAIL: POST sync/push routes missing (sync must still run on explicit action)');
+            console.log('  PASS: GETs left plan + markdown untouched; sync lives on the POST routes only.');
         }
 
         console.log("\n✅ ALL COMPREHENSIVE CURATOR REGRESSION TESTS PASSED 100%!");
