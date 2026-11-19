@@ -2131,6 +2131,23 @@
         // State variables
         let activeProjectId = null;
         let projectInfo = null;
+
+        // Derive the episode number from the current project (never hardcoded).
+        // Prefers the loaded project name, then the ?project= / ?id= URL param,
+        // then the active project id; returns "" when none can be determined.
+        function currentEpisodeNum() {
+            if (projectInfo && projectInfo.name) {
+                return projectInfo.name.match(/\d+/)?.[0] || projectInfo.name;
+            }
+            let fromPage = "";
+            try {
+                const q = new URLSearchParams(window.location.search);
+                fromPage = q.get("project") || q.get("id") || "";
+            } catch (e) {}
+            if (!fromPage && typeof activeProjectId === "string") fromPage = activeProjectId;
+            const m = fromPage ? fromPage.match(/\d+/) : null;
+            return m ? m[0] : "";
+        }
         let transcriptionData = null;
         let allWords = [];
         let availableMusicFiles = [];
@@ -2651,7 +2668,7 @@
             if (clipIndex === undefined || clipIndex === null || !clips[clipIndex]) return;
             activeTextClipIndex = clipIndex;
             const clip = clips[clipIndex];
-            const episodeNum = (projectInfo && projectInfo.name) ? (projectInfo.name.match(/\d+/)?.[0] || projectInfo.name) : "244";
+            const episodeNum = currentEpisodeNum();
 
             const modal = document.getElementById('clipTextModalOverlay');
             const titleEl = document.getElementById('clipTextModalTitle');
@@ -2738,14 +2755,15 @@
                             return ch;
                         });
                         await savePlanToServer();
+                        updateStateBar(`Saved captions for Clip ${clips[savedClipIdx].num}!`);
+                        closeClipTextModal();
                     } catch (saveErr) {
                         console.error("Failed to save plan to server:", saveErr);
+                        updateStateBar(`Save FAILED for Clip ${clips[savedClipIdx].num} — captions NOT saved. Retry.`);
                     } finally {
                         saveBtn.disabled = false;
                         saveBtn.innerHTML = origBtnText;
                     }
-                    updateStateBar(`Saved captions for Clip ${clips[savedClipIdx].num}!`);
-                    closeClipTextModal();
                 });
             }
         });
@@ -4933,7 +4951,7 @@
             
             segmentClipboard = JSON.parse(JSON.stringify(seg));
             
-            const episodeNum = (projectInfo && projectInfo.name) ? (projectInfo.name.match(/\d+/)?.[0] || projectInfo.name) : "244";
+            const episodeNum = currentEpisodeNum();
             updateStateBar(`Copied segment (from Clip ${episodeNum}-${clips[clipIdx].num}) to clipboard`);
             
             // Re-render clips to show the newly enabled "Paste Segment" button
@@ -4949,7 +4967,7 @@
             const copy = JSON.parse(JSON.stringify(segmentClipboard));
             clips[clipIdx].segments.unshift(copy);
             
-            const episodeNum = (projectInfo && projectInfo.name) ? (projectInfo.name.match(/\d+/)?.[0] || projectInfo.name) : "244";
+            const episodeNum = currentEpisodeNum();
             updateStateBar(`Pasted segment to Clip ${episodeNum}-${clips[clipIdx].num}`);
             
             renderClips();
@@ -6031,7 +6049,7 @@
 
             clearExistingCards();
 
-            const episodeNum = (projectInfo && projectInfo.name) ? (projectInfo.name.match(/\d+/)?.[0] || projectInfo.name) : "244";
+            const episodeNum = currentEpisodeNum();
             const isZeroIndexedPlan = clips.length > 0 && clips[0].num === 0;
 
             clips.forEach((clip, index) => {
