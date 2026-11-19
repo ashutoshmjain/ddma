@@ -1536,7 +1536,7 @@
                 ⚙️ Settings
             </button>
 
-            <a href="http://127.0.0.1:8088/" target="deepdive-workspace" id="topWorkspaceBtn" class="btn btn-secondary btn-mini" style="font-weight: 600; padding: 0.25rem 0.65rem; display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; text-decoration: none;" title="Open the Workspace home page (landing page)">
+            <a data-workspace-home target="deepdive-workspace" id="topWorkspaceBtn" class="btn btn-secondary btn-mini" style="font-weight: 600; padding: 0.25rem 0.65rem; display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; text-decoration: none;" title="Open the Workspace home page (landing page)">
                 <span>🏠</span> Workspace
             </a>
         </div>
@@ -1980,6 +1980,7 @@
 
     <audio id="audioElement"></audio>
 
+    <script src="workspace-link.js"></script>
     <script>
         // =========================================================================
         // Custom Styled Alert Modal with Copy Message Support
@@ -2148,6 +2149,30 @@
             const m = fromPage ? fromPage.match(/\d+/) : null;
             return m ? m[0] : "";
         }
+
+        // Workspace home link: ensure the cockpit (:8088) answers, starting it
+        // via the Curator server when it is down, then open the landing page in
+        // the shared workspace tab. Never opens a dead tab silently.
+        document.addEventListener('DOMContentLoaded', () => {
+            const wsBtn = document.getElementById('topWorkspaceBtn');
+            if (!wsBtn) return;
+            wsBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                updateStateBar('Opening Workspace…');
+                try {
+                    const res = await fetch('/api/cockpit/launch', {method: 'POST'});
+                    const data = await res.json();
+                    if (data && data.success && data.cockpit_url) {
+                        window.open(data.cockpit_url, 'deepdive-workspace');
+                        updateStateBar('Workspace home page opened.');
+                    } else {
+                        throw new Error((data && data.error) || 'Workspace server is not running.');
+                    }
+                } catch (err) {
+                    updateStateBar('Workspace server is not running: ' + err.message + ' Start it with: python ingest/server.py (or ./start.sh on Linux/WSL), then click Workspace again.');
+                }
+            });
+        });
         let transcriptionData = null;
         let allWords = [];
         let availableMusicFiles = [];

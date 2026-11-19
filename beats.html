@@ -28,8 +28,8 @@ a { color: #7dd3fc; }
   </div>
   <div style="display: flex; align-items: center; gap: 0.5rem;">
     <a class="btn-mini" href="/docs/documentation.html" target="_blank" title="Open documentation">📖 Docs</a>
-    <a class="btn-mini" href="http://127.0.0.1:8088/" target="deepdive-workspace" title="Open the Workspace home page (landing page)">🏠 Workspace</a>
-    <a class="btn-mini" href="http://127.0.0.1:8088/cockpit.html">cockpit</a>
+    <a class="btn-mini" data-workspace-home target="deepdive-workspace" title="Open the Workspace home page (landing page)">🏠 Workspace</a>
+    <a class="btn-mini" data-workspace-home data-workspace-page="cockpit.html">cockpit</a>
     <a class="btn-mini" href="http://127.0.0.1:8000/curator.html">ddma</a>
     <span id="beats-toast"></span>
   </div>
@@ -630,6 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inp) inp.addEventListener('input', () => { inp.dataset.touched = '1'; });
 });
 </script>
+<script src="workspace-link.js"></script>
 
 </body>
 </html>

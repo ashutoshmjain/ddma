@@ -111,14 +111,15 @@ def resolve_dd_hub_root():
                 return cfg
     except Exception:
         pass
-    for cand in [r"G:\My Drive\dd_hub", "/mnt/gdrive/dd_hub", "/workspace/dd_hub"]:
+    for cand in ["/workspace/dd_hub"]:
         try:
             if os.path.exists(cand):
                 return cand
         except Exception:
             pass
-    print("WARNING: DD_HUB_ROOT is unset and no dd_hub directory exists at any known location -- using default G:\\My Drive\\dd_hub which DOES NOT EXIST. Vault/plan reads will fail and hub syncs will be skipped.")
-    return r"G:\My Drive\dd_hub"
+    local_default = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "dd_hub")
+    print(f"WARNING: DD_HUB_ROOT is unset and no dd_hub directory exists at any known location -- defaulting to plain local folder {local_default} (set DD_HUB_ROOT to your workspace to override). Vault/plan reads may fail and hub syncs will be skipped until the folder exists.")
+    return local_default
 
 
 def vault_settings_path():

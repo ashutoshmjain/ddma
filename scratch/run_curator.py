@@ -152,14 +152,15 @@ def resolve_dd_hub_root():
                 return cfg
     except Exception:
         pass
-    for cand in [r"G:\My Drive\dd_hub", "/mnt/gdrive/dd_hub", "/workspace/dd_hub"]:
+    for cand in ["/workspace/dd_hub"]:
         try:
             if os.path.exists(cand):
                 return cand
         except Exception:
             pass
-    print("WARNING: DD_HUB_ROOT is unset and no dd_hub directory exists at any known location -- using default G:\\My Drive\\dd_hub which DOES NOT EXIST. Vault/plan reads will fail and hub syncs will be skipped.")
-    return r"G:\My Drive\dd_hub"
+    local_default = str(DDMA_DIR.parent / "dd_hub")
+    print(f"WARNING: DD_HUB_ROOT is unset and no dd_hub directory exists at any known location -- defaulting to plain local folder {local_default} (set DD_HUB_ROOT to your workspace to override). Vault/plan reads may fail and hub syncs will be skipped until the folder exists.")
+    return local_default
 
 
 def vault_settings_path():
@@ -1693,6 +1694,60 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         parsed_url = urlparse(self.path)
         params = parse_qs(parsed_url.query)
         
+        if parsed_url.path == '/api/cockpit/launch':
+            # Ensure the Workspace home (cockpit :8088) server answers, starting it
+            # on this machine when it is down. Mirrors the /api/beats/launch
+            # precedent. The browser host comes from the request Host header so the
+            # returned URL stays on the host the user actually opened.
+            try:
+                host_hdr = (self.headers.get('Host') or '').split(':')[0] or '127.0.0.1'
+                cockpit_url = f"http://{host_hdr}:8088/"
+                up = False
+                try:
+                    r = requests.get("http://127.0.0.1:8088/", timeout=2)
+                    up = r.status_code < 500
+                except Exception:
+                    up = False
+                if not up:
+                    ingest_dir = DDMA_DIR.parent / "ingest"
+                    cockpit_script = ingest_dir / "server.py"
+                    if not cockpit_script.exists():
+                        raise Exception("ingest/server.py not found next to ddma/.")
+                    try:
+                        prev = globals().get('cockpit_server_process')
+                        if not (prev and prev.poll() is None):
+                            globals()['cockpit_server_process'] = subprocess.Popen(
+                                [sys.executable, str(cockpit_script)],
+                                cwd=str(ingest_dir),
+                                stdout=subprocess.DEVNULL,
+                                stderr=subprocess.DEVNULL)
+                    except Exception as pe:
+                        raise Exception(f"Could not start the cockpit server: {pe}")
+                    for _ in range(30):
+                        time.sleep(0.5)
+                        try:
+                            r = requests.get("http://127.0.0.1:8088/", timeout=2)
+                            if r.status_code < 500:
+                                up = True
+                                break
+                        except Exception:
+                            pass
+                if not up:
+                    raise Exception("still not responding after start.")
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "cockpit_url": cockpit_url}).encode('utf-8'))
+                return
+            except Exception as e:
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": False, "error": "Workspace server is not running on :8088 " + str(e)}).encode('utf-8'))
+                return
+
         if parsed_url.path == '/help-bot':
             content_length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(content_length)
@@ -4228,20 +4283,42 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         except Exception as fe:
                             print(f"[{project_id}][Clip {clip_num}] Manifest fallback failed for {mpath}: {fe}")
 
-                # (e) Scoped git add + commit + push (cwd = repo root). ONLY the clip + both manifests.
+                # (d2) Write the distribution fields into the plan BEFORE the scoped commit:
+                # the rendered duration (probed from the staged canonical master) plus the
+                # published flag + URL. Hub-first via save_plan (mirrors to the docs/ and
+                # src/ published plan copies), so the commit below picks up the copy too.
+                clip_url = (f"https://github.com/ashutoshmjain/deepDive/blob/master/src/ddma/docs/episodes/"
+                            f"{ep_num}/clips/{master_name}")
+                try:
+                    probe = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
+                                            "format=duration", "-of", "default=noprint_wrappers=1:nokey=1",
+                                            local_master],
+                                           capture_output=True, text=True, timeout=30)
+                    rendered_dur = round(float(probe.stdout.strip()), 2)
+                except Exception as pe:
+                    raise Exception(f"Could not probe rendered duration of {master_name}: {pe}")
+                target_clip["rendered_duration"] = rendered_dur
+                target_clip["published"] = True
+                target_clip["published_url"] = clip_url
+                save_plan(project_id, plan_data, writer="curator")
+
+                # (e) Scoped git add + commit + push (cwd = repo root). ONLY the clip,
+                # the published plan copy, and both manifests.
                 # NOTE: forward slashes -- a backslash pathspec can silently match nothing on Git for Windows.
                 # Idempotent: if everything already matches HEAD (re-publish), report success without committing.
                 rel_clip = "src/ddma/docs/episodes/%s/clips/%s" % (ep_num, master_name)
+                rel_plancopy = "src/ddma/docs/episodes/%s/plan.json" % ep_num
                 rel_manifests = ["ddma/docs/episodes.json",
                                  "src/ddma/docs/episodes.json"]
+                rel_scope = [rel_clip, rel_plancopy] + rel_manifests
                 already = False
                 try:
-                    subprocess.run(["git", "add", rel_clip] + rel_manifests, cwd=repo_root, check=True,
+                    subprocess.run(["git", "add"] + rel_scope, cwd=repo_root, check=True,
                                    capture_output=True, text=True)
                     staged = subprocess.run(["git", "diff", "--cached", "--name-only"], cwd=repo_root,
                                             capture_output=True, text=True)
                     if not staged.stdout.strip():
-                        clean = subprocess.run(["git", "diff", "--quiet", "HEAD", "--", rel_clip] + rel_manifests,
+                        clean = subprocess.run(["git", "diff", "--quiet", "HEAD", "--"] + rel_scope,
                                                cwd=repo_root, capture_output=True)
                         if clean.returncode == 0:
                             # Remote-aware idempotency (Issue 91): files matching
@@ -4272,22 +4349,12 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                     raise Exception(f"Git publish failed: {(ge.stderr or ge.stdout or ge)[:500]}")
 
                 # (f) Success with the GitHub URL of the published clip.
-                clip_url = (f"https://github.com/ashutoshmjain/deepDive/blob/master/src/ddma/docs/episodes/"
-                            f"{ep_num}/clips/{master_name}")
+                # (Distribution fields were written + mirrored in (d2) above, fresh and
+                # already-published paths alike.)
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
-                # (f2) Persist the published state on the clip (fresh + already-published
-
-                # paths alike) so the card render survives a refresh. Hub-first via save_plan.
-
-                target_clip["published"] = True
-
-                target_clip["published_url"] = clip_url
-
-                save_plan(project_id, plan_data, writer="curator")
-
                 self.wfile.write(json.dumps({"success": True, "url": clip_url, "clip": master_name, "already_published": already, "persisted": True}).encode('utf-8'))
                 return
             except Exception as e:
@@ -4891,25 +4958,25 @@ class RangeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
                         if os.path.exists(cand):
                             audio_path = cand
                             break
-                    # Automatic fallback to Google Drive dd_hub/inputs/<ep_num> (and legacy agy_inputs/<ep_num>)
+                    # Automatic fallback to workspace dd_hub/inputs/<ep_num> (and legacy agy_inputs/<ep_num>)
                     if not audio_path or not os.path.exists(audio_path):
-                        for gdrive_base in [
+                        for hub_base in [
                             os.path.join(resolve_dd_hub_root(), "inputs"),
-                            r"G:\My Drive\agy_inputs",
+                            os.path.join(resolve_dd_hub_root(), "agy_inputs"),
                         ]:
-                            gdrive_dir = os.path.join(gdrive_base, str(ep_num))
-                            if os.path.exists(gdrive_dir):
-                                for fn in sorted(os.listdir(gdrive_dir)):
+                            hub_dir = os.path.join(hub_base, str(ep_num))
+                            if os.path.exists(hub_dir):
+                                for fn in sorted(os.listdir(hub_dir)):
                                     if fn.lower().endswith((".m4a", ".mp3", ".wav")):
                                         ext = os.path.splitext(fn)[1].lower()
                                         dest_cand = os.path.join(project_dir, f"{ep_num}{ext}")
                                         try:
-                                            shutil.copy2(os.path.join(gdrive_dir, fn), dest_cand)
+                                            shutil.copy2(os.path.join(hub_dir, fn), dest_cand)
                                             audio_path = dest_cand
-                                            print(f"[GDrive Audio Sync] Copied {fn} -> {dest_cand}")
+                                            print(f"[Hub Audio Sync] Copied {fn} -> {dest_cand}")
                                             break
                                         except Exception as ge:
-                                            print(f"[GDrive Audio Sync] Error copying {fn}: {ge}")
+                                            print(f"[Hub Audio Sync] Error copying {fn}: {ge}")
                             if audio_path and os.path.exists(audio_path):
                                 break
                 if not audio_path or not os.path.exists(audio_path):
